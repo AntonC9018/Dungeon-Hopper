@@ -52,9 +52,12 @@ function Enemy:damage(dir, dmg)
 end
 
 function Enemy:reset()
+    self.bounces = {}
     self.action_name = nil
     self.cur_actions = nil
     self.cur_audio = nil
+    self.cur_a = nil
+    self.cur_r = nil
     self.hit = false
     self.moved = false
     self.seq_count = (self.seq_count >= #self.sequence and 1) or (self.seq_count + 1)
@@ -68,4 +71,18 @@ function Enemy:die()
             display.remove(self.sprite)
         end
     })
+end
+
+function Enemy:face(p, dir)
+    -- player is right to the right or to the left
+    if math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 0 then
+        self.facing = { p.x - self.x, 0 }
+        return true
+    -- player is right to the top or to the bottom
+    elseif  math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 0 then
+        self.facing = { p.y - self.y, 0 }
+        return true
+    end
+
+    return false
 end

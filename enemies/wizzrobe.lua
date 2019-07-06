@@ -3,9 +3,9 @@ Wizzrobe = Enemy:new{
     y = 7,
     offsetY = -0.2,
     sequence = { 
-        { name = "idle", a_def = "idle" }, 
-        { name = "ready", a_def = "ready", a_close = "angry" }, 
-        { name = "move", a_def = "jump", a_dmg = "jump", a_bump = "jump", dirs = { table.unpack(HOR_VER) } } 
+        { name = "idle" }, 
+        { name = "ready" }, 
+        { name = "move/attack", dirs = { table.unpack(HOR_VER) } } 
     },
     seq_count = 1
 }
@@ -105,78 +105,105 @@ function Wizzrobe:getSeqStep()
 end
 
 
--- do nothing
-function Wizzrobe:loiter(g)
+function Wizzrobe:setAction(a, r, g)
 
-    if self:getSeqStep().name == "ready" then
-        if  math.abs(self.x - g.player.x) == 1 and 
-            math.abs(self.y - g.player.y) == 0 then
+    -- "Current action"
+    self.cur_a = a
+    -- "[ (to the) Current (<-->) response ] (action)"
+    self.cur_r = r
 
-                self.anim_name = 'a_close'
-                self.facing = { g.player.x - self.x, 0 }
 
-        elseif  math.abs(self.y - g.player.y) == 1 and 
-                math.abs(self.x - g.player.x) == 0 then
-
-                self.anim_name = 'a_close'
-                self.facing = { 0, g.player.y - self.y }
-        else
-            self.anim_name = 'a_def'
+    if self:getSeqStep().name == 'move/attack' then
+        -- change orientation
+        if a[1] ~= 0 then
+            self:orient(a[1])
         end
 
-    else
-        self.anim_name = 'a_def'
-    end
+        -- Free way, just move
+        if r == FREE then
+            self.x = a[1] + self.x
+            self.y = a[2] + self.y
+            self.facing = { a[1], a[2] }
+        -- damage the player
+        elseif r == PLAYER then
+            g.player:damage(self)
+            -- TODO: pushing a player back if the enemy must do so
+        end
+        -- TODO: cases with walls, where the enemy might 
+        -- destroy a wall or damage a wall or whatever 
 
-    if (self.facing[1] ~= 0) then
-        self:orient(self.facing[1])
-    end
-
-end
-
--- move / attack
-function Wizzrobe:move(i, g)
-
-    self.facing = self.cur_actions[i]
-
-    if (self.facing[1] ~= 0) then
-        self:orient(self.facing[1])
-    end
-
-    local x, y = self.x + self.facing[1], self.y + self.facing[2]
-
-    if g.player.x == x and g.player.y == y then
-        g.player:damage(self)
-        self.anim_name = 'a_bump'
-    else 
-        self.anim_name = 'a_def'
-        self.x = x
-        self.y = y
+    elseif self:getSeqStep().name == 'ready' then
+        -- change orientation
+        self:orientTo(g.player)
     end
 end
 
-function Wizzrobe:bump(i, g)
-    self.facing = self.cur_actions[i]
-
-    if (self.facing[1] ~= 0) then
-        self:orient(self.facing[1])
-    end
-
-    self.anim_name = 'a_bump'
-
+function Wizzrobe:anim(ts, name)
+    self.sprite.timeScale = ts
+    self.sprite:setSequence(name)
+    self.sprite:play()
 end
+
+function Wizzrobe:trans(o)
+    transition.to(self.sprite, o)
+end
+
+function Wizzrobe:orientTo(player)
+    if self.facing[1] > 0 and player.x > self.x or
+       self.facing[1] < 0 and player.x < self.x or
+       self.facing[2] > 0 and player.y > self.y or
+       self.facing[2] < 0 and player.y < self.y then return end
+
+    if     player.x > self.x then self.facing[1] =  1
+    elseif player.x < self.x then self.facing[1] = -1
+    elseif player.y > self.y then self.facing[2] =  1
+    elseif player.y < self.y then self.facing[2] = -1
+
+    -- TODO: give it a random val when no player is around 
+    else   self.facing = { 0, 0 } end
+end
+
 
 function Wizzrobe:play_animation(g)
-    
-    -- get the animation length, 
-    -- scale down if there will be more than one animation (bouncing off traps)
+    -- get the step in sequence
+    local step = self:getSeqStep()
+    -- get the time of animations and transitions
     local l = g:getAnimLength()
     local t = #self.bounces and l or l / #self.bounces
 
-    local function _callback(event)
-        if callback then callback(event) end
-    end
 
+    -- no bounces
+    -- NOTE: "Bounces" in this context are 
+    -- any pushing action (effects of traps, other enemies, bombs so on)
+    if #self.bounces == 0 then
+
+        print('no bounces')
+
+        -- the enemy does nothing
+        if step.name == "idle" then
+            self:anim(1, "idle")
+
+        -- the enemy is preparing to attack
+        elseif step.name == "ready" then
+            print("ready")
+            -- turn to player if they are close
+            local turned = self:face(g.player)
+            if turned then
+                -- play anger animation
+                self:anim(1, 'angry')
+            else
+                -- play ready animation
+                self:anim(1, 'ready')
+            end                
+        end
+    end -- if not #self.bounces
+    
+    -- there are bounces
+    -- now THIS is a bit more complicated
+    -- I just add the function that iterates 
+    -- through bounces as a callback to transitions
+    
+    -- LO AND BEHOLD
     -- recursive bouncing
     local function do_bounces(i)
         i = i + 1        
@@ -189,81 +216,99 @@ function Wizzrobe:play_animation(g)
                 -- if the last one
                 i >= #self.bounces 
                 -- call the closing function
-                and _callback 
+                -- TODO: add an emitter that other objects could hook up to
+                -- and broadcast events such as this 
+                and function() end 
                 -- do the next animation
                 or function() do_bounces(i) end 
 
+            -- TODO: add types of bouncing (i.e. not just traps 
+            -- but also pushing, which would use other animations)
+
             -- play animation
-            self.sprite.timeScale = 1000 / t
-            self.sprite:setSequence('jump')
-            self.sprite:play()
+            self:anim(1000 / t, 'jump')
 
             if not self.bounces[i][2] then
                 -- if hopping to the right or to the left, jump up a little
-                transition.to(self.sprite, {
-                    y = self.y + 0.4,
+                self:trans({
+                    -- TODO: this 0.4 is too arbitrary, make that a property
+                    y = self.y + 0.4 + self.offsetY,
                     transition = easing.continuousLoop,
                     time = t / 2
                 })
-                transition.to(self.sprite, {
+                self:trans({
                     x = self.x,
                     transition = easing.inOutQuad,
                     time = t,
                     onComplete = cb
                 })            
             else
-                transition.to(self.follow_group, {
+                self:trans({
                     x = self.x,
-                    y = self.y,
+                    y = self.y + self.offsetY,
                     transition = easing.inOutQuad,
                     time = t,
                     onComplete = cb
                 })
             end
         else
-            _callback({ phase = "end" })
+            -- TODO: add an emitter as discussed earlier
+            -- _callback({ phase = "end" })
         end
     end
 
-    if self.anim_name == "a_bump" then
-        -- play animation
-        self.sprite.timeScale = 1000 / t
-        self.sprite:setSequence('jump')
-        self.sprite:play()
-        -- hop to and back
-        transition.to(self.sprite, {
-            x = self.x - self.facing[1] / 2,
-            y = self.y - self.facing[2] / 2 + self.offsetY,
-            transition = easing.continuousLoop,
-            time = t / 2,
-            onComplete = function () do_bounces(0) end
-        })       
 
-    elseif self.anim_name then
-        -- play animation
-        if self:getSeqStep()[self.anim_name] ~= 'idle' then self.sprite.timeScale = 1000 / t else self.sprite.timeScale = 1 end
-        self.sprite:setSequence(self:getSeqStep()[self.anim_name])
-        self.sprite:play()
+    -- the enemy intends to move / attack
+    if step.name == "move/attack" then
+        -- check what is the response
 
-        if self:getSeqStep().name == 'move' then
-            -- hop onto the tile
-            transition.to(self.sprite, {
+        -- it hit the player this beat
+        if self.cur_r == PLAYER then
+            -- play hit animation
+            self:anim(1000 / t, 'jump')
+            -- jump to and back
+            self:trans({ 
+                x = self.x + self.cur_a[1] / 2, 
+                y = self.y + self.cur_a[2] / 2 + self.offsetY,
+                time = t / 2,
+                transition = easing.continuousLoop,
+                onComplete = function() do_bounces(0) end
+            })
+        
+        -- The way is lit, the path is clear!
+        elseif self.cur_r == FREE then
+            -- play the jump animation
+            self:anim(1000 / t, 'jump')
+            -- jump to the tile
+            self:trans({
                 x = self.x,
                 y = self.y + self.offsetY,
-                transition = easing.inOutQuad,
                 time = t,
-                onComplete = function () do_bounces(0) end
+                transition = easing.inOutQuad,
+                onComplete = function() do_bounces(0) end
             })
-        else
-            do_bounces(0)
+        
+        -- bump into the block or the enemy
+        elseif self.cur_r == BLOCK or self.cur_r == ENEMY then
+            -- play hit animation
+            self:anim(1000 / t, 'jump')
+            -- jump to and back
+            self:trans({ 
+                x = self.x + self.cur_a[1] / 2, 
+                y = self.y + self.cur_a[2] / 2 + self.offsetY,
+                time = t / 2,
+                transition = easing.continuousLoop,
+                onComplete = function() do_bounces(0) end
+            })
         end
-    else
-        do_bounces(0)
+        -- TODO: think about being pushed while getting ready or idling
     end
+
 end
 
 
 function Wizzrobe:reset()
+    -- TODO: call this something like 'weak'
     if self.hit then self.seq_count = 0 end
     Enemy.reset(self)
 end

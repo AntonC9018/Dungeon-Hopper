@@ -12,21 +12,21 @@ Entity = {
     bounces = {}
 }
 
-function Entity:new(o)
+function Entity:new(o, options)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
 
-    if o.options then
+    if options then
         -- load the image sheet
-        if o.options.sheet_path and not self.sheet then
-            self:loadSheet(o.options.sheet_path, o.options.sheet_options)
+        if options.sheet_path and not self.sheet then
+            self:loadSheet(options.sheet_path, options.sheet_options)
         end
 
         -- load audio
-        if o.options.audio and not self.audio then
+        if options.audio and not self.audio then
             self.audio = {}
-            for k, v in pairs(o.options.audio) do
+            for k, v in pairs(options.audio) do
                 self.audio[k] = audio.loadSound(v)
             end
         end

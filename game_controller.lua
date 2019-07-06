@@ -1,3 +1,12 @@
+
+-- an enum for response values
+-- TODO: make a file for constants
+FREE = 1
+ENEMY = 2
+WAIT = 3
+BLOCK = 4
+PLAYER = 5
+
 Controller = constructor:new{
     loop_queue = {},
     doing_loop = false
@@ -57,6 +66,8 @@ function Controller:do_loop(player_action)
 
     ]]--
 
+    -- TODO: add projectiles
+
     -- update enemy grid
     for i = 1, #self.enemGrid do
         for j = 1, #self.enemGrid[i] do
@@ -65,10 +76,7 @@ function Controller:do_loop(player_action)
     end
     for i = 1, #self.enemList do
         self.enemGrid[self.enemList[i].x][self.enemList[i].y] = self.enemList[i]
-    end
-
-    print(player_action)
-    print(ins(player_action))
+    end    
 
     -- player has priority
     -- update player's coordinates
@@ -84,6 +92,9 @@ function Controller:do_loop(player_action)
     -- do the same for their weapon (and spade?)
     self.player:act(player_action, self)
 
+    -- also add the player to the grid
+    self.enemGrid[self.player.x][self.player.y] = self.player
+
 
     local t = { table.unpack(self.enemList) }
 
@@ -92,7 +103,7 @@ function Controller:do_loop(player_action)
     -- (update stunned?)
 
 
-    
+    local y = 0
 
     -- TODO: sort by proximity to the player, then do checks
 
@@ -102,6 +113,8 @@ function Controller:do_loop(player_action)
         -- Figure out the next action of the enemies
         -- go from the back of the array to be able to remove elements
         for i = #t, 1, -1 do
+
+            y = y + 1
 
             if t[i].moved then
                 table.remove(t, i)
@@ -115,9 +128,11 @@ function Controller:do_loop(player_action)
                 -- the array is of configuration { { x, y, (specs) {} }, ... }
                 local desActs = t[i]:getAction(player_action, self)
 
+                if y == 200 then error("OVERFLOW at 132") end
+
                 -- if the action specified is doing nothing
                 if #desActs == 0 then
-                    t[i]:loiter(self)
+                    t[i]:setAction(nil, 0, self)
                     t[i].moved = true
                 else
 
@@ -132,43 +147,41 @@ function Controller:do_loop(player_action)
 
                         !!!This might be changed in the future!!!
 
-                            1 - free way, no enemy or block
-                            2 - an enemy is blocking the spot
-                            3 - there is an enemy but they haven't moved yet
-                            4 - there is a block on the way
+                            1 - free way, no enemy or block [FREE]
+                            2 - an enemy is blocking the spot [ENEMY]
+                            3 - there is an enemy but they haven't moved yet [WAIT]
+                            4 - there is a block on the way [BLOCK]
                             
-                            {? the durability of that block 
-                                5 - dirt
-                                6 - stone
-                                7 - obsidian
-                                8 - bedrock
-                            }?
                         ]]--
 
                         if self.walls[ t[i].x + x ][ t[i].y + y ] then
                             -- there is a wall
-                            resps[j] = 4
+                            resps[j] = BLOCK
                         else
 
                             local en = self.enemGrid[ t[i].x + x ][ t[i].y + y ]
 
 
-                            -- the simplest case unblocked way
+                            -- the simplest case: unblocked way
                             if not en then 
-                                resps[j] = 1
+                                resps[j] = FREE
+                                break
+                            -- hit the player (yes, it is in enemyGrid)
+                            elseif en == self.player then
+                                resps[j] = PLAYER
                                 break
                             -- an enemy has moved to the spot
                             elseif en.moved then
                                 -- if the enemy is dead it's valid
                                 if en.dead then
-                                    resps[j] = 1
+                                    resps[j] = FREE
                                     break
                                 else
-                                    resps[j] = 2 
+                                    resps[j] = ENEMY 
                                 end
                             else 
                                 -- the enemy is going to move later
-                                resps[j] = 3
+                                resps[j] = WAIT
                                 break
                             end
                         end
@@ -180,19 +193,32 @@ function Controller:do_loop(player_action)
                     -- remember, they are ordered by desirability
                     for j = 1, #resps do
                         -- wait for the enemy to move out of the way
-                        if resps[j] == 3 then 
+                        if resps[j] == WAIT then 
                             all_blocked = false 
                             break 
                         end
+
+
+                        -- TODO: merge these
                         -- move if can move
-                        if resps[j] == 1 then
-                            -- move / hit the player
-                            -- Note: if the player has been hit by this, the audio
-                            -- of the player would also be changed
+                        if resps[j] == FREE then
+
+                            -- move       
+                            -- TODO: move inside enemy
                             self.enemGrid[t[i].x][t[i].y] = false
-                            t[i]:move(j, self)
+                            t[i]:setAction(desActs[j], resps[j], self)
                             self.enemGrid[t[i].x][t[i].y] = t[i]
 
+                            t[i].moved = true
+                            all_blocked = false
+                            break
+                        end
+                        -- hit the player
+                        -- Note: if the player has been hit by this, the audio
+                        -- of the player would also be changed
+                        if resps[j] == PLAYER then
+                            -- TODO: figure pushing
+                            t[i]:setAction(desActs[j], resps[j], self)
                             t[i].moved = true
                             all_blocked = false
                             break
@@ -201,8 +227,7 @@ function Controller:do_loop(player_action)
 
                     -- if nowhere to go 
                     if all_blocked then
-                        -- would also trigger if there's no action in the resps list
-                        t[i]:bump(1, self)
+                        t[i]:setAction(desActs[1], resps[1], self)
                         t[i].moved = true
                     end
                 end -- / if # = 0                
@@ -315,7 +340,7 @@ function Controller:getBeatOffset()
 end
 
 function Controller:getAnimLength()
-    return 160
+    return 560
 end
 
 function Controller:on_beat() 

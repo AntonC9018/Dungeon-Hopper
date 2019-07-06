@@ -8,7 +8,7 @@ function Dagger:attemptAttack(dir, g, player)
 
     local x, y = player.x + dir[1], player.y + dir[2]
 
-    if g.enemGrid[x][y] then
+    if g.enemGrid[x][y] and g.enemGrid[x][y] ~= player then
 
         self:orient(dir)  
 

@@ -183,7 +183,7 @@ function Player:play_animation(g, callback)
     end
 
     if self.action_name == "bump" then
-        print(ins(self.cur_action))
+        -- print(ins(self.cur_action))
         -- play animation
         self.sprite.timeScale = 1000 / t
         self.sprite:setSequence('jump')

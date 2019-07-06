@@ -12,7 +12,7 @@ UNIT = 64
 
 table.unpack = unpack
 
-require('classes_util')
+require('entity')
 require('tile')
 require('player')
 require('enemies.enemy')
@@ -41,17 +41,16 @@ function scene:create( event )
     Entity.group = tileGroup
 
     local dagger = Dagger:new(
+        {},
         {
-            options = {
-                sheet_path = '/assets/image_sheets/swipes/swipe_dagger.png',
-                sheet_options = {
-                    width = 24,
-                    height = 24,
-                    numFrames = 3
-                },
-                audio = {
-                    swipe = '/assets/audio/pound.wav'
-                }
+            sheet_path = '/assets/image_sheets/swipes/swipe_dagger.png',
+            sheet_options = {
+                width = 24,
+                height = 24,
+                numFrames = 3
+            },
+            audio = {
+                swipe = '/assets/audio/pound.wav'
             }
         }        
     )
@@ -63,19 +62,19 @@ function scene:create( event )
             x = 1,
             y = 1,
             follow_group = tileGroup,
-            weapon = dagger,
-            options = -- options list
-                {
-                    sheet_path = '/assets/image_sheets/elf_girl.png',
-                    sheet_options = {
-                        width = 16,
-                        height = 21, 
-                        numFrames = 9
-                    },
-                    audio = {
-                        hurt = '/assets/audio/roblox.mp3'
-                    }
-                }
+            weapon = dagger
+        },
+         -- options list
+        {
+            sheet_path = '/assets/image_sheets/elf_girl.png',
+            sheet_options = {
+                width = 16,
+                height = 21, 
+                numFrames = 9
+            },
+            audio = {
+                hurt = '/assets/audio/roblox.mp3'
+            }
         }     
     )
     player:createSprite()
@@ -127,21 +126,22 @@ function scene:create( event )
 
     local enemList = {}
 
-    local wizzrobe = Wizzrobe:new{
-        x = 2,
-        y = 2,
-            options = {
-                sheet_path = '/assets/image_sheets/wizzrobe.png',
-                sheet_options = {
-                    width = 16,
-                    height = 17, 
-                    numFrames = 5
-                },
-                audio = {
-                    hurt = '/assets/audio/roblox.mp3'
-                }
+    local wizzrobe = Wizzrobe:new({
+            x = 2,
+            y = 2,
+        },
+        {
+            sheet_path = '/assets/image_sheets/wizzrobe.png',
+            sheet_options = {
+                width = 16,
+                height = 17, 
+                numFrames = 5
+            },
+            audio = {
+                hurt = '/assets/audio/roblox.mp3'
             }
         }
+    )
 
     wizzrobe:createSprite()
 

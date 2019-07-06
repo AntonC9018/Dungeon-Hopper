@@ -11,11 +11,12 @@ Enemy = Entity:new{
     dead = false,
     max_vision = 6,
     health = 3,
-    bounces = {}
+    bounces = {},
+    sees = true
 }
 
 function Enemy:createSprite()
-    error('An enemy class must override the createSprite() method')
+    -- error('An enemy class must override the createSprite() method')
 end
 
 
@@ -41,12 +42,30 @@ end
 
 function Enemy:damage(dir, dmg)
     self.moved = true
+    self.hit = true
     self.health = self.health - dmg
 
     if (self.health <= 0) then
         self.dead = true
         self.dmg = 0       
     end
+end
 
-    print(self.health)
+function Enemy:reset()
+    self.action_name = nil
+    self.cur_actions = nil
+    self.cur_audio = nil
+    self.hit = false
+    self.moved = false
+    self.seq_count = (self.seq_count >= #self.sequence and 1) or (self.seq_count + 1)
+end
+
+function Enemy:die()
+    transition.to(self.sprite, {
+        alpha = 0,
+        time = 600,
+        onComplete = function()
+            display.remove(self.sprite)
+        end
+    })
 end

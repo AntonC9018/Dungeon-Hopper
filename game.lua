@@ -10,11 +10,13 @@ ins = require('inspect')
 
 UNIT = 64
 
+table.unpack = unpack
+
 require('classes_util')
 require('tile')
 require('player')
-require('enemList.enemy')
-require('enemList.wizzrobe')
+require('enemies.enemy')
+require('enemies.wizzrobe')
 require('game_controller')
 require('weapons.dagger')
 
@@ -35,47 +37,49 @@ function scene:create( event )
     local followGroup = display.newGroup(sceneGroup)
     local tileGroup = display.newGroup(followGroup)
     local playerGroup = display.newGroup(followGroup)
-       
+    
+    Entity.group = tileGroup
 
-    dagger = Dagger:new(
+    local dagger = Dagger:new(
         {
-            group = tileGroup
-        },
-        -- options list
-        {
-            sheet_path = '/assets/image_sheets/swipes/swipe_dagger.png',
-            sheet_options = {
-                width = 24,
-                height = 24,
-                numFrames = 4
-            },
-            audio = {
-                attack = '/assets/audio/pound.wav'
+            options = {
+                sheet_path = '/assets/image_sheets/swipes/swipe_dagger.png',
+                sheet_options = {
+                    width = 24,
+                    height = 24,
+                    numFrames = 3
+                },
+                audio = {
+                    swipe = '/assets/audio/pound.wav'
+                }
             }
-        }
+        }        
     )
+    dagger:createSprite()
 
     -- init player
-    player = Player:new({
+    Player.group = playerGroup
+    local player = Player:new({
             x = 1,
             y = 1,
-            group = playerGroup,
-            followGroup = tileGroup,
-            weapon = dagger
-        }, 
-        -- options list
-        {
-            sheet_path = '/assets/image_sheets/elf_girl.png',
-            sheet_options = {
-                width = 16,
-                height = 21, 
-                numFrames = 9
-            },
-            audio = {
-                hurt = '/assets/audio/roblox.mp3'
-            }
-        }
+            follow_group = tileGroup,
+            weapon = dagger,
+            options = -- options list
+                {
+                    sheet_path = '/assets/image_sheets/elf_girl.png',
+                    sheet_options = {
+                        width = 16,
+                        height = 21, 
+                        numFrames = 9
+                    },
+                    audio = {
+                        hurt = '/assets/audio/roblox.mp3'
+                    }
+                }
+        }     
     )
+    player:createSprite()
+
 
     
 
@@ -96,13 +100,24 @@ function scene:create( event )
     -- Initialize tiles 
     local field_width, field_height = 10, 10
 
-    tiles = {}
+    local tiles = {}
+    local walls = {}
+    local environment = {}
+    local enemGrid = {}
 
     for i = 1, field_width do
         tiles[i] = {}
+        walls[i] = {}
+        environment[i] = {}
+        enemGrid[i] = {}
         
         for j = 1, field_height do        
-            tiles[i][j] = Tile:new({ x = i, y = j, type = math.random(11) })
+            tiles[i][j] = Tile:new{ x = i, y = j, type = math.random(11) }
+            tiles[i][j]:createSprite()
+
+            walls[i][j] = false
+            environment[i][j] = false
+            enemGrid[i][j] = false
         end
     end
     
@@ -112,32 +127,39 @@ function scene:create( event )
 
     local enemList = {}
 
-    local wizzrobe = Wizzrobe:new(
-        {
-            group = tileGroup
-        },
-        {
-            sheet_path = '/assets/image_sheets/wizzrobe.png',
-            sheet_options = {
-                width = 16,
-                height = 17, 
-                numFrames = 5
-            },
-            audio = {
-                hurt = '/assets/audio/roblox.mp3'
+    local wizzrobe = Wizzrobe:new{
+        x = 2,
+        y = 2,
+            options = {
+                sheet_path = '/assets/image_sheets/wizzrobe.png',
+                sheet_options = {
+                    width = 16,
+                    height = 17, 
+                    numFrames = 5
+                },
+                audio = {
+                    hurt = '/assets/audio/roblox.mp3'
+                }
             }
         }
-    )
 
-    for i = 1, 10 do
-        local w = Wizzrobe:new{
-            x = math.random(10),
-            y = math.random(10)
-        }
-        table.insert(enemList, w)
-    end
+    wizzrobe:createSprite()
 
     table.insert(enemList, wizzrobe)
+    enemGrid[wizzrobe.x][wizzrobe.y] = wizzrobe
+
+    for i = 1, 10 do
+        local x, y = 1 + math.random(8), 1 + math.random(8)
+        local w = Wizzrobe:new{
+            x = x,
+            y = y
+        }
+        table.insert(enemList, w)
+        enemGrid[x][y] = w
+        w:createSprite()
+    end
+
+    
 
     table.sort(enemList, function(a, b) return a.y < b.y end)
 
@@ -147,17 +169,22 @@ function scene:create( event )
 
     controller = Controller:new{
         enemList = enemList,
+        enemGrid = enemGrid,
         player = player,
-        walls = {},
+        walls = walls,
         tiles = tiles,
-        environment = {},
-        groups = followGroups,
+        environment = environment,
+        follow_group = tileGroup,
         ignore = false
     }
 
 
+    first_input = true
+
+
     Runtime:addEventListener("tap", function(event)
         
+        if first_input then first_input = false return end
 
         local _w, _h = display.contentWidth, display.contentHeight
         local w, h = display.viewableContentWidth, display.viewableContentHeight

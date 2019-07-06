@@ -70,18 +70,21 @@ function Player:dig(dir, g)
 
     local x, y = self.x + dir[1], self.y + dir[2]
 
-    if g.walls[x] and g.walls[x][y] ~= nil then
-        g.walls[x][y] = nil
+    if g.walls[x][y] then
+        g.walls[x][y] = false
         return true
-    else return false end
+    else 
+        return false
+    end
 
 end
 
 
 function Player:attack(dir, g)
     if self.weapon then
-        g.attackedEnemy = self.weapon:attemptAttack(dir, g, self)   
+        g.attackedEnemy = self.weapon:attemptAttack(dir, g, self)
         if g.attackedEnemy then 
+            self.action_name = "idle" 
             return true 
         else
             return false
@@ -122,7 +125,7 @@ function Player:play_animation(g, callback)
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
     local l = g:getAnimLength()
-    local t = #self.bounce and t or t / #self.bounce
+    local t = #self.bounces and l or l / #self.bounces
 
     local function _callback(event)
         self.sprite.timeScale = 1
@@ -133,7 +136,7 @@ function Player:play_animation(g, callback)
 
     -- recursive bouncing
     local function do_bounces(i)
-        i = (i or 0) + 1        
+        i = i + 1     
         
         if self.bounces[i] then
             -- update position
@@ -180,17 +183,18 @@ function Player:play_animation(g, callback)
     end
 
     if self.action_name == "bump" then
+        print(ins(self.cur_action))
         -- play animation
         self.sprite.timeScale = 1000 / t
         self.sprite:setSequence('jump')
         self.sprite:play()
         -- hop to and back
         transition.to(self.sprite, {
-            x = display.contentCenterX + self.curAction[1] * UNIT / 2,
-            y = display.contentCenterY + self.curAction[2] * UNIT / 2 + self.offsetY * UNIT,
+            x = display.contentCenterX + self.cur_action[1] * UNIT / 2,
+            y = display.contentCenterY + self.cur_action[2] * UNIT / 2 + self.offsetY * UNIT,
             transition = easing.continuousLoop,
             time = t / 2,
-            onComplete = do_bounces
+            onComplete = function() do_bounces(0) end
         })
     elseif self.action_name == "jump" then
         -- play animation
@@ -203,14 +207,15 @@ function Player:play_animation(g, callback)
             y = -self.y * UNIT + display.contentCenterY,
             transition = easing.inOutQuad,
             time = t,
-            onComplete = do_bounces
+            onComplete = function() do_bounces(0) end
         })
     else
-        do_bounces()
+        do_bounces(0)
     end
 
     if self.weapon then
-        self.weapon.play_audio()
+        self.weapon:play_animation(g)
+        self.weapon:play_audio()
     end
 end
 
@@ -250,4 +255,12 @@ function Player:equip(weapon)
 
     -- play equip sound
 
+end
+
+function Player:reset()
+    self.action_name = nil
+    self.cur_audio = nil
+    self.weapon.action_name  = nil
+    self.weapon.cur_audio = nil
+    self.attackedEnemy = nil
 end

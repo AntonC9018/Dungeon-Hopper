@@ -1,5 +1,5 @@
 Controller = constructor:new{
-    anim_queue = {},
+    loop_queue = {},
     doing_loop = false
 }
 
@@ -57,6 +57,19 @@ function Controller:do_loop(player_action)
 
     ]]--
 
+    -- update enemy grid
+    for i = 1, #self.enemGrid do
+        for j = 1, #self.enemGrid[i] do
+            self.enemGrid[i][j] = false
+        end
+    end
+    for i = 1, #self.enemList do
+        self.enemGrid[self.enemList[i].x][self.enemList[i].y] = self.enemList[i]
+    end
+
+    print(player_action)
+    print(ins(player_action))
+
     -- player has priority
     -- update player's coordinates
     -- hit the enemy at the location, update its:
@@ -72,29 +85,30 @@ function Controller:do_loop(player_action)
     self.player:act(player_action, self)
 
 
-    local t = {}
+    local t = { table.unpack(self.enemList) }
 
     -- loop through enemList, set their 'moved' to false (except hit)
     -- set hit to false
     -- (update stunned?)
-    for i = 1, #self.enemList do
-        if (not self.enemList[i].hit) then
-            self.enemList.moved = false
-            table.insert(t, self.enemList[i])
-        end
-    end
 
-    -- reapeat until all enemies have moved
+
+    
+
+    -- TODO: sort by proximity to the player, then do checks
+
+    -- repeat until all enemies have moved
     while #t ~= 0 do
 
         -- Figure out the next action of the enemies
         -- go from the back of the array to be able to remove elements
         for i = #t, 1, -1 do
 
+            if t[i].moved then
+                table.remove(t, i)
             -- if the player is not in radius, ignore
-            if not t[i].sees then 
+            elseif not t[i].sees then 
                 t[i].moved = true
-                table.remove(t, i)            
+                table.remove(t, i)
             else 
                 -- the enemy would spit out an array of desired actions
                 -- elements to the left are most desired, to the right - least
@@ -105,91 +119,93 @@ function Controller:do_loop(player_action)
                 if #desActs == 0 then
                     t[i]:loiter(self)
                     t[i].moved = true
-                    table.remove(t, i)
-                end
+                else
 
-                -- responds, i.e. answers of the environment
-                local resps = {}                
+                    -- responds, i.e. answers of the environment
+                    local resps = {}                
 
-                for j = 1, #desActs do
-                    local x, y, s = desActs[j]
-                    
+                    for j = 1, #desActs do
 
-                    local en = self.enemGrid[x][y]
+                        local x, y, s = table.unpack(desActs[j]) 
 
-                    --[[
+                        --[[
 
-                    !!!This might be changed in the future!!!
+                        !!!This might be changed in the future!!!
 
-                        1 - free way, no enemy or block
-                        2 - an enemy is blocking the spot
-                        3 - there is an enemy but they haven't moved yet
-                        4 - there is a block on the way
-                        
-                        {? the durability of that block 
-                            5 - dirt
-                            6 - stone
-                            7 - obsidian
-                            8 - bedrock
-                        }?
-                    ]]--
+                            1 - free way, no enemy or block
+                            2 - an enemy is blocking the spot
+                            3 - there is an enemy but they haven't moved yet
+                            4 - there is a block on the way
+                            
+                            {? the durability of that block 
+                                5 - dirt
+                                6 - stone
+                                7 - obsidian
+                                8 - bedrock
+                            }?
+                        ]]--
 
-                    if self.walls[x][y] then
-                        -- there is a wall
-                        resps[j] = 4
-                    else
+                        if self.walls[ t[i].x + x ][ t[i].y + y ] then
+                            -- there is a wall
+                            resps[j] = 4
+                        else
 
-                        -- the simplest case unblocked way
-                        if not en then 
-                            resps[j] = 1
-                            break
-                        -- an enemy has moved to the spot
-                        elseif en.moved then
-                            -- if the enemy is dead it's valid
-                            if en.dead then
+                            local en = self.enemGrid[ t[i].x + x ][ t[i].y + y ]
+
+
+                            -- the simplest case unblocked way
+                            if not en then 
                                 resps[j] = 1
                                 break
-                            else
-                                resps[j] = 2 
+                            -- an enemy has moved to the spot
+                            elseif en.moved then
+                                -- if the enemy is dead it's valid
+                                if en.dead then
+                                    resps[j] = 1
+                                    break
+                                else
+                                    resps[j] = 2 
+                                end
+                            else 
+                                -- the enemy is going to move later
+                                resps[j] = 3
+                                break
                             end
-                        else 
-                            -- the enemy is going to move later
-                            resps[j] = 3
+                        end
+                    end
+
+                    local all_blocked = true
+
+                    -- loop through all possible actions
+                    -- remember, they are ordered by desirability
+                    for j = 1, #resps do
+                        -- wait for the enemy to move out of the way
+                        if resps[j] == 3 then 
+                            all_blocked = false 
+                            break 
+                        end
+                        -- move if can move
+                        if resps[j] == 1 then
+                            -- move / hit the player
+                            -- Note: if the player has been hit by this, the audio
+                            -- of the player would also be changed
+                            self.enemGrid[t[i].x][t[i].y] = false
+                            t[i]:move(j, self)
+                            self.enemGrid[t[i].x][t[i].y] = t[i]
+
+                            t[i].moved = true
+                            all_blocked = false
                             break
                         end
                     end
-                end
 
-                local all_blocked = true
-
-                -- loop through all possible actions
-                -- remember, they are ordered by desirability
-                for j = 1, #resps do
-                    -- wait for the enemy to move out of the way
-                    if resps[j] == 3 then 
-                        all_blocked = false 
-                        break 
-                    end
-                    -- move if can move
-                    if resps[j] == 1 then
-                        -- move / hit the player
-                        -- Note: if the player has been hit by this, the audio
-                        -- of the player would also be changed
-                        t[i]:move(j, self)
+                    -- if nowhere to go 
+                    if all_blocked then
+                        -- would also trigger if there's no action in the resps list
+                        t[i]:bump(1, self)
                         t[i].moved = true
-                        table.remove(t, i)
-                        all_blocked = false
                     end
-                end
-
-                -- if nowhere to go 
-                if all_blocked then
-                    -- would also trigger if there's no action in the resps list
-                    t[i]:bump(1, self)
-                    t[i].moved = true
-                    table.remove(t, i)
-                end
-                
+                end -- / if # = 0                
             end -- / resps loop
         end -- / #t loop
     end -- / while t loop
@@ -258,9 +274,15 @@ function Controller:do_loop(player_action)
     end
 
     -- animate all enemies
-    for i = 1, #self.enemList do
+    for i = #self.enemList, 1, -1 do
+
         self.enemList[i]:play_audio()
-        self.enemList[i]:play_animation()
+        self.enemList[i]:play_animation(self)
+        self.enemList[i]:reset()
+        if (self.enemList[i].dead) then 
+            self.enemList[i]:die()
+            table.remove(self.enemList, i)         
+        end
     end
 
     self.player:play_audio()
@@ -269,6 +291,7 @@ function Controller:do_loop(player_action)
     -- the callback function will be called nevertheless 
     -- (even if the player is not going to play an animation)
     self.player:play_animation(
+        self,
         function(event)
             -- when the animation ends
             if event.phase == "end" then
@@ -281,6 +304,9 @@ function Controller:do_loop(player_action)
             end
         end
     )
+
+    self.player:reset()
+
 end
 
 function Controller:getBeatOffset()

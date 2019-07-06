@@ -8,29 +8,29 @@ function constructor:new(o)
 end
 
 
-Entity = {}
+Entity = {
+    bounces = {}
+}
 
-function Entity:new(o, options)
+function Entity:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
 
-    if options then
+    if o.options then
         -- load the image sheet
-        if options.sheet_path and not self.sheet then
-            self:loadSheet(options.sheet_path, options.sheet_options)
+        if o.options.sheet_path and not self.sheet then
+            self:loadSheet(o.options.sheet_path, o.options.sheet_options)
         end
 
         -- load audio
-        if options.audio and not self.audio then
+        if o.options.audio and not self.audio then
             self.audio = {}
-            for k, v in pairs(options.audio) do
-                self.audio[k] = audio.loadAudio(v)
+            for k, v in pairs(o.options.audio) do
+                self.audio[k] = audio.loadSound(v)
             end
         end
     end
-
-    self:createSprite()
 
     return o
 end
@@ -43,13 +43,10 @@ end
 
 function Entity:play_animation(g)
     if self.action_name then
-        self.sprite:setSequence(action_name)
+        self.sprite:setSequence(self.action_name)
         self.sprite.timeScale = 1000 / g.getAnimLength() 
         self.sprite:play()
     end
-end
-
-function Entity:createSprite()
 end
 
 function Entity:loadSheet(fname, options)

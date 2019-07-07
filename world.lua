@@ -7,13 +7,13 @@ WAIT = 3
 BLOCK = 4
 PLAYER = 5
 
-Controller = constructor:new{
+World = constructor:new{
     loop_queue = {},
     doing_loop = false
 }
 
 
-function Controller:do_loop(player_action)
+function World:do_loop(player_action)
 
     self.doing_loop = true
 
@@ -82,7 +82,7 @@ function Controller:do_loop(player_action)
     -- update player's coordinates
     -- hit the enemy at the location, update its:
     -- health (if not invincible)
-    -- hit = true 
+    -- hurt = true 
     -- moved = true (if required)
     -- dead = true (if required)
     -- if dead, set animation string to death
@@ -106,6 +106,11 @@ function Controller:do_loop(player_action)
     local y = 0
 
     -- TODO: sort by proximity to the player, then do checks
+    -- table.sort(t, function(a, b) 
+        
+    --     math.abs(self.player.x - a.x) + math.abs(self.player.y - a.y)
+    
+    -- end)
 
     -- repeat until all enemies have moved
     while #t ~= 0 do
@@ -128,7 +133,7 @@ function Controller:do_loop(player_action)
                 -- the array is of configuration { { x, y, (specs) {} }, ... }
                 local desActs = t[i]:getAction(player_action, self)
 
-                if y == 200 then error("OVERFLOW at 132") end
+                if y == 50000 then error("OVERFLOW") end
 
                 -- if the action specified is doing nothing
                 if #desActs == 0 then
@@ -234,12 +239,11 @@ function Controller:do_loop(player_action)
             end -- / resps loop
         end -- / #t loop
     end -- / while t loop
-    
 
     -- Environment (traps and such)
     local function trap(entity, _x, _y) 
 
-        if entity.cur_action[1] or entity.cur_action[2] then return end
+        -- if entity.cur_action[1] or entity.cur_action[2] then return end
 
         local t = self.environment[_x][_y]
 
@@ -254,7 +258,7 @@ function Controller:do_loop(player_action)
                 if not self.walls[x][y] and not self.enemGrid[x][y] then
                     -- store the bounce
                     entity:bounce(action.dir, self)
-                    -- reapeat (could have hit another trap)
+                    -- repeat (could have hit another trap)
                     trap(entity, x, y)
                 else
                     -- just hop a bit to the up
@@ -276,41 +280,19 @@ function Controller:do_loop(player_action)
     table.sort(t, function(a, b) return a.y > b.y end)
     for i = 1, #t do
         t[i].sprite:toFront()
-    end
-    
-    -- player is invincible (flickering)
-    if self.player.flicker ~= nil then
-
-        -- keep track of how many beats the player has been flickering
-        self.player.flicker_count = self.player.flicker_count + 1
-
-        -- exceeded flicker limit
-        if (self.player.flicker_count > self.player.flicker_max) then
-            -- stop flickering
-            transition.cancel(self.player.flicker)
-            -- restore alpha
-            transition.to(self.player.sprite, {
-                alpha = 1,
-                time = 100
-            })
-            self.player.flicker = nil
-        end 
 
     end
+
 
     -- animate all enemies
     for i = #self.enemList, 1, -1 do
 
-        self.enemList[i]:play_audio()
         self.enemList[i]:play_animation(self)
-        self.enemList[i]:reset()
-        if (self.enemList[i].dead) then 
-            self.enemList[i]:die()
-            table.remove(self.enemList, i)         
-        end
+
+        if self.enemList[i] == nil then print('nil') end
+        
     end
 
-    self.player:play_audio()
 
     -- animate the player sprite and all its descendants (weapons so on)
     -- the callback function will be called nevertheless 
@@ -320,29 +302,51 @@ function Controller:do_loop(player_action)
         function(event)
             -- when the animation ends
             if event.phase == "end" then
+
+                for i = #self.enemList, 1, -1 do                    
+                    self.enemList[i]:reset(self)
+
+
+                    if (self.enemList[i].dead) then 
+                        print('I am DEAD')
+                        -- self.enemList[i]:die()
+                        transition.to(self.enemList[i].sprite, {
+                            alpha = 0,
+                            time = 600,
+                            transition = easing.linear,
+                            onComplete = function()
+                                display.remove(self.enemList[i].sprite)
+                            end
+                        })
+                        -- display.remove(self.enemList[i].sprite)
+                        table.remove(self.enemList, i)         
+                    end
+                end
+                self.player:reset()
+
                 -- if there are actions in the queue, do them
                 if #self.loop_queue > 0 then
                     self:do_loop(table.remove(self.loop_queue, 1))
                 else
                     self.doing_loop = false
                 end
+                
             end
         end
     )
 
-    self.player:reset()
 
 end
 
-function Controller:getBeatOffset()
+function World:getBeatOffset()
     -- if self.ignore -> return precise time
     -- else -> return edge time
 end
 
-function Controller:getAnimLength()
-    return 560
+function World:getAnimLength()
+    return 230
 end
 
-function Controller:on_beat() 
+function World:on_beat() 
     return true
 end

@@ -12,18 +12,19 @@ UNIT = 64
 
 table.unpack = unpack
 
+require('animated')
 require('entity')
+require('weapon')
 require('tile')
 require('player')
 require('enemies.enemy')
 require('enemies.wizzrobe')
-require('game_controller')
+require('world')
 require('weapons.dagger')
 
 
 local tiles
 local entities
-
 
 
 function scene:create( event )
@@ -38,7 +39,7 @@ function scene:create( event )
     local tileGroup = display.newGroup(followGroup)
     local playerGroup = display.newGroup(followGroup)
     
-    Entity.group = tileGroup
+    Animated.group = tileGroup
 
     local dagger = Dagger:new(
         {},
@@ -59,8 +60,8 @@ function scene:create( event )
     -- init player
     Player.group = playerGroup
     local player = Player:new({
-            x = 1,
-            y = 1,
+            x = 10,
+            y = 10,
             follow_group = tileGroup,
             weapon = dagger
         },
@@ -148,8 +149,8 @@ function scene:create( event )
     table.insert(enemList, wizzrobe)
     enemGrid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 10 do
-        local x, y = 1 + math.random(8), 1 + math.random(8)
+    for i = 1, 5 do
+        local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,
             y = y
@@ -167,7 +168,7 @@ function scene:create( event )
         enemList[i].sprite:toFront()
     end
 
-    controller = Controller:new{
+    world = World:new{
         enemList = enemList,
         enemGrid = enemGrid,
         player = player,
@@ -224,12 +225,10 @@ function scene:create( event )
             (side == 3 and -1) or (side == 4 and 1) or 0 
         }
 
-        -- dagger:prepareAnimation(act, 5, 5, controller)
-
-        if #controller.loop_queue == 0 and not controller.doing_loop then
-            controller:do_loop(act)
+        if #world.loop_queue == 0 and not world.doing_loop then
+            world:do_loop(act)
         else    
-            table.insert(controller.loop_queue, act)
+            table.insert(world.loop_queue, act)
         end
     
     end)

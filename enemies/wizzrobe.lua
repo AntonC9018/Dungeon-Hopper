@@ -1,13 +1,12 @@
 Wizzrobe = Enemy:new{
-    x = 7,
-    y = 7,
-    offsetY = -0.2,
+    offset_y = -0.2,
     sequence = { 
         { name = "idle" }, 
         { name = "ready" }, 
-        { name = "move/attack", dirs = { table.unpack(HOR_VER) } } 
+        { name = "move/attack", dirs = HOR_VER } 
     },
-    seq_count = 1
+    seq_count = 1,
+    bounces = {}
 }
 
 function Wizzrobe:createSprite()
@@ -40,18 +39,17 @@ function Wizzrobe:createSprite()
         }
     })
     self.sprite.x = self.x
-    self.sprite.y = self.y + self.offsetY
+    self.sprite.y = self.y + self.offset_y
 
     self.sprite:scale(self.scaleX, self.scaleY)
-    self.sprite:setSequence('idle')
-    self.sprite:play()
+    self:anim(1, 'idle')
 end
 
-function Wizzrobe:computeAction(player_action, g)
+function Wizzrobe:computeAction(player_action, w)
     
     if self:getSeqStep().dirs then 
-        local gx, gy = g.player.x > self.x, g.player.y > self.y
-        local lx, ly = g.player.x < self.x, g.player.y < self.y
+        local gx, gy = w.player.x > self.x, w.player.y > self.y
+        local lx, ly = w.player.x < self.x, w.player.y < self.y
 
         local actions = {}
 
@@ -60,34 +58,34 @@ function Wizzrobe:computeAction(player_action, g)
 
         if self.facing[1] > 0 then -- looking right
             -- prioritize going to the right
-            if gx then table.insert(actions, { 1, 0 }) end
-            if gy then table.insert(actions, { 0, 1 }) end
-            if ly then table.insert(actions, { 0, -1 }) end
-            if lx then table.insert(actions, { -1, 0 }) end
+            if gx then table.insert(actions, {  1,  0 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
+            if lx then table.insert(actions, { -1,  0 }) end
         elseif self.facing[1] < 0 then -- looking left
             -- prioritize going to the left
-            if lx then table.insert(actions, { -1, 0 }) end
-            if gy then table.insert(actions, { 0, 1 }) end
-            if ly then table.insert(actions, { 0, -1 }) end
-            if gx then table.insert(actions, { 1, 0 }) end
+            if lx then table.insert(actions, { -1,  0 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
+            if gx then table.insert(actions, {  1,  0 }) end
         elseif self.facing[2] > 0 then -- looking down
             --- ...
-            if gy then table.insert(actions, { 0, 1 }) end
-            if gx then table.insert(actions, { 1, 0 }) end
-            if lx then table.insert(actions, { -1, 0 }) end
-            if ly then table.insert(actions, { 0, -1 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
+            if gx then table.insert(actions, {  1,  0 }) end
+            if lx then table.insert(actions, { -1,  0 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
         elseif self.facing[2] < 0 then -- looking up
             --- ...
-            if gy then table.insert(actions, { 0, 1 }) end
-            if gx then table.insert(actions, { 1, 0 }) end
-            if lx then table.insert(actions, { -1, 0 }) end
-            if ly then table.insert(actions, { 0, -1 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
+            if gx then table.insert(actions, {  1,  0 }) end
+            if lx then table.insert(actions, { -1,  0 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
         else -- no direction. Default order!
             -- ...
-            if gx then table.insert(actions, { 1, 0 }) end
-            if lx then table.insert(actions, { -1, 0 }) end
-            if gy then table.insert(actions, { 0, 1 }) end
-            if ly then table.insert(actions, { 0, -1 }) end
+            if gx then table.insert(actions, {  1,  0 }) end
+            if lx then table.insert(actions, { -1,  0 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
         end
 
 
@@ -100,12 +98,8 @@ function Wizzrobe:computeAction(player_action, g)
 
 end
 
-function Wizzrobe:getSeqStep()
-    return self.sequence[self.seq_count]
-end
 
-
-function Wizzrobe:setAction(a, r, g)
+function Wizzrobe:setAction(a, r, w)
 
     -- "Current action"
     self.cur_a = a
@@ -114,19 +108,18 @@ function Wizzrobe:setAction(a, r, g)
 
 
     if self:getSeqStep().name == 'move/attack' then
-        -- change orientation
-        if a[1] ~= 0 then
-            self:orient(a[1])
-        end
 
         -- Free way, just move
         if r == FREE then
             self.x = a[1] + self.x
             self.y = a[2] + self.y
             self.facing = { a[1], a[2] }
+            self.displaced = true
         -- damage the player
         elseif r == PLAYER then
-            g.player:damage(self)
+            w.player:takeDamage(self)
+            self.facing = { a[1], a[2] }
+            self.hit = true
             -- TODO: pushing a player back if the enemy must do so
         end
         -- TODO: cases with walls, where the enemy might 
@@ -134,19 +127,11 @@ function Wizzrobe:setAction(a, r, g)
 
     elseif self:getSeqStep().name == 'ready' then
         -- change orientation
-        self:orientTo(g.player)
+        -- self:orientTo(w.player)
     end
 end
 
-function Wizzrobe:anim(ts, name)
-    self.sprite.timeScale = ts
-    self.sprite:setSequence(name)
-    self.sprite:play()
-end
 
-function Wizzrobe:trans(o)
-    transition.to(self.sprite, o)
-end
 
 function Wizzrobe:orientTo(player)
     if self.facing[1] > 0 and player.x > self.x or
@@ -164,20 +149,22 @@ function Wizzrobe:orientTo(player)
 end
 
 
-function Wizzrobe:play_animation(g)
+function Wizzrobe:play_animation(w)
     -- get the step in sequence
     local step = self:getSeqStep()
     -- get the time of animations and transitions
-    local l = g:getAnimLength()
+    local l = w:getAnimLength()
     local t = #self.bounces and l or l / #self.bounces
 
+    -- change orientation
+    if self.facing[1] ~= 0 then
+        self:orient(self.facing[1])
+    end
 
     -- no bounces
     -- NOTE: "Bounces" in this context are 
     -- any pushing action (effects of traps, other enemies, bombs so on)
     if #self.bounces == 0 then
-
-        print('no bounces')
 
         -- the enemy does nothing
         if step.name == "idle" then
@@ -185,9 +172,9 @@ function Wizzrobe:play_animation(g)
 
         -- the enemy is preparing to attack
         elseif step.name == "ready" then
-            print("ready")
+
             -- turn to player if they are close
-            local turned = self:face(g.player)
+            local turned = self:face(w.player)
             if turned then
                 -- play anger animation
                 self:anim(1, 'angry')
@@ -198,7 +185,7 @@ function Wizzrobe:play_animation(g)
         end
     end -- if not #self.bounces
     
-    -- there are bounces
+    -- there are bounces (or not)
     -- now THIS is a bit more complicated
     -- I just add the function that iterates 
     -- through bounces as a callback to transitions
@@ -223,7 +210,7 @@ function Wizzrobe:play_animation(g)
                 or function() do_bounces(i) end 
 
             -- TODO: add types of bouncing (i.e. not just traps 
-            -- but also pushing, which would use other animations)
+            -- but also pushinw, which would use other animations)
 
             -- play animation
             self:anim(1000 / t, 'jump')
@@ -232,7 +219,7 @@ function Wizzrobe:play_animation(g)
                 -- if hopping to the right or to the left, jump up a little
                 self:trans({
                     -- TODO: this 0.4 is too arbitrary, make that a property
-                    y = self.y + 0.4 + self.offsetY,
+                    y = self.y + 0.4 + self.offset_y,
                     transition = easing.continuousLoop,
                     time = t / 2
                 })
@@ -245,7 +232,7 @@ function Wizzrobe:play_animation(g)
             else
                 self:trans({
                     x = self.x,
-                    y = self.y + self.offsetY,
+                    y = self.y + self.offset_y,
                     transition = easing.inOutQuad,
                     time = t,
                     onComplete = cb
@@ -269,7 +256,7 @@ function Wizzrobe:play_animation(g)
             -- jump to and back
             self:trans({ 
                 x = self.x + self.cur_a[1] / 2, 
-                y = self.y + self.cur_a[2] / 2 + self.offsetY,
+                y = self.y + self.cur_a[2] / 2 + self.offset_y,
                 time = t / 2,
                 transition = easing.continuousLoop,
                 onComplete = function() do_bounces(0) end
@@ -282,7 +269,7 @@ function Wizzrobe:play_animation(g)
             -- jump to the tile
             self:trans({
                 x = self.x,
-                y = self.y + self.offsetY,
+                y = self.y + self.offset_y,
                 time = t,
                 transition = easing.inOutQuad,
                 onComplete = function() do_bounces(0) end
@@ -295,7 +282,7 @@ function Wizzrobe:play_animation(g)
             -- jump to and back
             self:trans({ 
                 x = self.x + self.cur_a[1] / 2, 
-                y = self.y + self.cur_a[2] / 2 + self.offsetY,
+                y = self.y + self.cur_a[2] / 2 + self.offset_y,
                 time = t / 2,
                 transition = easing.continuousLoop,
                 onComplete = function() do_bounces(0) end
@@ -303,12 +290,32 @@ function Wizzrobe:play_animation(g)
         end
         -- TODO: think about being pushed while getting ready or idling
     end
+end
 
+function Wizzrobe:takeDamage(dir, dmg)
+    -- TODO: call this something like 'weak'
+    self.seq_count = 1
+
+    Enemy.takeDamage(self, dir, dmg)
 end
 
 
-function Wizzrobe:reset()
-    -- TODO: call this something like 'weak'
-    if self.hit then self.seq_count = 0 end
+function Wizzrobe:reset(w)
+    -- if tried to move but didn't, move again
+    if self:getSeqStep().name == 'move/attack' and not self.displaced and not self.hit then
+        self.seq_count = 3 - 1
+
+        -- turn to player if they are close
+        local turned = self:face(w.player)
+        if turned then
+            -- play anger animation
+            self:anim(1, 'angry')
+        else
+            -- play ready animation
+            self:anim(1, 'ready')
+        end  
+    end
+    
     Enemy.reset(self)
+    Enemy.tickAll(self)
 end

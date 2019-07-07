@@ -1,4 +1,4 @@
-Tile = Entity:new{
+Tile = Animated:new{
     width = UNIT
 }
 

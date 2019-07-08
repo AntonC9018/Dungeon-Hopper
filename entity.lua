@@ -1,5 +1,11 @@
 Entity = Animated:new{}
 
+local DEBUFFS = {'stun', 'confuse', 'tiny', 'poison', 'fire', 'freeze'}
+
+local SPECIAL = {'push', 'pierce'}
+
+
+
 -- states
 -- game logic states
 Entity.displaced = false -- TODO: change to number of tile?
@@ -13,12 +19,8 @@ Entity.dug = false -- dug a tile this loop
 Entity.sliding = false
 Entity.levitating = false
 
--- numerical states (decremented each loop)
-Entity.stunned = 0
+-- these two are a bit special 
 Entity.stuck = 0
-Entity.confused = 0
-Entity.on_fire = 0
-Entity.frozen = 0
 Entity.invincible = 0
 
 -- Stats
@@ -27,28 +29,35 @@ Entity.dig = 0 -- level of dig (how hard are the walls it can dig)
 Entity.dmg = 0 -- damage
 Entity.armor = 0 -- damage reduction (down to 0.5 hp)
 
--- -ing stats
-Entity.pushing = 0
-Entity.stunning = 0
-Entity.confusing = 0
-Entity.tinying = 0
-Entity.poisoning = 0
-Entity.firing = 0
 
--- _res stats
+-- set up default values for debuff properties
+for i = 1, #DEBUFFS do
+    -- _ed stats, decremented each loop
+    Entity[DEBUFFS[i]..'_ed'] = 0
+    -- _ing stats
+    Entity[DEBUFFS[i]..'_ing'] = 0
+    -- _res stats
+    Entity[DEBUFFS[i]..'_res'] = 0
+    -- _amount stats. Amount of an effect in an attack
+    -- For example, the amount of seconds the attacked is gonna burn
+    Entity[DEBUFFS[i]..'_amount'] = 0
+end
+
+-- Do the same for special effects
+for i = 1, #SPECIAL do
+    Entity[SPECIAL[i]..'_ing'] = 0
+    Entity[SPECIAL[i]..'_res'] = 0
+    Entity[SPECIAL[i]..'_amount'] = 0
+end
+
 -- numerical stats
 Entity.dmg_res = 0 -- minimal amount of damage to punch through
-Entity.push_res = 0
-Entity.expl_res = 0
-Entity.stun_res = 0
-Entity.confusion_res = 0
-Entity.stuck_res = 0
-Entity.tiny_res = 0
-Entity.poison_res = 0
-Entity.fire_res = 0
--- boolean stats
-Entity.slide_res = false
 
+-- these are a bit special
+-- normal attacks cannot apply these
+Entity.explode_res = 0
+Entity.stuck_res = 0
+Entity.slide_res = 0
 
 -- vector values
 -- direction the thing is pointing
@@ -65,14 +74,49 @@ function Entity:reset()
     self.hurt = false
     self.dug = false
     self.last_a = self.cur_a
+    self.cur_a = false
     self.bounces = {}
 end
 
+-- Decrement all debuffs
 function Entity:tickAll()
-    self.stunned = self.stunned - 1
-    self.stuck = self.stuck - 1
-    self.confused = self.confused - 1
-    self.on_fire = self.on_fire - 1
-    self.frozen = self.frozen - 1
-    self.invincible = self.invincible - 1
+    
+    for i = 1, #DEBUFFS do
+        self[DEBUFFS[i]..'_ed'] = math.max(self[DEBUFFS[i]..'_ed'] - 1, 0)
+    end
+
+    self.stuck = math.max(self.stuck - 1, 0)
+    self.invincible = math.max(self.invincible - 1, 0)
+end
+
+-- return the actual damage dealt from an attack
+function Entity:calculateAttack(from)
+    return math.max(
+        -- take armor into consideration
+        math.max(from.dmg - self.armor, 0.5) -
+        -- resist damage if not pierced through
+        (self.pierce_res < from.pierce_ing and 0 or self.dmg_res), 0)
+end
+
+-- update _ed parameters 
+function Entity:applyDebuffs(from)
+
+    for i = 1, #DEBUFFS do
+        if  from[DEBUFFS[i]..'_amount'] > 0 and 
+            self[DEBUFFS[i]..'_res'] < from[DEBUFFS[i]..'_ing'] 
+            then   
+                -- reset the debuff count  
+                self[DEBUFFS[i]..'_ed'] = from[DEBUFFS[i]..'_amount']
+            end
+    end
+end
+
+function Entity:loseHP(dmg)
+
+    self.health = self.health - dmg
+
+    if (self.health <= 0) then
+        self.dead = true     
+
+    end
 end

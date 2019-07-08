@@ -1,9 +1,10 @@
 Wizzrobe = Enemy:new{
-    offset_y = -0.2,
+    offset_y = -0.3,
+    offset_y_jump = -0.2,
     sequence = { 
         { name = "idle" }, 
         { name = "ready" }, 
-        { name = "move/attack", dirs = HOR_VER } 
+        { name = "move/attack", mov = ADJACENT } 
     },
     seq_count = 1,
     bounces = {}
@@ -45,59 +46,6 @@ function Wizzrobe:createSprite()
     self:anim(1, 'idle')
 end
 
-function Wizzrobe:computeAction(player_action, w)
-    
-    if self:getSeqStep().dirs then 
-        local gx, gy = w.player.x > self.x, w.player.y > self.y
-        local lx, ly = w.player.x < self.x, w.player.y < self.y
-
-        local actions = {}
-
-        -- So this is basically if-you-look-to-the-left,- 
-        -- you-would-prefer-to-go-to-the-left action
-
-        if self.facing[1] > 0 then -- looking right
-            -- prioritize going to the right
-            if gx then table.insert(actions, {  1,  0 }) end
-            if gy then table.insert(actions, {  0,  1 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
-            if lx then table.insert(actions, { -1,  0 }) end
-        elseif self.facing[1] < 0 then -- looking left
-            -- prioritize going to the left
-            if lx then table.insert(actions, { -1,  0 }) end
-            if gy then table.insert(actions, {  0,  1 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
-            if gx then table.insert(actions, {  1,  0 }) end
-        elseif self.facing[2] > 0 then -- looking down
-            --- ...
-            if gy then table.insert(actions, {  0,  1 }) end
-            if gx then table.insert(actions, {  1,  0 }) end
-            if lx then table.insert(actions, { -1,  0 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
-        elseif self.facing[2] < 0 then -- looking up
-            --- ...
-            if gy then table.insert(actions, {  0,  1 }) end
-            if gx then table.insert(actions, {  1,  0 }) end
-            if lx then table.insert(actions, { -1,  0 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
-        else -- no direction. Default order!
-            -- ...
-            if gx then table.insert(actions, {  1,  0 }) end
-            if lx then table.insert(actions, { -1,  0 }) end
-            if gy then table.insert(actions, {  0,  1 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
-        end
-
-
-        self.cur_actions = actions
-
-    else
-        self.cur_actions = {}
-    end
-
-
-end
-
 
 function Wizzrobe:setAction(a, r, w)
 
@@ -129,23 +77,6 @@ function Wizzrobe:setAction(a, r, w)
         -- change orientation
         -- self:orientTo(w.player)
     end
-end
-
-
-
-function Wizzrobe:orientTo(player)
-    if self.facing[1] > 0 and player.x > self.x or
-       self.facing[1] < 0 and player.x < self.x or
-       self.facing[2] > 0 and player.y > self.y or
-       self.facing[2] < 0 and player.y < self.y then return end
-
-    if     player.x > self.x then self.facing[1] =  1
-    elseif player.x < self.x then self.facing[1] = -1
-    elseif player.y > self.y then self.facing[2] =  1
-    elseif player.y < self.y then self.facing[2] = -1
-
-    -- TODO: give it a random val when no player is around 
-    else   self.facing = { 0, 0 } end
 end
 
 
@@ -199,6 +130,9 @@ function Wizzrobe:play_animation(w)
     
     -- LO AND BEHOLD
     -- recursive bouncing
+    -- TODO: not actually move inside this
+    -- TODO: REFACTOR the hell out of this one
+    -- TODO: Put outside, like in Entity class
     local function do_bounces(i)
         i = i + 1        
         
@@ -217,7 +151,7 @@ function Wizzrobe:play_animation(w)
                 or function() do_bounces(i) end 
 
             -- TODO: add types of bouncing (i.e. not just traps 
-            -- but also pushinw, which would use other animations)
+            -- but also pushing, which would use other animations)
 
             -- play animation
             self:anim(1000 / t, 'jump')
@@ -225,8 +159,7 @@ function Wizzrobe:play_animation(w)
             if not self.bounces[i][2] then
                 -- if hopping to the right or to the left, jump up a little
                 self:trans({
-                    -- TODO: this 0.4 is too arbitrary, make that a property
-                    y = self.y + 0.4 + self.offset_y,
+                    y = self.y + self.offset_y_jump + self.offset_y,
                     transition = easing.continuousLoop,
                     time = t / 2
                 })
@@ -299,11 +232,11 @@ function Wizzrobe:play_animation(w)
     end
 end
 
-function Wizzrobe:takeDamage(dir, dmg)
+function Wizzrobe:takeDamage(dir, player)
     -- TODO: call this something like 'weak'
     self.seq_count = 1
 
-    Enemy.takeDamage(self, dir, dmg)
+    Enemy.takeDamage(self, dir, player)
 end
 
 

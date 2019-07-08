@@ -12,9 +12,13 @@ UNIT = 64
 
 table.unpack = unpack
 
+function sign(x)
+  return (x < 0 and -1) or 1
+end
+
 require('animated')
 require('entity')
-require('weapon')
+require('weapons.weapon')
 require('tile')
 require('player')
 require('enemies.enemy')
@@ -62,8 +66,7 @@ function scene:create( event )
     local player = Player:new({
             x = 10,
             y = 10,
-            follow_group = tileGroup,
-            weapon = dagger
+            follow_group = tileGroup
         },
          -- options list
         {
@@ -79,6 +82,7 @@ function scene:create( event )
         }     
     )
     player:createSprite()
+    player:equip(dagger)
 
 
     

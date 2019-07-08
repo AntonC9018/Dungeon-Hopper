@@ -5,15 +5,12 @@ Player = Entity:new{
     scaleY = 60 / 16,
     offset_y = -0.4,
     offset_y_jump = -0.2,
-    flicker_max = 1,
-    flicker_count = 2,
     health = 20,
-    last_pos = { 1, 1 },
-    last_dir = { 1, 0 },
     to_drop = {},
     bounces = {},
     invincible = 0,
-    invincible_max = 1
+    invincible_max = 1,
+    pierce_ing = 1
 }
 
 function Player:createSprite()
@@ -284,7 +281,7 @@ function Player:takeDamage(from)
     self.hurt = true
 
     -- flicker
-    transition.to(self.sprite, {
+    self.flicker = transition.to(self.sprite, {
         alpha = 0,
         transition = easing.continuousLoop,
         time = 200,
@@ -303,6 +300,9 @@ function Player:equip(weapon)
     table.insert(self.to_drop, self.weapon)
     self.weapon = weapon
 
+    -- TODO: refactor
+    self.dmg = weapon.dmg
+
     -- play equip sound
 
 end
@@ -315,9 +315,9 @@ end
 function Player:reset()
     self.attacked_enemy = false
     Entity.reset(self)
-    if self.invincible <= 0 then
+    if self.invincible <= 0 and self.flicker then
         -- stop flickering
-        transition.cancel('flicker')
+        transition.cancel(self.flicker)
         -- restore alpha
         transition.to(self.sprite, {
             alpha = 1,

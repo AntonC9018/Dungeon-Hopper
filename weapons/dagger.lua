@@ -1,7 +1,7 @@
 Dagger = Weapon:new{
-    dmg = 1,
     xScale = 1 / 24,
-    yScale = 1 / 24
+    yScale = 1 / 24,
+    dmg = 1
 }
 
 function Dagger:attemptAttack(dir, w, player)
@@ -13,7 +13,7 @@ function Dagger:attemptAttack(dir, w, player)
         self:orient(dir) 
 
         -- deal damage to the enemy
-        w.enemGrid[x][y]:takeDamage(dir, self.dmg)
+        w.enemGrid[x][y]:takeDamage(dir, player)
 
         self.sprite.x = x
         self.sprite.y = y

@@ -48,11 +48,8 @@ function Enemy:reset()
 
     self.bounces = {}
     self.moved = false
-    -- self.action_name = nil
-    self.cur_actions = nil
-    self.cur_audio = nil
-    self.cur_a = nil
-    self.cur_r = nil
+    self.cur_a = false
+    self.cur_r = false
     self.seq_count = (self.seq_count >= #self.sequence and 1) or (self.seq_count + 1)
 
     --[[
@@ -63,14 +60,14 @@ function Enemy:reset()
 end
 
 function Enemy:die()
-    transition.to(self.sprite, {
+    print(ins(transition.to(self.sprite, {
         alpha = 0,
         time = 600,
         transition = easing.linear,
         onComplete = function()
             display.remove(self.sprite)
         end
-    })
+    })))
 end
 
 function Enemy:face(p, dir)
@@ -93,4 +90,10 @@ end
 
 function Enemy:updateSeq()
     self.seq_count = self.seq_count + 1
+end
+
+function Enemy:tickAll()
+    self.cur_r = false
+    self.cur_actions = false
+    Entity.tickAll(self)
 end

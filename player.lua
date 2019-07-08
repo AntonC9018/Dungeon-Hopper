@@ -13,7 +13,7 @@ Player = Entity:new{
     to_drop = {},
     bounces = {},
     invincible = 0,
-    invincible_max = 2
+    invincible_max = 1
 }
 
 function Player:createSprite()
@@ -284,11 +284,12 @@ function Player:takeDamage(from)
     self.hurt = true
 
     -- flicker
-    self.flicker = transition.to(self.sprite, {
+    transition.to(self.sprite, {
         alpha = 0,
         transition = easing.continuousLoop,
         time = 200,
-        iterations = 0
+        iterations = 0,
+        tag = 'flicker'
     })
     -- reset fliker count
     self.invincible = self.invincible_max
@@ -314,20 +315,21 @@ end
 function Player:reset()
     self.attacked_enemy = false
     Entity.reset(self)
-    self:tickAll()
-end
-
-function Player:tickAll()
     if self.invincible <= 0 then
         -- stop flickering
-        transition.cancel(self.flicker)
+        transition.cancel('flicker')
         -- restore alpha
         transition.to(self.sprite, {
             alpha = 1,
             time = 100
         })
-        self.flicker = nil
+        self.sprite.alpha = 1
     end
     Entity.tickAll(self)
+
+end
+
+function Player:tickAll()
+    
 
 end

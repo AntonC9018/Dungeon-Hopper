@@ -152,6 +152,13 @@ end
 function Wizzrobe:play_animation(w)
     -- get the step in sequence
     local step = self:getSeqStep()
+
+    if self.dead then
+        self:die()
+        return 
+    end
+
+
     -- get the time of animations and transitions
     local l = w:getAnimLength()
     local t = #self.bounces and l or l / #self.bounces

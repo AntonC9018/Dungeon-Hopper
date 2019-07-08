@@ -133,7 +133,7 @@ function World:do_loop(player_action)
                 -- the array is of configuration { { x, y, (specs) {} }, ... }
                 local desActs = t[i]:getAction(player_action, self)
 
-                if y == 50000 then error("OVERFLOW") end
+                if y == 500 then error("OVERFLOW") end
 
                 -- if the action specified is doing nothing
                 if #desActs == 0 then
@@ -286,11 +286,11 @@ function World:do_loop(player_action)
 
     -- animate all enemies
     for i = #self.enemList, 1, -1 do
+        self.enemList[i]:play_animation(self)       
 
-        self.enemList[i]:play_animation(self)
-
-        if self.enemList[i] == nil then print('nil') end
-        
+        if (self.enemList[i].dead) then
+            table.remove(self.enemList, i)                    
+        end
     end
 
 
@@ -301,28 +301,12 @@ function World:do_loop(player_action)
         self,
         function(event)
             -- when the animation ends
-            if event.phase == "end" then
-
-                for i = #self.enemList, 1, -1 do                    
-                    self.enemList[i]:reset(self)
-
-
-                    if (self.enemList[i].dead) then 
-                        print('I am DEAD')
-                        -- self.enemList[i]:die()
-                        transition.to(self.enemList[i].sprite, {
-                            alpha = 0,
-                            time = 600,
-                            transition = easing.linear,
-                            onComplete = function()
-                                display.remove(self.enemList[i].sprite)
-                            end
-                        })
-                        -- display.remove(self.enemList[i].sprite)
-                        table.remove(self.enemList, i)         
-                    end
-                end
+            if event.phase == "end" then                
                 self.player:reset()
+
+                for i = #self.enemList, 1, -1 do
+                    self.enemList[i]:reset(self)
+                end
 
                 -- if there are actions in the queue, do them
                 if #self.loop_queue > 0 then
@@ -334,6 +318,8 @@ function World:do_loop(player_action)
             end
         end
     )
+
+
 
 
 end

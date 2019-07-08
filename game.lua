@@ -128,8 +128,8 @@ function scene:create( event )
     local enemList = {}
 
     local wizzrobe = Wizzrobe:new({
-            x = 2,
-            y = 2,
+            x = 8,
+            y = 8,
         },
         {
             sheet_path = '/assets/image_sheets/wizzrobe.png',
@@ -149,7 +149,7 @@ function scene:create( event )
     table.insert(enemList, wizzrobe)
     enemGrid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 5 do
+    for i = 1, 10 do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,

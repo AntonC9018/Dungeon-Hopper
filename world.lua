@@ -286,7 +286,7 @@ function World:do_loop(player_action)
 
     -- animate all enemies
     for i = #self.enemList, 1, -1 do
-        self.enemList[i]:play_animation(self)       
+        self.enemList[i]:playAnimation(self)       
 
         if (self.enemList[i].dead) then
             table.remove(self.enemList, i)                    

@@ -19,7 +19,7 @@ function Player:createSprite()
             name = "idle",
             start = 1,
             count = 4,
-            time = 550,
+            time = 600,
             loopCount = 0
         },
         {
@@ -38,6 +38,7 @@ function Player:createSprite()
     self.sprite:setSequence('idle')
     self.sprite:play()
 end
+
 
 function Player:act(action, w)     
 
@@ -61,6 +62,7 @@ function Player:act(action, w)
     end
 
 end
+
 
 function Player:dropBeat()
 
@@ -136,11 +138,12 @@ function Player:play_animation(w, callback)
     end
 
     local function _callback(event)
-        self:anim(1, 'idle')
+        self:anim(1000, 'idle')
         if callback then callback(event) end
     end
 
     -- recursive bouncing
+    -- TODO: REFACTOR
     local function do_bounces(i)
         i = i + 1     
         
@@ -157,7 +160,7 @@ function Player:play_animation(w, callback)
                 or function() do_bounces(i) end 
 
             -- play animation
-            self:anim(1000 / t, 'jump')
+            self:anim(t, 'jump')
 
             if not self.bounces[i][2] then
                 -- if hopping to the right or to the left, jump up a little
@@ -190,19 +193,19 @@ function Player:play_animation(w, callback)
 
     if self.hurt then
         -- TODO: play hurt animation
-        self:anim(1, 'idle')
+        self:anim(t, 'idle')
 
         self:play_audio('hurt')
     end
 
     if self.hit then
         -- play the weapon animation animation
-        self.weapon:play_animation(1000 / l)
+        self.weapon:play_animation(l)
         self.weapon:play_audio()
 
         -- TODO: add a hit animation
         -- self:anim('hit')
-        self:anim(1, 'idle')
+        self:anim(t, 'idle')
 
         -- TODO: add a hitting sound
         -- self:play_audio('hit')
@@ -226,24 +229,14 @@ function Player:play_animation(w, callback)
 
     elseif self.displaced then
         -- play the jumping animation
-        self:anim(1000 / t, 'jump')
+        self:anim(t, 'jump')
 
         -- transition of the world
-        self:transGroup({
-            x = -self.x * UNIT + display.contentCenterX,
-            y = -self.y * UNIT + display.contentCenterY,
-            transition = easing.inOutQuad,
-            time = t,
-            onComplete = function() do_bounces(0) end
-        })
+        self:syncGroup(t, do_bounces)
 
         -- transition of own sprite
         -- hop up a bit
-        self:trans({
-            y = display.contentCenterY + (self.offset_y_jump + self.offset_y) * UNIT,
-            transition = easing.continuousLoop,
-            time = t / 2
-        })
+        self:hopUp(t)
 
 
 
@@ -251,13 +244,7 @@ function Player:play_animation(w, callback)
         -- TODO: add bumping animation?
         self:anim(1000 / t, 'jump')
 
-        self:trans({
-            x = display.contentCenterX + (-self.x + self.cur_a[1] / 2) * UNIT,
-            y = display.contentCenterY + (self.offset_y_jump + self.offset_y - self.y + self.cur_a[2] / 2) * UNIT,
-            transition = easing.continuousLoop,
-            time = t / 2,
-            onComplete = function() do_bounces(0) end
-        })
+        self:transBump(t, do_bounces)
     else
 
         timer.performWithDelay(t, function() do_bounces(0) end, 1)
@@ -267,7 +254,7 @@ end
 
 
 -- take damage from an enemy
-function Player:takeDamage(from)
+function Player:takeHit(from)
 
     -- the palyer is invincible, ignore
     if self.invincible > 0 then return end
@@ -330,6 +317,34 @@ function Player:reset()
 end
 
 function Player:tickAll()
-    
+end
 
+function Player:syncGroup(t, cb)
+    transition.to(self.follow_group, {
+        x = -self.x * UNIT + display.contentCenterX,
+        y = -self.y * UNIT + display.contentCenterY,
+        transition = easing.inOutQuad,
+        time = t,
+        onComplete = function() if cb then cb(0) end end
+    })
+end
+
+function Player:transBump(t, cb, x, y, dir)
+    transition.to(self.sprite, {
+        x = display.contentCenterX + ((x or -self.x) + (dir and dir[1] or self.cur_a[1]) / 2) * UNIT,
+        y = display.contentCenterY + ((y or -self.y) + self.offset_y_jump + self.offset_y + (dir and dir[2] or self.cur_a[2]) / 2) * UNIT,
+        transition = easing.continuousLoop,
+        time = t / 2,
+        onComplete = function() if cb then cb(0) end end
+    })
+end
+
+
+function Player:hopUp(t, cb)
+    transition.to(self.sprite, {
+        y = display.contentCenterY + (self.offset_y_jump + self.offset_y) * UNIT,
+        transition = easing.continuousLoop,
+        time = t / 2,
+        onComplete = function() if cb then cb(0) end end
+    })
 end

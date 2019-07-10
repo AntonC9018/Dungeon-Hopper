@@ -59,7 +59,7 @@ function Animated:orient(dir)
 end
 
 function Animated:anim(ts, name)
-    self.sprite.timeScale = ts
+    self.sprite.timeScale = 1000 / ts
     self.sprite:setSequence(name)
     self.sprite:play()
 end

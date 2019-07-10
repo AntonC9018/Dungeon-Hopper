@@ -13,7 +13,7 @@ function Dagger:attemptAttack(dir, w, player)
         self:orient(dir) 
 
         -- deal damage to the enemy
-        w.enemGrid[x][y]:takeDamage(dir, player)
+        w.enemGrid[x][y]:takeHit(dir, player)
 
         self.sprite.x = x
         self.sprite.y = y

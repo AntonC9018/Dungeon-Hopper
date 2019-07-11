@@ -158,67 +158,17 @@ function Enemy:computeAction(player_action, w)
         local lx, ly = w.player.x < self.x, w.player.y < self.y
 
         if gx then
-            if gy then  table.insert(actions, {  1,  1 }) end
-            if ly then  table.insert(actions, {  1, -1 }) end
+            if gy then  table.insert(actions, {  1,  1 }) table.insert(actions, { 0,  1 }) end
+            if ly then  table.insert(actions, {  1, -1 }) table.insert(actions, { 0, -1 }) end
                         table.insert(actions, {  1,  0 })
         elseif lx then
-            if gy then  table.insert(actions, { -1,  1 }) end
-            if ly then  table.insert(actions, { -1, -1 }) end
+            if gy then  table.insert(actions, { -1,  1 }) table.insert(actions, { 0,  1 }) end
+            if ly then  table.insert(actions, { -1, -1 }) table.insert(actions, { 0, -1 }) end
                         table.insert(actions, { -1,  0 })
         
         -- on one X with the player
         else
             table.insert(actions, { 0, gy and 1 or -1 })
-        end
-
-    -- same adjacent, but if bumping into an enemy by going diagonally
-    -- it would compromise by going straight down/up or left/right towards the player
-    elseif self:getSeqStep().mov == "adjacent-smart" then
-
-        local gx, gy = w.player.x > self.x, w.player.y > self.y
-        local lx, ly = w.player.x < self.x, w.player.y < self.y
-
-        -- to the right of the player
-        if gx then
-            if gy then  
-                table.insert(actions, {  1,  1 }) 
-                table.insert(actions, {  1,  0 })
-                table.insert(actions, {  1, -1 })
-            elseif ly then  
-                table.insert(actions, {  1, -1 })
-                table.insert(actions, {  1,  0 })
-                table.insert(actions, {  1,  1 }) 
-            else
-                table.insert(actions, {  1,  0 })
-                table.insert(actions, {  1, -1 })
-                table.insert(actions, {  1,  1 })
-            end
-        -- to the left of the player
-        elseif lx then
-            if gy then  
-                table.insert(actions, { -1,  1 }) 
-                table.insert(actions, { -1,  0 })
-                table.insert(actions, { -1, -1 })
-            elseif ly then  
-                table.insert(actions, { -1, -1 })
-                table.insert(actions, { -1,  0 })
-                table.insert(actions, { -1,  1 }) 
-            else
-                table.insert(actions, { -1,  0 })
-                table.insert(actions, { -1, -1 })
-                table.insert(actions, { -1,  1 })
-            end
-        -- on the same X with the player
-        else
-            if gy then
-                table.insert(actions, {  0,  1 })
-                table.insert(actions, {  1,  1 })
-                table.insert(actions, { -1,  1 })
-            else
-                table.insert(actions, {  0,  1 })
-                table.insert(actions, { -1,  1 })
-                table.insert(actions, {  1,  1 })
-            end
         end
 
     -- please don't use these random ones. These would be very obnoxious to deal with
@@ -626,78 +576,75 @@ function Enemy:performAction(player_action, w)
 
         local a, m = contains(step.name, 'attack'), contains(step.name, 'move')
 
+        -- a wall
+        if w.walls[x][y] then
 
-        if a then
-            if 
-                -- if this enemy can destoy walls
-                self.dig and
-                -- if there is a wall at that tile
-                w.walls[x][y] then
+            -- if this enemy can destoy the given wall
+            if a and self.dig >= w.walls[x][y].dig_res then 
+                return self:setAction(A, DIG, w)
+            
+            -- if can move, bump
+            elseif m then
+                responds[i] = BLOCK
+            end
+                
+        elseif w.enemGrid[x][y] then
 
-                    self:setAction(A, DIG, w)
-                    return  
-                    
-            elseif w.walls[x][y] then
+            -- check if it's the player
+            if w.enemGrid[x][y] == w.player then
 
-                self:setAction(A, BLOCK, w)
-                return
+                -- if attacking, attack
+                if a then
+                    return self:setAction(A, PLAYER, w)
+                
+                -- if moving, bump
+                elseif m then
+                    responds[i] = ENEMY
+                end
 
-            -- if there is something at that spot
-            elseif w.enemGrid[x][y] then
-
-                -- attack the player if 
-                if w.enemGrid[x][y] == w.player then
-
-                    self:setAction(A, PLAYER, w)
-                    return
-
+            -- an enemy
+            elseif a and A[3] == "attack_fellow" then
                 -- attack an enemy? what? why?
-                elseif 
-                    A[3] and
-                    A[3] == 'attack_fellow' then
+                -- TODO: complete this
+                self.moved = true
 
-                        self.moved = true
-                        -- TODO: complete this
-                end
+            -- take up the place of a dead enemy
+            elseif m and w.enemGrid[x][y].dead then
+                return self.setAction(A, FREE, w)
 
-            -- attack empty tiles
-            elseif not m then
-                self:setAction(A, FREE, w) 
-                return
-            end
-        end
 
-        
-        if m then
-            if w.enemGrid[x][y] then
-
-                -- make the enemy move, then check again
-                if 
-                    w.enemGrid[x][y] ~= w.player and
-                    w.enemGrid[x][y].moved == false and 
-                    -- prevent calling one another in a loop
-                    -- this can happen if an enemy intends to go back
-                    not w.enemGrid[x][y].doing_action then
-                    
-                        w.enemGrid[x][y]:selectAction(w)
-                        -- do the checks for the current iteration again
-                        i = i - 1
-
-                else
-                    if w.enemGrid[x][y].dead then
-                        self:setAction(A, FREE, w)
-                        return
-                    else
-                        -- bump into the enemy if there's no better move
-                        responds[i] = ENEMY
-                    end
-                end
-
-            else -- free way
-                self:setAction(A, FREE, w)
-                return
+            elseif m and w.enemGrid[x][y].moved == false and 
+                -- prevent calling one another in a loop
+                -- this can happen if an enemy intends to go back
+                not w.enemGrid[x][y].doing_action then
+               
+                -- make the enemy move
+                w.enemGrid[x][y]:selectAction(w)
+                -- do the checks for the current iteration again
+                i = i - 1
+            
+            -- attack empty space
+            elseif a and not m then
+                return self:setAction(A, FREE, w) 
+                
+            elseif m then
+                -- bump into the enemy if there's no better move
+                responds[i] = ENEMY
             end
 
+
+        elseif m then -- free way
+            return self:setAction(A, FREE, w)
+
+        else
+            -- do user defined special checks
+            if self.doSpecialChecks then
+                responds[i], ret, rep = self:doSpecialChecks(player_action, w, A)
+                if ret then self:setAction(A, responds[i], w) end
+                if rep then i = i - 1 end
+            else
+                return self:setAction(A, FREE, w)
+            end
         end
 
         -- TODO: add projectiles and actions besides these?

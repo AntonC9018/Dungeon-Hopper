@@ -4,7 +4,7 @@ Wizzrobe = Enemy:new{
     sequence = { 
         { name = "idle", anim = "idle" }, 
         { name = "idle", anim = "ready", p_close = { anim = "angry" }, reorient = true },
-        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "basic", loop = "s3Loop" } 
+        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "adjacent", loop = "s3Loop" } 
     },
     seq_count = 1,
     bounces = {},

@@ -129,7 +129,7 @@ function Player:play_animation(w, callback)
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
     local l = w:getAnimLength()
-    local t = #self.bounces and l or (l + 1) / #self.bounces
+    local t = #self.bounces == 0 and l or l / (#self.bounces + 1)
 
 
     -- look in the proper direction
@@ -149,41 +149,13 @@ function Player:play_animation(w, callback)
         
         if self.bounces[i] then
             -- update position
-            self.x, self.y = self.x + self.bounces[i][1], self.y + self.bounces[i][2]
-
-            local cb = 
-                -- if the last one
-                i >= #self.bounces 
-                -- call the closing function
-                and _callback 
-                -- do the next animation
-                or function() do_bounces(i) end 
+            self.x, self.y = self.bounces[i][1], self.bounces[i][2] 
 
             -- play animation
-            self:anim(t, 'jump')
+            -- self:anim(t, 'jump')
+            self:hopUp(t)
+            self:syncGroup(t, function() do_bounces(i) end)
 
-            if not self.bounces[i][2] then
-                -- if hopping to the right or to the left, jump up a little
-                self:trans({
-                    y = (self.y + self.offset_y_jump + self.offset_y) * UNIT + display.contentCenterY,
-                    transition = easing.continuousLoop,
-                    time = t / 2
-                })
-                self:transGroup({
-                    x = (-self.x) * UNIT + display.contentCenterX,
-                    transition = easing.inOutQuad,
-                    time = t,
-                    onComplete = cb
-                })            
-            else
-                self:transGroup({
-                    x = (-self.x) * UNIT + display.contentCenterX,
-                    y = (-self.y) * UNIT + display.contentCenterY,
-                    transition = easing.inOutQuad,
-                    time = t,
-                    onComplete = cb
-                })
-            end
         else -- if not self.bounces[i]
             _callback({ phase = "end" })
         end

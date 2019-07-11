@@ -10,7 +10,8 @@ NOTHING = 6
 
 World = constructor:new{
     loop_queue = {},
-    doing_loop = false
+    doing_loop = false,
+    environment = Environment:new{}
 }
 
 
@@ -96,70 +97,21 @@ function World:do_loop(player_action)
     -- also add the player to the grid
     self.enemGrid[self.player.x][self.player.y] = self.player
 
-
-    local t = { table.unpack(self.enemList) }
-
-    -- loop through enemList, set their 'moved' to false (except hit)
-    -- set hit to false
-    -- (update stunned?)
-
-
-    local y = 0
-
-    -- TODO: sort by proximity to the player, then do checks
-    -- table.sort(t, function(a, b) 
-        
-    --     math.abs(self.player.x - a.x) + math.abs(self.player.y - a.y)
-    
-    -- end)
-
     for i = 1, #self.enemList do
         if not self.enemList[i].moved then
             self.enemList[i]:performAction(player_action, self)
         end
     end
+    -- environment stores such entities as bombs, traps
+    -- projectiles, decorations and such 
+    self.environment:act(self)
 
-    -- Environment (traps and such)
-    local function trap(entity, _x, _y) 
-
-        -- if entity.cur_action[1] or entity.cur_action[2] then return end
-
-        local t = self.environment[_x][_y]
-
-        if t ~= nil then
-
-            local action = t:get_action(entity, self)
-
-            -- if got push trap
-            if action.name == 'push' then
-                local x, y = _x + action.dir[1], _y + action.dir[2]
-
-                if not self.walls[x][y] and not self.enemGrid[x][y] then
-                    -- store the bounce
-                    entity:bounce(action.dir, self)
-                    -- repeat (could have hit another trap)
-                    trap(entity, x, y)
-                else
-                    -- just hop a bit to the up
-                    entity:bounce({ 0, 0 }, self)
-                end
-            end
-
-            -- other cases coming soon
-        end
-    end
-
-    -- react to the environment
-    -- local t = { player, table.unpack(self.enemList) }
-    -- for i = 1, #t do
-    --     trap(t[i], t[i].x, t[i].y)
-    -- end
+    self.environment:reset()
 
     -- bring the entities that have higher y to the front
-    table.sort(t, function(a, b) return a.y > b.y end)
-    for i = 1, #t do
-        t[i].sprite:toFront()
-
+    table.sort(self.enemList, function(a, b) return a.y > b.y end)
+    for i = 1, #self.enemList do
+        self.enemList[i].sprite:toFront()
     end
 
 

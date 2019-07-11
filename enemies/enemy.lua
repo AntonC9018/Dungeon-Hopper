@@ -610,7 +610,7 @@ function Enemy:performAction(player_action, w)
 
             -- take up the place of a dead enemy
             elseif m and w.enemGrid[x][y].dead then
-                return self.setAction(A, FREE, w)
+                return self:setAction(A, FREE, w)
 
 
             elseif m and w.enemGrid[x][y].moved == false and 
@@ -759,3 +759,4 @@ function Enemy:getPointsFromDirection(dir)
     end
     return t
 end
+

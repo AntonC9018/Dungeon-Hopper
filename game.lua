@@ -32,6 +32,7 @@ require('tile')
 require('player')
 require('enemies.enemy')
 require('enemies.wizzrobe')
+require('environment.environment')
 require('world')
 require('weapons.dagger')
 
@@ -115,13 +116,11 @@ function scene:create( event )
 
     local tiles = {}
     local walls = {}
-    local environment = {}
     local enemGrid = {}
 
     for i = 1, field_width do
         tiles[i] = {}
         walls[i] = {}
-        environment[i] = {}
         enemGrid[i] = {}
         
         for j = 1, field_height do        
@@ -129,7 +128,6 @@ function scene:create( event )
             tiles[i][j]:createSprite()
 
             walls[i][j] = false
-            environment[i][j] = false
             enemGrid[i][j] = false
         end
     end
@@ -162,7 +160,7 @@ function scene:create( event )
     table.insert(enemList, wizzrobe)
     enemGrid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 10 do
+    for i = 1, 0 do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,
@@ -187,7 +185,6 @@ function scene:create( event )
         player = player,
         walls = walls,
         tiles = tiles,
-        environment = environment,
         follow_group = tileGroup,
         ignore = false
     }

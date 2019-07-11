@@ -120,3 +120,24 @@ function Entity:loseHP(dmg)
 
     end
 end
+
+
+function Entity:bounce(dir, w)
+
+    local t = #self.bounces > 0 and self.bounces or ({ self.x, self.y })
+    local x, y = t[1] + dir[1], t[2] + dir[2]
+
+    if not w.walls[x][y] then
+
+        if w.enemGrid[x][y] == w.player then
+            w.takeHit(self)
+
+        elseif not w.enemGrid[x][y] then
+            table.insert(self.bounces, { x, y })
+        
+        else
+            table.insert(self.bounces, { self.x, self.y })
+        end
+    end
+
+end

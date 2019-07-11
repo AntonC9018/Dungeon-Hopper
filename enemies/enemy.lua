@@ -322,6 +322,8 @@ end
 
 
 function Enemy:setAction(a, r, w)
+    self.moved = true
+
     -- "Current action"
     self.cur_a = a
     -- "Response to the current action"
@@ -343,13 +345,19 @@ function Enemy:setAction(a, r, w)
 
         -- Free way, just move
         if r == FREE then
+            -- delete itself from grid
+            self:unsetPositions(w)
+
             self.x = a[1] + self.x
             self.y = a[2] + self.y
-            if not step.reorient then self.facing = { a[1], a[2] } end
+            self.facing = { a[1], a[2] }
             self.displaced = true
+
+            -- shift the position in grid
+            self:resetPositions(w)
         
         elseif r == ENEMY or r == BLOCK then
-            if not step.reorient then self.facing = { a[1], a[2] } end
+            self.facing = { a[1], a[2] }
             self.bumped = true
         end
     end
@@ -359,9 +367,8 @@ function Enemy:setAction(a, r, w)
         -- damage the player
         if r == PLAYER then
             w.player:takeHit(self)
-            if not step.reorient then self.facing = { a[1], a[2] } end
+            self.facing = { a[1], a[2] }
             self.hit = true
-            print('hit true')
         end
 
     -- elseif contains(step.name, 'break') then
@@ -375,9 +382,9 @@ function Enemy:setAction(a, r, w)
         
         then
             for i = 1, #step.name do
-                if self['_f'..step.name[i]] then
+                if self['_f_'..step.name[i]] then
                     -- run the custom function
-                    self['_f'..step.name[i]](self, a, r, w, step)
+                    self['_f_'..step.name[i]](self, a, r, w, step)
                 end
             end
 
@@ -392,6 +399,9 @@ function Enemy:takeHit(dir, from)
     if not self.resilient then
         self.moved = true
     end
+    if self.weak then
+        self.seq_count = 1
+    end
     self.hurt = true
 
     self:loseHP(self:calculateAttack(from))    
@@ -399,16 +409,23 @@ function Enemy:takeHit(dir, from)
 end
 
 
+function Enemy:reset()
+    self:tickAll()
+    self:_reset()
+end
 
 
 -- reset loop logic
-function Enemy:reset()
+function Enemy:_reset()
     -- reset general properties
     Entity.reset(self)
     -- properties specific to enemy
     self.moved = false
     self.cur_r = false
     self.cur_actions = false
+    self.doing_loop = false
+    self.waiting = false
+
 end
 
 
@@ -449,13 +466,13 @@ function Enemy:updateSeq()
     local next_step
 
     -- check loop condition. Keep playing if active
-    if step.loop and step.loop(self) then
+    if step.loop and self[step.loop](self) then
         next_step = self.seq_count
     elseif 
         -- check if any are specified
         (not step.escape and not step.iterations) or
         -- check the escape condition
-        (step.escape and step.escape(self)) or
+        (step.escape and self[step.escape](self)) or
         -- check the iterations condition
         (step.iterations and self.iterations >= step.iterations) then
 
@@ -514,8 +531,8 @@ end
 
 function Enemy:transBump(t, cb, x, y, dir)
     transition.to(self.sprite, { 
-        x = (x or self.x) + (dir and dir[1] or self.cur_a[1]) / 2, 
-        y = (y or self.y) + (dir and dir[2] or self.cur_a[2]) / 2 + self.offset_y + self.offset_y_jump,
+        x = (x or self.x) + (dir and dir[1] or self.cur_a[1]) / 2 + self.size[1] / 2, 
+        y = (y or self.y) + (dir and dir[2] or self.cur_a[2]) / 2 + self.offset_y + self.offset_y_jump + self.size[2] / 2,
         time = t / 2,
         transition = easing.continuousLoop,
         onComplete = function() if cb then cb(0) end end
@@ -524,14 +541,14 @@ end
 
 function Enemy:transJump(t, cb, x, y, dir)
     transition.to(self.sprite, {
-        x = (x or self.x),
-        y = (y or self.y) + self.offset_y,
+        x = (x or self.x) + self.size[1] / 2,
+        y = (y or self.y) + self.offset_y + self.size[2] / 2,
         time = t,
         transition = easing.inOutQuad,
         onComplete = function() if cb then cb(0) end end
     })
     transition.to(self.sprite, {
-        y = (y or self.y) + self.offset_y + self.offset_y_jump,
+        y = (y or self.y) + self.offset_y + self.offset_y_jump + self.size[2] / 2,
         time = t / 2,
         transition = easing.continuousLoop
     })
@@ -565,18 +582,233 @@ function Enemy:transformSequence()
 
 
         -- convert "loop" and "escape" strings into functions
-        if s.loop and type(s.loop) == "string" then  
-            local str = string.sub(s.loop, 1)
-            s.loop = function(e) return e[str] end
-        end
+        -- if s.loop and type(s.loop) == "string" then  
+        --     s.loop = self[s.loop]
+        -- end
         
-        if s.escape and type(s.escape) == "string" then  
-            local str = string.sub(s.escape, 1)
-            s.escape = function(e) return e[str] end
-        end
+        -- if s.escape and type(s.escape) == "string" then  
+        --     s.escape = self[s.escape]
+        -- end
 
     end
 
 
 
+end
+
+
+-- make other enemies move if they block way
+-- NOTE: for the time being this is not compatible with bigger sizes
+-- TODO: fix that
+function Enemy:performAction(player_action, w)
+
+    self.doing_action = true
+
+    if not self.sees then
+        self.moved = true
+        return
+    end
+
+    local step = self:getSeqStep()
+    local acts = self:getAction(player_action, w)
+    local responds = {}
+
+    for i = 1, #acts do
+        responds[i] = false
+    end
+
+    -- loop throught all actions
+    for i = 1, #acts do
+
+        local A = acts[i]
+
+        local x, y = self.x + A[1], self.y + A[2]
+
+        local a, m = contains(step.name, 'attack'), contains(step.name, 'move')
+
+
+        if a then
+            if 
+                -- if this enemy can destoy walls
+                self.dig and
+                -- if there is a wall at that tile
+                w.walls[x][y] then
+
+                    self:setAction(A, DIG, w)
+                    return  
+                    
+            elseif w.walls[x][y] then
+
+                self:setAction(A, BLOCK, w)
+                return
+
+            -- if there is something at that spot
+            elseif w.enemGrid[x][y] then
+
+                -- attack the player if 
+                if w.enemGrid[x][y] == w.player then
+
+                    self:setAction(A, PLAYER, w)
+                    return
+
+                -- attack an enemy? what? why?
+                elseif 
+                    A[3] and
+                    A[3] == 'attack_fellow' then
+
+                        self.moved = true
+                        -- TODO: complete this
+                end
+
+            -- attack empty tiles
+            elseif not m then
+                self:setAction(A, FREE, w) 
+                return
+            end
+        end
+
+        
+        if m then
+            if w.enemGrid[x][y] then
+
+                -- make the enemy move, then check again
+                if 
+                    w.enemGrid[x][y] ~= w.player and
+                    w.enemGrid[x][y].moved == false and 
+                    -- prevent calling one another in a loop
+                    -- this can happen if an enemy intends to go back
+                    not w.enemGrid[x][y].doing_action then
+                    
+                        w.enemGrid[x][y]:selectAction(w)
+                        -- do the checks for the current iteration again
+                        i = i - 1
+
+                else
+                    if w.enemGrid[x][y].dead then
+                        self:setAction(A, FREE, w)
+                        return
+                    else
+                        -- bump into the enemy if there's no better move
+                        responds[i] = ENEMY
+                    end
+                end
+
+            else -- free way
+                self:setAction(A, FREE, w)
+                return
+            end
+
+        end
+
+        -- TODO: add projectiles and actions besides these?
+    end
+
+    -- if by here it hasn't returned then all actions were meh
+    -- in that case just do the first action 
+    self:setAction(acts[1], responds[1] or 0, w)
+end
+
+
+function Enemy:unsetPositions(w)
+    local ps = self:getPositions()
+    for i = 1, #ps do
+        w.enemGrid[ps[i][1]][ps[i][2]] = false
+    end
+end
+
+
+function Enemy:resetPositions(w)
+    local ps = self:getPositions()
+    for i = 1, #ps do
+        w.enemGrid[ps[i][1]][ps[i][2]] = self
+    end
+end
+
+
+function Enemy:getPositions()
+    local t = {}
+    for i = 0, self.size[1] do
+        for j = 0, self.size[2] do
+            table.insert(t, { self.x + i, self.y + j })
+        end
+    end
+    return t
+end
+
+-- get all adjacent positions
+function Enemy:getAdjacentPositions()
+    local t = {}
+
+    for i = -1, self.size[1] + 1 do
+        table.insert(t, { self.x + i, self.y - 1 })
+        table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
+    end
+
+    for j = 0, self.size[1] do
+        table.insert(t, { self.x - 1, self.y + j })
+        table.insert(t, { self.x + 1 + self.size[1], self.y + j })
+    end
+
+    return t
+end
+
+-- given a direction, i.e. { 1, 0 }
+-- return all positions associated with that direction
+-- taking into considerations the sizes of the enemy 
+function Enemy:getPointsFromDirection(dir)
+    local t = {} 
+
+    if dir[1] ~= 0 and dir[2] == 0 then
+
+        if dir[1] > 1 then
+            -- right
+            for j = 0, self.size[2] do
+                table.insert(t, { self.x + self.size[1] + 1, self.y + j })
+            end
+        else
+            -- left
+            for j = 0, self.size[2] do
+                table.insert(t, { self.x - 1, self.y + j })
+            end
+        end
+
+    elseif dir[2] ~= 0 and dir[1] == 0 then
+
+        if dir[2] > 1 then
+            -- bottom
+            for i = 0, self.size[1] do
+                table.insert(t, { self.x + i, self.y + self.size[2] + 1 })
+            end
+        else
+            -- top
+            for i = 0, self.size[1] do
+                table.insert(t, { self.x + i, self.y - 1 })
+            end
+        end
+
+    else -- got diagnal direction
+
+        if dir[1] > 0 then
+
+            if dir[2] > 0 then
+                -- bottom right
+                table.insert(t, { self.x + 1 + self.size[1], self.y + 1 + self.size[2] })
+            else 
+                -- top right
+                table.insert(t, { self.x + 1 + self.size[1], self.y - 1 })
+            end
+
+        else
+            
+            if dir[2] > 0 then
+                -- bottom left
+                table.insert(t, { self.x - 1, self.y + 1 + self.size[2] })
+            else
+                -- top left
+                table.insert(t, { self.x - 1, self.y - 1 })
+            end
+
+        end
+    end
+    return t
 end

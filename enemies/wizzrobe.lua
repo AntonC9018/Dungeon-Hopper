@@ -4,11 +4,12 @@ Wizzrobe = Enemy:new{
     sequence = { 
         { name = "idle", anim = "idle" }, 
         { name = "idle", anim = "ready", p_close = { anim = "angry" }, reorient = true },
-        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "adjacent-smart", loop = "bumped" } 
+        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "basic", loop = "s3Loop" } 
     },
     seq_count = 1,
     bounces = {},
-    health = 4
+    health = 4,
+    size = { 0, 0 }
 }
 
 Wizzrobe:transformSequence()
@@ -42,29 +43,29 @@ function Wizzrobe:createSprite()
             time = 0
         }
     })
-    self.sprite.x = self.x
-    self.sprite.y = self.y + self.offset_y
+    self.sprite.x = self.x - self.size[1] / 2
+    self.sprite.y = self.y + self.offset_y - self.size[2] / 2
 
     self.sprite:scale(self.scaleX, self.scaleY)
     self:anim(1000, 'idle')
 end
 
-function Wizzrobe:takeHit(dir, player)
-    -- TODO: call this something like 'weak'
-    self.seq_count = 1
-
-    Enemy.takeHit(self, dir, player)
-end
+-- function Wizzrobe:takeHit(dir, player)
+--     Enemy.takeHit(self, dir, player)
+-- end
 
 
-function Wizzrobe:reset(w)
-    if self.bumped then
+function Wizzrobe:s3Loop()
+    print('doing s3loop')
+    print(self.cur_r)
+    if self.bumped then 
+        print('then')
         if self.close then
             self:anim(1000, "angry") 
         else
             self:anim(1000, "ready") 
-        end
-    end  
-    Enemy.tickAll(self)
-    Enemy.reset(self)
+        end        
+        return true
+    end
+    return false
 end

@@ -9,7 +9,7 @@ Player = Entity:new{
     to_drop = {},
     bounces = {},
     invincible = 0,
-    invincible_max = 1,
+    invincible_max = 2,
     pierce_ing = 1
 }
 
@@ -256,6 +256,8 @@ end
 -- take damage from an enemy
 function Player:takeHit(from)
 
+    print()
+
     -- the palyer is invincible, ignore
     if self.invincible > 0 then return end
     -- ignore 0 damage
@@ -272,8 +274,7 @@ function Player:takeHit(from)
         alpha = 0,
         transition = easing.continuousLoop,
         time = 200,
-        iterations = 0,
-        tag = 'flicker'
+        iterations = 0
     })
     -- reset fliker count
     self.invincible = self.invincible_max
@@ -301,7 +302,7 @@ end
 
 function Player:reset()
     self.attacked_enemy = false
-    Entity.reset(self)
+    Entity.tickAll(self)
     if self.invincible <= 0 and self.flicker then
         -- stop flickering
         transition.cancel(self.flicker)
@@ -312,7 +313,7 @@ function Player:reset()
         })
         self.sprite.alpha = 1
     end
-    Entity.tickAll(self)
+    Entity.reset(self)
 
 end
 

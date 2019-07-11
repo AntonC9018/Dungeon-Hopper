@@ -6,6 +6,7 @@ ENEMY = 2
 WAIT = 3
 BLOCK = 4
 PLAYER = 5
+NOTHING = 6
 
 World = constructor:new{
     loop_queue = {},
@@ -112,133 +113,11 @@ function World:do_loop(player_action)
     
     -- end)
 
-    -- repeat until all enemies have moved
-    while #t ~= 0 do
-
-        -- Figure out the next action of the enemies
-        -- go from the back of the array to be able to remove elements
-        for i = #t, 1, -1 do
-
-            y = y + 1
-
-            if t[i].moved then
-                table.remove(t, i)
-            -- if the player is not in radius, ignore
-            elseif not t[i].sees then 
-                t[i].moved = true
-                table.remove(t, i)
-            else 
-                -- the enemy would spit out an array of desired actions
-                -- elements to the left are most desired, to the right - least
-                -- the array is of configuration { { x, y, (specs) {} }, ... }
-                local desActs = t[i]:getAction(player_action, self)
-
-                if y == 500 then error("OVERFLOW") end
-
-                -- if the action specified is doing nothing
-                if #desActs == 0 then
-                    t[i]:setAction(nil, 0, self)
-                    t[i].moved = true
-                else
-
-                    -- responds, i.e. answers of the environment
-                    local resps = {}                
-
-                    for j = 1, #desActs do
-
-                        local x, y, s = table.unpack(desActs[j]) 
-
-                        --[[
-
-                        !!!This might be changed in the future!!!
-
-                            1 - free way, no enemy or block [FREE]
-                            2 - an enemy is blocking the spot [ENEMY]
-                            3 - there is an enemy but they haven't moved yet [WAIT]
-                            4 - there is a block on the way [BLOCK]
-                            
-                        ]]--
-
-                        if self.walls[ t[i].x + x ][ t[i].y + y ] then
-                            -- there is a wall
-                            resps[j] = BLOCK
-                        else
-
-                            local en = self.enemGrid[ t[i].x + x ][ t[i].y + y ]
-
-
-                            -- the simplest case: unblocked way
-                            if not en then 
-                                resps[j] = FREE
-                                break
-                            -- hit the player (yes, it is in enemyGrid)
-                            elseif en == self.player then
-                                resps[j] = PLAYER
-                                break
-                            -- an enemy has moved to the spot
-                            elseif en.moved then
-                                -- if the enemy is dead it's valid
-                                if en.dead then
-                                    resps[j] = FREE
-                                    break
-                                else
-                                    resps[j] = ENEMY 
-                                end
-                            else 
-                                -- the enemy is going to move later
-                                resps[j] = WAIT
-                                break
-                            end
-                        end
-                    end
-
-                    local all_blocked = true
-
-                    -- loop through all possible actions
-                    -- remember, they are ordered by desirability
-                    for j = 1, #resps do
-                        -- wait for the enemy to move out of the way
-                        if resps[j] == WAIT then 
-                            all_blocked = false 
-                            break 
-                        end
-
-
-                        -- TODO: merge these
-                        -- move if can move
-                        if resps[j] == FREE then
-
-                            -- move       
-                            -- TODO: move inside enemy
-                            self.enemGrid[t[i].x][t[i].y] = false
-                            t[i]:setAction(desActs[j], resps[j], self)
-                            self.enemGrid[t[i].x][t[i].y] = t[i]
-
-                            t[i].moved = true
-                            all_blocked = false
-                            break
-                        end
-                        -- hit the player
-                        -- Note: if the player has been hit by this, the audio
-                        -- of the player would also be changed
-                        if resps[j] == PLAYER then
-                            -- TODO: figure pushing
-                            t[i]:setAction(desActs[j], resps[j], self)
-                            t[i].moved = true
-                            all_blocked = false
-                            break
-                        end
-                    end
-
-                    -- if nowhere to go 
-                    if all_blocked then
-                        t[i]:setAction(desActs[1], resps[1], self)
-                        t[i].moved = true
-                    end
-                end -- / if # = 0                
-            end -- / resps loop
-        end -- / #t loop
-    end -- / while t loop
+    for i = 1, #self.enemList do
+        if not self.enemList[i].moved then
+            self.enemList[i]:performAction(player_action, self)
+        end
+    end
 
     -- Environment (traps and such)
     local function trap(entity, _x, _y) 

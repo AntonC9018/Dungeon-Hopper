@@ -118,48 +118,38 @@ function World:do_loop(player_action)
     end
 
 
+    -- Reset everything only when all animations have finished
+    local I = #self.entities_list
 
+    local function refresh()
+        print('Ending loop')
+        for i = 1, #self.entities_list do            
+            self.entities_list[i]:reset(self)            
+        end
 
-    -- animate all enemies
-    for i = #self.entities_list, 1, -1 do
-        if self.entities_list[i] ~= self.player then
-            self.entities_list[i]:playAnimation(self)       
+        self.environment:reset()
 
-            if (self.entities_list[i].dead) then
-                table.remove(self.entities_list, i)                    
-            end
+        -- if there are actions in the queue, do them
+        if #self.loop_queue > 0 then
+            self:do_loop(table.remove(self.loop_queue, 1))
+        else
+            self.doing_loop = false
         end
     end
 
+    local function tryRefresh()
+        I = I - 1
+        if I == 0 then refresh() end
+    end  
 
-    -- animate the player sprite and all its descendants (weapons so on)
-    -- the callback function will be called nevertheless 
-    -- (even if the player is not going to play an animation)
-    self.player:playAnimation(
-        self,
-        function(event)
-            -- when the animation ends
-            if event.phase == "end" then 
+    -- animate all enemies
+    for i = #self.entities_list, 1, -1 do
+        self.entities_list[i]:playAnimation(self, tryRefresh)       
 
-                for i = #self.entities_list, 1, -1 do
-                    self.entities_list[i]:reset(self)
-                end
-
-                print('  ')
-
-                self.environment:reset()
-
-
-                -- if there are actions in the queue, do them
-                if #self.loop_queue > 0 then
-                    self:do_loop(table.remove(self.loop_queue, 1))
-                else
-                    self.doing_loop = false
-                end
-                
-            end
-        end
-    )
+        if (self.entities_list[i].dead) then
+            table.remove(self.entities_list, i)                    
+        end    
+    end
 
 
 

@@ -5,6 +5,12 @@ local DEBUFFS = {'stun', 'confuse', 'tiny', 'poison', 'fire', 'freeze'}
 local SPECIAL = {'push', 'pierce'}
 
 
+function Entity:new(...)
+    local o = Animated.new(self, ...)
+    o.history = {}
+    o.prev_pos = {}
+    return o
+end
 
 -- states
 -- game logic states
@@ -64,12 +70,10 @@ Entity.slide_res = 0
 -- Entity.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
 -- Entity.last_a = {} -- last action
 -- Entity.cur_a = {} -- current action
--- Entity.bounces = {} -- pushing, bounces and such
+-- Entity.history = {} -- pushing, history and such
 
 
 function Entity:reset()
-    print('Me am '..(self.enemy and 'ENEMY' or 'PLAYER'))
-    print('Me play RESET')
     self.displaced = false
     self.bumped = false
     self.hit = false
@@ -77,7 +81,8 @@ function Entity:reset()
     self.dug = false
     self.last_a = self.cur_a
     self.cur_a = false
-    self.bounces = {}
+    self.prev_pos = { x = self.x, y = self.y }
+    self.history = {}
 end
 
 -- Decrement all debuffs
@@ -126,22 +131,152 @@ end
 
 function Entity:bounce(trap, w)
 
-    local t = #self.bounces > 0 and self.bounces[#self.bounces] or ({ self.x, self.y })
-    local x, y = t[1] + trap.dir[1], t[2] + trap.dir[2]
+    local x, y = self.x + trap.dir[1], self.y + trap.dir[2]
 
+    self:unsetPositions(w)
 
     if not w.walls[x][y] then
 
-        if w.entities_grid[x][y] == w.player and self ~= w.player then
-            w.entities_grid[x][y].takeHit(self)
+        -- we're an enemy and we intend to attack
+        if w.entities_grid[x][y] == w.player and self ~= w.player and 
+            contains(self:getSeqStep(), 'attack') then
 
-        elseif not w.entities_grid[x][y] then
-            table.insert(self.bounces, { x, y, trap })        
-        else
-            table.insert(self.bounces, { self.x, self.y, trap })
-        end
+                w.entities_grid[x][y].takeHit(self)
+                table.insert(self.history, { x, y, trap })        
+                self.hit = true
+
+            elseif not w.entities_grid[x][y] then
+                self.x, self.y = x, y
+
+                table.insert(self.history, { x, y, trap })        
+            else
+                table.insert(self.history, { self.x, self.y, trap })
+            end
     else
-        table.insert(self.bounces, { self.x, self.y, trap })
+        table.insert(self.history, { self.x, self.y, trap })
     end
 
+    if self.x == self.prev_pos.x and self.y == self.prev_pos.y then
+
+    end
+
+    self:resetPositions(w)
+end
+
+
+function Entity:unsetPositions(w)
+    local ps = self:getPositions()
+    for i = 1, #ps do
+        w.entities_grid[ps[i][1]][ps[i][2]] = false
+    end
+end
+
+
+function Entity:resetPositions(w)
+    local ps = self:getPositions()
+    for i = 1, #ps do
+        w.entities_grid[ps[i][1]][ps[i][2]] = self
+    end
+end
+
+
+function Entity:getPositions()
+    local t = {}
+    for i = 0, self.size[1] do
+        for j = 0, self.size[2] do
+            table.insert(t, { self.x + i, self.y + j })
+        end
+    end
+    return t
+end
+
+-- get all adjacent positions
+function Entity:getAdjacentPositions()
+    local t = {}
+
+    for i = -1, self.size[1] + 1 do
+        table.insert(t, { self.x + i, self.y - 1 })
+        table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
+    end
+
+    for j = 0, self.size[1] do
+        table.insert(t, { self.x - 1, self.y + j })
+        table.insert(t, { self.x + 1 + self.size[1], self.y + j })
+    end
+
+    return t
+end
+
+-- given a direction, i.e. { 1, 0 }
+-- return all positions associated with that direction
+-- taking into considerations the sizes of the enemy 
+function Entity:getPointsFromDirection(dir)
+    local t = {} 
+
+    if dir[1] ~= 0 and dir[2] == 0 then
+
+        if dir[1] > 1 then
+            -- right
+            for j = 0, self.size[2] do
+                table.insert(t, { self.x + self.size[1] + 1, self.y + j })
+            end
+        else
+            -- left
+            for j = 0, self.size[2] do
+                table.insert(t, { self.x - 1, self.y + j })
+            end
+        end
+
+    elseif dir[2] ~= 0 and dir[1] == 0 then
+
+        if dir[2] > 1 then
+            -- bottom
+            for i = 0, self.size[1] do
+                table.insert(t, { self.x + i, self.y + self.size[2] + 1 })
+            end
+        else
+            -- top
+            for i = 0, self.size[1] do
+                table.insert(t, { self.x + i, self.y - 1 })
+            end
+        end
+
+    else -- got diagnal direction
+
+        if dir[1] > 0 then
+
+            if dir[2] > 0 then
+                -- bottom right
+                table.insert(t, { self.x + 1 + self.size[1], self.y + 1 + self.size[2] })
+            else 
+                -- top right
+                table.insert(t, { self.x + 1 + self.size[1], self.y - 1 })
+            end
+
+        else
+            
+            if dir[2] > 0 then
+                -- bottom left
+                table.insert(t, { self.x - 1, self.y + 1 + self.size[2] })
+            else
+                -- top left
+                table.insert(t, { self.x - 1, self.y - 1 })
+            end
+
+        end
+    end
+    return t
+end
+
+
+function Entity:go(dir, w)
+    -- delete itself from grid
+    self:unsetPositions(w)
+    self.x = dir[1] + self.x
+    self.y = dir[2] + self.y
+    table.insert(self.history, {self.x, self.y})
+    self.facing = { dir[1], dir[2] }
+    self.displaced = true
+    -- shift the position in grid
+    self:resetPositions(w)
 end

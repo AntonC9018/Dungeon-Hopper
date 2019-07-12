@@ -5,7 +5,6 @@ Player = Entity:new{
     offset_y_jump = -0.2,
     health = 20,
     to_drop = {},
-    bounces = {},
     invincible = 0,
     invincible_max = 2,
     pierce_ing = 1,
@@ -115,8 +114,7 @@ function Player:move(dir, w)
         if w.walls[self.x + dir[1]][self.y + dir[2]] then
             self.bumped = true
         else
-            self.x, self.y = self.x + dir[1], self.y + dir[2] 
-            self.displaced = true
+            self:go(dir, w)
         end
     end
 
@@ -129,17 +127,9 @@ function Player:playAnimation(w, callback)
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
     local l = w:getAnimLength()
-    local t = #self.bounces == 0 and l or l / (#self.bounces + 1)
+    local t = #self.history == 0 and l or l / (#self.history)
 
-    local x, y
-
-    if #self.bounces > 0 then
-        x, y = self.bounces[#self.bounces][1], self.bounces[#self.bounces][2]
-    else
-        x, y = self.x, self.y
-    end
-
-    self:syncGroup(l, nil, x, y)
+    self:syncGroup(l, nil, self.x, self.y)
     
 
     -- look in the proper direction
@@ -147,29 +137,39 @@ function Player:playAnimation(w, callback)
         self:orient(self.cur_a[1])
     end
 
-    local function _callback(event)
+    local function _callback()
         self:anim(1000, 'idle')
-        if callback then callback(event) end
+        if callback then callback() end
     end
 
     -- recursive bouncing
     local function do_bounces(i)
         i = i + 1     
         
-        if self.bounces[i] then
+        if self.history[i] then
             -- update position
-            self.x, self.y = self.bounces[i][1], self.bounces[i][2] 
+            local x, y = self.history[i][1], self.history[i][2] 
 
-            self.bounces[i][3]:anim(1000, 'inactive')
+            self.history[i][3]:anim(1000, 'inactive')
 
 
             -- play animation
             -- self:anim(t, 'jump')
-            self:transJump(t, function() do_bounces(i) end)
+            self:transJump(t, function() do_bounces(i) end, x, y)
 
         else -- if not self.bounces[i]
-            _callback({ phase = "end" })
+            _callback()
         end
+    end
+
+    -- get coordiates before bounces
+    local x, y
+    if self.history[1] then
+        x, y = self.history[1][1], self.history[1][2]
+    end
+
+    if x == self.x and y == self.y then
+        t = l
     end
     
     
@@ -177,15 +177,18 @@ function Player:playAnimation(w, callback)
     if self.hurt then
         -- TODO: play hurt animation
         self:anim(t, 'idle')
-
         self:play_audio('hurt')
+
+        if not self.displaced and not self.bumped then
+            do_bounces(1)
+        end
+
     end
 
     if self.hit then
         -- play the weapon animation animation
         self.weapon:play_animation(l)
         self.weapon:play_audio()
-
         -- TODO: add a hit animation
         -- self:anim('hit')
         self:anim(1000, 'idle')
@@ -194,8 +197,7 @@ function Player:playAnimation(w, callback)
         -- self:play_audio('hit')
 
         -- no transition on sprite is happenning, but the callback
-        -- must be called in time. Offset bounces by t
-        timer.performWithDelay(t, function() do_bounces(0) end, 1)
+        do_bounces(1)
 
 
     elseif self.dug then
@@ -206,25 +208,22 @@ function Player:playAnimation(w, callback)
         -- TODO: sound
         self:play_audio('dig')
 
-
-        timer.performWithDelay(t, function() do_bounces(0) end, 1)
+        do_bounces(1)
 
 
     elseif self.displaced then
         -- play the jumping animation
         self:anim(t, 'jump')
-
-        self:transJump(t, do_bounces)
+        self:transJump(t, do_bounces, x, y)
 
 
     elseif self.bumped then
         -- TODO: add bumping animation?
         self:anim(1000 / t, 'jump')
-
-        self:transBump(t, do_bounces)
+        self:transBump(t, do_bounces, x, y)
     else
 
-        timer.performWithDelay(t, function() do_bounces(0) end, 1)
+        do_bounces(1)
 
     end
 end

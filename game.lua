@@ -164,8 +164,8 @@ function scene:create( event )
 
 
     local wizzrobe = Wizzrobe:new({
-            x = 4,
-            y = 4,
+            x = 1,
+            y = 1,
         },
         {
             sheet_path = '/assets/image_sheets/wizzrobe.png',

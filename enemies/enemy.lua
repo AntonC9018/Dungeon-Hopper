@@ -197,10 +197,11 @@ function Enemy:computeAction(player_action, w)
 end
 
 
-function Enemy:playAnimation(w)   
+function Enemy:playAnimation(w, callback)   
 
     if self.dead then
         self:die()
+        if callback then callback() end
         return 
     end
 
@@ -209,35 +210,43 @@ function Enemy:playAnimation(w)
 
     -- get the time of animations and transitions
     local l = w:getAnimLength()
-    local t = #self.bounces and l or l / (#self.bounces + 1)
+    local t = #self.history == 0 and l or l / (#self.history)
 
-    local function _callback(event)
-        self:anim(1000, 'idle')
-        if callback then callback(event) end
+    local function _callback()
+        if self.sprite.isPlaying ~= true then self:anim(1000, 'idle') end
+        if callback then callback() end
     end
 
 
     local function do_bounces(i)
 
-        print('Me am ENEMY')
-        print('Me play BOUNCES')
-
         i = i + 1    
         
-        if self.bounces[i] then
+        if self.history[i] then
             -- update position
-            self.x, self.y = self.bounces[i][1], self.bounces[i][2] 
+            local x, y = self.history[i][1], self.history[i][2] 
 
-            self.bounces[i][3]:anim(1000, 'inactive')
+            self.history[i][3]:anim(1000, 'inactive')
 
             -- play animation
             -- self:anim(t, 'jump')
-            self:transJump(t, function() do_bounces(i) end)
+            self:transJump(t, function() do_bounces(i) end, x, y)
 
-        else -- if not self.bounces[i]
-            _callback({ phase = "end" })
+        else -- if not self.history[i]
+            _callback()
         end
     end
+
+    -- get coordiates before bounces
+    local x, y
+    if self.history[1] then
+        x, y = self.history[1][1], self.history[1][2]
+    end
+
+    if x == self.x and y == self.y then
+        t = l
+    end
+
 
 
     -- change orientation
@@ -263,8 +272,10 @@ function Enemy:playAnimation(w)
 
         else
             -- play the idle animation
-            self:anim(t, step.anim.idle)
+            self:anim(1000, step.anim.idle)
         end
+
+        do_bounces(1)
 
     else
 
@@ -273,8 +284,9 @@ function Enemy:playAnimation(w)
             if self.hit then
                 -- play hit animation
                 self:anim(t, step.anim.attack)
-                -- jump to and back
-                self:transAttack(t)
+                -- attack the tile        
+                self:transAttack(t, do_bounces, x, y)
+                
                 return
             end
 
@@ -284,17 +296,20 @@ function Enemy:playAnimation(w)
 
             if self.displaced then
                 self:anim(t, step.anim.move)
-                self:transJump(t * 0.7, do_bounces)
+                self:transJump(t, do_bounces, x, y)
             
             elseif self.bumped then
                 self:anim(t, step.anim.move)
-                self:transBump(t)
+                self:transBump(t, do_bounces, x, y)
             end
 
         end
 
+        if not contains(step.name, 'attack') and contains(step.name, 'move') then
+            do_bounces(1)
+        end
 
-
+        
     end
 end
 
@@ -326,17 +341,9 @@ function Enemy:setAction(a, r, w)
     if contains(step.name, 'move') then
 
         -- Free way, just move
-        if r == FREE then
-            -- delete itself from grid
-            self:unsetPositions(w)
+        if r == FREE then 
+            self:go(a, w)
 
-            self.x = a[1] + self.x
-            self.y = a[2] + self.y
-            self.facing = { a[1], a[2] }
-            self.displaced = true
-
-            -- shift the position in grid
-            self:resetPositions(w)
         
         elseif r == ENEMY or r == BLOCK then
             self.facing = { a[1], a[2] }
@@ -659,107 +666,5 @@ function Enemy:performAction(player_action, w)
 end
 
 
-function Enemy:unsetPositions(w)
-    local ps = self:getPositions()
-    for i = 1, #ps do
-        w.entities_grid[ps[i][1]][ps[i][2]] = false
-    end
-end
 
-
-function Enemy:resetPositions(w)
-    local ps = self:getPositions()
-    for i = 1, #ps do
-        w.entities_grid[ps[i][1]][ps[i][2]] = self
-    end
-end
-
-
-function Enemy:getPositions()
-    local t = {}
-    for i = 0, self.size[1] do
-        for j = 0, self.size[2] do
-            table.insert(t, { self.x + i, self.y + j })
-        end
-    end
-    return t
-end
-
--- get all adjacent positions
-function Enemy:getAdjacentPositions()
-    local t = {}
-
-    for i = -1, self.size[1] + 1 do
-        table.insert(t, { self.x + i, self.y - 1 })
-        table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
-    end
-
-    for j = 0, self.size[1] do
-        table.insert(t, { self.x - 1, self.y + j })
-        table.insert(t, { self.x + 1 + self.size[1], self.y + j })
-    end
-
-    return t
-end
-
--- given a direction, i.e. { 1, 0 }
--- return all positions associated with that direction
--- taking into considerations the sizes of the enemy 
-function Enemy:getPointsFromDirection(dir)
-    local t = {} 
-
-    if dir[1] ~= 0 and dir[2] == 0 then
-
-        if dir[1] > 1 then
-            -- right
-            for j = 0, self.size[2] do
-                table.insert(t, { self.x + self.size[1] + 1, self.y + j })
-            end
-        else
-            -- left
-            for j = 0, self.size[2] do
-                table.insert(t, { self.x - 1, self.y + j })
-            end
-        end
-
-    elseif dir[2] ~= 0 and dir[1] == 0 then
-
-        if dir[2] > 1 then
-            -- bottom
-            for i = 0, self.size[1] do
-                table.insert(t, { self.x + i, self.y + self.size[2] + 1 })
-            end
-        else
-            -- top
-            for i = 0, self.size[1] do
-                table.insert(t, { self.x + i, self.y - 1 })
-            end
-        end
-
-    else -- got diagnal direction
-
-        if dir[1] > 0 then
-
-            if dir[2] > 0 then
-                -- bottom right
-                table.insert(t, { self.x + 1 + self.size[1], self.y + 1 + self.size[2] })
-            else 
-                -- top right
-                table.insert(t, { self.x + 1 + self.size[1], self.y - 1 })
-            end
-
-        else
-            
-            if dir[2] > 0 then
-                -- bottom left
-                table.insert(t, { self.x - 1, self.y + 1 + self.size[2] })
-            else
-                -- top left
-                table.insert(t, { self.x - 1, self.y - 1 })
-            end
-
-        end
-    end
-    return t
-end
 

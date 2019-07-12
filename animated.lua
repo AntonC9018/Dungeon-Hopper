@@ -42,14 +42,6 @@ function Animated:play_audio(t)
     end
 end
 
-function Animated:play_animation(g)
-    if self.action_name then
-        self.sprite:setSequence(self.action_name)
-        self.sprite.timeScale = 1000 / g.getAnimLength() 
-        self.sprite:play()
-    end
-end
-
 function Animated:loadSheet(fname, options)
     self.sheet = graphics.newImageSheet(fname, options)
 end
@@ -59,9 +51,11 @@ function Animated:orient(dir)
 end
 
 function Animated:anim(ts, name)
-    self.sprite.timeScale = 1000 / ts
-    self.sprite:setSequence(name)
-    self.sprite:play()
+    if not self.sprite.isPlaying or self.sprite.sequence ~= name then
+        self.sprite.timeScale = 1000 / ts
+        self.sprite:setSequence(name)
+        self.sprite:play()
+    end
 end
 
 function Animated:trans(o)
@@ -80,7 +74,7 @@ function Animated:transBump(t, cb, x, y, dir)
         y = (y or self.y) + (dir and dir[2] or self.cur_a[2]) / 2 + self.offset_y + self.offset_y_jump + self.size[2] / 2,
         time = t / 2,
         transition = easing.continuousLoop,
-        onComplete = function() if cb then cb(0) end end
+        onComplete = function() if cb then cb(1) end end
     })
 end
 
@@ -90,7 +84,7 @@ function Animated:transJump(t, cb, x, y, dir)
         y = (y or self.y) + self.offset_y + self.size[2] / 2,
         time = t,
         transition = easing.inOutQuad,
-        onComplete = function() if cb then cb(0) end end
+        onComplete = function() if cb then cb(1) end end
     })
     -- self:hopUp(t)
 end
@@ -100,6 +94,6 @@ function Animated:hopUp(t, cb)
         y = self.y + self.offset_y_jump + self.offset_y + self.size[2] / 2,
         transition = easing.continuousLoop,
         time = t / 2,
-        onComplete = function() if cb then cb(0) end end
+        onComplete = function() if cb then cb(1) end end
     })
 end

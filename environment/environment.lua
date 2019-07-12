@@ -111,9 +111,7 @@ function Trap:activate(e, w)
         
         e:bounce(self, w)
         
-        local x, y = e.bounces[#e.bounces][1], e.bounces[#e.bounces][2]
-        
-        if self.x == x and self.y == y then
+        if self.x == e.x and self.y == e.y then
             self.bounced = e
         else
             self.bounced = false

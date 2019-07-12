@@ -1,8 +1,6 @@
 
 
 Player = Entity:new{
-    scaleX = 60 / 16,
-    scaleY = 60 / 16,
     offset_y = -0.4,
     offset_y_jump = -0.2,
     health = 20,
@@ -10,11 +8,12 @@ Player = Entity:new{
     bounces = {},
     invincible = 0,
     invincible_max = 2,
-    pierce_ing = 1
+    pierce_ing = 1,
+    size = { 0, 0 }
 }
 
 function Player:createSprite()
-    self.sprite = display.newSprite(self.sheet, {
+    self.sprite = display.newSprite(self.group, self.sheet, {
         {
             name = "idle",
             start = 1,
@@ -30,8 +29,8 @@ function Player:createSprite()
         }
     })
     -- place the sprite in the middle of the screen
-    self.sprite.x = display.contentCenterX
-    self.sprite.y = display.contentCenterY + UNIT * self.offset_y
+    self.sprite.x = self.x
+    self.sprite.y = self.y + self.offset_y
 
     self.sprite:scale(self.scaleX, self.scaleY)
     
@@ -43,6 +42,7 @@ end
 function Player:act(action, w)     
 
     self.cur_a = action
+    self.moved = true
 
     if action[3] then
         -- special action
@@ -99,8 +99,8 @@ function Player:attack(dir, w)
     -- if no weapon
     local x, y = self.x + dir[1], self.y + dir[2]
     
-    if w.enemGrid[x][y] and w.enemGrid[x][y] ~= self then 
-        w.attacked_enemy = w.enemGrid[x][y]
+    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then 
+        w.attacked_enemy = w.entities_grid[x][y]
         self.bumped = true
         return false
     end
@@ -125,12 +125,22 @@ end
 
 
 
-function Player:play_animation(w, callback)
+function Player:playAnimation(w, callback)
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
     local l = w:getAnimLength()
     local t = #self.bounces == 0 and l or l / (#self.bounces + 1)
 
+    local x, y
+
+    if #self.bounces > 0 then
+        x, y = self.bounces[#self.bounces][1], self.bounces[#self.bounces][2]
+    else
+        x, y = self.x, self.y
+    end
+
+    self:syncGroup(l, nil, x, y)
+    
 
     -- look in the proper direction
     if self.cur_a[1] ~= 0 then
@@ -143,7 +153,6 @@ function Player:play_animation(w, callback)
     end
 
     -- recursive bouncing
-    -- TODO: REFACTOR
     local function do_bounces(i)
         i = i + 1     
         
@@ -151,10 +160,12 @@ function Player:play_animation(w, callback)
             -- update position
             self.x, self.y = self.bounces[i][1], self.bounces[i][2] 
 
+            self.bounces[i][3]:anim(1000, 'inactive')
+
+
             -- play animation
             -- self:anim(t, 'jump')
-            self:hopUp(t)
-            self:syncGroup(t, function() do_bounces(i) end)
+            self:transJump(t, function() do_bounces(i) end)
 
         else -- if not self.bounces[i]
             _callback({ phase = "end" })
@@ -177,7 +188,7 @@ function Player:play_animation(w, callback)
 
         -- TODO: add a hit animation
         -- self:anim('hit')
-        self:anim(t, 'idle')
+        self:anim(1000, 'idle')
 
         -- TODO: add a hitting sound
         -- self:play_audio('hit')
@@ -203,13 +214,7 @@ function Player:play_animation(w, callback)
         -- play the jumping animation
         self:anim(t, 'jump')
 
-        -- transition of the world
-        self:syncGroup(t, do_bounces)
-
-        -- transition of own sprite
-        -- hop up a bit
-        self:hopUp(t)
-
+        self:transJump(t, do_bounces)
 
 
     elseif self.bumped then
@@ -227,8 +232,6 @@ end
 
 -- take damage from an enemy
 function Player:takeHit(from)
-
-    print()
 
     -- the palyer is invincible, ignore
     if self.invincible > 0 then return end
@@ -267,11 +270,6 @@ function Player:equip(weapon)
 
 end
 
-
-function Player:transGroup(o)
-    transition.to(self.follow_group, o)
-end
-
 function Player:reset()
     self.attacked_enemy = false
     Entity.tickAll(self)
@@ -292,32 +290,7 @@ end
 function Player:tickAll()
 end
 
-function Player:syncGroup(t, cb)
-    transition.to(self.follow_group, {
-        x = -self.x * UNIT + display.contentCenterX,
-        y = -self.y * UNIT + display.contentCenterY,
-        transition = easing.inOutQuad,
-        time = t,
-        onComplete = function() if cb then cb(0) end end
-    })
+function Player:syncGroup(...)
+    self.camera:sync(self, ...)
 end
 
-function Player:transBump(t, cb, x, y, dir)
-    transition.to(self.sprite, {
-        x = display.contentCenterX + ((x or -self.x) + (dir and dir[1] or self.cur_a[1]) / 2) * UNIT,
-        y = display.contentCenterY + ((y or -self.y) + self.offset_y_jump + self.offset_y + (dir and dir[2] or self.cur_a[2]) / 2) * UNIT,
-        transition = easing.continuousLoop,
-        time = t / 2,
-        onComplete = function() if cb then cb(0) end end
-    })
-end
-
-
-function Player:hopUp(t, cb)
-    transition.to(self.sprite, {
-        y = display.contentCenterY + (self.offset_y_jump + self.offset_y) * UNIT,
-        transition = easing.continuousLoop,
-        time = t / 2,
-        onComplete = function() if cb then cb(0) end end
-    })
-end

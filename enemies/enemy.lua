@@ -14,7 +14,8 @@ Enemy = Entity:new{
     dmg = 1,
     max_vision = 6,
     health = 3,
-    sees = true
+    sees = true,
+    enemy = true
 }
 
 -- whether to reset the sequence step to 1 after being attacked
@@ -81,10 +82,10 @@ function Enemy:computeAction(player_action, w)
             if ly then table.insert(actions, {  0, -1 }) end
         elseif self.facing[2] < 0 then -- looking up
             --- ...
-            if gy then table.insert(actions, {  0,  1 }) end
+            if ly then table.insert(actions, {  0, -1 }) end
             if gx then table.insert(actions, {  1,  0 }) end
             if lx then table.insert(actions, { -1,  0 }) end
-            if ly then table.insert(actions, {  0, -1 }) end
+            if gy then table.insert(actions, {  0,  1 }) end
         else -- no direction. Default order!
             -- ...
             if gx then table.insert(actions, {  1,  0 }) end
@@ -208,7 +209,36 @@ function Enemy:playAnimation(w)
 
     -- get the time of animations and transitions
     local l = w:getAnimLength()
-    local t = #self.bounces and l or l / #self.bounces
+    local t = #self.bounces and l or l / (#self.bounces + 1)
+
+    local function _callback(event)
+        self:anim(1000, 'idle')
+        if callback then callback(event) end
+    end
+
+
+    local function do_bounces(i)
+
+        print('Me am ENEMY')
+        print('Me play BOUNCES')
+
+        i = i + 1    
+        
+        if self.bounces[i] then
+            -- update position
+            self.x, self.y = self.bounces[i][1], self.bounces[i][2] 
+
+            self.bounces[i][3]:anim(1000, 'inactive')
+
+            -- play animation
+            -- self:anim(t, 'jump')
+            self:transJump(t, function() do_bounces(i) end)
+
+        else -- if not self.bounces[i]
+            _callback({ phase = "end" })
+        end
+    end
+
 
     -- change orientation
     if self.facing[1] ~= 0 then
@@ -254,7 +284,7 @@ function Enemy:playAnimation(w)
 
             if self.displaced then
                 self:anim(t, step.anim.move)
-                self:transJump(t)
+                self:transJump(t * 0.7, do_bounces)
             
             elseif self.bumped then
                 self:anim(t, step.anim.move)
@@ -286,9 +316,11 @@ function Enemy:setAction(a, r, w)
     self.close_diagonal = self:playerCloseDiagonal(w.player)
 
     if step.reorient then
-
         self:orientTo(w.player)
+    end
 
+    if step.p_close and self.close and step.p_close.reorient then
+        self:orientTo(w.player)
     end
 
     if contains(step.name, 'move') then
@@ -459,50 +491,21 @@ end
 
 -- change the facing to the player if not facing them already
 function Enemy:orientTo(player)
+
     if self.facing[1] > 0 and player.x > self.x or
        self.facing[1] < 0 and player.x < self.x or
        self.facing[2] > 0 and player.y > self.y or
        self.facing[2] < 0 and player.y < self.y then return end
 
-    if     player.x > self.x then self.facing[1] =  1
-    elseif player.x < self.x then self.facing[1] = -1
-    elseif player.y > self.y then self.facing[2] =  1
-    elseif player.y < self.y then self.facing[2] = -1
+    if     player.x > self.x then self.facing =  {  1,  0 }
+    elseif player.x < self.x then self.facing =  { -1,  0 }
+    elseif player.y > self.y then self.facing =  {  0,  1 }
+    elseif player.y < self.y then self.facing =  {  0, -1 }
 
     -- TODO: give it a random val when no player is around 
     else   self.facing = { 0, 0 } end
 end
 
-
--- functions that define basic transitions
-function Enemy:transAttack(...)
-    self:transBump(...)
-end
-
-function Enemy:transBump(t, cb, x, y, dir)
-    transition.to(self.sprite, { 
-        x = (x or self.x) + (dir and dir[1] or self.cur_a[1]) / 2 + self.size[1] / 2, 
-        y = (y or self.y) + (dir and dir[2] or self.cur_a[2]) / 2 + self.offset_y + self.offset_y_jump + self.size[2] / 2,
-        time = t / 2,
-        transition = easing.continuousLoop,
-        onComplete = function() if cb then cb(0) end end
-    })
-end
-
-function Enemy:transJump(t, cb, x, y, dir)
-    transition.to(self.sprite, {
-        x = (x or self.x) + self.size[1] / 2,
-        y = (y or self.y) + self.offset_y + self.size[2] / 2,
-        time = t,
-        transition = easing.inOutQuad,
-        onComplete = function() if cb then cb(0) end end
-    })
-    transition.to(self.sprite, {
-        y = (y or self.y) + self.offset_y + self.offset_y_jump + self.size[2] / 2,
-        time = t / 2,
-        transition = easing.continuousLoop
-    })
-end
 
 
 function Enemy:transformSequence()
@@ -588,10 +591,10 @@ function Enemy:performAction(player_action, w)
                 responds[i] = BLOCK
             end
                 
-        elseif w.enemGrid[x][y] then
+        elseif w.entities_grid[x][y] then
 
             -- check if it's the player
-            if w.enemGrid[x][y] == w.player then
+            if w.entities_grid[x][y] == w.player then
 
                 -- if attacking, attack
                 if a then
@@ -609,17 +612,17 @@ function Enemy:performAction(player_action, w)
                 self.moved = true
 
             -- take up the place of a dead enemy
-            elseif m and w.enemGrid[x][y].dead then
+            elseif m and w.entities_grid[x][y].dead then
                 return self:setAction(A, FREE, w)
 
 
-            elseif m and w.enemGrid[x][y].moved == false and 
+            elseif m and w.entities_grid[x][y].moved == false and 
                 -- prevent calling one another in a loop
                 -- this can happen if an enemy intends to go back
-                not w.enemGrid[x][y].doing_action then
+                not w.entities_grid[x][y].doing_action then
                
                 -- make the enemy move
-                w.enemGrid[x][y]:selectAction(w)
+                w.entities_grid[x][y]:selectAction(w)
                 -- do the checks for the current iteration again
                 i = i - 1
             
@@ -659,7 +662,7 @@ end
 function Enemy:unsetPositions(w)
     local ps = self:getPositions()
     for i = 1, #ps do
-        w.enemGrid[ps[i][1]][ps[i][2]] = false
+        w.entities_grid[ps[i][1]][ps[i][2]] = false
     end
 end
 
@@ -667,7 +670,7 @@ end
 function Enemy:resetPositions(w)
     local ps = self:getPositions()
     for i = 1, #ps do
-        w.enemGrid[ps[i][1]][ps[i][2]] = self
+        w.entities_grid[ps[i][1]][ps[i][2]] = self
     end
 end
 

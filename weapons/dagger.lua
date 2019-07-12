@@ -8,17 +8,17 @@ function Dagger:attemptAttack(dir, w, player)
 
     local x, y = player.x + dir[1], player.y + dir[2]
 
-    if w.enemGrid[x][y] and w.enemGrid[x][y] ~= player then
+    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= player then
 
         self:orient(dir) 
 
         -- deal damage to the enemy
-        w.enemGrid[x][y]:takeHit(dir, player)
+        w.entities_grid[x][y]:takeHit(dir, player)
 
         self.sprite.x = x
         self.sprite.y = y
 
-        return w.enemGrid[x][y]
+        return w.entities_grid[x][y]
     end
 
 end

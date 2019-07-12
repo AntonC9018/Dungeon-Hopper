@@ -10,8 +10,7 @@ NOTHING = 6
 
 World = constructor:new{
     loop_queue = {},
-    doing_loop = false,
-    environment = Environment:new{}
+    doing_loop = false
 }
 
 
@@ -70,15 +69,17 @@ function World:do_loop(player_action)
 
     -- TODO: add projectiles
 
-    -- update enemy grid
-    for i = 1, #self.enemGrid do
-        for j = 1, #self.enemGrid[i] do
-            self.enemGrid[i][j] = false
+    -- update enemy + player grid
+    for i = 1, #self.entities_grid do
+        for j = 1, #self.entities_grid[i] do
+            self.entities_grid[i][j] = false
         end
     end
-    for i = 1, #self.enemList do
-        self.enemGrid[self.enemList[i].x][self.enemList[i].y] = self.enemList[i]
+    for i = 1, #self.entities_list do
+        self.entities_grid[self.entities_list[i].x][self.entities_list[i].y] = self.entities_list[i]
     end    
+
+    self.entities_grid[self.player.x][self.player.y] = false
 
     -- player has priority
     -- update player's coordinates
@@ -94,33 +95,39 @@ function World:do_loop(player_action)
     -- do the same for their weapon (and spade?)
     self.player:act(player_action, self)
 
-    -- also add the player to the grid
-    self.enemGrid[self.player.x][self.player.y] = self.player
+    self.entities_grid[self.player.x][self.player.y] = self.player
 
-    for i = 1, #self.enemList do
-        if not self.enemList[i].moved then
-            self.enemList[i]:performAction(player_action, self)
+
+    for i = 1, #self.entities_list do
+        if not self.entities_list[i].moved then
+            self.entities_list[i]:performAction(player_action, self)
         end
     end
+
     -- environment stores such entities as bombs, traps
     -- projectiles, decorations and such 
     self.environment:act(self)
 
-    self.environment:reset()
+    
+    environment:toFront()
 
     -- bring the entities that have higher y to the front
-    table.sort(self.enemList, function(a, b) return a.y > b.y end)
-    for i = 1, #self.enemList do
-        self.enemList[i].sprite:toFront()
+    table.sort(self.entities_list, function(a, b) return a.y > b.y end)
+    for i = 1, #self.entities_list do
+        self.entities_list[i].sprite:toFront()
     end
 
 
-    -- animate all enemies
-    for i = #self.enemList, 1, -1 do
-        self.enemList[i]:playAnimation(self)       
 
-        if (self.enemList[i].dead) then
-            table.remove(self.enemList, i)                    
+
+    -- animate all enemies
+    for i = #self.entities_list, 1, -1 do
+        if self.entities_list[i] ~= self.player then
+            self.entities_list[i]:playAnimation(self)       
+
+            if (self.entities_list[i].dead) then
+                table.remove(self.entities_list, i)                    
+            end
         end
     end
 
@@ -128,16 +135,20 @@ function World:do_loop(player_action)
     -- animate the player sprite and all its descendants (weapons so on)
     -- the callback function will be called nevertheless 
     -- (even if the player is not going to play an animation)
-    self.player:play_animation(
+    self.player:playAnimation(
         self,
         function(event)
             -- when the animation ends
-            if event.phase == "end" then                
-                self.player:reset()
+            if event.phase == "end" then 
 
-                for i = #self.enemList, 1, -1 do
-                    self.enemList[i]:reset(self)
+                for i = #self.entities_list, 1, -1 do
+                    self.entities_list[i]:reset(self)
                 end
+
+                print('  ')
+
+                self.environment:reset()
+
 
                 -- if there are actions in the queue, do them
                 if #self.loop_queue > 0 then

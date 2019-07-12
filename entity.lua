@@ -68,6 +68,8 @@ Entity.slide_res = 0
 
 
 function Entity:reset()
+    print('Me am '..(self.enemy and 'ENEMY' or 'PLAYER'))
+    print('Me play RESET')
     self.displaced = false
     self.bumped = false
     self.hit = false
@@ -122,22 +124,24 @@ function Entity:loseHP(dmg)
 end
 
 
-function Entity:bounce(dir, w)
+function Entity:bounce(trap, w)
 
-    local t = #self.bounces > 0 and self.bounces or ({ self.x, self.y })
-    local x, y = t[1] + dir[1], t[2] + dir[2]
+    local t = #self.bounces > 0 and self.bounces[#self.bounces] or ({ self.x, self.y })
+    local x, y = t[1] + trap.dir[1], t[2] + trap.dir[2]
+
 
     if not w.walls[x][y] then
 
-        if w.enemGrid[x][y] == w.player then
-            w.takeHit(self)
+        if w.entities_grid[x][y] == w.player and self ~= w.player then
+            w.entities_grid[x][y].takeHit(self)
 
-        elseif not w.enemGrid[x][y] then
-            table.insert(self.bounces, { x, y })
-        
+        elseif not w.entities_grid[x][y] then
+            table.insert(self.bounces, { x, y, trap })        
         else
-            table.insert(self.bounces, { self.x, self.y })
+            table.insert(self.bounces, { self.x, self.y, trap })
         end
+    else
+        table.insert(self.bounces, { self.x, self.y, trap })
     end
 
 end

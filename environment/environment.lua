@@ -10,8 +10,12 @@ function Environment:doTraps(w)
 
         local t = self.traps[i]
 
-        if t.active and w.enemGrid[t.x][t.y] then
-            t:activate(w.enemGrid[t.x][t.y], w)
+        if t.active then
+            if w.entities_grid[t.x][t.y] then
+                t:activate(w.entities_grid[t.x][t.y], w)
+            else
+                t.bounced = false
+            end
         end
 
     end
@@ -51,28 +55,73 @@ end
 function Environment:reset()
     for i = 1, #self.traps do
         self.traps[i].active = true
+        self.traps[i]:anim(1000, 'active')
+    end
+end
+
+function Environment:toFront()
+    for i = 1, #self.traps do
+        self.traps[i].sprite:toFront()
     end
 end
 
 
-Trap = Animated:new{
-    active = true,
-    push_ing = 5,
-    push_amount = 1,
-    v = { 1, 0 }
-}
+Trap = Animated:new(
+    {
+        active = true,
+        push_ing = 5,
+        push_amount = 1,
+        dir = { 1, 0 }
+    }
+)
+
+
+function Trap:createSprite()
+    self.sprite = display.newSprite(self.group, self.sheet, {
+        {
+            name = "active",
+            frames = { 1 },
+            time = 0,
+            loopCount = 0
+
+        },
+        {
+            name = "inactive",
+            frames = { 2 },
+            time = 0,
+            loopCount = 0
+        }
+    })
+
+    self.sprite.x = self.x
+    self.sprite.y = self.y
+
+    self.sprite:scale(self.scaleX, self.scaleY)
+    self:anim(1000, 'active')
+end
+
 
 -- for now assume it's a right pushing trap
-function Trap:activate(e, w)
-    self.active = false
-    if self.push_ing >= e.push_res then
-        e:bounce(self.v, w)
-        local x, y = e.bounces[#e.bounces]
+function Trap:activate(e, w)   
+
+    
+    if self.push_ing > e.push_res and e ~= self.bounced then
+
+        self.active = false
+        
+        e:bounce(self, w)
+        
+        local x, y = e.bounces[#e.bounces][1], e.bounces[#e.bounces][2]
+        
+        if self.x == x and self.y == y then
+            self.bounced = e
+        else
+            self.bounced = false
+        end
+
         local t = w.environment:getTrapAt(x, y)
         if t and t.active then
             t:activate(e, w)
         end
     end
 end
-
-table.insert(Environment.traps, Trap:new{x = 2, y = 2})

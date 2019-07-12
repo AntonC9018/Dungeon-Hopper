@@ -3,8 +3,8 @@ Wizzrobe = Enemy:new{
     offset_y_jump = -0.2,
     sequence = { 
         { name = "idle", anim = "idle" }, 
-        { name = "idle", anim = "ready", p_close = { anim = "angry" }, reorient = true },
-        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "adjacent", loop = "s3Loop" } 
+        { name = "idle", anim = "ready", p_close = { anim = "angry", reorient = true } },
+        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "basic", loop = "s3Loop" } 
     },
     seq_count = 1,
     bounces = {},
@@ -56,10 +56,7 @@ end
 
 
 function Wizzrobe:s3Loop()
-    print('doing s3loop')
-    print(self.cur_r)
     if self.bumped then 
-        print('then')
         if self.close then
             self:anim(1000, "angry") 
         else

@@ -27,6 +27,7 @@ end
 
 require('animated')
 require('entity')
+require('camera')
 require('weapons.weapon')
 require('tile')
 require('player')
@@ -49,11 +50,9 @@ function scene:create( event )
 
     -- initialize groups
     local sceneGroup = self.view
-    local followGroup = display.newGroup(sceneGroup)
-    local tileGroup = display.newGroup(followGroup)
-    local playerGroup = display.newGroup(followGroup)
+    local entities_group = display.newGroup(sceneGroup)
     
-    Animated.group = tileGroup
+    Animated.group = entities_group
 
     local dagger = Dagger:new(
         {},
@@ -74,9 +73,10 @@ function scene:create( event )
     -- init player
     Player.group = playerGroup
     local player = Player:new({
-            x = 10,
-            y = 10,
-            follow_group = tileGroup
+            x = 3,
+            y = 3,
+            group = entities_group,
+            camera = Camera:new{}
         },
          -- options list
         {
@@ -95,10 +95,32 @@ function scene:create( event )
     player:equip(dagger)
 
 
+    local trap = Trap:new(
+        { x = 2, y = 2, group = entities_group },
+        {
+            sheet_path = 'assets/image_sheets/bounce_trap.png',
+            sheet_options = {
+                width = 16,
+                height = 16,
+                numFrames = 2
+            }
+        }
+    )
+    trap:createSprite()
+
+    local trap2 = Trap:new{ x = 3, y = 2, group = entities_group }
+    trap2:createSprite()
+
+    
+    environment = Environment:new{}
+
+    table.insert(environment.traps, trap)
+    table.insert(environment.traps, trap2)
+
     
 
     -- set up tiles
-    Tile.group = tileGroup
+    Tile.group = entities_group
     Tile:loadSheet(
         '/assets/image_sheets/floor.png', 
         {
@@ -108,7 +130,7 @@ function scene:create( event )
         }
     )
     -- display sprites of right size
-    tileGroup:scale(UNIT, UNIT) 
+    entities_group:scale(UNIT, UNIT) 
 
 
     -- Initialize tiles 
@@ -116,31 +138,34 @@ function scene:create( event )
 
     local tiles = {}
     local walls = {}
-    local enemGrid = {}
+    local entities_grid = {}
 
     for i = 1, field_width do
         tiles[i] = {}
         walls[i] = {}
-        enemGrid[i] = {}
+        entities_grid[i] = {}
         
         for j = 1, field_height do        
             tiles[i][j] = Tile:new{ x = i, y = j, type = math.random(11) }
             tiles[i][j]:createSprite()
 
             walls[i][j] = false
-            enemGrid[i][j] = false
+            entities_grid[i][j] = false
         end
     end
     
-    tileGroup.x, tileGroup.y =
+    entities_group.x, entities_group.y =
         -player.x * UNIT + display.contentCenterX,
         -player.y * UNIT + display.contentCenterY
 
-    local enemList = {}
+    local entities_list = {}
+
+    table.insert(entities_list, player)
+
 
     local wizzrobe = Wizzrobe:new({
-            x = 8,
-            y = 8,
+            x = 4,
+            y = 4,
         },
         {
             sheet_path = '/assets/image_sheets/wizzrobe.png',
@@ -157,35 +182,36 @@ function scene:create( event )
 
     wizzrobe:createSprite()
 
-    table.insert(enemList, wizzrobe)
-    enemGrid[wizzrobe.x][wizzrobe.y] = wizzrobe
+    table.insert(entities_list, wizzrobe)
+    entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 0 do
+    for i = 1, 2 do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,
             y = y
         }
-        table.insert(enemList, w)
-        enemGrid[x][y] = w
+        table.insert(entities_list, w)
+        entities_grid[x][y] = w
         w:createSprite()
     end
 
     
 
-    table.sort(enemList, function(a, b) return a.y < b.y end)
+    table.sort(entities_list, function(a, b) return a.y < b.y end)
 
-    for i = 1, #enemList do
-        enemList[i].sprite:toFront()
+    for i = 1, #entities_list do
+        entities_list[i].sprite:toFront()
     end
 
     world = World:new{
-        enemList = enemList,
-        enemGrid = enemGrid,
+        entities_list = entities_list,
+        entities_grid = entities_grid,
         player = player,
         walls = walls,
         tiles = tiles,
-        follow_group = tileGroup,
+        environment = environment,
+        follow_group = entities_group,
         ignore = false
     }
 

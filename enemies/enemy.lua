@@ -306,11 +306,10 @@ function Enemy:setAction(a, r, w)
 end
 
 
--- refactor to have an Attack object
-function Enemy:takeHit(from)
+function Enemy:takeHit(a, w)
 
     -- create the turn
-    local t = Turn:new(self, dir)
+    local t = Turn:new(self, a.dir)
     t:setResult('hurt')
     table.insert(self.history, t)
 
@@ -323,8 +322,9 @@ function Enemy:takeHit(from)
         self.seq_count = 1
     end
 
-    self:loseHP(self:calculateAttack(from))    
-    self:applyDebuffs(from)
+    self:loseHP(self:calculateAttack(a))    
+    self:applyDebuffs(a)
+    self:applySpecials(a, w)
 end
 
 

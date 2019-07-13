@@ -52,3 +52,9 @@ end
 function sign(x)
   return (x < 0 and -1) or ((x > 0 and 1) or 0)
 end
+
+function mul(v, a)
+    v[1] = v[1] * a
+    v[2] = v[2] * a
+    return v
+end

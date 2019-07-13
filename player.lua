@@ -154,6 +154,8 @@ end
 
 
 
+
+
 function Player:preAnimation(w)
     Entity.preAnimation(self)
     self:syncGroup(w:getAnimLength(), nil, self.x, self.y)
@@ -181,7 +183,7 @@ end
 
 
 -- take damage from an enemy
-function Player:takeHit(from)
+function Player:takeHit(att, w)
 
     -- the palyer is invincible, ignore
     if self.invincible > 0 then return end

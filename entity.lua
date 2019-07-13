@@ -95,19 +95,29 @@ function Entity:calculateAttack(a)
         -- take armor into consideration
         math.max(a.dmg - self.armor, math.min(a.dmg, 0.5)) -
         -- resist damage if not pierced through
-        (self.pierce_res < (a.pierce_ing or -999999) and 0 or self.dmg_res), 0)
+        (self.pierce_res < (a.specials.pierce_ing or -999999) and 0 or self.dmg_res), 0)
+end
+
+
+function Entity:applySpecials(a, w)
+    local s = a.specials
+    if s['push_ing'] and s['push_ing'] > self['push_res'] then
+        self:push(normComps(a.dir), s['push_amount'], w)
+    end
 end
 
 
 -- update _ed parameters 
 function Entity:applyDebuffs(a)
 
+    local d = a.debuffs
+
     for i = 1, #DEBUFFS do
         if a[DEBUFFS[i]..'_amount'] and a[DEBUFFS[i]..'_amount'] > 0 and 
-            self[DEBUFFS[i]..'_res'] < from[DEBUFFS[i]..'_ing'] 
+            self[DEBUFFS[i]..'_res'] < a[DEBUFFS[i]..'_ing'] 
             then   
                 -- reset the debuff count  
-                self[DEBUFFS[i]..'_ed'] = from[DEBUFFS[i]..'_amount']
+                self[DEBUFFS[i]..'_ed'] = a[DEBUFFS[i]..'_amount']
             end
     end
 end
@@ -152,7 +162,7 @@ function Entity:bounce(trap, w)
             not Turn.was(self.history, 'hit')            
         then
             t:setResult('hit', 'bounced')
-            w.player:takeHit(self)
+            w.player:takeHit(self, w)
         
         else
             t:setResult('bumped', 'bounced') 
@@ -282,6 +292,47 @@ function Entity:getPointsFromDirection(dir)
 
         end
     end
+    return t
+end
+
+
+function Entity:push(...)
+    local t = self:_thrust(...)
+    t:setResult('pushed')
+end
+
+
+function Entity:thrust(...)
+    local t = self:_thrust(...)
+    t:setResult('dashed')
+end
+
+
+function Entity:_thrust(dir, amount, w)
+
+    -- TODO: push dir or less
+    mul(dir, amount)
+    local t = Turn:new(self, dir)
+    -- there is no enemies in the way
+    if     
+        w.entities_grid[self.x + dir[1]][self.y + dir[2]] or 
+        w.walls[self.x + dir[1]][self.y + dir[2]]     
+    then
+        t:setResult('bumped')
+    else
+        -- delete itself from grid
+        self:unsetPositions(w)
+
+        -- update position
+        self.x = dir[1] + self.x
+        self.y = dir[2] + self.y
+        
+        t:setResult('displaced')
+        
+        -- shift the position in grid
+        self:resetPositions(w)       
+    end
+    table.insert(self.history, t)
     return t
 end
 

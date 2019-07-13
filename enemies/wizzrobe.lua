@@ -7,7 +7,7 @@ Wizzrobe = Enemy:new{
         { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "basic", loop = "s3Loop" } 
     },
     seq_count = 1,
-    health = 4,
+    health = 16,
     size = { 0, 0 }
 }
 

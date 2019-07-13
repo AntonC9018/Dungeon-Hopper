@@ -61,9 +61,11 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
             local att = owner:getAttack()
 
-            self:modify(att, self.pattern[i], dir, owner)
+            att.dir = dir
+
+            self:modify(att, self.pattern[i], owner, w)
             
-            self:attack(w.entities_grid[x][y], att, self.pattern[i], dir, owner)
+            self:attack(w.entities_grid[x][y], att, self.pattern[i], owner, w)
             
 
             if not self.hit_all then
@@ -86,8 +88,8 @@ end
 function Weapon:modify()
 end
 
-function Weapon:attack(en, att)
-    en:takeHit(att)
+function Weapon:attack(en, att, pat, owner, w)
+    en:takeHit(att, w)
 end
 
 function Weapon:playAudio()

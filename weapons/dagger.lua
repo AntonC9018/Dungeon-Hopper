@@ -2,7 +2,7 @@ Dagger = Weapon:new{
     xScale = 1 / 24,
     yScale = 1 / 24,
     dmg = 1,
-    pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }}
+    pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }, { 2, 0 }}
 }
 
 
@@ -22,12 +22,16 @@ function Dagger:createSprite()
     self.sprite:scale(self.xScale, self.yScale)
 
     self:listenAlpha()
-     
+    
 end
 
-
-function Dagger:modify(att, pat, dir, owner)
-    if pat[1] == 0 and pat[2] == 2 then   
-        owner:applyThrust(norm(dir))
+-- this is a test
+-- the dagger now acts like rapier in CoH
+function Dagger:modify(att, pat, owner, w)
+    if pat[2] == 0 and pat[1] == 2 then
+        att.dmg = att.dmg + 1 
+        att.specials.push_ing = att.specials.push_ing + 1
+        att.specials.push_amount = att.specials.push_amount + 1  
+        owner:thrust(normComps(att.dir), 1, w)
     end
 end

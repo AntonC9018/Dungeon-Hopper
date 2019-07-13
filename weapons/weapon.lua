@@ -1,4 +1,6 @@
-Weapon = Animated:new{}
+Weapon = Animated:new{
+    run_and_gun = false
+}
 
 
 function Weapon:listenAlpha()

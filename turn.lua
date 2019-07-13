@@ -26,6 +26,8 @@ function Turn:setResult(...)
     self.f_pos = { x = self.s.x, y = self.s.y }
     -- final facing
     self.f_facing = self.s.facing
+
+    self._set = true
 end
 
 

@@ -1,12 +1,4 @@
 
--- an enum for response values
--- TODO: make a file for constants
-FREE = 1
-ENEMY = 2
-WAIT = 3
-BLOCK = 4
-PLAYER = 5
-NOTHING = 6
 
 World = constructor:new{
     loop_queue = {},

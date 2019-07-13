@@ -54,20 +54,49 @@ function Player:act(action, w)
         -- look to the proper direction
         self.facing = { action[1], action[2] }
         
-        if 
-            -- attempt to attack
-            self:attack(action, t, w) or
-            -- attempt to dig
-            self:dig(action, t, w) or
-            -- attempt to move
-            self:move(action, t, w) 
         
-        then            
+        -- attempt to attack
+        local enemy = self:attack(action, t, w)
+
+        -- if attacking set the turn, refresh
+        if t._set then
+            table.insert(self.history, t)
+            t = Turn:new(self, action)
+        end
+
+        local wall 
+
+        -- if did not attack or can dig after attacking
+        if not enemy or (self.weapon and self.weapon.dig_and_gun) then
+            -- attempt to dig
+            wall = self:dig(action, t, w)
+        end
+
+        -- if digging set the turn, refresh
+        if t._set then
+            table.insert(self.history, t)
+            t = Turn:new(self, action)
+        end
+
+        if 
+        
+        -- if did not attack or can move after attacking 
+        (not enemy or (self.weapon and self.weapon.run_and_gun))
+
+        -- and did not dig
+        and not dug
+        
+        then
+            self:move(action, t, w)
+        end
+
+        -- if moved, add the turn
+        if t._set then
+            table.insert(self.history, t)
         end
 
     end
     
-    table.insert(self.history, t)
 
 end
 
@@ -77,61 +106,50 @@ function Player:dropBeat()
 end
 
 -- attempt to dig
--- if failed, returns true 
--- if succeeded, return false
 function Player:dig(dir, t, w)
 
     local x, y = self.x + dir[1], self.y + dir[2]
     
     -- TODO: reconsider 
     if w.walls[x][y] then
-        w.walls[x][y] = false
+        local wall
+        wall, w.walls[x][y] = w.walls[x][y], false
         t:setResult('dug')
-        return true
-    else 
-        return false
+        return wall
     end
+
+    return false
 
 end
 
 -- attempt to attack
--- if failed, returns true 
--- if succeeded, return false
 function Player:attack(dir, t, w)
+
     if self.weapon then
-        w.attacked_enemy = self.weapon:attemptAttack(dir, w, self)
-        if w.attacked_enemy then 
-            t:setResult('hit') 
-            return true 
-        else
-            return false
-        end     
+        return self.weapon:attemptAttack(dir, t, w, self)
     end
 
     -- if no weapon
     local x, y = self.x + dir[1], self.y + dir[2]
     
-    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then 
-        w.attacked_enemy = w.entities_grid[x][y]
+    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
         t:setResult('bumped')
-        return false
+        return w.entities_grid[x][y]
     end
-
-    return false
 end
 
 
-function Player:move(dir, t, w)
-
-    if not w.attacked_enemy then 
+function Player:move(dir, t, w)       
+    -- there is no enemies in the way
+    if not w.entities_grid[self.x + dir[1]][self.y + dir[2]] then
+        -- there is no walls in the way
         if w.walls[self.x + dir[1]][self.y + dir[2]] then
             t:setResult('bumped')
         else
+            -- go forward
             self:go(dir, t, w)
         end
     end
-
-    return true
 end
 
 
@@ -231,5 +249,16 @@ end
 
 function Player:syncGroup(...)
     self.camera:sync(self, ...)
+end
+
+
+function Player:getAttack()
+    local a = Attack:new()
+    a:setDmg(self.dmg)
+    a:copyAll(self)
+    for i = 1, #self.items do
+        self.items[i]:modifyAttack(a)       
+    end    
+    return a
 end
 

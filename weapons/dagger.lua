@@ -4,7 +4,7 @@ Dagger = Weapon:new{
     dmg = 1
 }
 
-function Dagger:attemptAttack(dir, w, player)
+function Dagger:attemptAttack(dir, t, w, player)
 
     local x, y = player.x + dir[1], player.y + dir[2]
 
@@ -13,14 +13,17 @@ function Dagger:attemptAttack(dir, w, player)
         self:orient(dir) 
 
         -- deal damage to the enemy
-        w.entities_grid[x][y]:takeHit(dir, player)
+        w.entities_grid[x][y]:takeHit(player:getAttack())
 
         self.sprite.x = x
         self.sprite.y = y
 
+        t:setResult('hit')
+        
         return w.entities_grid[x][y]
     end
 
+    return false
 end
 
 

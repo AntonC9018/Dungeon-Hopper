@@ -1,8 +1,5 @@
 Entity = Animated:new{}
 
-local DEBUFFS = {'stun', 'confuse', 'tiny', 'poison', 'fire', 'freeze'}
-
-local SPECIAL = {'push', 'pierce'}
 
 
 function Entity:new(...)
@@ -93,20 +90,20 @@ end
 
 
 -- return the actual damage dealt from an attack
-function Entity:calculateAttack(from)
+function Entity:calculateAttack(a)
     return math.max(
         -- take armor into consideration
-        math.max(from.dmg - self.armor, 0.5) -
+        math.max(a.dmg - self.armor, math.min(a.dmg, 0.5)) -
         -- resist damage if not pierced through
-        (self.pierce_res < from.pierce_ing and 0 or self.dmg_res), 0)
+        (self.pierce_res < (a.pierce_ing or -999999) and 0 or self.dmg_res), 0)
 end
 
 
 -- update _ed parameters 
-function Entity:applyDebuffs(from)
+function Entity:applyDebuffs(a)
 
     for i = 1, #DEBUFFS do
-        if  from[DEBUFFS[i]..'_amount'] > 0 and 
+        if a[DEBUFFS[i]..'_amount'] and a[DEBUFFS[i]..'_amount'] > 0 and 
             self[DEBUFFS[i]..'_res'] < from[DEBUFFS[i]..'_ing'] 
             then   
                 -- reset the debuff count  
@@ -299,7 +296,7 @@ function Entity:go(a, t, w)
 
     self.facing = { a[1], a[2] }
     
-    t:setResult('displaced', { x = self.x, y = self.y })
+    t:setResult('displaced')
     
     -- shift the position in grid
     self:resetPositions(w)

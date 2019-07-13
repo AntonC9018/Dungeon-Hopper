@@ -49,10 +49,6 @@ function Wizzrobe:createSprite()
     self:anim(1000, 'idle')
 end
 
--- function Wizzrobe:takeHit(dir, player)
---     Enemy.takeHit(self, dir, player)
--- end
-
 
 function Wizzrobe:s3Loop()
     if 

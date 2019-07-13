@@ -61,9 +61,9 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
             local att = owner:getAttack()
 
-            self:modify(att, pattern[i], dir, owner)
+            self:modify(att, self.pattern[i], dir, owner)
             
-            self:attack(w.entities_grid[x][y], att, pattern[i], dir, owner)
+            self:attack(w.entities_grid[x][y], att, self.pattern[i], dir, owner)
             
 
             if not self.hit_all then

@@ -141,14 +141,14 @@ end
 
 function Player:move(dir, t, w)       
     -- there is no enemies in the way
-    if not w.entities_grid[self.x + dir[1]][self.y + dir[2]] then
-        -- there is no walls in the way
-        if w.walls[self.x + dir[1]][self.y + dir[2]] then
-            t:setResult('bumped')
-        else
-            -- go forward
-            self:go(dir, t, w)
-        end
+    if     
+        w.entities_grid[self.x + dir[1]][self.y + dir[2]] or 
+        w.walls[self.x + dir[1]][self.y + dir[2]]     
+    then
+        t:setResult('bumped')
+    else
+        -- go forward
+        self:go(dir, t, w)
     end
 end
 

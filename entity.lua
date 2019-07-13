@@ -326,8 +326,6 @@ function Entity:playAnimation(w, callback)
 
             local t = self.history[i]
 
-            print(ins(t.f_facing))
-
             if t.f_facing and t.f_facing[1] ~= 0 then
                 self:orient(t.f_facing[1])
             end
@@ -485,7 +483,6 @@ function Entity:_displaced(t, ts, cb)
                 time = ts / 2,
                 transition = easing.linear,
                 onComplete = function() 
-                    print('cb')
                     if cb then cb() end 
                 end
             })

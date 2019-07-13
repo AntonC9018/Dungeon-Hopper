@@ -1,30 +1,9 @@
 Dagger = Weapon:new{
     xScale = 1 / 24,
     yScale = 1 / 24,
-    dmg = 1
+    dmg = 1,
+    pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }}
 }
-
-function Dagger:attemptAttack(dir, t, w, player)
-
-    local x, y = player.x + dir[1], player.y + dir[2]
-
-    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= player then
-
-        self:orient(dir) 
-
-        -- deal damage to the enemy
-        w.entities_grid[x][y]:takeHit(player:getAttack())
-
-        self.sprite.x = x
-        self.sprite.y = y
-
-        t:setResult('hit')
-        
-        return w.entities_grid[x][y]
-    end
-
-    return false
-end
 
 
 function Dagger:createSprite()
@@ -44,4 +23,11 @@ function Dagger:createSprite()
 
     self:listenAlpha()
      
+end
+
+
+function Dagger:modify(att, pat, dir, owner)
+    if pat[1] == 0 and pat[2] == 2 then   
+        owner:applyThrust(norm(dir))
+    end
 end

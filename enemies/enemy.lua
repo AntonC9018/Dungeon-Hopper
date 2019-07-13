@@ -309,8 +309,6 @@ end
 -- refactor to have an Attack object
 function Enemy:takeHit(from)
 
-    print(ins(from))
-
     -- create the turn
     local t = Turn:new(self, dir)
     t:setResult('hurt')

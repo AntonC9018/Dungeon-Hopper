@@ -114,7 +114,6 @@ function World:do_loop(player_action)
     local I = #self.entities_list
 
     local function refresh()
-        print('Ending loop')
         for i = 1, #self.entities_list do            
             self.entities_list[i]:reset(self)            
         end

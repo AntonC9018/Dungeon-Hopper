@@ -112,7 +112,7 @@ function World:do_loop(player_action)
     environment:toFront()
 
     -- bring the entities that have higher y to the front
-    table.sort(self.entities_list, function(a, b) return a.y > b.y end)
+    table.sort(self.entities_list, function(a, b) return a.y < b.y end)
     for i = 1, #self.entities_list do
         self.entities_list[i].sprite:toFront()
     end
@@ -127,7 +127,7 @@ function World:do_loop(player_action)
             self.entities_list[i]:reset(self)            
         end
 
-        self.environment:reset()
+        self.environment:reset(self)
 
         -- if there are actions in the queue, do them
         if #self.loop_queue > 0 then

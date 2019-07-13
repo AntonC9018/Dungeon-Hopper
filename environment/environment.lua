@@ -52,10 +52,14 @@ function Environment:act(w)
     self:doTraps(w)
 end
 
-function Environment:reset()
+function Environment:reset(w)
     for i = 1, #self.traps do
-        self.traps[i].active = true
-        self.traps[i]:anim(1000, 'active')
+        local t = self.traps[i]
+        if not w.entities_grid[t.x][t.y] then
+            t.active = true
+            t:anim(1000, 'active')
+            t.bounced = false
+        end
     end
 end
 
@@ -102,9 +106,7 @@ end
 
 
 -- for now assume it's a right pushing trap
-function Trap:activate(e, w)   
-
-    
+function Trap:activate(e, w)       
     if self.push_ing > e.push_res and e ~= self.bounced then
 
         self.active = false
@@ -122,4 +124,10 @@ function Trap:activate(e, w)
             t:activate(e, w)
         end
     end
+end
+
+
+function Trap:bePushed(ts)
+    self:anim(ts, 'inactive')
+    self:playAudio('bounce')
 end

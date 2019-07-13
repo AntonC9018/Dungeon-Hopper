@@ -196,133 +196,42 @@ function Enemy:computeAction(player_action, w)
     self.cur_actions = actions
 end
 
-
-function Enemy:playAnimation(w, callback)   
-
+function Enemy:preAnimation()
     if self.dead then
         self:die()
-        if callback then callback() end
-        return 
     end
-
-    -- get the sequence step
-    local step = self:getSeqStep()
-
-    -- get the time of animations and transitions
-    local l = w:getAnimLength()
-    local t = #self.history == 0 and l or l / (#self.history)
-
-    local function _callback()
-        if self.sprite.isPlaying ~= true then self:anim(1000, 'idle') end
-        if callback then callback() end
-    end
-
-
-    local function do_bounces(i)
-
-        i = i + 1    
-        
-        if self.history[i] then
-            -- update position
-            local x, y = self.history[i][1], self.history[i][2] 
-
-            self.history[i][3]:anim(1000, 'inactive')
-
-            -- play animation
-            -- self:anim(t, 'jump')
-            self:transJump(t, function() do_bounces(i) end, x, y)
-
-        else -- if not self.history[i]
-            _callback()
-        end
-    end
-
-    -- get coordiates before bounces
-    local x, y
-    if self.history[1] then
-        x, y = self.history[1][1], self.history[1][2]
-    end
-
-    if x == self.x and y == self.y then
-        t = l
-    end
-
-
-
-    -- change orientation
-    if self.facing[1] ~= 0 then
-        self:orient(self.facing[1])
-    end
-
-    -- the enemy does nothing
-    if contains(step.name, "idle") then
-
-        -- this can only be true if a p_close if specified
-        if self.close and step.p_close then
-            -- play the specified animation
-            if step.p_close.anim then
-                self:anim(t, step.p_close.anim)
-            end
-
-        elseif self.close_diagonal and step.p_close_diagonal then
-            -- play the specified animation
-            if step.p_close_diagonal.anim then
-                self:anim(t, step.p_close_diagonal.anim)
-            end
-
-        else
-            -- play the idle animation
-            self:anim(1000, step.anim.idle)
-        end
-
-        do_bounces(1)
-
-    else
-
-        if contains(step.name, 'attack') then
-
-            if self.hit then
-                -- play hit animation
-                self:anim(t, step.anim.attack)
-                -- attack the tile        
-                self:transAttack(t, do_bounces, x, y)
-                
-                return
-            end
-
-        end
-
-        if contains(step.name, 'move') then
-
-            if self.displaced then
-                self:anim(t, step.anim.move)
-                self:transJump(t, do_bounces, x, y)
-            
-            elseif self.bumped then
-                self:anim(t, step.anim.move)
-                self:transBump(t, do_bounces, x, y)
-            end
-
-        end
-
-        if not contains(step.name, 'attack') and contains(step.name, 'move') then
-            do_bounces(1)
-        end
-
-        
-    end
+    Entity.preAnimation(self)
 end
 
 
+function Enemy:_idle(t, ts, cb)
+
+    local step = self:getSeqStep()
+
+    if self.close and step.p_close then
+        -- play the specified animation
+        if step.p_close.anim then
+            self:anim(ts, step.p_close.anim)
+        end
+
+    elseif self.close_diagonal and step.p_close_diagonal then
+        -- play the specified animation
+        if step.p_close_diagonal.anim then
+            self:anim(ts, step.p_close_diagonal.anim)
+        end
+
+    else
+        -- play the idle animation
+        self:anim(1000, step.anim.idle)
+    end
+
+    if cb then cb() end
+end
 
 
 function Enemy:setAction(a, r, w)
     self.moved = true
 
-    -- "Current action"
-    self.cur_a = a
-    -- "Response to the current action"
-    self.cur_r = r
     -- get the sequence step
     local step = self:getSeqStep()
 
@@ -330,37 +239,48 @@ function Enemy:setAction(a, r, w)
     self.close = self:playerClose(w.player)
     self.close_diagonal = self:playerCloseDiagonal(w.player)
 
+    -- reorient to the player if necessary
     if step.reorient then
         self:orientTo(w.player)
-    end
-
-    if step.p_close and self.close and step.p_close.reorient then
+    elseif step.p_close and self.close and step.p_close.reorient then
         self:orientTo(w.player)
     end
 
-    if contains(step.name, 'move') then
+    -- create the turn
+    local t = Turn:new(self, a)
+
+    local M, A, I = contains(step.name, 'move'), contains(step.name, 'attack'), contains(step.name, 'idle')
+
+
+    if M then
 
         -- Free way, just move
         if r == FREE then 
-            self:go(a, w)
+            self:go(a, t, w)
 
         
         elseif r == ENEMY or r == BLOCK then
             self.facing = { a[1], a[2] }
-            self.bumped = true
+            t:setResult('bumped')
         end
     end
 
-    if contains(step.name, 'attack') then
+    if A then
 
         -- damage the player
         if r == PLAYER then
             w.player:takeHit(self)
             self.facing = { a[1], a[2] }
-            self.hit = true
+            t:setResult('hit')
         end
 
     -- elseif contains(step.name, 'break') then
+    end
+
+    if I then
+        
+        t:setResult('idle')
+
     end
     
 
@@ -373,25 +293,35 @@ function Enemy:setAction(a, r, w)
             for i = 1, #step.name do
                 if self['_f_'..step.name[i]] then
                     -- run the custom function
-                    self['_f_'..step.name[i]](self, a, r, w, step)
+                    self['_f_'..step.name[i]](self, a, r, t, w, step)
                 end
             end
 
         end
 
+    
+    -- save the turn in the history
+    table.insert(self.history, t)
+
 end
 
 
-
+-- refactor to have an Attack object
 function Enemy:takeHit(dir, from)
+
+    -- create the turn
+    local t = Turn:new(self, dir)
+    t:setResult('hurt')
+    table.insert(self.history, t)
+
     -- stop moving after taking damage?
     if not self.resilient then
         self.moved = true
     end
+    -- reset the seq_count?
     if self.weak then
         self.seq_count = 1
     end
-    self.hurt = true
 
     self:loseHP(self:calculateAttack(from))    
     self:applyDebuffs(from)
@@ -410,7 +340,6 @@ function Enemy:_reset()
     Entity.reset(self)
     -- properties specific to enemy
     self.moved = false
-    self.cur_r = false
     self.cur_actions = false
     self.doing_loop = false
     self.waiting = false
@@ -434,13 +363,14 @@ function Enemy:die()
     })
 end
 
+-- TODO: update to include different sizes
 function Enemy:playerClose(p)
     return 
         (math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 0) or 
         (math.abs(p.x - self.x) == 0 and math.abs(p.y - self.y) == 1)
 end
 
-
+-- TODO: update to include different sizes
 function Enemy:playerCloseDiagonal(p, dir)
     return math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 1
 end
@@ -577,8 +507,13 @@ function Enemy:performAction(player_action, w)
         responds[i] = false
     end
 
+    local i = 0
+
     -- loop throught all actions
-    for i = 1, #acts do
+    while(true) do
+
+        i = i + 1
+        if i > #acts then break end
 
         local A = acts[i]
 

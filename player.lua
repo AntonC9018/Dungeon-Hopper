@@ -40,7 +40,8 @@ end
 
 function Player:act(action, w)     
 
-    self.cur_a = action
+    local t = Turn:new(self, action)
+
     self.moved = true
 
     if action[3] then
@@ -52,13 +53,21 @@ function Player:act(action, w)
         end
         -- look to the proper direction
         self.facing = { action[1], action[2] }
-        -- attempt to attack
-        if self:attack(action, w) then return end
-        -- attempt to dig
-        if self:dig(action, w) then return end
-        -- attampt to move
-        if self:move(action, w) then return end
+        
+        if 
+            -- attempt to attack
+            self:attack(action, t, w) or
+            -- attempt to dig
+            self:dig(action, t, w) or
+            -- attempt to move
+            self:move(action, t, w) 
+        
+        then            
+        end
+
     end
+    
+    table.insert(self.history, t)
 
 end
 
@@ -67,15 +76,17 @@ function Player:dropBeat()
 
 end
 
-
-function Player:dig(dir, w)
+-- attempt to dig
+-- if failed, returns true 
+-- if succeeded, return false
+function Player:dig(dir, t, w)
 
     local x, y = self.x + dir[1], self.y + dir[2]
     
-    -- TODO: consider 
+    -- TODO: reconsider 
     if w.walls[x][y] then
         w.walls[x][y] = false
-        self.dug = true
+        t:setResult('dug')
         return true
     else 
         return false
@@ -83,12 +94,14 @@ function Player:dig(dir, w)
 
 end
 
-
-function Player:attack(dir, w)
+-- attempt to attack
+-- if failed, returns true 
+-- if succeeded, return false
+function Player:attack(dir, t, w)
     if self.weapon then
         w.attacked_enemy = self.weapon:attemptAttack(dir, w, self)
         if w.attacked_enemy then 
-            self.hit = true 
+            t:setResult('hit') 
             return true 
         else
             return false
@@ -100,7 +113,7 @@ function Player:attack(dir, w)
     
     if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then 
         w.attacked_enemy = w.entities_grid[x][y]
-        self.bumped = true
+        t:setResult('bumped')
         return false
     end
 
@@ -108,13 +121,13 @@ function Player:attack(dir, w)
 end
 
 
-function Player:move(dir, w)
+function Player:move(dir, t, w)
 
     if not w.attacked_enemy then 
         if w.walls[self.x + dir[1]][self.y + dir[2]] then
-            self.bumped = true
+            t:setResult('bumped')
         else
-            self:go(dir, w)
+            self:go(dir, t, w)
         end
     end
 
@@ -123,110 +136,30 @@ end
 
 
 
-function Player:playAnimation(w, callback)
-    -- get the animation length, 
-    -- scale down if there will be more than one animation (bouncing off traps)
-    local l = w:getAnimLength()
-    local t = #self.history == 0 and l or l / (#self.history)
-
-    self:syncGroup(l, nil, self.x, self.y)
-    
-
-    -- look in the proper direction
-    if self.cur_a[1] ~= 0 then
-        self:orient(self.cur_a[1])
-    end
-
-    local function _callback()
-        self:anim(1000, 'idle')
-        if callback then callback() end
-    end
-
-    -- recursive bouncing
-    local function do_bounces(i)
-        i = i + 1     
-        
-        if self.history[i] then
-            -- update position
-            local x, y = self.history[i][1], self.history[i][2] 
-
-            self.history[i][3]:anim(1000, 'inactive')
-
-
-            -- play animation
-            -- self:anim(t, 'jump')
-            self:transJump(t, function() do_bounces(i) end, x, y)
-
-        else -- if not self.bounces[i]
-            _callback()
-        end
-    end
-
-    -- get coordiates before bounces
-    local x, y
-    if self.history[1] then
-        x, y = self.history[1][1], self.history[1][2]
-    end
-
-    if x == self.x and y == self.y then
-        t = l
-    end
-    
-    
-
-    if self.hurt then
-        -- TODO: play hurt animation
-        self:anim(t, 'idle')
-        self:play_audio('hurt')
-
-        if not self.displaced and not self.bumped then
-            do_bounces(1)
-        end
-
-    end
-
-    if self.hit then
-        -- play the weapon animation animation
-        self.weapon:play_animation(l)
-        self.weapon:play_audio()
-        -- TODO: add a hit animation
-        -- self:anim('hit')
-        self:anim(1000, 'idle')
-
-        -- TODO: add a hitting sound
-        -- self:play_audio('hit')
-
-        -- no transition on sprite is happenning, but the callback
-        do_bounces(1)
-
-
-    elseif self.dug then
-        -- TODO: play spade animation?
-        -- TODO: add a digging animation
-        -- self:anim('dig')
-
-        -- TODO: sound
-        self:play_audio('dig')
-
-        do_bounces(1)
-
-
-    elseif self.displaced then
-        -- play the jumping animation
-        self:anim(t, 'jump')
-        self:transJump(t, do_bounces, x, y)
-
-
-    elseif self.bumped then
-        -- TODO: add bumping animation?
-        self:anim(1000 / t, 'jump')
-        self:transBump(t, do_bounces, x, y)
-    else
-
-        do_bounces(1)
-
-    end
+function Player:preAnimation(w)
+    Entity.preAnimation(self)
+    self:syncGroup(w:getAnimLength(), nil, self.x, self.y)
 end
+
+-- for now
+function Player:_hurt(t, ts, cb)
+    self:anim(ts, 'idle')
+    self:playAudio('hurt')
+    if cb then cb() end
+end
+
+function Player:_hit(t, ts, cb)
+    self.weapon:play_animation(ts)
+    self.weapon:playAudio()
+    self:anim(1000, 'idle')
+    if cb then cb() end
+end
+
+function Player:_dug(t, ts, cb)
+    self:playAudio('dig')
+    if cb then cb() end
+end
+
 
 
 -- take damage from an enemy
@@ -241,7 +174,11 @@ function Player:takeHit(from)
     -- take damage
     self.health = self.health - from.dmg
 
-    self.hurt = true
+    
+    local t = Turn:new(self, false)
+    t:setResult('hurt')
+    table.insert(self.history, t)
+
 
     -- flicker
     self.flicker = transition.to(self.sprite, {
@@ -269,9 +206,12 @@ function Player:equip(weapon)
 
 end
 
+
 function Player:reset()
     self.attacked_enemy = false
     Entity.tickAll(self)
+
+    -- stop flickering
     if self.invincible <= 0 and self.flicker then
         -- stop flickering
         transition.cancel(self.flicker)
@@ -282,8 +222,8 @@ function Player:reset()
         })
         self.sprite.alpha = 1
     end
-    Entity.reset(self)
 
+    Entity.reset(self)
 end
 
 function Player:tickAll()

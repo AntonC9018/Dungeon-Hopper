@@ -36,7 +36,7 @@ function Animated:new(o, options)
     return o
 end
 
-function Animated:play_audio(t)
+function Animated:playAudio(t)
     if t and self.audio[t] then
         audio.play(self.audio[t])
     end
@@ -62,38 +62,3 @@ function Animated:trans(o)
     transition.to(self.sprite, o)
 end
 
-
--- functions that define basic transitions
-function Animated:transAttack(...)
-    self:transBump(...)
-end
-
-function Animated:transBump(t, cb, x, y, dir)
-    transition.to(self.sprite, { 
-        x = (x or self.x) + (dir and dir[1] or self.cur_a[1]) / 2 + self.size[1] / 2, 
-        y = (y or self.y) + (dir and dir[2] or self.cur_a[2]) / 2 + self.offset_y + self.offset_y_jump + self.size[2] / 2,
-        time = t / 2,
-        transition = easing.continuousLoop,
-        onComplete = function() if cb then cb(1) end end
-    })
-end
-
-function Animated:transJump(t, cb, x, y, dir)
-    transition.to(self.sprite, {
-        x = (x or self.x) + self.size[1] / 2,
-        y = (y or self.y) + self.offset_y + self.size[2] / 2,
-        time = t,
-        transition = easing.inOutQuad,
-        onComplete = function() if cb then cb(1) end end
-    })
-    -- self:hopUp(t)
-end
-
-function Animated:hopUp(t, cb)
-    transition.to(self.sprite, {
-        y = self.y + self.offset_y_jump + self.offset_y + self.size[2] / 2,
-        transition = easing.continuousLoop,
-        time = t / 2,
-        onComplete = function() if cb then cb(1) end end
-    })
-end

@@ -55,7 +55,14 @@ end
 
 
 function Wizzrobe:s3Loop()
-    if self.bumped then 
+    if 
+        -- if was preparing to attack
+        contains(self:getSeqStep().name, 'attack') and 
+        -- but has bumped into an enemy
+        Turn.was(self.history, 'bumped') and
+        -- and hasn't attacked 
+        not Turn.was(self.history, 'attack')
+    then
         if self.close then
             self:anim(1000, "angry") 
         else

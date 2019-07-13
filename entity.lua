@@ -74,16 +74,11 @@ Entity.slide_res = 0
 
 
 function Entity:reset()
-    self.displaced = false
-    self.bumped = false
-    self.hit = false
-    self.hurt = false
-    self.dug = false
-    self.last_a = self.cur_a
-    self.cur_a = false
     self.prev_pos = { x = self.x, y = self.y }
+    self.prev_history = self.history
     self.history = {}
 end
+
 
 -- Decrement all debuffs
 function Entity:tickAll()
@@ -96,6 +91,7 @@ function Entity:tickAll()
     self.invincible = math.max(self.invincible - 1, 0)
 end
 
+
 -- return the actual damage dealt from an attack
 function Entity:calculateAttack(from)
     return math.max(
@@ -104,6 +100,7 @@ function Entity:calculateAttack(from)
         -- resist damage if not pierced through
         (self.pierce_res < from.pierce_ing and 0 or self.dmg_res), 0)
 end
+
 
 -- update _ed parameters 
 function Entity:applyDebuffs(from)
@@ -118,52 +115,72 @@ function Entity:applyDebuffs(from)
     end
 end
 
+
 function Entity:loseHP(dmg)
 
     self.health = self.health - dmg
 
     if (self.health <= 0) then
-        self.dead = true     
-
+        self.dead = true 
     end
 end
 
 
+-- bounce off a bounce trap
 function Entity:bounce(trap, w)
 
     local x, y = self.x + trap.dir[1], self.y + trap.dir[2]
 
-    self:unsetPositions(w)
+    local t = Turn:new(self, trap.dir)
 
-    if not w.walls[x][y] then
+    t.trap = trap
 
-        -- we're an enemy and we intend to attack
-        if w.entities_grid[x][y] == w.player and self ~= w.player and 
-            contains(self:getSeqStep(), 'attack') then
-
-                w.entities_grid[x][y].takeHit(self)
-                table.insert(self.history, { x, y, trap })        
-                self.hit = true
-
-            elseif not w.entities_grid[x][y] then
-                self.x, self.y = x, y
-
-                table.insert(self.history, { x, y, trap })        
-            else
-                table.insert(self.history, { self.x, self.y, trap })
-            end
-    else
-        table.insert(self.history, { self.x, self.y, trap })
+    if self == w.player then
+        -- face the direction of the bounce
+        self.facing = { trap.dir[1], trap.dir[2] }
     end
 
-    if self.x == self.prev_pos.x and self.y == self.prev_pos.y then
+    -- stay at place if met a wall
+    if w.walls[x][y] then        
+        t:setResult('bumped', 'bounced')
+    
+    -- if met an entity
+    elseif w.entities_grid[x][y] then
 
+        if  -- attack the player
+            w.entities_grid[x][y] == w.player and
+            -- if intends to attack
+            contains(self:getSeqStep().name, 'attack') and
+            -- but hasn't
+            not Turn.was(self.history, 'hit')            
+        then
+            t:setResult('hit', 'bounced')
+            w.player:takeHit(self)
+        
+        else
+            t:setResult('bumped', 'bounced') 
+        end
+
+    else -- free way
+        -- remove itself from the grid
+        self:unsetPositions(w)
+
+        -- get displaced
+        self.x, self.y = x, y
+        t:setResult('displaced', 'bounced')
+
+        -- insert itself into the grid
+        self:resetPositions(w)
     end
 
-    self:resetPositions(w)
+
+    table.insert(self.history, t)
+
+    return t
 end
 
 
+-- delete the positions of itself from the grid
 function Entity:unsetPositions(w)
     local ps = self:getPositions()
     for i = 1, #ps do
@@ -172,6 +189,7 @@ function Entity:unsetPositions(w)
 end
 
 
+-- set the positions of itself back in the grid
 function Entity:resetPositions(w)
     local ps = self:getPositions()
     for i = 1, #ps do
@@ -180,6 +198,7 @@ function Entity:resetPositions(w)
 end
 
 
+-- get positions that the creature occupies
 function Entity:getPositions()
     local t = {}
     for i = 0, self.size[1] do
@@ -189,6 +208,7 @@ function Entity:getPositions()
     end
     return t
 end
+
 
 -- get all adjacent positions
 function Entity:getAdjacentPositions()
@@ -269,14 +289,234 @@ function Entity:getPointsFromDirection(dir)
 end
 
 
-function Entity:go(dir, w)
+function Entity:go(a, t, w)
     -- delete itself from grid
     self:unsetPositions(w)
-    self.x = dir[1] + self.x
-    self.y = dir[2] + self.y
-    table.insert(self.history, {self.x, self.y})
-    self.facing = { dir[1], dir[2] }
-    self.displaced = true
+
+    -- update position
+    self.x = a[1] + self.x
+    self.y = a[2] + self.y
+
+    self.facing = { a[1], a[2] }
+    
+    t:setResult('displaced', { x = self.x, y = self.y })
+    
     -- shift the position in grid
     self:resetPositions(w)
+end
+
+
+function Entity:playAnimation(w, callback)
+
+    self:preAnimation(w)
+
+    -- get the animation length, 
+    -- scale down if there will be more than one animation (bouncing off traps)
+    local l = w:getAnimLength()
+    local ts = #self.history == 0 and l or l / (#self.history)
+
+
+    local function _callback()
+        self:_idle()
+        if callback then callback() end
+    end
+
+    local function doIteration(i)
+
+        local cb = function() doIteration(i + 1) end
+
+        if self.history[i] then
+
+            local t = self.history[i]
+
+            print(ins(t.f_facing))
+
+            if t.f_facing and t.f_facing[1] ~= 0 then
+                self:orient(t.f_facing[1])
+            end
+
+            -- a bounce trap action
+            if t.bounced then
+
+                -- push the button
+                t.trap:bePushed(ts)
+
+
+                -- hit the player by being displaced by the trap
+                if t.hit then
+                    self:_bouncedDisplacedHit(t, ts, cb)
+
+
+                -- just displaced by the trap
+                elseif t.displaced then
+                    self:_bouncedDisplaced(t, ts, cb)
+
+                
+                -- bumped into a wall by bouncing off a trap
+                elseif t.bumped then
+                    self:_bouncedBumped(t, ts, cb)
+
+
+                -- user defined
+                else
+                    self:_bounced(t, ts, cb)
+                end
+
+
+            -- hurt by being pushed into a wall or another enemy
+            -- maybe aditionally just hurt
+            elseif t.hurt and t.pushed and t.bumped then
+                self:_hurtPushedBumped(t, ts, cb)
+
+            
+            -- hurt and pushed by the player or another enemy
+            elseif t.hurt and t.pushed then
+                self:_hurtPushed(t, ts, cb)
+            
+
+            -- hurt but not pushed
+            elseif t.hurt then
+                self:_hurt(t, ts, cb)
+
+
+            -- pushed but not hurt
+            elseif t.pushed then
+                self:_pushed(t, ts, cb)
+
+
+            -- attacked an enemy / the player
+            elseif t.hit then
+                self:_hit(t, ts, cb)
+
+
+            -- bumping into an enemy / player / wall
+            elseif t.bumped then
+                self:_bumped(t, ts, cb)
+
+            
+            -- jumping / moving / walking
+            elseif t.displaced then
+                self:_displaced(t, ts, cb)
+
+            
+            elseif t.idle then
+                self:_idle(t, ts, cb)
+            
+            elseif t.dug then
+                self:_dug(t, ts, cb)
+            
+            else -- custom actions
+                self:_custom(t, ts, cb)
+            end
+
+
+        else
+            _callback()
+        end
+    end
+
+    -- start the animations
+    doIteration(1)
+end
+
+
+function Entity:_bouncedDisplacedHit(...)
+    self:_hit(...)
+end
+
+function Entity:_bouncedDisplaced(...)
+    self:_displaced(...)
+end
+
+function Entity:_bouncedBumped(...)
+    self:_hopUp(...)
+end
+
+function Entity:_hurtPushedBumped(...)
+    self:_pushed(...)
+end
+
+function Entity:_hurtPushed(...)
+    self:_hurt(...)
+end
+
+function Entity:_hurt(t, ts, cb)
+    self:anim(ts, 'hurt')
+    self:playAudio('hurt')
+    if cb then cb() end
+end
+
+function Entity:_pushed(t, ts, cb)
+    self:anim(ts, 'pushed')
+    transition.to(self.sprite, {
+        x = t.f_pos.x,
+        y = t.f_pos.y + self.offset_y,
+        time = ts,
+        onComplete = function() if cb then cb() end end
+    })
+end
+
+function Entity:_hit(...)
+    self:_bumped(...)
+end
+
+function Entity:_bumped(t, ts, cb)
+    self:anim(ts, 'jump')
+    transition.to(self.sprite, {
+        x = t.i_pos.x + t.a[1] / 2,
+        y = t.i_pos.y + t.a[2] / 2 + self.offset_y + self.offset_y_jump,
+        time = ts / 2,
+        transition = easing.continuousLoop,
+        onComplete = function() if cb then cb() end end
+    })
+end
+
+function Entity:_displaced(t, ts, cb)
+    self:anim(ts, 'jump')
+    -- this animation consists of two steps
+    -- first is the first half - jumping up
+    transition.to(self.sprite, {
+        x = (t.f_pos.x + t.i_pos.x) / 2,
+        y = (t.f_pos.y + t.i_pos.y) / 2 + self.offset_y + self.offset_y_jump,
+        time = ts / 2,
+        transition = easing.linear,
+        onComplete = function()
+            -- falling down
+            transition.to(self.sprite, {
+                x = t.f_pos.x,
+                y = t.f_pos.y + self.offset_y,
+                time = ts / 2,
+                transition = easing.linear,
+                onComplete = function() 
+                    print('cb')
+                    if cb then cb() end 
+                end
+            })
+        end
+    })
+end
+
+function Entity:_idle(t, ts, cb)
+    self:anim(1000, 'idle')
+    if cb then cb() end
+end
+
+function Entity:_dug()
+end
+
+function Entity:_custom()
+end
+
+function Entity:_hopUp(t, ts, cb)
+    transition.to(self.sprite, {
+        x = t.f_pos.x,
+        y = t.f_pos.y + self.offset_y + self.offset_y_jump,
+        time = ts / 2,
+        transition = easing.continuousLoop,
+        onComplete = function() if cb then cb() end end
+    })
+end
+
+function Entity:preAnimation()
+    
 end

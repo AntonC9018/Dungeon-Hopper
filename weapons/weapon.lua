@@ -23,7 +23,7 @@ function Weapon:orient(dir)
 end
 
 
-function Weapon:play_audio()
+function Weapon:playAudio()
     audio.play(self.audio['swipe'])
 end
 

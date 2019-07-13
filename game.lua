@@ -28,6 +28,7 @@ end
 require('animated')
 require('entity')
 require('camera')
+require('turn')
 require('weapons.weapon')
 require('tile')
 require('player')
@@ -73,8 +74,8 @@ function scene:create( event )
     -- init player
     Player.group = playerGroup
     local player = Player:new({
-            x = 3,
-            y = 3,
+            x = 4,
+            y = 2,
             group = entities_group,
             camera = Camera:new{}
         },
@@ -103,6 +104,9 @@ function scene:create( event )
                 width = 16,
                 height = 16,
                 numFrames = 2
+            },
+            audio = {
+                bounce = 'assets/audio/spring_bounce.mp3'
             }
         }
     )
@@ -165,7 +169,7 @@ function scene:create( event )
 
     local wizzrobe = Wizzrobe:new({
             x = 1,
-            y = 1,
+            y = 2,
         },
         {
             sheet_path = '/assets/image_sheets/wizzrobe.png',
@@ -185,7 +189,7 @@ function scene:create( event )
     table.insert(entities_list, wizzrobe)
     entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 2 do
+    for i = 1, 0  do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,

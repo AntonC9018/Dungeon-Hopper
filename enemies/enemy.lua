@@ -230,6 +230,7 @@ end
 
 
 function Enemy:setAction(a, r, w)
+    print(r)
     self.moved = true
 
     -- get the sequence step
@@ -237,7 +238,7 @@ function Enemy:setAction(a, r, w)
 
     -- TODO: probably refactor
     self.close = self:isClose(w.player)
-    self.close_diagonal = self:isCloseDiagonal(w.player)
+    -- self.close_diagonal = self:isCloseDiagonal(w.player)
 
     -- reorient to the player if necessary
     if step.reorient then
@@ -478,8 +479,6 @@ end
 
 
 -- make other enemies move if they block way
--- NOTE: for the time being this is not compatible with bigger sizes
--- TODO: fix that
 function Enemy:performAction(player_action, w)
 
     self.doing_action = true
@@ -499,6 +498,9 @@ function Enemy:performAction(player_action, w)
 
     local i = 0
 
+    local a, m = contains(step.name, 'attack'), contains(step.name, 'move')
+
+
     -- loop throught all actions
     while(true) do
 
@@ -507,80 +509,131 @@ function Enemy:performAction(player_action, w)
 
         local A = acts[i]
 
-        local x, y = self.x + A[1], self.y + A[2]
+        local ps = self:getPointsFromDirection(A) 
+        local rs = {}
 
-        local a, m = contains(step.name, 'attack'), contains(step.name, 'move')
+        local returnOn = {
+            FREE,
+            DIG
+        }
 
-        -- a wall
-        if w.walls[x][y] then
+        for j = 1, #ps do
 
-            -- if this enemy can destoy the given wall
-            if a and self.dig >= w.walls[x][y].dig_res then 
-                return self:setAction(A, DIG, w)
-            
-            -- if can move, bump
-            elseif m then
-                responds[i] = BLOCK
-            end
+            local x, y = ps[j][1], ps[j][2]
+
+            -- a wall
+            if w.walls[x][y] then
+
+                -- if this enemy can destoy the given wall
+                if a and self.dig >= w.walls[x][y].dig_res then 
+                    rs[j] = DIG
                 
-        elseif w.entities_grid[x][y] then
-
-            -- check if it's the player
-            if w.entities_grid[x][y] == w.player then
-
-                -- if attacking, attack
-                if a then
-                    return self:setAction(A, PLAYER, w)
-                
-                -- if moving, bump
+                -- if can move, bump
                 elseif m then
-                    responds[i] = ENEMY
+                    rs[j] = BLOCK
+                end
+                    
+            elseif w.entities_grid[x][y] then
+
+                -- check if it's the player
+                if w.entities_grid[x][y] == w.player then
+
+                    -- if attacking, attack
+                    if a then
+                        rs[j] = PLAYER
+                    
+                    -- if moving, bump
+                    elseif m then
+                        rs[j] = ENEMY
+                    end
+
+                -- an enemy
+                elseif a and A[3] == "attack_fellow" then
+                    -- attack an enemy? what? why?
+                    -- TODO: complete this
+                    self.moved = true
+
+                -- take up the place of a dead enemy
+                elseif m and w.entities_grid[x][y].dead then
+                    rs[j] = FREE
+                    -- return self:setAction(A, FREE, w)
+
+
+                elseif m and w.entities_grid[x][y].moved == false and 
+                    -- prevent calling one another in a loop
+                    -- this can happen if an enemy intends to go back
+                    not w.entities_grid[x][y].doing_action then
+                
+                    -- make the enemy move
+                    w.entities_grid[x][y]:selectAction(w)
+                    -- do the checks for the current iteration again
+                    i = i - 1
+
+                    break
+                
+                -- attack empty space
+                elseif a and not m then
+                    -- return self:setAction(A, FREE, w) 
+                    rs[j] = FREE
+                    
+                elseif m then
+                    -- bump into the enemy if there's no better move
+                    -- responds[i] = ENEMY
+                    rs[j] = ENEMY
                 end
 
-            -- an enemy
-            elseif a and A[3] == "attack_fellow" then
-                -- attack an enemy? what? why?
-                -- TODO: complete this
-                self.moved = true
 
-            -- take up the place of a dead enemy
-            elseif m and w.entities_grid[x][y].dead then
-                return self:setAction(A, FREE, w)
+            elseif m then -- free way
+                rs[j] = FREE
 
-
-            elseif m and w.entities_grid[x][y].moved == false and 
-                -- prevent calling one another in a loop
-                -- this can happen if an enemy intends to go back
-                not w.entities_grid[x][y].doing_action then
-               
-                -- make the enemy move
-                w.entities_grid[x][y]:selectAction(w)
-                -- do the checks for the current iteration again
-                i = i - 1
-            
-            -- attack empty space
-            elseif a and not m then
-                return self:setAction(A, FREE, w) 
-                
-            elseif m then
-                -- bump into the enemy if there's no better move
-                responds[i] = ENEMY
-            end
-
-
-        elseif m then -- free way
-            return self:setAction(A, FREE, w)
-
-        else
-            -- do user defined special checks
-            if self.doSpecialChecks then
-                responds[i], ret, rep = self:doSpecialChecks(player_action, w, A)
-                if ret then self:setAction(A, responds[i], w) end
-                if rep then i = i - 1 end
             else
-                return self:setAction(A, FREE, w)
+                -- do user defined special checks
+                if self.doCustomChecks then
+                    local ret, rep
+                    rs[i], ret, rep = self:doCustomChecks(player_action, w, A)
+                    if ret then table.insert(returnOn, rs[j]) end
+                    if rep then i = i - 1 break end
+                else
+                    rs[j] = FREE
+                end
             end
         end
+
+        -- if broke out of the loop, we need to do another iteration
+        if #rs == #ps then
+
+            local go_on = true
+
+            -- do custom ones
+            if self.doCustomDecision then
+                local ret
+                responds[i], ret, go_on = self:doCustomDecision(rs, A, w, player_action, returnOn)
+                if ret then return self:setAction(A, responds[i], w) end
+            end
+
+            if go_on then
+
+                -- if met a return condition (FREE, DIG or some other user defined)
+                for j = 1, #returnOn do
+                    if table.all(rs, returnOn[j]) then 
+                        return self:setAction(A, returnOn[j], w) 
+                    end
+                end
+
+                if table.some(rs, BLOCK) then 
+                    responds[i] = BLOCK
+                elseif table.some(rs, ENEMY) then
+                    responds[i] = ENEMY
+                elseif table.some(rs, PLAYER) then
+                    return self:setAction(A, PLAYER, w)
+                else
+                    responds[i] = rs[1]
+                end
+
+            end
+
+        end
+
 
         -- TODO: add projectiles and actions besides these?
     end

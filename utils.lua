@@ -58,7 +58,19 @@ function addCopy(v, a)
     return { v[1] + a, v[2] + a }    
 end
 
+table.all = function(arr, it)
+    for i = 1, #arr do
+        if arr[i] ~= it then return false end
+    end
+    return true
+end
 
+table.some = function(arr, it)
+    for i = 1, #arr do
+        if arr[i] == it then return true end
+    end
+    return false
+end
 
 function isBlocked(x, y, w)
     return w.walls[x][y] or w.entities_grid[x][y]

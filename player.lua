@@ -88,7 +88,6 @@ function Player:act(a, w)
         and not dug
         
         then
-            print('move')
             self:move(a, t, w)
         end
 

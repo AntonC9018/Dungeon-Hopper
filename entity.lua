@@ -136,6 +136,7 @@ end
 
 
 -- bounce off a bounce trap
+-- TODO: sizes
 function Entity:bounce(trap, w)
 
     local x, y = self.x + trap.dir[1], self.y + trap.dir[2]
@@ -326,28 +327,10 @@ function Entity:getPointsFromDirection(dir)
 end
 
 
--- function Entity:closeX(p)
---     if self.x <= p.x then
---         return p.x - self.size[1] - self.x
---     else
---         return p:closeX(self)
---     end
--- end
-
-
--- function Entity:closeY(p)
---     if self.y <= p.y then
---         return p.y - self.size[2] - self.y
---     else
---         return p:closeY(self)
---     end
--- end
-
-
 function Entity:isClose(p)
     -- just some vector math, need to rewrite with a math library probably
-    local ss = mul( addCopy( self.size, 1 ), 1 / 2)
-    local sp = mul( addCopy( p.size,    1 ), 1 / 2)
+    local ss =  { (self.size[1] + 1) / 2,  (self.size[2] + 1) / 2  }
+    local sp =  { (p.size[1] + 1) / 2,     (p.size[2] + 1) / 2     }
     local cs =  { self.x + ss[1],          self.y + ss[2]          }
     local cp =  { p.x    + sp[1],          p.y    + sp[2]          }
     local sss = { ss[1]  + sp[1],          ss[2]  + sp[2]          }
@@ -467,13 +450,18 @@ function Entity:playAnimation(w, callback)
                 self:orient(t.f_facing[1])
             end
 
+            -- if self.enemy then
             -- print('')
+            -- print('bounced: ', t.bounced)
             -- print('displaced: ', t.displaced)
             -- print('bumped: ', t.bumped)
             -- print('hit: ', t.hit)
             -- print('hurt: ', t.hurt)
             -- print('dashed: ', t.dashed)
             -- print('pushed: ', t.pushed)
+            -- print('idle: ', t.idle)
+            -- print('_set: ', t._set)
+            -- end
 
             -- a bounce trap action
             if t.bounced then
@@ -524,6 +512,7 @@ function Entity:playAnimation(w, callback)
 
                 -- hurt but not pushed
                 else
+                    print('hurt')
                     self:_hurt(t, ts, cb)
                 end
             
@@ -607,8 +596,8 @@ end
 function Entity:_pushed(t, ts, cb)
     self:anim(ts, 'pushed')
     transition.to(self.sprite, {
-        x = t.f_pos.x,
-        y = t.f_pos.y + self.offset_y,
+        x = t.f_pos.x + self.size[1] / 2,
+        y = t.f_pos.y + self.size[2] / 2 + self.offset_y,
         time = ts,
         onComplete = function() if cb then cb() end end
     })
@@ -621,8 +610,8 @@ end
 function Entity:_bumped(t, ts, cb)
     self:anim(ts, 'jump')
     transition.to(self.sprite, {
-        x = t.i_pos.x + t.a[1] / 2,
-        y = t.i_pos.y + t.a[2] / 2 + self.offset_y + self.offset_y_jump,
+        x = t.i_pos.x + t.a[1] / 2 + self.size[1] / 2,
+        y = t.i_pos.y + t.a[2] / 2 + self.size[2] / 2 + self.offset_y + self.offset_y_jump,
         time = ts / 2,
         transition = easing.continuousLoop,
         onComplete = function() if cb then cb() end end
@@ -634,15 +623,15 @@ function Entity:_displaced(t, ts, cb)
     -- this animation consists of two steps
     -- first is the first half - jumping up
     transition.to(self.sprite, {
-        x = (t.f_pos.x + t.i_pos.x) / 2,
-        y = (t.f_pos.y + t.i_pos.y) / 2 + self.offset_y + self.offset_y_jump,
+        x = (t.f_pos.x + t.i_pos.x) / 2 + self.size[1] / 2,
+        y = (t.f_pos.y + t.i_pos.y) / 2 + self.size[2] / 2 + self.offset_y + self.offset_y_jump,
         time = ts / 2,
         transition = easing.linear,
         onComplete = function()
             -- falling down
             transition.to(self.sprite, {
-                x = t.f_pos.x,
-                y = t.f_pos.y + self.offset_y,
+                x = t.f_pos.x + self.size[1] / 2,
+                y = t.f_pos.y + self.size[2] / 2 + self.offset_y,
                 time = ts / 2,
                 transition = easing.linear,
                 onComplete = function() 
@@ -659,15 +648,17 @@ function Entity:_idle(t, ts, cb)
 end
 
 function Entity:_dug()
+    if cb then cb() end
 end
 
 function Entity:_custom()
+    if cb then cb() end
 end
 
 function Entity:_hopUp(t, ts, cb)
     transition.to(self.sprite, {
-        x = t.f_pos.x,
-        y = t.f_pos.y + self.offset_y + self.offset_y_jump,
+        x = t.f_pos.x + self.size[1] / 2,
+        y = t.f_pos.y + self.size[2] / 2 + self.offset_y + self.offset_y_jump,
         time = ts / 2,
         transition = easing.continuousLoop,
         onComplete = function() if cb then cb() end end

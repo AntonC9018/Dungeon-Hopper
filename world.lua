@@ -68,7 +68,7 @@ function World:do_loop(player_action)
         end
     end
     for i = 1, #self.entities_list do
-        self.entities_grid[self.entities_list[i].x][self.entities_list[i].y] = self.entities_list[i]
+        self.entities_list[i]:resetPositions(self)
     end    
 
     self.entities_grid[self.player.x][self.player.y] = false

@@ -230,7 +230,6 @@ end
 
 
 function Enemy:setAction(a, r, w)
-    print(r)
     self.moved = true
 
     -- get the sequence step

@@ -35,7 +35,7 @@ Wizzrobe = Enemy:new{
     seq_count = 1,
     health = 16,
     dmg = 1,
-    size = { 0, 0 }
+    size = { 1, 1 }
 }
 
 Wizzrobe:transformSequence()
@@ -43,6 +43,8 @@ Wizzrobe:transformSequence()
 
 function Wizzrobe:new(...)
     local o = Enemy.new(self, ...)
+    o.scaleX = o.scaleX * 2
+    o.scaleY = o.scaleY * 2
     return o
 end
 

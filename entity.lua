@@ -155,7 +155,7 @@ function Entity:bounce(trap, w)
         t:setResult('bumped', 'bounced')
     
     -- if met an entity
-    elseif w.entities_grid[x][y] then
+    elseif w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then
 
         if  -- attack the player
             w.entities_grid[x][y] == w.player and
@@ -306,9 +306,25 @@ function Entity:getPointsFromDirection(dir)
             if dir[2] > 0 then
                 -- bottom right
                 table.insert(t, { self.x + 1 + self.size[1], self.y + 1 + self.size[2] })
+
+                for i = 1, self.size[1] do
+                    table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
+                end
+
+                for i = 1, self.size[2] do
+                    table.insert(t, { self.x + 1 + self.size[1], self.y + i })
+                end
             else 
                 -- top right
                 table.insert(t, { self.x + 1 + self.size[1], self.y - 1 })
+
+                for i = 1, self.size[1] do
+                    table.insert(t, { self.x + i, self.y - 1 })
+                end
+                
+                for i = 0, self.size[2] - 1 do
+                    table.insert(t, { self.x + 1 + self.size[1], self.y + i })
+                end
             end
 
         else
@@ -316,9 +332,27 @@ function Entity:getPointsFromDirection(dir)
             if dir[2] > 0 then
                 -- bottom left
                 table.insert(t, { self.x - 1, self.y + 1 + self.size[2] })
+
+                for i = 0, self.size[1] - 1 do
+                    table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
+                end
+                
+                for i = 1, self.size[2] do
+                    table.insert(t, { self.x - 1, self.y + i })
+                end
+
             else
                 -- top left
                 table.insert(t, { self.x - 1, self.y - 1 })
+                
+                for i = 0, self.size[1] - 1 do
+                    table.insert(t, { self.x + i, self.y - 1 })
+                end
+                
+                for i = 0, self.size[2] - 1 do
+                    table.insert(t, { self.x - 1, self.y + i })
+                end
+
             end
 
         end

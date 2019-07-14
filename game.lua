@@ -128,7 +128,7 @@ function scene:create( event )
 
 
     -- Initialize tiles 
-    local field_width, field_height = 10, 10
+    local field_width, field_height = 50, 50
 
     local tiles = {}
     local walls = {}
@@ -179,7 +179,7 @@ function scene:create( event )
     table.insert(entities_list, wizzrobe)
     entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 0  do
+    for i = 1, 40  do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,

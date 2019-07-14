@@ -326,26 +326,34 @@ function Entity:getPointsFromDirection(dir)
 end
 
 
-function Entity:isCloseX(p)
-    if self.x <= p.x then
-        return math.abs(p.x - self.size[1] + 1 - self.x) <= self.size[1] + 1
-    else
-        return p:isCloseX(self)
-    end
-end
+-- function Entity:closeX(p)
+--     if self.x <= p.x then
+--         return p.x - self.size[1] - self.x
+--     else
+--         return p:closeX(self)
+--     end
+-- end
 
 
-function Entity:isCloseY(p)
-    if self.y <= p.y then
-        return math.abs(p.y - self.size[2] + 1 - self.y) <= self.size[2] + 1
-    else
-        return p:isCloseY(self)
-    end
-end
+-- function Entity:closeY(p)
+--     if self.y <= p.y then
+--         return p.y - self.size[2] - self.y
+--     else
+--         return p:closeY(self)
+--     end
+-- end
 
 
 function Entity:isClose(p)
-    return self:isCloseX(p) and self:isCloseY(p)        
+    -- just some vector math, need to rewrite with a math library probably
+    local ss = mul(addCopy(self.size, 1), 1 / 2)
+    local sp = mul(addCopy(p.size, 1), 1 / 2)
+    local cs = { self.x + ss[1], self.y + ss[2] }
+    local cp = { p.x + sp[1], p.y + sp[2] }
+    local sss = { ss[1] + sp[1], ss[2] + sp[2] }
+    local dcs = { math.abs(cs[1] - cp[1]), math.abs(cs[2] - cp[2]) }
+
+    return sss[1] >= dcs[1] and sss[2] >= dcs[2] and not (dcs[1] == dcs[2])
 end
 
 

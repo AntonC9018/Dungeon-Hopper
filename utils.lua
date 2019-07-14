@@ -49,6 +49,17 @@ function mulCopy(v, a)
     return { v[1] * a, v[2] * a }
 end
 
+
+function addVecCopy(v1, v2)
+    return { v1[1] + v2[1], v1[2] + v2[2] }
+end
+
+function addCopy(v, a)
+    return { v[1] + a, v[2] + a }    
+end
+
+
+
 function isBlocked(x, y, w)
     return w.walls[x][y] or w.entities_grid[x][y]
 end

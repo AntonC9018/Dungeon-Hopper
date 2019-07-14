@@ -139,7 +139,7 @@ end
 -- TODO: sizes
 function Entity:bounce(trap, w)
 
-    local x, y = self.x + trap.dir[1], self.y + trap.dir[2]
+    local ps = self:getPointsFromDirection(trap.dir)
 
     local t = Turn:new(self, trap.dir)
 
@@ -150,15 +150,13 @@ function Entity:bounce(trap, w)
         self.facing = { trap.dir[1], trap.dir[2] }
     end
 
-    -- stay at place if met a wall
-    if w.walls[x][y] then        
-        t:setResult('bumped', 'bounced')
     
     -- if met an entity
-    elseif w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then
+    if areBlocked(ps, w) then
 
-        if  -- attack the player
-            w.entities_grid[x][y] == w.player and
+        if  
+            -- attack the player
+            havePlayer(ps, w) and
             -- if intends to attack
             contains(self:getSeqStep().name, 'attack') and
             -- but hasn't
@@ -176,7 +174,7 @@ function Entity:bounce(trap, w)
         self:unsetPositions(w)
 
         -- get displaced
-        self.x, self.y = x, y
+        self.x, self.y = self.x + trap.dir[1], self.y + trap.dir[2]
         t:setResult('displaced', 'bounced')
 
         -- insert itself into the grid

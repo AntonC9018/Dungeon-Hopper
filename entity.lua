@@ -346,11 +346,11 @@ end
 
 function Entity:isClose(p)
     -- just some vector math, need to rewrite with a math library probably
-    local ss = mul(addCopy(self.size, 1), 1 / 2)
-    local sp = mul(addCopy(p.size, 1), 1 / 2)
-    local cs = { self.x + ss[1], self.y + ss[2] }
-    local cp = { p.x + sp[1], p.y + sp[2] }
-    local sss = { ss[1] + sp[1], ss[2] + sp[2] }
+    local ss = mul( addCopy( self.size, 1 ), 1 / 2)
+    local sp = mul( addCopy( p.size,    1 ), 1 / 2)
+    local cs =  { self.x + ss[1],          self.y + ss[2]          }
+    local cp =  { p.x    + sp[1],          p.y    + sp[2]          }
+    local sss = { ss[1]  + sp[1],          ss[2]  + sp[2]          }
     local dcs = { math.abs(cs[1] - cp[1]), math.abs(cs[2] - cp[2]) }
 
     return sss[1] >= dcs[1] and sss[2] >= dcs[2] and not (dcs[1] == dcs[2])

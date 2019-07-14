@@ -236,8 +236,8 @@ function Enemy:setAction(a, r, w)
     local step = self:getSeqStep()
 
     -- TODO: probably refactor
-    self.close = self:playerClose(w.player)
-    self.close_diagonal = self:playerCloseDiagonal(w.player)
+    self.close = self:isClose(w.player)
+    self.close_diagonal = self:isCloseDiagonal(w.player)
 
     -- reorient to the player if necessary
     if step.reorient then
@@ -364,17 +364,6 @@ function Enemy:die()
     })
 end
 
--- TODO: update to include different sizes
-function Enemy:playerClose(p)
-    return 
-        (math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 0) or 
-        (math.abs(p.x - self.x) == 0 and math.abs(p.y - self.y) == 1)
-end
-
--- TODO: update to include different sizes
-function Enemy:playerCloseDiagonal(p, dir)
-    return math.abs(p.x - self.x) == 1 and math.abs(p.y - self.y) == 1
-end
 
 function Enemy:getSeqStep()
     return self.sequence[self.seq_count]

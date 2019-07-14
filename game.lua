@@ -12,6 +12,7 @@ UNIT = 64
 
 
 require('constants')
+require('utils')
 require('animated')
 require('attack')
 require('entity')

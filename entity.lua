@@ -219,6 +219,34 @@ function Entity:getPositions()
 end
 
 
+-- get positions of right to the left, 
+-- right to the right, to the top and to the bottom
+function Entity:getNeighborPositions()
+    local t = {}
+    for i = 0, self.size[1] do
+        table.insert(t, { self.x + i, self.y - 1 })
+        table.insert(t, { self.x + i, self.y + 1 + self.size[2] })
+    end
+
+    for j = 0, self.size[1] do
+        table.insert(t, { self.x - 1, self.y + j })
+        table.insert(t, { self.x + 1 + self.size[1], self.y + j })
+    end
+    return t
+end
+
+
+-- get diagonal positions
+function Entity:getNeighborPositionsDiagonal()
+    return {
+        { self.x - 1, self.y - 1 },
+        { self.x + self.size[1] + 1, self.y - 1 },
+        { self.x - 1, self.y + self.size[2] + 1 },
+        { self.x + self.size[1] + 1, self.y + self.size[2] + 1 }
+    }
+end
+
+
 -- get all adjacent positions
 function Entity:getAdjacentPositions()
     local t = {}
@@ -298,6 +326,46 @@ function Entity:getPointsFromDirection(dir)
 end
 
 
+function Entity:isCloseX(p)
+    if self.x <= p.x then
+        return math.abs(p.x - self.size[1] + 1 - self.x) <= self.size[1] + 1
+    else
+        return p:isCloseX(self)
+    end
+end
+
+
+function Entity:isCloseY(p)
+    if self.y <= p.y then
+        return math.abs(p.y - self.size[2] + 1 - self.y) <= self.size[2] + 1
+    else
+        return p:isCloseY(self)
+    end
+end
+
+
+function Entity:isClose(p)
+    return self:isCloseX(p) and self:isCloseY(p)        
+end
+
+
+function Entity:isCloseDiagonal(p, dir)
+    -- TODO: do this in a more elegant way, like the isClose
+    -- NOTE: this algorithm is the most inefficient, but this
+    -- function is probably never gonna be used anyway 
+    local dps = self:getNeighborPositionsDiagonal()
+    local ps = p:getPositions()
+    for i = 1, #dps do
+        for j = 1, #ps do
+            if ps[j][1] == dps[i][1] and ps[j][2] == dps[i][2] then
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
 function Entity:push(...)
     local t = self:_thrust(...)
     t:setResult('pushed')
@@ -312,61 +380,35 @@ end
 
 function Entity:_thrust(dir, amount, t, w)
 
-    local max = 0
+    local blocked = false
+
+    -- delete itself from grid
+    self:unsetPositions(w)
 
     for i = 1, amount do
-        local u = mulCopy(dir, i)
 
         -- get the directions taking into consideration
         -- the sizes of the entity
+        local ps = self:getPointsFromDirection(dir)
 
-        local ps = self:getPointsFromDirection(u)
+        if not areBlocked(ps, w) then  
+            -- update position
+            self.x = dir[1] + self.x
+            self.y = dir[2] + self.y
 
-        local d = true
-
-        -- check if we're not blocked for any position
-        for j = 1, #ps do
-
-            local x, y = ps[j][1], ps[j][2]
-            
-            -- there is an enemy in the way
-            if     
-                w.entities_grid[x][y] or 
-                w.walls[x][y]     
-            then
-                d = false
-                break
-            end
-        end
-
-        if d then
-            max = i
+            t:setResult('displaced')            
         else
+            blocked = true
             break
         end
     end
 
-    print('max: '..max)
+    -- shift the position in grid
+    self:resetPositions(w)
 
-    if max > 0 then
-        local u = mulCopy(dir, max)
-        -- delete itself from grid
-        self:unsetPositions(w)
-
-        -- update position
-        self.x = dir[1] + self.x
-        self.y = dir[2] + self.y
-        
-        t:setResult('displaced')
-        
-        -- shift the position in grid
-        self:resetPositions(w)
-    end 
-
-    if max < amount then
+    if blocked then
         t:setResult('bumped') 
     end           
-
     
     return t
 end

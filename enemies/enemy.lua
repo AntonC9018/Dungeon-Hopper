@@ -269,7 +269,8 @@ function Enemy:setAction(a, r, w)
 
         -- damage the player
         if r == PLAYER then
-            w.player:takeHit(self)
+            -- TODO: be able to specify the attack inside sequence
+            w.player:takeHit(self:getAttack():setDir(a), w)
             self.facing = { a[1], a[2] }
             t:setResult('hit')
         end
@@ -324,7 +325,7 @@ function Enemy:takeHit(a, w)
 
     self:loseHP(self:calculateAttack(a))    
     self:applyDebuffs(a)
-    self:applySpecials(a, w)
+    self:applySpecials(a, t, w)
 end
 
 

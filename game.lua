@@ -62,8 +62,8 @@ function scene:create( event )
     -- init player
     Player.group = playerGroup
     local player = Player:new({
-            x = 4,
-            y = 2,
+            x = 6,
+            y = 6,
             group = entities_group,
             camera = Camera:new{},
             items = {}
@@ -86,7 +86,7 @@ function scene:create( event )
 
 
     local trap = Trap:new(
-        { x = 2, y = 2, group = entities_group },
+        { x = 4, y = 4, group = entities_group },
         {
             sheet_path = 'assets/image_sheets/bounce_trap.png',
             sheet_options = {
@@ -101,7 +101,7 @@ function scene:create( event )
     )
     trap:createSprite()
 
-    local trap2 = Trap:new{ x = 3, y = 2, group = entities_group }
+    local trap2 = Trap:new{ x = 5, y = 4, group = entities_group }
     trap2:createSprite()
 
     
@@ -157,8 +157,8 @@ function scene:create( event )
 
 
     local wizzrobe = Wizzrobe:new({
-            x = 1,
-            y = 2,
+            x = 5,
+            y = 4,
         },
         {
             sheet_path = '/assets/image_sheets/wizzrobe.png',
@@ -178,7 +178,7 @@ function scene:create( event )
     table.insert(entities_list, wizzrobe)
     entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 0  do
+    for i = 1, 10  do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,

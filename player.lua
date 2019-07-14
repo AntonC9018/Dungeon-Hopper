@@ -37,31 +37,32 @@ function Player:createSprite()
     self.sprite:play()
 end
 
+-- a stands for action
+-- w stands for world
+function Player:act(a, w)     
 
-function Player:act(action, w)     
-
-    local t = Turn:new(self, action)
+    local t = Turn:new(self, a)
 
     self.moved = true
 
-    if action[3] then
-        -- special action
-        -- self:special(action, w)
+    if a[3] then
+        -- special a
+        -- self:special(a, w)
     else 
-        if action[1] == nil then
+        if a[1] == nil then
             self:dropBeat() 
         end
         -- look to the proper direction
-        self.facing = { action[1], action[2] }
+        self.facing = { a[1], a[2] }
         
         
         -- attempt to attack
-        local enemy = self:attack(action, t, w)
+        local enemy = self:attack(a, t, w)
 
         -- if attacking set the turn, refresh
         if t._set then
             table.insert(self.history, t)
-            t = Turn:new(self, action)
+            t = Turn:new(self, a)
         end
 
         local wall 
@@ -69,13 +70,13 @@ function Player:act(action, w)
         -- if did not attack or can dig after attacking
         if not enemy or (self.weapon and self.weapon.dig_and_gun) then
             -- attempt to dig
-            wall = self:dig(action, t, w)
+            wall = self:dig(a, t, w)
         end
 
         -- if digging set the turn, refresh
         if t._set then
             table.insert(self.history, t)
-            t = Turn:new(self, action)
+            t = Turn:new(self, a)
         end
 
         if 
@@ -87,7 +88,8 @@ function Player:act(action, w)
         and not dug
         
         then
-            self:move(action, t, w)
+            print('move')
+            self:move(a, t, w)
         end
 
         -- if moved, add the turn
@@ -102,7 +104,35 @@ end
 
 
 function Player:dropBeat()
+end
 
+
+-- attempt to attack
+function Player:attack(dir, t, w)
+
+    if self.weapon then
+        return self.weapon:attemptAttack(dir, t, w, self)
+    end
+
+    -- if no weapon
+    local x, y = self.x + dir[1], self.y + dir[2]
+    
+    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
+        t:setResult('bumped')
+        return w.entities_grid[x][y]
+    end
+end
+
+-- return the attack object
+-- modified by items that are on
+function Player:getAttack()
+    local a = Attack:new()
+    a:setDmg(self.dmg)
+    a:copyAll(self)
+    for i = 1, #self.items do
+        self.items[i]:modifyAttack(a)       
+    end    
+    return a
 end
 
 -- attempt to dig
@@ -122,23 +152,7 @@ function Player:dig(dir, t, w)
 
 end
 
--- attempt to attack
-function Player:attack(dir, t, w)
-
-    if self.weapon then
-        return self.weapon:attemptAttack(dir, t, w, self)
-    end
-
-    -- if no weapon
-    local x, y = self.x + dir[1], self.y + dir[2]
-    
-    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
-        t:setResult('bumped')
-        return w.entities_grid[x][y]
-    end
-end
-
-
+-- attempt to move
 function Player:move(dir, t, w)       
     -- there is no enemies in the way
     if     
@@ -152,55 +166,47 @@ function Player:move(dir, t, w)
     end
 end
 
-
-
-
-
-function Player:preAnimation(w)
-    Entity.preAnimation(self)
-    self:syncGroup(w:getAnimLength(), nil, self.x, self.y)
-end
-
--- for now
-function Player:_hurt(t, ts, cb)
-    self:anim(ts, 'idle')
-    self:playAudio('hurt')
-    if cb then cb() end
-end
-
-function Player:_hit(t, ts, cb)
-    self.weapon:play_animation(ts)
-    self.weapon:playAudio()
-    self:anim(1000, 'idle')
-    if cb then cb() end
-end
-
-function Player:_dug(t, ts, cb)
-    self:playAudio('dig')
-    if cb then cb() end
-end
-
-
-
 -- take damage from an enemy
 function Player:takeHit(att, w)
 
+    -- create the turn object
+    local t = Turn:new(self, false)    
+
+    -- apply pushing etc
+    self:applySpecials(att, t, w)
+
+    -- if pushed or something
+    if t._set then
+        table.insert(self.history, t)
+    end
+    
     -- the palyer is invincible, ignore
     if self.invincible > 0 then return end
+
+    -- calculate the attack damage
+    local dmg = self:calculateAttack(att) 
+
     -- ignore 0 damage
-    if from.dmg <= 0 then return end
+    if dmg <= 0 then return end
+    
+    
     -- taking damage drops beat
     self:dropBeat() 
+
     -- take damage
-    self.health = self.health - from.dmg
-
+    self:loseHP(dmg)    
+    -- apply debuffs etc
+    self:applyDebuffs(att, w)
     
-    local t = Turn:new(self, false)
-    t:setResult('hurt')
-    table.insert(self.history, t)
+    t:setResult('hurt')  
+
+    -- insert the turn if it hasn't been inserted already
+    if not contains(self.history, t) then
+        table.insert(self.history, t)
+    end
 
 
-    -- flicker
+    -- start flickering
     self.flicker = transition.to(self.sprite, {
         alpha = 0,
         transition = easing.continuousLoop,
@@ -214,6 +220,8 @@ function Player:takeHit(att, w)
 end
 
 
+-- equipping a weapon 
+-- TODO: or an item
 function Player:equip(weapon)
 
     table.insert(self.to_drop, self.weapon)
@@ -224,6 +232,44 @@ function Player:equip(weapon)
 
     -- play equip sound
 
+end
+
+
+-- function called before playAnimation()
+function Player:preAnimation(w)
+    Entity.preAnimation(self)
+    -- make the world (the camera) follow the player
+    self:syncCamera(w:getAnimLength(), nil, self.x, self.y)
+end
+
+
+function Player:syncCamera(...)
+    self.camera:sync(self, ...)
+end
+
+
+-- for now
+function Player:_hurt(t, ts, cb)
+    self:playAudio('hurt')
+    if cb then cb() end
+end
+
+
+function Player:_hit(t, ts, cb)
+    self.weapon:play_animation(ts)
+    self.weapon:playAudio()
+    if cb then cb() end
+end
+
+
+function Player:_dashedHit(t, ts, cb)
+    self:_hit(t, ts)
+    self:_displaced(t, ts, cb)
+end
+
+function Player:_dug(t, ts, cb)
+    self:playAudio('dig')
+    if cb then cb() end
 end
 
 
@@ -245,22 +291,3 @@ function Player:reset()
 
     Entity.reset(self)
 end
-
-function Player:tickAll()
-end
-
-function Player:syncGroup(...)
-    self.camera:sync(self, ...)
-end
-
-
-function Player:getAttack()
-    local a = Attack:new()
-    a:setDmg(self.dmg)
-    a:copyAll(self)
-    for i = 1, #self.items do
-        self.items[i]:modifyAttack(a)       
-    end    
-    return a
-end
-

@@ -4,8 +4,11 @@ Entity = Animated:new{}
 
 function Entity:new(...)
     local o = Animated.new(self, ...)
-    o.history = {}
     o.prev_pos = {}
+    o.prev_history = {}
+    o.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
+    o.history = {} -- pushing, history and such
+    o.hp = {} -- list of health points (red, blue, yellow, hell knows)
     return o
 end
 
@@ -27,7 +30,6 @@ Entity.stuck = 0
 Entity.invincible = 0
 
 -- Stats
-Entity.hp = {} -- list of health points (red, blue, yellow, hell knows)
 Entity.dig = 0 -- level of dig (how hard are the walls it can dig)
 Entity.dmg = 0 -- damage
 Entity.armor = 0 -- damage reduction (down to 0.5 hp)
@@ -62,12 +64,7 @@ Entity.explode_res = 0
 Entity.stuck_res = 0
 Entity.slide_res = 0
 
--- vector values
--- direction the thing is pointing
--- Entity.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
--- Entity.last_a = {} -- last action
--- Entity.cur_a = {} -- current action
--- Entity.history = {} -- pushing, history and such
+
 
 
 function Entity:reset()
@@ -99,10 +96,10 @@ function Entity:calculateAttack(a)
 end
 
 
-function Entity:applySpecials(a, w)
+function Entity:applySpecials(a, t, w)
     local s = a.specials
     if s['push_ing'] and s['push_ing'] > self['push_res'] then
-        self:push(normComps(a.dir), s['push_amount'], w)
+        self:push(normComps(a.dir), s['push_amount'], t, w)
     end
 end
 
@@ -130,6 +127,11 @@ function Entity:loseHP(dmg)
     if (self.health <= 0) then
         self.dead = true 
     end
+end
+
+
+function Entity:getAttack()
+    return Attack:new():setDmg(self.dmg or 0)
 end
 
 
@@ -162,7 +164,7 @@ function Entity:bounce(trap, w)
             not Turn.was(self.history, 'hit')            
         then
             t:setResult('hit', 'bounced')
-            w.player:takeHit(self, w)
+            w.player:takeHit(self:getAttack():setDir(trap.dir), w)
         
         else
             t:setResult('bumped', 'bounced') 
@@ -242,7 +244,7 @@ function Entity:getPointsFromDirection(dir)
 
     if dir[1] ~= 0 and dir[2] == 0 then
 
-        if dir[1] > 1 then
+        if dir[1] > 0 then
             -- right
             for j = 0, self.size[2] do
                 table.insert(t, { self.x + self.size[1] + 1, self.y + j })
@@ -256,7 +258,7 @@ function Entity:getPointsFromDirection(dir)
 
     elseif dir[2] ~= 0 and dir[1] == 0 then
 
-        if dir[2] > 1 then
+        if dir[2] > 0 then
             -- bottom
             for i = 0, self.size[1] do
                 table.insert(t, { self.x + i, self.y + self.size[2] + 1 })
@@ -308,18 +310,46 @@ function Entity:thrust(...)
 end
 
 
-function Entity:_thrust(dir, amount, w)
+function Entity:_thrust(dir, amount, t, w)
 
-    -- TODO: push dir or less
-    mul(dir, amount)
-    local t = Turn:new(self, dir)
-    -- there is no enemies in the way
-    if     
-        w.entities_grid[self.x + dir[1]][self.y + dir[2]] or 
-        w.walls[self.x + dir[1]][self.y + dir[2]]     
-    then
-        t:setResult('bumped')
-    else
+    local max = 0
+
+    for i = 1, amount do
+        local u = mulCopy(dir, i)
+
+        -- get the directions taking into consideration
+        -- the sizes of the entity
+
+        local ps = self:getPointsFromDirection(u)
+
+        local d = true
+
+        -- check if we're not blocked for any position
+        for j = 1, #ps do
+
+            local x, y = ps[j][1], ps[j][2]
+            
+            -- there is an enemy in the way
+            if     
+                w.entities_grid[x][y] or 
+                w.walls[x][y]     
+            then
+                d = false
+                break
+            end
+        end
+
+        if d then
+            max = i
+        else
+            break
+        end
+    end
+
+    print('max: '..max)
+
+    if max > 0 then
+        local u = mulCopy(dir, max)
         -- delete itself from grid
         self:unsetPositions(w)
 
@@ -330,9 +360,14 @@ function Entity:_thrust(dir, amount, w)
         t:setResult('displaced')
         
         -- shift the position in grid
-        self:resetPositions(w)       
-    end
-    table.insert(self.history, t)
+        self:resetPositions(w)
+    end 
+
+    if max < amount then
+        t:setResult('bumped') 
+    end           
+
+    
     return t
 end
 
@@ -363,6 +398,7 @@ function Entity:playAnimation(w, callback)
     local l = w:getAnimLength()
     local ts = #self.history == 0 and l or l / (#self.history)
 
+    
 
     local function _callback()
         self:_idle()
@@ -380,6 +416,14 @@ function Entity:playAnimation(w, callback)
             if t.f_facing and t.f_facing[1] ~= 0 then
                 self:orient(t.f_facing[1])
             end
+
+            -- print('')
+            -- print('displaced: ', t.displaced)
+            -- print('bumped: ', t.bumped)
+            -- print('hit: ', t.hit)
+            -- print('hurt: ', t.hurt)
+            -- print('dashed: ', t.dashed)
+            -- print('pushed: ', t.pushed)
 
             -- a bounce trap action
             if t.bounced then
@@ -408,31 +452,45 @@ function Entity:playAnimation(w, callback)
                     self:_bounced(t, ts, cb)
                 end
 
-
-            -- hurt by being pushed into a wall or another enemy
-            -- maybe aditionally just hurt
-            elseif t.hurt and t.pushed and t.bumped then
-                self:_hurtPushedBumped(t, ts, cb)
-
             
-            -- hurt and pushed by the player or another enemy
-            elseif t.hurt and t.pushed then
-                self:_hurtPushed(t, ts, cb)
-            
-
-            -- hurt but not pushed
             elseif t.hurt then
-                self:_hurt(t, ts, cb)
+
+                -- hurt by being pushed into a wall or another enemy
+                -- but first tavelled a distance  
+                if t.pushed and t.bumped and t.displaced then
+                    self:_hurtPushedBumpedDisplaced(t, ts, cb)
+                    
+                    
+                -- hurt by being pushed into a wall or another enemy
+                -- maybe also just hurt
+                elseif t.pushed and t.bumped then
+                    self:_hurtPushedBumped(t, ts, cb)
+
+                
+                -- hurt and pushed by the player or another enemy
+                elseif t.pushed then
+                    self:_hurtPushed(t, ts, cb)
+                
+
+                -- hurt but not pushed
+                else
+                    self:_hurt(t, ts, cb)
+                end
+            
+            
+            elseif t.hit then
+
+                if t.dashed then
+                    self:_dashedHit(t, ts, cb)
+                else
+                    self:_hit(t, ts, cb)
+                end
+            
 
 
             -- pushed but not hurt
             elseif t.pushed then
                 self:_pushed(t, ts, cb)
-
-
-            -- attacked an enemy / the player
-            elseif t.hit then
-                self:_hit(t, ts, cb)
 
 
             -- bumping into an enemy / player / wall
@@ -478,12 +536,16 @@ function Entity:_bouncedBumped(...)
     self:_hopUp(...)
 end
 
-function Entity:_hurtPushedBumped(...)
+function Entity:_hurtPushedBumpedDisplaced(...)
     self:_pushed(...)
 end
 
+function Entity:_hurtPushedBumped(...)
+    self:_bumped(...)
+end
+
 function Entity:_hurtPushed(...)
-    self:_hurt(...)
+    self:_pushed(...)
 end
 
 function Entity:_hurt(t, ts, cb)
@@ -560,6 +622,10 @@ function Entity:_hopUp(t, ts, cb)
         transition = easing.continuousLoop,
         onComplete = function() if cb then cb() end end
     })
+end
+
+function Entity:_dashedHit(...)
+    self:_displaced(...)
 end
 
 function Entity:preAnimation()

@@ -1,6 +1,6 @@
 Weapon = Animated:new{
     run_and_gun = false,
-    hit_all = true
+    hit_all = false
 }
 
 
@@ -59,18 +59,25 @@ function Weapon:attemptAttack(dir, t, w, owner)
         
         then
 
-            local att = owner:getAttack()
+            local att = owner:getAttack():setDir(dir)
 
-            att.dir = dir
+            local obj = {
+                enemy = w.entities_grid[x][y],
+                attack = att,
+                pattern = self.pattern[i],
+                t = t,
+                owner = owner,
+                w = w
+            }
 
-            self:modify(att, self.pattern[i], owner, w)
+            self:modify(obj)
             
-            self:attack(w.entities_grid[x][y], att, self.pattern[i], owner, w)
+            self:attack(obj)
             
 
             if not self.hit_all then
                 t:setResult('hit')
-                return w.entities_grid[x][y]
+                return { w.entities_grid[x][y] }
             else
                 table.insert(hits, w.entities_grid[x][y])
             end
@@ -88,8 +95,8 @@ end
 function Weapon:modify()
 end
 
-function Weapon:attack(en, att, pat, owner, w)
-    en:takeHit(att, w)
+function Weapon:attack(obj)
+    obj.enemy:takeHit(obj.attack, obj.w)
 end
 
 function Weapon:playAudio()

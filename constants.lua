@@ -58,3 +58,7 @@ function mul(v, a)
     v[2] = v[2] * a
     return v
 end
+
+function mulCopy(v, a)
+    return { v[1] * a, v[2] * a }
+end

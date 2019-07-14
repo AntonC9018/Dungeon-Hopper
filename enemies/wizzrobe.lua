@@ -1,17 +1,50 @@
 Wizzrobe = Enemy:new{
     offset_y = -0.3,
-    offset_y_jump = -0.2,
+    offset_y_jump = -0.05,
     sequence = { 
-        { name = "idle", anim = "idle" }, 
-        { name = "idle", anim = "ready", p_close = { anim = "angry", reorient = true } },
-        { name = { "move", "attack" }, anim = { "jump", "jump" }, mov = "basic", loop = "s3Loop" } 
+        -- do nothing for the first beat
+        { 
+            name = "idle"
+        }, 
+        { 
+            -- do nothing too
+            name = "idle", 
+            -- play the ready animation
+            anim = "ready", 
+            -- if the player is close
+            p_close = { 
+                -- play the angry animation
+                anim = "angry", 
+                -- turn to player 
+                reorient = true 
+            } 
+        },
+        {  
+            -- attack or move
+            name = { "move", "attack" }, 
+            -- animations for "attack" and for "move" respectively
+            -- if not specified, it would default to the name, i.e.
+            -- { "move", "attack" }
+            anim = { "jump", "jump" }, 
+            -- follow the basic movement pattern (orthogonal movement)
+            mov = "basic", 
+            -- redo this step if the function s3Loop() returns true
+            loop = "s3Loop" 
+        } 
     },
     seq_count = 1,
     health = 16,
+    dmg = 1,
     size = { 0, 0 }
 }
 
 Wizzrobe:transformSequence()
+
+
+function Wizzrobe:new(...)
+    local o = Enemy.new(self, ...)
+    return o
+end
 
 function Wizzrobe:createSprite()
     self.sprite = display.newSprite(self.group, self.sheet, {
@@ -57,7 +90,9 @@ function Wizzrobe:s3Loop()
         -- but has bumped into an enemy
         Turn.was(self.history, 'bumped') and
         -- and hasn't attacked 
-        not Turn.was(self.history, 'attack')
+        not Turn.was(self.history, 'attack') and
+        -- and hasn't bounced
+        not Turn.was(self.history, 'bounced')
     then
         if self.close then
             self:anim(1000, "angry") 

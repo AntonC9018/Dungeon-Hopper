@@ -10,6 +10,12 @@ end
 
 function Attack:setDmg(dmg)
     self.dmg = dmg
+    return self
+end
+
+function Attack:setDir(dir)
+    self.dir = dir
+    return self
 end
 
 function Attack:copyAll(e)
@@ -21,6 +27,7 @@ function Attack:copyAll(e)
         self.specials[SPECIAL[i]..'_ing'] = e[SPECIAL[i]..'_ing']
         self.specials[SPECIAL[i]..'_amount'] = e[SPECIAL[i]..'_amount']
     end
+    return self
 end
 
 function Attack:copySpecials(e, names)
@@ -28,6 +35,7 @@ function Attack:copySpecials(e, names)
         self.specials[names[i]..'_ing'] = e[names[i]..'_ing']
         self.specials[names[i]..'_amount'] = e[names[i]..'_amount']
     end
+    return self
 end
 
 
@@ -36,6 +44,7 @@ function Attack:copyDebuffs(e, names)
         self.debuffs[names[i]..'_ing'] = e[names[i]..'_ing']
         self.debuffs[names[i]..'_amount'] = e[names[i]..'_amount']
     end
+    return self
 end
 
 function Attack:addDebuffs(names, ings, amounts)
@@ -43,6 +52,7 @@ function Attack:addDebuffs(names, ings, amounts)
         self.debuffs[names[i]..'_ing'] = (self.debuffs[names[i]..'_ing'] or 0) + ings[i]
         self.debuffs[names[i]..'_amount'] = (self.debuffs[names[i]..'_ing'] or 0) + amounts[i]
     end
+    return self
 end
 
 
@@ -51,4 +61,5 @@ function Attack:addSpecials(names, ings, amounts)
         self.specials[names[i]..'_ing'] = (self.specials[names[i]..'_ing'] or 0) + ings[i]
         self.specials[names[i]..'_amount'] = (self.specials[names[i]..'_amount'] or 0) + amounts[i]
     end
+    return self
 end

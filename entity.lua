@@ -162,11 +162,11 @@ function Entity:bounce(trap, w)
             -- but hasn't
             not Turn.was(self.history, 'hit')            
         then
-            t:setResult('hit', 'bounced')
+            t:set('hit', 'bounced')
             w.player:takeHit(self:getAttack():setDir(trap.dir), w)
         
         else
-            t:setResult('bumped', 'bounced') 
+            t:set('bumped', 'bounced') 
         end
 
     else -- free way
@@ -175,14 +175,14 @@ function Entity:bounce(trap, w)
 
         -- get displaced
         self.x, self.y = self.x + trap.dir[1], self.y + trap.dir[2]
-        t:setResult('displaced', 'bounced')
+        t:set('displaced', 'bounced')
 
         -- insert itself into the grid
         self:resetPositions(w)
     end
 
 
-    table.insert(self.history, t)
+    t:apply()
 
     return t
 end
@@ -391,13 +391,13 @@ end
 
 function Entity:push(...)
     local t = self:_thrust(...)
-    t:setResult('pushed')
+    t:set('pushed')
 end
 
 
 function Entity:thrust(...)
     local t = self:_thrust(...)
-    t:setResult('dashed')
+    t:set('dashed')
 end
 
 
@@ -419,7 +419,7 @@ function Entity:_thrust(dir, amount, t, w)
             self.x = dir[1] + self.x
             self.y = dir[2] + self.y
 
-            t:setResult('displaced')            
+            t:set('displaced')            
         else
             blocked = true
             break
@@ -430,7 +430,7 @@ function Entity:_thrust(dir, amount, t, w)
     self:resetPositions(w)
 
     if blocked then
-        t:setResult('bumped') 
+        t:set('bumped') 
     end           
     
     return t
@@ -447,7 +447,7 @@ function Entity:go(a, t, w)
 
     self.facing = { a[1], a[2] }
     
-    t:setResult('displaced')
+    t:set('displaced')
     
     -- shift the position in grid
     self:resetPositions(w)

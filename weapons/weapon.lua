@@ -76,7 +76,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
             
 
             if not self.hit_all then
-                t:setResult('hit')
+                t:set('hit')
                 return { w.entities_grid[x][y] }
             else
                 table.insert(hits, w.entities_grid[x][y])
@@ -85,7 +85,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
     end
 
     if #hits > 0 then 
-        t:setResult('hit')
+        t:set('hit')
         return hits
     end
 

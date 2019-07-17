@@ -61,7 +61,7 @@ function Player:act(a, w)
 
         -- if attacking set the turn, refresh
         if t._set then
-            table.insert(self.history, t)
+            t:apply()
             t = Turn:new(self, a)
         end
 
@@ -75,7 +75,7 @@ function Player:act(a, w)
 
         -- if digging set the turn, refresh
         if t._set then
-            table.insert(self.history, t)
+            t:apply()
             t = Turn:new(self, a)
         end
 
@@ -93,7 +93,7 @@ function Player:act(a, w)
 
         -- if moved, add the turn
         if t._set then
-            table.insert(self.history, t)
+            t:apply()
         end
 
     end
@@ -117,7 +117,7 @@ function Player:attack(dir, t, w)
     local x, y = self.x + dir[1], self.y + dir[2]
     
     if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
-        t:setResult('bumped')
+        t:set('bumped')
         return w.entities_grid[x][y]
     end
 end
@@ -143,7 +143,7 @@ function Player:dig(dir, t, w)
     if w.walls[x][y] then
         local wall
         wall, w.walls[x][y] = w.walls[x][y], false
-        t:setResult('dug')
+        t:set('dug')
         return wall
     end
 
@@ -158,7 +158,7 @@ function Player:move(dir, t, w)
         w.entities_grid[self.x + dir[1]][self.y + dir[2]] or 
         w.walls[self.x + dir[1]][self.y + dir[2]]     
     then
-        t:setResult('bumped')
+        t:set('bumped')
     else
         -- go forward
         self:go(dir, t, w)
@@ -176,7 +176,7 @@ function Player:takeHit(att, w)
 
     -- if pushed or something
     if t._set then
-        table.insert(self.history, t)
+        t:apply()
     end
     
     -- the palyer is invincible, ignore
@@ -197,11 +197,11 @@ function Player:takeHit(att, w)
     -- apply debuffs etc
     self:applyDebuffs(att, w)
     
-    t:setResult('hurt')  
+    t:set('hurt')  
 
     -- insert the turn if it hasn't been inserted already
     if not contains(self.history, t) then
-        table.insert(self.history, t)
+        t:apply()
     end
 
 

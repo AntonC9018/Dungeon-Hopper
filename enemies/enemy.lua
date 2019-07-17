@@ -261,7 +261,7 @@ function Enemy:setAction(a, r, w)
         
         elseif r == ENEMY or r == BLOCK then
             self.facing = { a[1], a[2] }
-            t:setResult('bumped')
+            t:set('bumped')
         end
     end
 
@@ -272,7 +272,7 @@ function Enemy:setAction(a, r, w)
             -- TODO: be able to specify the attack inside sequence
             w.player:takeHit(self:getAttack():setDir(a), w)
             self.facing = { a[1], a[2] }
-            t:setResult('hit')
+            t:set('hit')
         end
 
     -- elseif contains(step.name, 'break') then
@@ -280,7 +280,7 @@ function Enemy:setAction(a, r, w)
 
     if I then
         
-        t:setResult('idle')
+        t:set('idle')
 
     end
     
@@ -302,7 +302,7 @@ function Enemy:setAction(a, r, w)
 
     
     -- save the turn in the history
-    table.insert(self.history, t)
+    t:apply()
 
 end
 
@@ -311,8 +311,7 @@ function Enemy:takeHit(a, w)
 
     -- create the turn
     local t = Turn:new(self, a.dir)
-    t:setResult('hurt')
-    table.insert(self.history, t)
+    t:set('hurt')
 
     -- stop moving after taking damage?
     if not self.resilient then
@@ -326,6 +325,8 @@ function Enemy:takeHit(a, w)
     self:loseHP(self:calculateAttack(a))    
     self:applyDebuffs(a)
     self:applySpecials(a, t, w)
+
+    t:apply()
 end
 
 

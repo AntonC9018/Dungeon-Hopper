@@ -18,16 +18,20 @@ function Turn:new(s, a)
     return o
 end
 
-function Turn:setResult(...)
+function Turn:set(...)
     for i = 1, arg.n do
         self[arg[i]] = true
     end
+
+    self._set = true
+end
+
+function Turn:apply()
+    table.insert(self.s.history, self)
     -- final position (after the movement)
     self.f_pos = { x = self.s.x, y = self.s.y }
     -- final facing
     self.f_facing = self.s.facing
-
-    self._set = true
 end
 
 

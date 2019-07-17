@@ -173,6 +173,8 @@ function Enemy:computeAction(player_action, w)
         end
 
     -- please don't use these random ones. These would be very obnoxious to deal with
+    -- at least make the enemies point in the direction they are going to move
+    -- like bats in CoH as opposed to the bats of CotND
     elseif self:getSeqStep().mov == "basic-random" then
         local x = math.random(0, 1) * 2 - 1
         local i = math.random(1, 2)

@@ -136,7 +136,6 @@ end
 
 
 -- bounce off a bounce trap
--- TODO: sizes
 function Entity:bounce(trap, w)
 
     local ps = self:getPointsFromDirection(trap.dir)

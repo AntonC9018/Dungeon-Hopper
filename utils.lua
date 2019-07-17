@@ -13,6 +13,7 @@ function dot(v, i, j)
     }
 end
 
+
 function normalize(v)
     local length = Math.sqrt(v[1]^2 + v[2]^2)
     v[1] = v[1] / length
@@ -20,11 +21,13 @@ function normalize(v)
     return v
 end
 
+
 function normComps(v)
     v[1] = sign(v[1])
     v[2] = sign(v[2])
     return v
 end
+
 
 function contains(table, val)
     for i = 1, #table do
@@ -35,15 +38,18 @@ function contains(table, val)
     return false
 end
 
+
 function sign(x)
   return (x < 0 and -1) or ((x > 0 and 1) or 0)
 end
+
 
 function mul(v, a)
     v[1] = v[1] * a
     v[2] = v[2] * a
     return v
 end
+
 
 function mulCopy(v, a)
     return { v[1] * a, v[2] * a }
@@ -54,9 +60,11 @@ function addVecCopy(v1, v2)
     return { v1[1] + v2[1], v1[2] + v2[2] }
 end
 
+
 function addCopy(v, a)
     return { v[1] + a, v[2] + a }    
 end
+
 
 table.all = function(arr, it)
     for i = 1, #arr do
@@ -65,6 +73,7 @@ table.all = function(arr, it)
     return true
 end
 
+
 table.some = function(arr, it)
     for i = 1, #arr do
         if arr[i] == it then return true end
@@ -72,9 +81,11 @@ table.some = function(arr, it)
     return false
 end
 
+
 function isBlocked(x, y, w)
     return w.walls[x][y] or w.entities_grid[x][y]
 end
+
 
 function areBlocked(arr, w)
     for i = 1, #arr do
@@ -83,9 +94,10 @@ function areBlocked(arr, w)
     return false
 end
 
+
 function havePlayer(arr, w)
     for i = 1, #arr do
-        if w.entities_grid[x][y] == w.player then return true end
+        if w.entities_grid[arr[i][1]][arr[i][2]] == w.player then return true end
     end
     return false
 end

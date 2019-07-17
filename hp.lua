@@ -68,12 +68,14 @@ function HP:set(type, am)
     for i = 1, am do
         self.cs[i] = HPContainer:new({ type = type, full = FULL })
     end
+    return self
 end
 
 function HP:add(type, am)
     for i = 1, am do
         table.insert(self.cs, HPContainer:new({ type = type, full = FULL }))
     end
+    return self
 end
 
 function HP:rmv(type, am)

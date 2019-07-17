@@ -1,15 +1,19 @@
 
-
 Player = Entity:new{
     offset_y = -0.4,
     offset_y_jump = -0.2,
-    health = 20,
-    to_drop = {},
     invincible = 0,
     invincible_max = 2,
     pierce_ing = 1,
     size = { 0, 0 }
 }
+
+function Player:new(...)
+    local o = Entity.new(self, ...)
+    o.hp = HP:new():set(RED, 6)
+    o.to_drop = {}
+    return o
+end
 
 function Player:createSprite()
     self.sprite = display.newSprite(self.group, self.sheet, {
@@ -95,10 +99,7 @@ function Player:act(a, w)
         if t._set then
             t:apply()
         end
-
     end
-    
-
 end
 
 
@@ -289,4 +290,12 @@ function Player:reset()
     end
 
     Entity.reset(self)
+end
+
+-- TODO: improve this
+function Player:loseHP(dmg)
+    local status, residue = self.hp:take(dmg)
+    if status == DEAD then
+        print('dead')
+    end
 end

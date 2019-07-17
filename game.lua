@@ -10,8 +10,10 @@ ins = require('inspect')
 
 UNIT = 64
 
-
+-- TODO: namespace these out
+-- TODO: don't use globals
 require('constants')
+require('hp')
 require('utils')
 require('animated')
 require('attack')

@@ -50,9 +50,13 @@ function Player:act(a, w)
     self.moved = true
 
     if a[3] then
+        self.emitter:emit('act:special', self, dir)
+
         -- special a
         -- self:special(a, w)
     else 
+        self.emitter:emit('act:normal', self, dir)
+        
         if a[1] == nil then
             self:dropBeat() 
         end
@@ -119,6 +123,7 @@ function Player:attack(dir, t, w)
     
     if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
         t:set('bumped')
+        self.emitter:emit('attack:bump', self, dir)
         return w.entities_grid[x][y]
     end
 end
@@ -145,8 +150,12 @@ function Player:dig(dir, t, w)
         local wall
         wall, w.walls[x][y] = w.walls[x][y], false
         t:set('dug')
+        self.emitter:emit('dig:dug', self, dir)
         return wall
     end
+
+    self.emitter:emit('dig:fail', self, dir)
+
 
     return false
 
@@ -160,14 +169,19 @@ function Player:move(dir, t, w)
         w.walls[self.x + dir[1]][self.y + dir[2]]     
     then
         t:set('bumped')
+        self.emitter:emit('move:bump', self, dir)
     else
         -- go forward
         self:go(dir, t, w)
+        self.emitter:emit('move:went', self, dir)
     end
 end
 
 -- take damage from an enemy
 function Player:takeHit(att, w)
+
+    self.emitter:emit('hit:start', self, weapon)
+
 
     -- create the turn object
     local t = Turn:new(self, att.dir or false)    
@@ -197,6 +211,8 @@ function Player:takeHit(att, w)
     self:loseHP(dmg)    
     -- apply debuffs etc
     self:applyDebuffs(att, w)
+
+    self.emitter:emit('hit:damage', self, weapon)
     
     t:set('hurt')  
 
@@ -223,6 +239,7 @@ end
 -- equipping a weapon 
 -- TODO: or an item
 function Player:equip(weapon)
+    self.emitter:emit('equip:start', self, weapon)
 
     table.insert(self.to_drop, self.weapon)
     self.weapon = weapon
@@ -232,14 +249,8 @@ function Player:equip(weapon)
 
     -- play equip sound
 
-end
 
-
--- function called before playAnimation()
-function Player:preAnimation(w)
-    Entity.preAnimation(self)
-    -- make the world (the camera) follow the player
-    self:syncCamera(w:getAnimLength(), nil, self.x, self.y)
+    self.emitter:emit('equip:end', self, weapon)
 end
 
 
@@ -274,6 +285,8 @@ end
 
 
 function Player:reset()
+    self.emitter:emit('reset:start', self)
+
     self.attacked_enemy = false
     Entity.tickAll(self)
 
@@ -290,16 +303,15 @@ function Player:reset()
     end
 
     Entity.reset(self)
+
+    self.emitter:emit('reset:end', self)
 end
 
 -- TODO: improve this
 function Player:loseHP(dmg)
-    print('Taking damage')
-    print(dmg)
     local status, residue = self.hp:take(dmg)
-    print(residue)
     print(self.hp)
     if status == DEAD then
-        print('dead')
+        self.emitter:emit('dead', self)
     end
 end

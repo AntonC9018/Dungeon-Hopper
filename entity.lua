@@ -8,6 +8,7 @@ function Entity:new(...)
     o.prev_history = {}
     o.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
     o.history = {} -- pushing, history and such
+    o.emitter = Emitter:new()
     return o
 end
 
@@ -73,7 +74,7 @@ function Entity:tickAll()
     for i = 1, #DEBUFFS do
         self[DEBUFFS[i]..'_ed'] = math.max(self[DEBUFFS[i]..'_ed'] - 1, 0)
     end
-
+    
     self.stuck = math.max(self.stuck - 1, 0)
     self.invincible = math.max(self.invincible - 1, 0)
 end
@@ -119,6 +120,7 @@ function Entity:loseHP(dmg)
 
     if (self.health <= 0) then
         self.dead = true 
+        self.emitter:emit('dead', self)
     end
 end
 
@@ -136,6 +138,9 @@ function Entity:bounce(trap, w)
     local t = Turn:new(self, trap.dir)
 
     t.trap = trap
+
+    self.emitter:emit('trap:start', self, trap)
+
 
     if self == w.player then
         -- face the direction of the bounce
@@ -155,9 +160,13 @@ function Entity:bounce(trap, w)
         then
             t:set('hit', 'bounced')
             w.player:takeHit(self:getAttack():setDir(trap.dir), w)
+            self.emitter:emit('trap:hit', self, trap)
+
         
         else
             t:set('bumped', 'bounced') 
+            self.emitter:emit('trap:bump', self, trap)
+
         end
 
     else -- free way
@@ -170,6 +179,8 @@ function Entity:bounce(trap, w)
 
         -- insert itself into the grid
         self:resetPositions(w)
+
+        self.emitter:emit('trap:displaced', self, trap)
     end
 
 
@@ -364,19 +375,15 @@ end
 
 
 function Entity:isCloseDiagonal(p, dir)
-    -- TODO: do this in a more elegant way, like the isClose
-    -- NOTE: this algorithm is the most inefficient, but this
-    -- function is probably never gonna be used anyway 
-    local dps = self:getNeighborPositionsDiagonal()
-    local ps = p:getPositions()
-    for i = 1, #dps do
-        for j = 1, #ps do
-            if ps[j][1] == dps[i][1] and ps[j][2] == dps[i][2] then
-                return true
-            end
-        end
-    end
-    return false
+    -- just some vector math, need to rewrite with a math library probably
+    local ss =  { (self.size[1] + 1) / 2,  (self.size[2] + 1) / 2  }
+    local sp =  { (p.size[1] + 1) / 2,     (p.size[2] + 1) / 2     }
+    local cs =  { self.x + ss[1],          self.y + ss[2]          }
+    local cp =  { p.x    + sp[1],          p.y    + sp[2]          }
+    local sss = { ss[1]  + sp[1],          ss[2]  + sp[2]          }
+    local dcs = { math.abs(cs[1] - cp[1]), math.abs(cs[2] - cp[2]) }
+
+    return sss[1] >= dcs[1] and sss[2] >= dcs[2] and dcs[1] == dcs[2]
 end
 
 
@@ -394,6 +401,9 @@ end
 
 function Entity:_thrust(dir, amount, t, w)
 
+    self.emitter:emit('thrust:start', self, dir, amount)
+
+
     local blocked = false
 
     -- delete itself from grid
@@ -410,7 +420,9 @@ function Entity:_thrust(dir, amount, t, w)
             self.x = dir[1] + self.x
             self.y = dir[2] + self.y
 
-            t:set('displaced')            
+            t:set('displaced')
+            self.emitter:emit('thrust:displaced', self, dir, i)
+
         else
             blocked = true
             break
@@ -422,7 +434,10 @@ function Entity:_thrust(dir, amount, t, w)
 
     if blocked then
         t:set('bumped') 
-    end           
+        self.emitter:emit('thrust:bumped', self)
+    end    
+    
+    self.emitter:emit('thrust:end', self)    
     
     return t
 end
@@ -447,7 +462,7 @@ end
 
 function Entity:playAnimation(w, callback)
 
-    self:preAnimation(w)
+    self.emitter:emit('animation:start', self, w)
 
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
@@ -456,6 +471,7 @@ function Entity:playAnimation(w, callback)
 
     local function _callback()
         self:_idle()
+        self.emitter:emit('animation:end', self, w)
         if callback then callback() end
     end
 
@@ -464,6 +480,8 @@ function Entity:playAnimation(w, callback)
         local cb = function() doIteration(i + 1) end
 
         if self.history[i] then
+
+            self.emitter:emit('animation:step', self, i, w)
 
             local t = self.history[i]
 
@@ -690,5 +708,6 @@ function Entity:_dashedHit(...)
     self:_displaced(...)
 end
 
-function Entity:preAnimation()    
+function Entity:on(...)
+    self.emitter:on(...)
 end

@@ -46,6 +46,9 @@ function Enemy:computeAction(player_action, w)
 
     local actions = {}
 
+    self.emitter:emit('computeAction:start', self, player_action)
+    
+
     if not self:getSeqStep().mov then self.cur_actions = actions
 
     -- got a custom table of actions
@@ -196,13 +199,14 @@ function Enemy:computeAction(player_action, w)
     end
 
     self.cur_actions = actions
+
+    self.emitter:emit('computeAction:end', self, actions)
 end
 
 function Enemy:preAnimation()
     if self.dead then
         self:die()
     end
-    Entity.preAnimation(self)
 end
 
 
@@ -232,6 +236,7 @@ end
 
 
 function Enemy:setAction(a, r, w)
+
     self.moved = true
 
     -- get the sequence step
@@ -244,69 +249,64 @@ function Enemy:setAction(a, r, w)
     local M, A, I = contains(step.name, 'move'), contains(step.name, 'attack'), contains(step.name, 'idle')
 
 
-    if M then
+    self.emitter:emit('setAction:start', self, a, r, t)
 
-        -- Free way, just move
-        if r == FREE then 
-            self:go(a, t, w)
+    if not t._set then
 
-        
-        elseif r == ENEMY or r == BLOCK then
-            self.facing = { a[1], a[2] }
-            t:set('bumped')
-        end
-    end
+        if M then
 
-    if A then
+            -- Free way, just move
+            if r == FREE then 
+                self:go(a, t, w)
 
-        -- damage the player
-        if r == PLAYER then
-            -- TODO: be able to specify the attack inside sequence
-            w.player:takeHit(self:getAttack():setDir(a), w)
-            self.facing = { a[1], a[2] }
-            t:set('hit')
+            
+            elseif r == ENEMY or r == BLOCK then
+                self.facing = { a[1], a[2] }
+                t:set('bumped')
+            end
         end
 
-    -- elseif contains(step.name, 'break') then
-    end
+        if A then
 
-    if I then
-        
-        t:set('idle')
+            -- damage the player
+            if r == PLAYER then
+                -- TODO: be able to specify the attack inside sequence
+                w.player:takeHit(self:getAttack():setDir(a), w)
+                self.facing = { a[1], a[2] }
+                t:set('hit')
+            end
+
+        -- elseif contains(step.name, 'break') then
+        end
+
+        if I then
+            
+            t:set('idle')
+
+        end
 
     end
     
 
-    if -- got a custom name of step
-        not contains(step.name, 'attack') and 
-        not contains(step.name, 'move') and 
-        not contains(step.name, 'idle') 
-        
-        then
-            for i = 1, #step.name do
-                if self['_f_'..step.name[i]] then
-                    -- run the custom function
-                    self['_f_'..step.name[i]](self, a, r, t, w, step)
-                end
-            end
-
-        end
-
+    
+    
     -- TODO: probably refactor
     self.close = self:isClose(w.player)
     -- self.close_diagonal = self:isCloseDiagonal(w.player)
-
-
-     -- reorient to the player if necessary
+    
+    
+    -- reorient to the player if necessary
     if step.reorient then
         self:orientTo(w.player)
     elseif step.p_close and self.close and step.p_close.reorient then
         self:orientTo(w.player)
     end
+
+    self.emitter:emit('setAction:end', self, a, r, t)
     
     -- save the turn in the history
     t:apply()
-
+    
 end
 
 
@@ -315,6 +315,8 @@ function Enemy:takeHit(a, w)
     -- create the turn
     local t = Turn:new(self, a.dir)
     t:set('hurt')
+
+    self.emitter:emit('takeHit:start', self, a, t)
 
     -- stop moving after taking damage?
     if not self.resilient then
@@ -328,6 +330,9 @@ function Enemy:takeHit(a, w)
     self:loseHP(self:calculateAttack(a))    
     self:applyDebuffs(a)
     self:applySpecials(a, t, w)
+
+    self.emitter:emit('takeHit:end', self, a, t)
+
 
     t:apply()
 end
@@ -378,6 +383,9 @@ function Enemy:updateSeq()
 
     local next_step
 
+    self.emitter:emit('updateSeq:start', self)
+
+
     -- check loop condition. Keep playing if active
     if step.loop and self[step.loop](self) then
         next_step = self.seq_count
@@ -417,6 +425,8 @@ function Enemy:updateSeq()
     end
 
     self.seq_count = next_step > #self.sequence and (next_step - #self.sequence) or next_step
+
+    self.emitter:emit('updateSeq:end', self)
 end
 
 
@@ -464,32 +474,22 @@ function Enemy:transformSequence()
         s.name = names
         s.anim = anims
 
-
-        -- convert "loop" and "escape" strings into functions
-        -- if s.loop and type(s.loop) == "string" then  
-        --     s.loop = self[s.loop]
-        -- end
-        
-        -- if s.escape and type(s.escape) == "string" then  
-        --     s.escape = self[s.escape]
-        -- end
-
     end
-
-
-
 end
 
 
 -- make other enemies move if they block way
-function Enemy:performAction(player_action, w)
-
+function Enemy:performAction(player_action, w)    
+    
     self.doing_action = true
-
+    
     if not self.sees then
         self.moved = true
         return
     end
+
+    self.emitter:emit('performAction:start', self)
+
 
     local step = self:getSeqStep()
     local acts = self:getAction(player_action, w)

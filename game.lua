@@ -7,6 +7,7 @@ local scene = composer.newScene()
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 ins = require('inspect')
+Emitter = require('events')
 
 UNIT = 64
 
@@ -71,7 +72,6 @@ function scene:create( event )
             x = 3,
             y = 4,
             group = entities_group,
-            camera = Camera:new{},
             items = {}
         },
          -- options list
@@ -88,6 +88,9 @@ function scene:create( event )
         }     
     )
     player:createSprite()
+
+    
+    
     -- player:equip(dagger)
 
 
@@ -225,6 +228,14 @@ function scene:create( event )
         follow_group = entities_group,
         ignore = false
     }
+
+    world.camera = Camera:new{}
+
+    player:on('animation:start', 
+        function(p, w)        
+            world.camera:sync(p, w:getAnimLength())    
+        end
+    )
 
 
     first_input = true

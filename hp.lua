@@ -1,8 +1,3 @@
-
-RED = 1
-BLUE = 2
-BLACK = 3
-
 EMPTY = 0
 HALF = 1
 FULL = 2
@@ -10,8 +5,12 @@ FULL = 2
 DEAD = 0
 ALIVE = 1
 
+local Animated = require('animated')
+local constructor = require('constructor')
 
-HPContainer = Animated:new{}
+
+
+local HPContainer = Animated:new{}
 
 -- function HPContainer:new(...)
 --     local o = Animated.new(self, ...)
@@ -60,7 +59,7 @@ function HPContainer:__tostring()
     return  ((self.full == EMPTY and '○') or (self.full == HALF and '◐') or '●')
 end
 
-HP = constructor:new{}
+local HP = constructor:new{}
 
 function HP:new(...)
     local o = constructor.new(self, ...)
@@ -142,3 +141,5 @@ function HP:__tostring()
     end
     return s
 end
+
+return HP, HPContainer

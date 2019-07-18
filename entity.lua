@@ -1,6 +1,9 @@
-Entity = Animated:new{}
 
+local Turn = require('turn')
+local Animated = require('animated')
+local Attack = require('attack')
 
+local Entity = Animated:new{}
 
 function Entity:new(...)
     local o = Animated.new(self, ...)
@@ -711,3 +714,5 @@ end
 function Entity:on(...)
     self.emitter:on(...)
 end
+
+return Entity

@@ -1,14 +1,5 @@
-constructor = {}
 
-function constructor:new(o)
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    return o
-end
-
-
-Animated = {
+local Animated = {
     scaleX = 1 / 16,
     scaleY = 1 / 16
 }
@@ -16,25 +7,18 @@ Animated = {
 function Animated:new(o, options)
     o = o or {}
     setmetatable(o, self)
-    self.__index = self
-
-    if options then
-        Animated.loadAssets(o, options)
-    end
-
+    self.__index = self    
     return o
 end
 
 function Animated:loadAssets(o)
-    -- load the image sheet
-    if o.sheet_path and not self.sheet then
-        self:loadSheet(o.sheet_path, o.sheet_options)
+    if o.sheet then
+        self:loadSheet(o.sheet.path, o.sheet.options)
     end
 
-    -- load audio
-    if o.audio and not self.audio then
+    if o.audio then
         self.audio = {}
-        for k, v in pairs(o.audio) do
+        for k, v in pairs(self.audio) do
             self.audio[k] = audio.loadSound(v)
         end
     end
@@ -66,3 +50,4 @@ function Animated:trans(o)
     transition.to(self.sprite, o)
 end
 
+return Animated

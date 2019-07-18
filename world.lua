@@ -1,13 +1,69 @@
+local constructor = require('constructor')
+local Environment = require('environment.environment')
+local Player = require('player')
+local Wizzrobe = require('enemies.wizzrobe')
+local Tile = require('tile')
+local Dagger = require('weapons.dagger')
+local Camera = require('camera')
 
 
-World = constructor:new()
+local World = constructor:new()
 
 function World:new(...)
     local o = constructor.new(self, ...)
     o.loop_queue = {}
     o.doing_loop = false
     o.loop_count = 1
+    o.environment = Environment:new{
+        world = o
+    }
+    o.tiles = tdArray(
+        o.width, 
+        o.height, 
+        function(i, j)
+            return Tile:new({
+                x = i,
+                y = j,
+                type = math.random(11),
+                world = o
+            })
+        end
+    )
+    o.entities_grid = tdArray(o.width, o.height)
+    o.walls = tdArray(o.width, o.height)
+    o.camera = Camera:new{}
+    o.entities_list = {}
     return o
+end
+
+
+function World:initPlayer(o)
+    o.world = self
+    local dagger = Dagger:new({ world = self })
+    self.player = Player:new(o)
+    self.player:equip(dagger)
+
+    self.player:on('animation:start', 
+        function(p, w) 
+            w.camera:sync(p, w:getAnimLength())    
+        end
+    )
+
+    table.insert(self.entities_list, self.player)
+end
+
+
+function World:populate(a)
+    for i = 1, a do
+        table.insert(
+            self.entities_list, 
+            Wizzrobe:new{
+                x = math.random(self.width),
+                y = math.random(self.height),
+                world = self
+            }
+        )
+    end
 end
 
 
@@ -94,7 +150,7 @@ function World:do_loop(player_action)
 
 
     -- test of explosion
-    environment:explode(math.random(2, 6), math.random(2, 6), 1, self)
+    if self.loop_count == 2 then self.environment:explode(math.random(2, 6), math.random(2, 6), 1, self) end
 
 
 
@@ -112,8 +168,8 @@ function World:do_loop(player_action)
     self.environment:act(self)
 
     
-    environment:toFront('traps')
-    environment:updateSprites()
+    self.environment:toFront('traps')
+    self.environment:updateSprites()
 
     -- bring the entities that have higher y to the front
     table.sort(self.entities_list, function(a, b) return a.y < b.y end)
@@ -121,7 +177,7 @@ function World:do_loop(player_action)
         self.entities_list[i].sprite:toFront()
     end
 
-    environment:toFront('expls')
+    self.environment:toFront('expls')
 
 
 
@@ -177,3 +233,5 @@ end
 function World:on_beat() 
     return true
 end
+
+return World

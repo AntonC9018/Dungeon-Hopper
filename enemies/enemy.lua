@@ -1,15 +1,8 @@
 
--- HOR_VER = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } }
--- DIAGONAL = { { 1, 1 }, { -1, -1 }, { -1, 1 }, { 1, -1 } }
+local Turn = require('turn')
+local Entity = require('entity')
 
--- movement types
--- "basic" = 1 -- basic right left up down (orthogonal) movement towards player
--- "diagonal" = 2 -- diagonal movement towards player
--- "straight" = 3 -- go in a straight line
--- "adjacent" = 4 -- go vertically, horizontally or diagonally towards player
-
-
-Enemy = Entity:new{
+local Enemy = Entity:new{
     facing = { 1, 0 },
     dmg = 1,
     max_vision = 6,
@@ -647,5 +640,4 @@ function Enemy:performAction(player_action, w)
 end
 
 
-
-
+return Enemy

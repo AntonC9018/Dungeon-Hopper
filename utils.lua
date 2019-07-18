@@ -114,3 +114,19 @@ function havePlayer(arr, w)
     end
     return false
 end
+
+
+function tdArray(w, h, f)
+    if not f then f = function() return false end end
+
+    local arr = {}
+
+    for i = 1, w do
+        arr[i] = {}        
+        for j = 1, h do
+            arr[i][j] = f(i, j)
+        end
+    end
+
+    return arr
+end

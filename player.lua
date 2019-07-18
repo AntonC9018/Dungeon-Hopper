@@ -1,5 +1,10 @@
+local Entity = require('entity')
+local HP = require('hp')
+local Turn = require('turn')
+local Attack = require('attack')
 
-Player = Entity:new{
+
+local Player = Entity:new{
     offset_y = -0.4,
     offset_y_jump = -0.2,
     invincible = 0,
@@ -8,15 +13,19 @@ Player = Entity:new{
     size = { 0, 0 }
 }
 
+Player:loadAssets(assets.Player)
+
 function Player:new(...)
     local o = Entity.new(self, ...)
-    o.hp = HP:new():set(RED, 6)
+    o.hp = HP:new():set('red', 6)
     o.to_drop = {}
+    o.items = {}
+    o:createSprite()
     return o
 end
 
 function Player:createSprite()
-    self.sprite = display.newSprite(self.group, self.sheet, {
+    self.sprite = display.newSprite(self.world.group, self.sheet, {
         {
             name = "idle",
             start = 1,
@@ -315,3 +324,5 @@ function Player:loseHP(dmg)
         self.emitter:emit('dead', self)
     end
 end
+
+return Player

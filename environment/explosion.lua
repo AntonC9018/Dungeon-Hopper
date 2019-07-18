@@ -1,5 +1,8 @@
+local Animated = require('animated')
 
-Explosion = Animated:new{}
+local Explosion = Animated:new{}
+
+Explosion:loadAssets(assets.Explosion)
 
 function Explosion:new(...)
     local o = Animated.new(self, ...)
@@ -12,11 +15,12 @@ function Explosion:new(...)
     }
     o.framecount = 1
     o.ended = false
+    o:createSprite()
     return o
 end
 
 function Explosion:createSprite()
-    self.sprite = display.newSprite(self.group, self.sheet, {
+    self.sprite = display.newSprite(self.world.group, self.sheet, {
         {
             name = "main",
             start = 1,
@@ -50,3 +54,5 @@ function Explosion:tick(w)
         self.ended = true
     end
 end
+
+return Explosion

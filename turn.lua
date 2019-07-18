@@ -1,6 +1,7 @@
 -- an abstraction for any single movement of an entity
+local constructor = require('constructor')
 
-Turn = constructor:new{}
+local Turn = constructor:new{}
 
 -- inited before the action has been registered
 function Turn:new(s, a)
@@ -45,3 +46,6 @@ function Turn:was(code)
     end
     return false
 end
+
+
+return Turn

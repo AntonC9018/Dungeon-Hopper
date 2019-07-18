@@ -1,14 +1,18 @@
 
-BounceTrap = Trap:new({
+local Trap = require('environment.trap')
+
+local BounceTrap = Trap:new({
     push_ing = 50,
     push_amount = 1,
 })
 
+BounceTrap:loadAssets(assets.BounceTrap)
 
 function BounceTrap:new(...)
     local o = Trap.new(self, ...)
     o.active = true
     o.dir = { math.random(-1, 1), math.random(-1, 1) }
+    o:createSprite()
     return o
 end
 
@@ -36,7 +40,7 @@ end
 
 
 function BounceTrap:createSprite()
-    self.sprite = display.newSprite(self.group, self.sheet, {
+    self.sprite = display.newSprite(self.world.group, self.sheet, {
         {
             name = "main",
             start = 1,
@@ -63,3 +67,5 @@ end
 function BounceTrap:rotate(dir)
     self.sprite.rotation = angleBetween({ 1, 0 }, dir) / math.pi * 180
 end
+
+return BounceTrap

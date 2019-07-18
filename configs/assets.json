@@ -1,0 +1,77 @@
+{
+    "Dagger": {
+        "sheet": {
+            "path": "swipe_dagger.png",
+            "options": {
+                "width": 24,
+                "height": 24,
+                "numFrames": 3
+            }
+        },
+        "audio": {
+            "swipe": "pound.wav"
+        }
+    },
+    "Player": {
+        "sheet": {
+            "path": "elf_girl.png",
+            "options": {
+                "width": 16,
+                "height": 21,
+                "numFrames": 9
+            }
+        },
+        "audio": {
+            "hurt": "roblox.mp3"
+        }
+    },
+    "BounceTrap": {
+        "sheet": {
+            "path": "bounce_trap.png",
+            "options": {
+                "width": 16,
+                "height": 16,
+                "numFrames": 2
+            }
+        },
+        "audio": {
+            "action": "spring_bounce.mp3"
+        }
+    },
+    "Explosion": {
+        "sheet": {
+            "path": "explosion.png",
+            "options": {
+                "width": 16,
+                "height": 16,
+                "numFrames": 3
+            }
+        },
+        "audio": {
+            "boom": "boom.mp3"
+        }
+    },
+    "Tile": {
+        "sheet": {
+            "path": "floor.png",
+            "options": {
+                "width": 16,
+                "height": 16,
+                "numFrames": 11
+            }
+        }
+    },
+    "Wizzrobe": {
+        "sheet": {
+            "path": "wizzrobe.png",
+            "options": {
+                "width": 16,
+                "height": 17,
+                "numFrames": 5
+            }
+        },
+        "audio": {
+            "hurt": "roblox.mp3"
+        }
+    }
+}

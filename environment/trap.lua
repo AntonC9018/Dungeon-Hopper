@@ -1,4 +1,6 @@
-Trap = Animated:new()
+local Animated = require('animated')
+
+local Trap = Animated:new()
 
 
 function Trap:bePushed()
@@ -12,5 +14,5 @@ function Trap:reset()
     self.active = true
 end
 
-
+return Trap
 

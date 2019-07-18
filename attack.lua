@@ -1,4 +1,6 @@
-Attack = constructor:new{}
+local constructor = require('constructor')
+
+local Attack = constructor:new{}
 
 function Attack:new(obj)
     local o = constructor.new(self, obj)
@@ -63,3 +65,5 @@ function Attack:addSpecials(names, ings, amounts)
     end
     return self
 end
+
+return Attack

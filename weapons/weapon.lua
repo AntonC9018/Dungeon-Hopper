@@ -1,4 +1,6 @@
-Weapon = Animated:new{
+local Animated = require('animated')
+
+local Weapon = Animated:new{
     run_and_gun = false,
     hit_all = false
 }
@@ -106,3 +108,5 @@ end
 function Weapon:play_animation(t)
     self:anim(t, 'swipe')
 end
+
+return Weapon

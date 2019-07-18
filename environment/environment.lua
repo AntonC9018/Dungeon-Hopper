@@ -1,10 +1,20 @@
-Environment = constructor:new{
-    traps = {},
-    bombs = {},
-    -- items that lie on ground
-    items = {},
-    expls = {}
+local constructor = require('constructor')
+local Explosion = require('environment.explosion')
+local BounceTrap = require('environment.bounceTrap')
+
+local Environment = constructor:new{
+    
 }
+
+function Environment:new(...)
+    local o = constructor.new(self, ...)
+    o.traps = {}
+    o.bombs = {}
+    -- items that lie on ground
+    o.items = {}
+    o.expls = {}
+    return o
+end
 
 function Environment:doTraps(w)
     for i = 1, #self.traps do
@@ -92,7 +102,7 @@ function Environment:explode(x, y, r, w)
     -- of a square, centered at (x, y), that has width of r
     for i = -r, r do
         for j = -r, r do
-            Environment:explodeAt(
+            self:explodeAt(
                 x + i, y + j, 
                 normComps({ i, j }), 
                 w
@@ -104,9 +114,11 @@ function Environment:explode(x, y, r, w)
 end
 
 function Environment:explodeAt(x, y, dir, w)
-    local e = Explosion:new({ x = x, y = y, dir = dir })
+    local e = Explosion:new({ x = x, y = y, dir = dir, world = w })
     e:explode(w)
     e:createSprite()
     table.insert(self.expls, e)
 end
+
+return Environment
 

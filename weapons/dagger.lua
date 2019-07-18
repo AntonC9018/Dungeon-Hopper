@@ -1,14 +1,25 @@
-Dagger = Weapon:new{
+local Weapon = require('weapons.weapon')
+
+local Dagger = Weapon:new{
     xScale = 1 / 24,
     yScale = 1 / 24,
     dmg = 1,
     pattern = {{ 1, 1 }, { 1, -1 }}
 }
 
+Dagger:loadAssets(assets.Dagger)
+
+function Dagger:new(...)
+    local o = Weapon.new(self, ...)
+    o:createSprite()
+    return o
+end
+
+
 
 function Dagger:createSprite()
     
-    self.sprite = display.newSprite(self.group, self.sheet, {
+    self.sprite = display.newSprite(self.world.group, self.sheet, {
         {
             name = "swipe",
             start = 1,
@@ -20,6 +31,7 @@ function Dagger:createSprite()
 
     self.sprite.x, self.sprite.y = 1, 1
     self.sprite:scale(self.xScale, self.yScale)
+    self.sprite.alpha = 0
 
     self:listenAlpha()
     
@@ -40,3 +52,5 @@ function Dagger:modify(obj)
         obj.owner:thrust(normComps(obj.owner.facing), 1, t, w)
     end
 end
+
+return Dagger

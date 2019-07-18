@@ -8,34 +8,26 @@ local scene = composer.newScene()
 -- -----------------------------------------------------------------------------------
 ins = require('inspect')
 Emitter = require('events')
+local json = require('json')
 
-UNIT = 64
+assets = json.decodeFile(system.pathForFile('configs/assets.json', system.ResourceDirectory ))
 
--- TODO: namespace these out
--- TODO: don't use globals
+
+for k, v in pairs(assets) do
+    if v.sheet then
+        assets[k].sheet.path = '/assets/image_sheets/'..v.sheet.path
+    end
+
+    if v.audio then
+        for _k, _v in pairs(v.audio) do
+            assets[k].audio[_k] = '/assets/audio/'.._v
+        end
+    end
+end
+
+
 require('constants')
 require('utils')
-require('animated')
-require('hp')
-require('attack')
-require('entity')
-require('camera')
-require('turn')
-require('weapons.weapon')
-require('tile')
-require('player')
-require('enemies.enemy')
-require('enemies.wizzrobe')
-require('environment.environment')
-require('environment.trap')
-require('environment.bounceTrap')
-require('environment.explosion')
-require('world')
-require('weapons.dagger')
-
-
-local tiles
-local entities
 
 
 function scene:create( event )
@@ -44,198 +36,43 @@ function scene:create( event )
     display.setDefault('magTextureFilter', 'nearest')
     display.setDefault('minTextureFilter', 'nearest')
 
+    local BounceTrap = require('environment.bounceTrap')
+    local World = require('world')
+
     -- initialize groups
     local sceneGroup = self.view
-    local entities_group = display.newGroup(sceneGroup)
+    local world_group = display.newGroup(sceneGroup)
     
-    Animated.group = entities_group
-
-    local dagger = Dagger:new(
-        {},
-        {
-            sheet_path = '/assets/image_sheets/swipes/swipe_dagger.png',
-            sheet_options = {
-                width = 24,
-                height = 24,
-                numFrames = 3
-            },
-            audio = {
-                swipe = '/assets/audio/pound.wav'
-            }
-        }        
-    )
-    dagger:createSprite()
-
-    -- init player
-    Player.group = playerGroup
-    local player = Player:new({
-            x = 3,
-            y = 4,
-            group = entities_group,
-            items = {}
-        },
-         -- options list
-        {
-            sheet_path = '/assets/image_sheets/elf_girl.png',
-            sheet_options = {
-                width = 16,
-                height = 21, 
-                numFrames = 9
-            },
-            audio = {
-                hurt = '/assets/audio/roblox.mp3'
-            }
-        }     
-    )
-    player:createSprite()
-
-    
-    
-    -- player:equip(dagger)
-
-
-    local trap = BounceTrap:new(
-        { x = 4, y = 4, group = entities_group },
-        {
-            sheet_path = 'assets/image_sheets/bounce_trap.png',
-            sheet_options = {
-                width = 16,
-                height = 16,
-                numFrames = 2
-            },
-            audio = {
-                action = 'assets/audio/spring_bounce.mp3'
-            }
-        }
-    )
-    trap:createSprite()
-
-    Explosion:loadAssets({
-        sheet_path = 'assets/image_sheets/explosion.png',
-        sheet_options = {
-            width = 16,
-            height = 16,
-            numFrames = 3
-        },
-        audio = {
-            boom = 'assets/audio/boom.mp3'
-        }
-    })
-
-    --local trap2 = Trap:new{ x = 5, y = 4, group = entities_group }
-    --trap2:createSprite()
-
-    
-    environment = Environment:new{}
-
-    table.insert(environment.traps, trap)
-    --table.insert(environment.traps, trap2)
-
-    
-
-    -- set up tiles
-    Tile.group = entities_group
-    Tile:loadSheet(
-        '/assets/image_sheets/floor.png', 
-        {
-            width = 16,
-            height = 16, 
-            numFrames = 11
-        }
-    )
     -- display sprites of right size
-    entities_group:scale(UNIT, UNIT) 
+    world_group:scale(UNIT, UNIT) 
 
-
-    -- Initialize tiles 
-    local field_width, field_height = 50, 50
-
-    local tiles = {}
-    local walls = {}
-    local entities_grid = {}
-
-    for i = 1, field_width do
-        tiles[i] = {}
-        walls[i] = {}
-        entities_grid[i] = {}
-        
-        for j = 1, field_height do        
-            tiles[i][j] = Tile:new{ x = i, y = j, type = math.random(11) }
-            tiles[i][j]:createSprite()
-
-            walls[i][j] = false
-            entities_grid[i][j] = false
-        end
-    end
-    
-    entities_group.x, entities_group.y =
-        -player.x * UNIT + display.contentCenterX,
-        -player.y * UNIT + display.contentCenterY
-
-    local entities_list = {}
-
-    table.insert(entities_list, player)
-
-
-    local wizzrobe = Wizzrobe:new({
-            x = 5,
-            y = 4,
-        },
-        {
-            sheet_path = '/assets/image_sheets/wizzrobe.png',
-            sheet_options = {
-                width = 16,
-                height = 17, 
-                numFrames = 5
-            },
-            audio = {
-                hurt = '/assets/audio/roblox.mp3'
-            }
+    local world = World:new(
+        { 
+            group = world_group, 
+            width = 18, 
+            height = 18 
         }
     )
+    -- create the player
+    world:initPlayer({ x = 4, y = 4 })
+    -- spawn 5 wizzrobes
+    world:populate(5)
 
-    wizzrobe:createSprite()
 
-    table.insert(entities_list, wizzrobe)
-    entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
+    -- local trap = BounceTrap:new(
+    --     { 
+    --         x = 4, 
+    --         y = 4, 
+    --         group = entities_group 
+    --     }
+    -- )
 
-    for i = 1, 0 do
-        local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
-        local w = Wizzrobe:new{
-            x = x,
-            y = y
-        }
-        table.insert(entities_list, w)
-        entities_grid[x][y] = w
-        w:createSprite()
-    end
+    -- table.insert(world.environment.traps, trap)
 
     
-
-    table.sort(entities_list, function(a, b) return a.y < b.y end)
-
-    for i = 1, #entities_list do
-        entities_list[i].sprite:toFront()
-    end
-
-    world = World:new{
-        entities_list = entities_list,
-        entities_grid = entities_grid,
-        player = player,
-        walls = walls,
-        tiles = tiles,
-        environment = environment,
-        follow_group = entities_group,
-        ignore = false
-    }
-
-    world.camera = Camera:new{}
-
-    player:on('animation:start', 
-        function(p, w)        
-            world.camera:sync(p, w:getAnimLength())    
-        end
-    )
+    -- world_group.x, world_group.y =
+    --     -world.player.x * UNIT + display.contentCenterX,
+    --     -world.player.y * UNIT + display.contentCenterY
 
 
     first_input = true

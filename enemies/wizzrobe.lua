@@ -1,4 +1,8 @@
-Wizzrobe = Enemy:new{
+
+local Enemy = require('enemies.enemy')
+local Turn = require('turn')
+
+local Wizzrobe = Enemy:new{
     offset_y = -0.3,
     offset_y_jump = -0.05,
     sequence = { 
@@ -43,15 +47,17 @@ Wizzrobe = Enemy:new{
 }
 
 Wizzrobe:transformSequence()
+Wizzrobe:loadAssets(assets.Wizzrobe)
 
 
 function Wizzrobe:new(...)
     local o = Enemy.new(self, ...)
+    o:createSprite()
     return o
 end
 
 function Wizzrobe:createSprite()
-    self.sprite = display.newSprite(self.group, self.sheet, {
+    self.sprite = display.newSprite(self.world.group, self.sheet, {
         {
             name = "idle",
             frames = { 1, 3 },
@@ -107,3 +113,5 @@ function Wizzrobe:s3Loop()
     end
     return false
 end
+
+return Wizzrobe

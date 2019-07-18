@@ -10,3 +10,5 @@ WAIT = 3
 BLOCK = 4
 PLAYER = 5
 NOTHING = 6
+
+UNIT = 64

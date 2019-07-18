@@ -8,18 +8,17 @@ function Entity:new(...)
     o.prev_history = {}
     o.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
     o.history = {} -- pushing, history and such
-    o.hp = {} -- list of health points (red, blue, yellow, hell knows)
     return o
 end
 
 -- states
 -- game logic states
-Entity.displaced = false -- TODO: change to number of tile?
+Entity.displaced = false
 Entity.bumped = false
-Entity.hit = false -- TODO: change to number of guys hit?
-Entity.hurt = false -- TODO: change to damage taken?
+Entity.hit = false
+Entity.hurt = false
 Entity.dead = false
-Entity.dug = false -- dug a tile this loop
+Entity.dug = false -- dug a wall this loop
 
 -- boolean states
 Entity.sliding = false
@@ -97,7 +96,7 @@ end
 
 
 function Entity:applySpecials(a, t, w)
-    local s = a.specials
+    local s = a.specials or a
     if s['push_ing'] and s['push_ing'] > self['push_res'] then
         self:push(normComps(a.dir), s['push_amount'], t, w)
     end
@@ -614,6 +613,7 @@ end
 
 function Entity:_hurtPushed(...)
     self:_pushed(...)
+    self:_hurt(arg and arg[1], arg and arg[2])
 end
 
 function Entity:_hurt(t, ts, cb)

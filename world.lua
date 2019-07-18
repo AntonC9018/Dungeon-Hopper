@@ -1,9 +1,14 @@
 
 
-World = constructor:new{
-    loop_queue = {},
-    doing_loop = false
-}
+World = constructor:new()
+
+function World:new(...)
+    local o = constructor.new(self, ...)
+    o.loop_queue = {}
+    o.doing_loop = false
+    o.loop_count = 1
+    return o
+end
 
 
 function World:do_loop(player_action)
@@ -87,6 +92,12 @@ function World:do_loop(player_action)
     -- do the same for their weapon (and spade?)
     self.player:act(player_action, self)
 
+
+    -- test of explosion
+    if self.loop_count == 1 then environment:explodeAt(3, 5, world) end
+
+
+
     self.entities_grid[self.player.x][self.player.y] = self.player
 
 
@@ -102,6 +113,7 @@ function World:do_loop(player_action)
 
     
     environment:toFront()
+    environment:updateSprites()
 
     -- bring the entities that have higher y to the front
     table.sort(self.entities_list, function(a, b) return a.y < b.y end)
@@ -119,6 +131,9 @@ function World:do_loop(player_action)
         end
 
         self.environment:reset(self)
+
+        -- update the iteration count
+        self.loop_count = self.loop_count + 1
 
         -- if there are actions in the queue, do them
         if #self.loop_queue > 0 then

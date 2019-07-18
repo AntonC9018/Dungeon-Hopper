@@ -1,6 +1,6 @@
 
 BounceTrap = Trap:new({
-    push_ing = 5,
+    push_ing = 50,
     push_amount = 1,
 })
 
@@ -39,9 +39,9 @@ function BounceTrap:createSprite()
     self.sprite = display.newSprite(self.group, self.sheet, {
         {
             name = "main",
-            frames = { 1, 2 },
-            time = math.huge,
-            loopCount = 0
+            start = 1,
+            count = 2,
+            time = math.huge
         }
     })
 
@@ -59,7 +59,7 @@ function BounceTrap:reset()
     Trap.reset(self)
 end
 
-
+-- TODO: rotate just the arrow
 function BounceTrap:rotate(dir)
     self.sprite.rotation = angleBetween({ 1, 0 }, dir) / math.pi * 180
 end

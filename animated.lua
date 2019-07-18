@@ -19,21 +19,25 @@ function Animated:new(o, options)
     self.__index = self
 
     if options then
-        -- load the image sheet
-        if options.sheet_path and not self.sheet then
-            self:loadSheet(options.sheet_path, options.sheet_options)
-        end
-
-        -- load audio
-        if options.audio and not self.audio then
-            self.audio = {}
-            for k, v in pairs(options.audio) do
-                self.audio[k] = audio.loadSound(v)
-            end
-        end
+        Animated.loadAssets(o, options)
     end
 
     return o
+end
+
+function Animated:loadAssets(o)
+    -- load the image sheet
+    if o.sheet_path and not self.sheet then
+        self:loadSheet(o.sheet_path, o.sheet_options)
+    end
+
+    -- load audio
+    if o.audio and not self.audio then
+        self.audio = {}
+        for k, v in pairs(o.audio) do
+            self.audio[k] = audio.loadSound(v)
+        end
+    end
 end
 
 function Animated:playAudio(t)

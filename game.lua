@@ -28,6 +28,7 @@ require('enemies.wizzrobe')
 require('environment.environment')
 require('environment.trap')
 require('environment.bounceTrap')
+require('environment.explosion')
 require('world')
 require('weapons.dagger')
 
@@ -105,6 +106,18 @@ function scene:create( event )
         }
     )
     trap:createSprite()
+
+    Explosion:loadAssets({
+        sheet_path = 'assets/image_sheets/explosion.png',
+        sheet_options = {
+            width = 16,
+            height = 16,
+            numFrames = 3
+        },
+        audio = {
+            boom = 'assets/audio/boom.mp3'
+        }
+    })
 
     --local trap2 = Trap:new{ x = 5, y = 4, group = entities_group }
     --trap2:createSprite()
@@ -220,6 +233,7 @@ function scene:create( event )
     Runtime:addEventListener("tap", function(event)
         
         if first_input then first_input = false return end
+
 
         local _w, _h = display.contentWidth, display.contentHeight
         local w, h = display.viewableContentWidth, display.viewableContentHeight

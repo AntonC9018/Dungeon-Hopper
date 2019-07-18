@@ -112,7 +112,7 @@ function World:do_loop(player_action)
     self.environment:act(self)
 
     
-    environment:toFront()
+    environment:toFront('traps')
     environment:updateSprites()
 
     -- bring the entities that have higher y to the front
@@ -120,6 +120,9 @@ function World:do_loop(player_action)
     for i = 1, #self.entities_list do
         self.entities_list[i].sprite:toFront()
     end
+
+    environment:toFront('expls')
+
 
 
     -- Reset everything only when all animations have finished

@@ -12,13 +12,7 @@ function Entity:new(...)
 end
 
 -- states
--- game logic states
-Entity.displaced = false
-Entity.bumped = false
-Entity.hit = false
-Entity.hurt = false
 Entity.dead = false
-Entity.dug = false -- dug a wall this loop
 
 -- boolean states
 Entity.sliding = false
@@ -698,6 +692,5 @@ function Entity:_dashedHit(...)
     self:_displaced(...)
 end
 
-function Entity:preAnimation()
-    
+function Entity:preAnimation()    
 end

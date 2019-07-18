@@ -66,7 +66,7 @@ function Environment:updateSprites(w)
             table.remove(self.expls, i)
             e.sprite:removeSelf()
         else
-            e:show()
+            e:tick()
         end
     end
 end
@@ -80,12 +80,9 @@ function Environment:reset(w)
     end       
 end
 
-function Environment:toFront()
-    for i = 1, #self.traps do
-        self.traps[i].sprite:toFront()
-    end
-    for i = 1, #self.expls do
-        self.expls[i].sprite:toFront()
+function Environment:toFront(str)
+    for i = 1, #self[str] do
+        self[str][i].sprite:toFront()
     end
 end
 
@@ -94,8 +91,8 @@ end
 
 function Environment:explodeAt(x, y, w)
     local e = Explosion:new({ x = x, y = y })
-    e:createSprite()
     e:explode(w)
+    e:createSprite()
     table.insert(self.expls, e)
 end
 

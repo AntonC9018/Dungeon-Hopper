@@ -4,7 +4,7 @@ Explosion = Animated:new{}
 function Explosion:new(...)
     local o = Animated.new(self, ...)
     o.dmg = 4
-    o.dir = { 1, 0 }
+    o.dir = { 1, -1 }
     o.specials = {
         push_ing = 50,
         push_amount = 1,
@@ -45,7 +45,7 @@ function Explosion:explode(w)
     end
 end
 
-function Explosion:show(w)
+function Explosion:tick(w)
     self.sprite:setFrame(self.framecount)
     self.framecount = self.framecount + 1
     if self.framecount > self.sprite.numFrames then

@@ -56,9 +56,7 @@ function Environment:reset(w)
     for i = 1, #self.traps do
         local t = self.traps[i]
         if not w.entities_grid[t.x][t.y] then
-            t.active = true
-            t:anim(1000, 'active')
-            t.bounced = false
+            t:reset()
         end
     end
 end
@@ -70,64 +68,3 @@ function Environment:toFront()
 end
 
 
-Trap = Animated:new(
-    {
-        active = true,
-        push_ing = 5,
-        push_amount = 1,
-        dir = { 1, 0 }
-    }
-)
-
-
-function Trap:createSprite()
-    self.sprite = display.newSprite(self.group, self.sheet, {
-        {
-            name = "active",
-            frames = { 1 },
-            time = 0,
-            loopCount = 0
-
-        },
-        {
-            name = "inactive",
-            frames = { 2 },
-            time = 0,
-            loopCount = 0
-        }
-    })
-
-    self.sprite.x = self.x
-    self.sprite.y = self.y
-
-    self.sprite:scale(self.scaleX, self.scaleY)
-    self:anim(1000, 'active')
-end
-
-
--- for now assume it's a right pushing trap
-function Trap:activate(e, w)       
-    if self.push_ing > e.push_res and e ~= self.bounced then
-
-        self.active = false
-        
-        e:bounce(self, w)
-        
-        if self.x == e.x and self.y == e.y then
-            self.bounced = e
-        else
-            self.bounced = false
-        end
-
-        local t = w.environment:getTrapAt(x, y)
-        if t and t.active then
-            t:activate(e, w)
-        end
-    end
-end
-
-
-function Trap:bePushed(ts)
-    self:anim(ts, 'inactive')
-    self:playAudio('bounce')
-end

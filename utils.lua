@@ -14,6 +14,19 @@ function dot(v, i, j)
 end
 
 
+function inner(v1, v2)
+    return v1[1] * v2[1] + v1[2] * v2[2]
+end
+
+function det(i, j)
+    return i[1] * j[2] - i[2] * j[1]
+end
+
+function angleBetween(v1, v2)
+    return math.atan2(det(v1, v2), inner(v1, v2))
+end
+
+
 function normalize(v)
     local length = Math.sqrt(v[1]^2 + v[2]^2)
     v[1] = v[1] / length

@@ -13,9 +13,9 @@ UNIT = 64
 -- TODO: namespace these out
 -- TODO: don't use globals
 require('constants')
-require('hp')
 require('utils')
 require('animated')
+require('hp')
 require('attack')
 require('entity')
 require('camera')
@@ -26,6 +26,8 @@ require('player')
 require('enemies.enemy')
 require('enemies.wizzrobe')
 require('environment.environment')
+require('environment.trap')
+require('environment.bounceTrap')
 require('world')
 require('weapons.dagger')
 
@@ -65,8 +67,8 @@ function scene:create( event )
     -- init player
     Player.group = playerGroup
     local player = Player:new({
-            x = 6,
-            y = 6,
+            x = 3,
+            y = 4,
             group = entities_group,
             camera = Camera:new{},
             items = {}
@@ -85,10 +87,10 @@ function scene:create( event )
         }     
     )
     player:createSprite()
-    player:equip(dagger)
+    -- player:equip(dagger)
 
 
-    local trap = Trap:new(
+    local trap = BounceTrap:new(
         { x = 4, y = 4, group = entities_group },
         {
             sheet_path = 'assets/image_sheets/bounce_trap.png',
@@ -98,20 +100,20 @@ function scene:create( event )
                 numFrames = 2
             },
             audio = {
-                bounce = 'assets/audio/spring_bounce.mp3'
+                action = 'assets/audio/spring_bounce.mp3'
             }
         }
     )
     trap:createSprite()
 
-    local trap2 = Trap:new{ x = 5, y = 4, group = entities_group }
-    trap2:createSprite()
+    --local trap2 = Trap:new{ x = 5, y = 4, group = entities_group }
+    --trap2:createSprite()
 
     
     environment = Environment:new{}
 
     table.insert(environment.traps, trap)
-    table.insert(environment.traps, trap2)
+    --table.insert(environment.traps, trap2)
 
     
 
@@ -181,7 +183,7 @@ function scene:create( event )
     table.insert(entities_list, wizzrobe)
     entities_grid[wizzrobe.x][wizzrobe.y] = wizzrobe
 
-    for i = 1, 40  do
+    for i = 1, 0 do
         local x, y = 1 + math.random(field_width - 2), 1 + math.random(field_height - 2)
         local w = Wizzrobe:new{
             x = x,

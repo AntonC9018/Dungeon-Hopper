@@ -237,16 +237,6 @@ function Enemy:setAction(a, r, w)
     -- get the sequence step
     local step = self:getSeqStep()
 
-    -- TODO: probably refactor
-    self.close = self:isClose(w.player)
-    -- self.close_diagonal = self:isCloseDiagonal(w.player)
-
-    -- reorient to the player if necessary
-    if step.reorient then
-        self:orientTo(w.player)
-    elseif step.p_close and self.close and step.p_close.reorient then
-        self:orientTo(w.player)
-    end
 
     -- create the turn
     local t = Turn:new(self, a)
@@ -302,6 +292,17 @@ function Enemy:setAction(a, r, w)
 
         end
 
+    -- TODO: probably refactor
+    self.close = self:isClose(w.player)
+    -- self.close_diagonal = self:isCloseDiagonal(w.player)
+
+
+     -- reorient to the player if necessary
+    if step.reorient then
+        self:orientTo(w.player)
+    elseif step.p_close and self.close and step.p_close.reorient then
+        self:orientTo(w.player)
+    end
     
     -- save the turn in the history
     t:apply()

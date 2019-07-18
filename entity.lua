@@ -148,7 +148,6 @@ function Entity:bounce(trap, w)
         -- face the direction of the bounce
         self.facing = { trap.dir[1], trap.dir[2] }
     end
-
     
     -- if met an entity
     if areBlocked(ps, w) then
@@ -543,7 +542,6 @@ function Entity:playAnimation(w, callback)
 
                 -- hurt but not pushed
                 else
-                    print('hurt')
                     self:_hurt(t, ts, cb)
                 end
             

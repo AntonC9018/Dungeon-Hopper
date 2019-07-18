@@ -454,8 +454,6 @@ function Entity:playAnimation(w, callback)
     local l = w:getAnimLength()
     local ts = #self.history == 0 and l or l / (#self.history)
 
-    
-
     local function _callback()
         self:_idle()
         if callback then callback() end
@@ -605,9 +603,9 @@ function Entity:_hurtPushedBumped(...)
     self:_bumped(...)
 end
 
-function Entity:_hurtPushed(...)
-    self:_pushed(...)
-    self:_hurt(arg and arg[1], arg and arg[2])
+function Entity:_hurtPushed(t, ts, cb)
+    self:_pushed(t, ts, cb)
+    self:_hurt(t, ts)
 end
 
 function Entity:_hurt(t, ts, cb)

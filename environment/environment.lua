@@ -86,11 +86,25 @@ function Environment:toFront(str)
     end
 end
 
-function Environment:explode(r)
+-- explode the tiles within radius of r around the specified coordinate
+function Environment:explode(x, y, r, w)
+    -- the idea is to create an explosion for each of the tiles 
+    -- of a square, centered at (x, y), that has width of r
+    for i = -r, r do
+        for j = -r, r do
+            Environment:explodeAt(
+                x + i, y + j, 
+                normComps({ i, j }), 
+                w
+            )
+        end
+    end
+    self.expls[#self.expls]:playAudio('boom')
+
 end
 
-function Environment:explodeAt(x, y, w)
-    local e = Explosion:new({ x = x, y = y })
+function Environment:explodeAt(x, y, dir, w)
+    local e = Explosion:new({ x = x, y = y, dir = dir })
     e:explode(w)
     e:createSprite()
     table.insert(self.expls, e)

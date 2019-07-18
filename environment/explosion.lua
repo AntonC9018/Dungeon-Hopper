@@ -4,7 +4,6 @@ Explosion = Animated:new{}
 function Explosion:new(...)
     local o = Animated.new(self, ...)
     o.dmg = 4
-    o.dir = { 1, -1 }
     o.specials = {
         push_ing = 50,
         push_amount = 1,
@@ -36,7 +35,6 @@ end
 
 function Explosion:explode(w)
     local t = w.entities_grid[self.x][self.y]
-    self:playAudio('boom')
 
     if t then
         if self.specials.explode_ing > t.explode_res then

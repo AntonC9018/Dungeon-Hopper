@@ -37,7 +37,7 @@ Wizzrobe = Enemy:new{
         } 
     },
     seq_count = 1,
-    health = 16,
+    health = 36,
     dmg = 1,
     size = { 0, 0 }
 }

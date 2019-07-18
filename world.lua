@@ -94,7 +94,7 @@ function World:do_loop(player_action)
 
 
     -- test of explosion
-    if self.loop_count == 1 then environment:explodeAt(3, 5, world) end
+    environment:explode(math.random(2, 6), math.random(2, 6), 1, self)
 
 
 

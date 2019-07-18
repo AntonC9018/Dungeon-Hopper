@@ -42,7 +42,7 @@ function HPContainer:sub(am)
     local residue = self.full - am
     if residue <= 0 then
         self.full = EMPTY
-        return residue
+        return -residue
     else
         self.full = self.full - am
         return 0
@@ -54,6 +54,10 @@ function HPContainer:rmv()
 end
 
 function HPContainer:empty()
+end
+
+function HPContainer:__tostring()
+    return  ((self.full == EMPTY and '○') or (self.full == HALF and '◐') or '●')
 end
 
 HP = constructor:new{}
@@ -129,4 +133,12 @@ function HP:isEmpty(cs)
         if self.cs[i] ~= EMPTY then return false end
     end
     return true
+end
+
+function HP:__tostring()
+    local s = 'Hearts: '
+    for i = #self.cs, 1, -1 do
+        s = s..self.cs[i]:__tostring()..' '
+    end
+    return s
 end

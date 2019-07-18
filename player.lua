@@ -170,7 +170,7 @@ end
 function Player:takeHit(att, w)
 
     -- create the turn object
-    local t = Turn:new(self, false)    
+    local t = Turn:new(self, att.dir or false)    
 
     -- apply pushing etc
     self:applySpecials(att, t, w)
@@ -294,7 +294,11 @@ end
 
 -- TODO: improve this
 function Player:loseHP(dmg)
+    print('Taking damage')
+    print(dmg)
     local status, residue = self.hp:take(dmg)
+    print(residue)
+    print(self.hp)
     if status == DEAD then
         print('dead')
     end

@@ -19,7 +19,7 @@ end
 
 
 function Weapon:orient(dir)
-    self.sprite.rotation = angleBetween({ 1, 0 }, dir)     
+    self.sprite.rotation = angleBetween({ 1, 0 }, dir) / math.pi * 180    
 end
 
 

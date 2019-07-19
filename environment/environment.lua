@@ -116,7 +116,6 @@ end
 function Environment:explodeAt(x, y, dir, w)
     local e = Explosion:new({ x = x, y = y, dir = dir, world = w })
     e:explode(w)
-    e:createSprite()
     table.insert(self.expls, e)
 end
 

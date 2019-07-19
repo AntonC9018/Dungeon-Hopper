@@ -59,20 +59,20 @@ function scene:create( event )
     world:populate(5)
 
 
-    -- local trap = BounceTrap:new(
-    --     { 
-    --         x = 4, 
-    --         y = 4, 
-    --         group = entities_group 
-    --     }
-    -- )
+    local trap = BounceTrap:new(
+        { 
+            x = 4, 
+            y = 4, 
+            world = world
+        }
+    )
 
-    -- table.insert(world.environment.traps, trap)
+    table.insert(world.environment.traps, trap)
 
     
-    -- world_group.x, world_group.y =
-    --     -world.player.x * UNIT + display.contentCenterX,
-    --     -world.player.y * UNIT + display.contentCenterY
+    world_group.x, world_group.y =
+        -world.player.x * UNIT + display.contentCenterX,
+        -world.player.y * UNIT + display.contentCenterY
 
 
     first_input = true

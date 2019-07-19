@@ -16,9 +16,10 @@ function Animated:loadAssets(o)
         self:loadSheet(o.sheet.path, o.sheet.options)
     end
 
+    
     if o.audio then
         self.audio = {}
-        for k, v in pairs(self.audio) do
+        for k, v in pairs(o.audio) do
             self.audio[k] = audio.loadSound(v)
         end
     end

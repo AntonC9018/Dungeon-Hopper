@@ -49,6 +49,7 @@ function World:initPlayer(o)
         end
     )
 
+
     table.insert(self.entities_list, self.player)
 end
 

@@ -618,12 +618,14 @@ function Entity:_bouncedBumped(...)
     self:_hopUp(...)
 end
 
-function Entity:_hurtPushedBumpedDisplaced(...)
-    self:_pushed(...)
+function Entity:_hurtPushedBumpedDisplaced(t, ts, cb)
+    self:_pushed(t, ts, cb)
+    self:_hurt(t, ts)
 end
 
-function Entity:_hurtPushedBumped(...)
-    self:_bumped(...)
+function Entity:_hurtPushedBumped(t, ts, cb)
+    self:_bumped(t, ts, cb)
+    self:_hurt(t, ts)
 end
 
 function Entity:_hurtPushed(t, ts, cb)

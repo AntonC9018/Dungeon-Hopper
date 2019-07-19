@@ -145,9 +145,7 @@ function World:do_loop(player_action)
     end
     for i = 1, #self.entities_list do
         self.entities_list[i]:resetPositions(self)
-    end    
-
-    self.entities_grid[self.player.x][self.player.y] = false
+    end
 
     -- player has priority
     -- update player's coordinates
@@ -164,12 +162,11 @@ function World:do_loop(player_action)
     self.player:act(player_action, self)
 
 
+    self.player:resetPositions(self)
+
+
     -- test of explosion
     self.environment:explode(math.random(2, 6), math.random(2, 6), 1, self)
-
-
-
-    self.entities_grid[self.player.x][self.player.y] = self.player
 
 
     for i = 1, #self.entities_list do

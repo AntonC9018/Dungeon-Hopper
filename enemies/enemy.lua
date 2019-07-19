@@ -9,7 +9,8 @@ local Enemy = Entity:new{
     sees = true,
     enemy = true,
     size = { 0, 0 },
-    seq_count = 1    
+    seq_count = 1,
+    priority = 1    
 }
 
 function Enemy:new(...)
@@ -33,8 +34,8 @@ function Enemy:createSprite() end
 
 
 function Enemy:setupSprite()
-    self.sprite.x = self.x - self.size[1] / 2
-    self.sprite.y = self.y + self.offset_y - self.size[2] / 2
+    self.sprite.x = self.x + self.size[1] / 2
+    self.sprite.y = self.y + self.offset_y + self.size[2] / 2
     self.sprite:scale(self.scaleX, self.scaleY)
     self:anim(1000, 'idle')
 end
@@ -675,5 +676,30 @@ function Enemy:bumpLoop()
     return false
 end
 
+function Enemy:_bouncedDisplacedHit(t, ts, cb)
+    self:_displaced(t, ts, cb, self:getSeqStep().anim.attack)
+    self:_hit(t, ts)
+end
+
+function Enemy:_bouncedDisplaced(t, ts, cb)
+    self:_displaced(t, ts, cb, self:getSeqStep().anim.move)
+end
+
+function Enemy:_hit(t, ts, cb, a)
+    self:_bumped(t, ts, cb, a or self:getSeqStep().anim.attack)
+end
+
+function Enemy:_bumped(t, ts, cb, a)
+    Entity._bumped(self, t, ts, cb, a or self:getSeqStep().anim.move)
+end
+
+function Enemy:_displaced(t, ts, cb, a)
+    Entity._displaced(self, t, ts, cb, a or self:getSeqStep().anim.move)
+end
+
+function Enemy:_idle(t, ts, cb, a)
+    self:anim(1000, a or self:getSeqStep().anim.idle)
+    if cb then cb() end
+end
 
 return Enemy

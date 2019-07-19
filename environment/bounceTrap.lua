@@ -31,7 +31,7 @@ function BounceTrap:activate(e, w)
             self.bounced = false
         end
 
-        local t = w.environment:getTrapAt(x, y)
+        local t = w.env:getTrapAt(x, y)
         if t and t.active then
             t:activate(e, w)
         end

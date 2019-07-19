@@ -21,7 +21,8 @@ local MiniWizzrobe = Enemy:new(
             }
         },
         health = 1,
-        dmg = 2
+        dmg = 2,
+        priority = 4500
     }
 )
 

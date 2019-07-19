@@ -67,7 +67,7 @@ function scene:create( event )
         }
     )
 
-    table.insert(world.environment.traps, trap)
+    table.insert(world.env.traps, trap)
 
     
     world_group.x, world_group.y =

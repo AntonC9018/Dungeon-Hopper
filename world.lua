@@ -14,7 +14,7 @@ function World:new(...)
     o.loop_queue = {}
     o.doing_loop = false
     o.loop_count = 1
-    o.environment = Environment:new{
+    o.env = Environment:new{
         world = o
     }
     o.tiles = tdArray(
@@ -149,15 +149,7 @@ function World:do_loop(player_action)
 
     -- player has priority
     -- update player's coordinates
-    -- hit the enemy at the location, update its:
-    -- health (if not invincible)
-    -- hurt = true 
-    -- moved = true (if required)
-    -- dead = true (if required)
-    -- if dead, set animation string to death
-    -- push it back (if required)
-    -- set player's animation to the necessary string
-    -- same for the audio
+    -- hit the enemy at the location
     -- do the same for their weapon (and spade?)
     self.player:act(player_action, self)
 
@@ -166,22 +158,23 @@ function World:do_loop(player_action)
 
 
     -- test of explosion
-    self.environment:explode(math.random(2, 6), math.random(2, 6), 1, self)
+    -- self.env:explode(math.random(4, 6), math.random(4, 6), 1, self)
 
-
+    -- sort them by priority
+    table.sort(self.entities_list, function(a, b) return a.priority > b.priority end)
     for i = 1, #self.entities_list do
         if not self.entities_list[i].moved then
             self.entities_list[i]:performAction(player_action, self)
         end
     end
 
-    -- environment stores such entities as bombs, traps
+    -- env stores such entities as bombs, traps
     -- projectiles, decorations and such 
-    self.environment:act(self)
+    self.env:act(self)
 
     
-    self.environment:toFront('traps')
-    self.environment:updateSprites()
+    self.env:toFront('traps')
+    self.env:updateSprites()
 
     -- bring the entities that have higher y to the front
     table.sort(self.entities_list, function(a, b) return a.y < b.y end)
@@ -189,7 +182,7 @@ function World:do_loop(player_action)
         self.entities_list[i].sprite:toFront()
     end
 
-    self.environment:toFront('expls')
+    self.env:toFront('expls')
 
 
 
@@ -201,7 +194,7 @@ function World:do_loop(player_action)
             self.entities_list[i]:reset(self)            
         end
 
-        self.environment:reset(self)
+        self.env:reset(self)
 
         -- update the iteration count
         self.loop_count = self.loop_count + 1

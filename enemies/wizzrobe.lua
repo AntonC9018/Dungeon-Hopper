@@ -42,7 +42,8 @@ local Wizzrobe = Enemy:new{
         } 
     },
     health = 3,
-    dmg = 1
+    dmg = 1,
+    priority = 5000
 }
 
 Wizzrobe:transformSequence()

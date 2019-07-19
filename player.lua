@@ -10,7 +10,8 @@ local Player = Entity:new{
     invincible = 0,
     invincible_max = 2,
     pierce_ing = 1,
-    size = { 0, 0 }
+    size = { 0, 0 },
+    priority = 1    
 }
 
 Player:loadAssets(assets.Player)

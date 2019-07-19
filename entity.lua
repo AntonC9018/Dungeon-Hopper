@@ -606,16 +606,17 @@ function Entity:playAnimation(w, callback)
 end
 
 
-function Entity:_bouncedDisplacedHit(...)
-    self:_hit(...)
+function Entity:_bouncedDisplacedHit(t, ts, cb)
+    self:_displaced(t, ts, cb)
+    self:_hit(t, ts)
 end
 
 function Entity:_bouncedDisplaced(...)
-    self:_displaced(...)
+    self:_displaced(unpack(arg))
 end
 
 function Entity:_bouncedBumped(...)
-    self:_hopUp(...)
+    self:_hopUp(unpack(arg))
 end
 
 function Entity:_hurtPushedBumpedDisplaced(t, ts, cb)
@@ -633,14 +634,14 @@ function Entity:_hurtPushed(t, ts, cb)
     self:_hurt(t, ts)
 end
 
-function Entity:_hurt(t, ts, cb)
-    self:anim(ts, 'hurt')
+function Entity:_hurt(t, ts, cb, a)
+    self:anim(ts, a or 'hurt')
     self:playAudio('hurt')
     if cb then cb() end
 end
 
-function Entity:_pushed(t, ts, cb)
-    self:anim(ts, 'pushed')
+function Entity:_pushed(t, ts, cb, a)
+    self:anim(ts, a or 'pushed')
     transition.to(self.sprite, {
         x = t.f_pos.x + self.size[1] / 2,
         y = t.f_pos.y + self.size[2] / 2 + self.offset_y,
@@ -650,11 +651,11 @@ function Entity:_pushed(t, ts, cb)
 end
 
 function Entity:_hit(...)
-    self:_bumped(...)
+    self:_bumped(unpack(arg))
 end
 
-function Entity:_bumped(t, ts, cb)
-    self:anim(ts, 'jump')
+function Entity:_bumped(t, ts, cb, a)
+    self:anim(ts, a or 'jump')
     transition.to(self.sprite, {
         x = t.i_pos.x + t.a[1] / 2 + self.size[1] / 2,
         y = t.i_pos.y + t.a[2] / 2 + self.size[2] / 2 + self.offset_y + self.offset_y_jump,
@@ -664,8 +665,8 @@ function Entity:_bumped(t, ts, cb)
     })
 end
 
-function Entity:_displaced(t, ts, cb)
-    self:anim(ts, 'jump')
+function Entity:_displaced(t, ts, cb, a)
+    self:anim(ts, a or 'jump')
     -- this animation consists of two steps
     -- first is the first half - jumping up
     transition.to(self.sprite, {
@@ -688,8 +689,8 @@ function Entity:_displaced(t, ts, cb)
     })
 end
 
-function Entity:_idle(t, ts, cb)
-    self:anim(1000, 'idle')
+function Entity:_idle(t, ts, cb, a)
+    self:anim(1000, a or 'idle')
     if cb then cb() end
 end
 
@@ -712,15 +713,15 @@ function Entity:_hopUp(t, ts, cb)
 end
 
 function Entity:_dashedHit(...)
-    self:_displaced(...)
+    self:_displaced(unpack(arg))
 end
 
 function Entity:_dashedHitBumped(...)
-    self:_bumped(...)
+    self:_bumped(unpack(arg))
 end
 
 function Entity:on(...)
-    self.emitter:on(...)
+    self.emitter:on(unpack(arg))
 end
 
 return Entity

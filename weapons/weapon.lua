@@ -19,12 +19,7 @@ end
 
 
 function Weapon:orient(dir)
-
-    if          dir[1] ==  1 then self.sprite.rotation = 0
-       elseif   dir[2] ==  1 then self.sprite.rotation = 90
-       elseif   dir[1] == -1 then self.sprite.rotation = 180
-       elseif   dir[2] == -1 then self.sprite.rotation = 270 
-       else self.sprite.rotation = 0 end       
+    self.sprite.rotation = angleBetween({ 1, 0 }, dir)     
 end
 
 

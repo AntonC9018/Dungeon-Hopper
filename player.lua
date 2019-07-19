@@ -189,7 +189,7 @@ end
 -- take damage from an enemy
 function Player:takeHit(att, w)
 
-    self.emitter:emit('hit:start', self, weapon)
+    self.emitter:emit('hurt:start', self, weapon)
 
 
     -- create the turn object
@@ -221,7 +221,7 @@ function Player:takeHit(att, w)
     -- apply debuffs etc
     self:applyDebuffs(att, w)
 
-    self.emitter:emit('hit:damage', self, weapon)
+    self.emitter:emit('hurt:damage', self, weapon)
     
     t:set('hurt')  
 

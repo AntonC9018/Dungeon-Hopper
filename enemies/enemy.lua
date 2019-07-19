@@ -3,13 +3,20 @@ local Turn = require('turn')
 local Entity = require('entity')
 
 local Enemy = Entity:new{
-    facing = { 1, 0 },
     dmg = 1,
     max_vision = 6,
-    health = 3,
+    health = 1,
     sees = true,
-    enemy = true
+    enemy = true,
+    size = { 0, 0 },
+    seq_count = 1    
 }
+
+function Enemy:new(...)
+    local o = Entity.new(self, ...)
+    o:on('animation:start', function() if o.dead then o:_die() end end)
+    return o
+end
 
 -- whether to reset the sequence step to 1 after being attacked
 Enemy.weak = true
@@ -23,6 +30,14 @@ Enemy.reach = 1
 
 -- abstract
 function Enemy:createSprite() end
+
+
+function Enemy:setupSprite()
+    self.sprite.x = self.x - self.size[1] / 2
+    self.sprite.y = self.y + self.offset_y - self.size[2] / 2
+    self.sprite:scale(self.scaleX, self.scaleY)
+    self:anim(1000, 'idle')
+end
 
 
 -- get a list of desirable actions sorted by priority
@@ -196,12 +211,6 @@ function Enemy:computeAction(player_action, w)
     self.emitter:emit('computeAction:end', self, actions)
 end
 
-function Enemy:preAnimation()
-    if self.dead then
-        self:die()
-    end
-end
-
 
 function Enemy:_idle(t, ts, cb)
 
@@ -356,9 +365,13 @@ function Enemy:tickAll()
 end
 
 function Enemy:die()
+    self.emitter:emit('death')
+end
+
+function Enemy:_die()
     transition.to(self.sprite, {
         alpha = 0,
-        time = 600,
+        time = 300,
         transition = easing.linear,
         onComplete = function()
             display.remove(self.sprite)
@@ -561,7 +574,7 @@ function Enemy:performAction(player_action, w)
                     not w.entities_grid[x][y].doing_action then
                 
                     -- make the enemy move
-                    w.entities_grid[x][y]:selectAction(w)
+                    w.entities_grid[x][y]:performAction(player_action, w)
                     -- do the checks for the current iteration again
                     i = i - 1
 
@@ -637,6 +650,29 @@ function Enemy:performAction(player_action, w)
     -- if by here it hasn't returned then all actions were meh
     -- in that case just do the first action 
     self:setAction(acts[1], responds[1] or 0, w)
+end
+
+
+function Enemy:bumpLoop()
+    if 
+        -- if was preparing to attack
+        contains(self:getSeqStep().name, 'attack') and 
+        -- but has bumped into an enemy
+        Turn.was(self.history, 'bumped') and
+        -- and hasn't attacked 
+        not Turn.was(self.history, 'hit') and
+        -- and hasn't bounced
+        not Turn.was(self.history, 'bounced')
+    then
+        -- TODO: Refactor this animation thing
+        if self.close then
+            self:anim(1000, "angry") 
+        else
+            self:anim(1000, "ready") 
+        end        
+        return true
+    end
+    return false
 end
 
 

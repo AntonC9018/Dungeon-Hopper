@@ -25,6 +25,12 @@ function Animated:loadAssets(o)
     end
 end
 
+function Animated:copyAssets(obj)
+    self.sheet = obj.sheet
+    self.audio = obj.audio
+end
+
+
 function Animated:playAudio(t)
     if t and self.audio[t] then
         audio.play(self.audio[t])

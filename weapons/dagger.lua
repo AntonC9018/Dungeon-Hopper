@@ -4,7 +4,8 @@ local Dagger = Weapon:new{
     xScale = 1 / 24,
     yScale = 1 / 24,
     dmg = 1,
-    pattern = {{ 1, 1 }, { 1, -1 }}
+    pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }},
+    hit_all = true
 }
 
 Dagger:loadAssets(assets.Dagger)
@@ -39,18 +40,18 @@ end
 
 -- this is a test
 -- the dagger now acts like rapier in CoH
-function Dagger:modify(obj)
-    local p = obj.pattern
-    local att = obj.attack
-    local w = obj.w
-    local t = obj.t
+-- function Dagger:modify(obj)
+--     local p = obj.pattern
+--     local att = obj.attack
+--     local w = obj.w
+--     local t = obj.t
 
-    if (p[2] == 1 or p[2] == -1) and p[1] == 1 then
-        att.dmg = att.dmg + 1 
-        att.specials.push_ing = att.specials.push_ing + 1
-        att.specials.push_amount = att.specials.push_amount + 1  
-        obj.owner:thrust(normComps(obj.owner.facing), 1, t, w)
-    end
-end
+--     if (p[2] == 1 or p[2] == -1) and p[1] == 1 then
+--         att.dmg = att.dmg + 1 
+--         att.specials.push_ing = att.specials.push_ing + 1
+--         att.specials.push_amount = att.specials.push_amount + 1  
+--         obj.owner:thrust(normComps(obj.owner.facing), 1, t, w)
+--     end
+-- end
 
 return Dagger

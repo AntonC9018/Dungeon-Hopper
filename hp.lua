@@ -56,7 +56,7 @@ function HPContainer:empty()
 end
 
 function HPContainer:__tostring()
-    return  ((self.full == EMPTY and '○') or (self.full == HALF and '◐') or '●')
+    return  ((self.full == EMPTY and '○') or (self.full == HALF and '◑') or '●')
 end
 
 local HP = constructor:new{}

@@ -560,8 +560,10 @@ function Entity:playAnimation(w, callback)
             
             elseif t.hit then
 
-                if t.dashed then
+                if t.dashed and t.displaced then
                     self:_dashedHit(t, ts, cb)
+                elseif t.dashed and t.bumped then
+                    self:_dashedHitBumped(t, ts, cb)
                 else
                     self:_hit(t, ts, cb)
                 end
@@ -709,6 +711,10 @@ end
 
 function Entity:_dashedHit(...)
     self:_displaced(...)
+end
+
+function Entity:_dashedHitBumped(...)
+    self:_bumped(...)
 end
 
 function Entity:on(...)

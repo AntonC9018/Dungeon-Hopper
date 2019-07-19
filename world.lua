@@ -68,6 +68,20 @@ function World:populate(a)
 end
 
 
+function World:spawn(x, y, class) 
+    local entity = class:new{  
+        x = x,
+        y = y,
+        world = self,
+        doing_action = true,
+        moved = true
+    }
+    table.insert(self.entities_list, entity)
+    entity:resetPositions(self)
+    return entity
+end
+
+
 function World:do_loop(player_action)
 
     self.doing_loop = true
@@ -151,7 +165,7 @@ function World:do_loop(player_action)
 
 
     -- test of explosion
-    if self.loop_count == 2 then self.environment:explode(math.random(2, 6), math.random(2, 6), 1, self) end
+    self.environment:explode(math.random(2, 6), math.random(2, 6), 1, self)
 
 
 

@@ -1,6 +1,7 @@
 
 local Enemy = require('enemies.enemy')
 local Turn = require('turn')
+local MiniWizzrobe = require('enemies.miniWizzrobe')
 
 local Wizzrobe = Enemy:new{
     offset_y = -0.3,
@@ -37,13 +38,11 @@ local Wizzrobe = Enemy:new{
                 reorient = true
             },
             -- redo this step if the function s3Loop() returns true
-            loop = "s3Loop" 
+            loop = "bumpLoop" 
         } 
     },
-    seq_count = 1,
-    health = 36,
-    dmg = 1,
-    size = { 0, 0 }
+    health = 3,
+    dmg = 1
 }
 
 Wizzrobe:transformSequence()
@@ -53,6 +52,12 @@ Wizzrobe:loadAssets(assets.Wizzrobe)
 function Wizzrobe:new(...)
     local o = Enemy.new(self, ...)
     o:createSprite()
+    o:setupSprite()
+    o:on('dead', function()
+        local mw = o.world:spawn(o.x, o.y, MiniWizzrobe)
+        mw.emitter:once('computeAction:start', function() mw.seq_step = 2 end)
+        mw.moved = true
+    end)
     return o
 end
 
@@ -85,33 +90,6 @@ function Wizzrobe:createSprite()
             time = 0
         }
     })
-    self.sprite.x = self.x - self.size[1] / 2
-    self.sprite.y = self.y + self.offset_y - self.size[2] / 2
-
-    self.sprite:scale(self.scaleX, self.scaleY)
-    self:anim(1000, 'idle')
-end
-
-
-function Wizzrobe:s3Loop()
-    if 
-        -- if was preparing to attack
-        contains(self:getSeqStep().name, 'attack') and 
-        -- but has bumped into an enemy
-        Turn.was(self.history, 'bumped') and
-        -- and hasn't attacked 
-        not Turn.was(self.history, 'attack') and
-        -- and hasn't bounced
-        not Turn.was(self.history, 'bounced')
-    then
-        if self.close then
-            self:anim(1000, "angry") 
-        else
-            self:anim(1000, "ready") 
-        end        
-        return true
-    end
-    return false
 end
 
 return Wizzrobe

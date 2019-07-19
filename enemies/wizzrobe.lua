@@ -51,7 +51,7 @@ Wizzrobe:loadAssets(assets.Wizzrobe)
 
 
 function Wizzrobe:new(...)
-    local o = Enemy.new(self, ...)
+    local o = Enemy.new(self, unpack(arg))
     o:createSprite()
     o:setupSprite()
     o:on('dead', function()

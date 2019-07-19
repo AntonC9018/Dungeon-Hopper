@@ -2,7 +2,6 @@ local constructor = require('constructor')
 local Environment = require('environment.environment')
 local Player = require('player')
 local Wizzrobe = require('enemies.wizzrobe')
-local Tile = require('tile')
 local Dagger = require('weapons.dagger')
 local Camera = require('camera')
 
@@ -10,25 +9,13 @@ local Camera = require('camera')
 local World = constructor:new()
 
 function World:new(...)
-    local o = constructor.new(self, ...)
+    local o = constructor.new(self, unpack(arg))
     o.loop_queue = {}
     o.doing_loop = false
     o.loop_count = 1
     o.env = Environment:new{
         world = o
     }
-    o.tiles = tdArray(
-        o.width, 
-        o.height, 
-        function(i, j)
-            return Tile:new({
-                x = i,
-                y = j,
-                type = math.random(11),
-                world = o
-            })
-        end
-    )
     o.entities_grid = tdArray(o.width, o.height)
     o.walls = tdArray(o.width, o.height)
     o.camera = Camera:new{}
@@ -168,10 +155,9 @@ function World:do_loop(player_action)
         end
     end
 
-    -- env stores such entities as bombs, traps
-    -- projectiles, decorations and such 
-    self.env:act(self)
-
+    self.env:doTraps(self)
+    
+    self.env:doTiles(self)
     
     self.env:toFront('traps')
     self.env:updateSprites()
@@ -185,7 +171,6 @@ function World:do_loop(player_action)
     self.env:toFront('expls')
 
 
-
     -- Reset everything only when all animations have finished
     local I = #self.entities_list
 
@@ -195,6 +180,7 @@ function World:do_loop(player_action)
         end
 
         self.env:reset(self)
+
 
         -- update the iteration count
         self.loop_count = self.loop_count + 1

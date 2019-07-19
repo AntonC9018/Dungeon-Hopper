@@ -25,6 +25,8 @@ function Turn:set(...)
     end
 
     self._set = true
+
+    return self
 end
 
 function Turn:apply()
@@ -33,6 +35,7 @@ function Turn:apply()
     self.f_pos = { x = self.s.x, y = self.s.y }
     -- final facing
     self.f_facing = self.s.facing
+    return self    
 end
 
 

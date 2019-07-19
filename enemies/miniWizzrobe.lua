@@ -30,7 +30,7 @@ MiniWizzrobe:transformSequence()
 MiniWizzrobe:loadAssets(assets.Wizzrobe)
 
 function MiniWizzrobe:new(...)
-    local o = Enemy.new(self, ...)
+    local o = Enemy.new(self, unpack(arg))
     -- scale down 3 times
     o.scaleX = o.scaleX * 0.4
     o.scaleY = o.scaleY * 0.4

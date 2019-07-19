@@ -14,7 +14,7 @@ local Enemy = Entity:new{
 }
 
 function Enemy:new(...)
-    local o = Entity.new(self, ...)
+    local o = Entity.new(self, unpack(arg))
     o:on('animation:start', function() if o.dead then o:_die() end end)
     return o
 end
@@ -249,30 +249,32 @@ function Enemy:setAction(a, r, w)
     -- create the turn
     local t = Turn:new(self, a)
 
-    local M, A, I = contains(step.name, 'move'), contains(step.name, 'attack'), contains(step.name, 'idle')
-
-
     self.emitter:emit('setAction:start', self, a, r, t)
+
+    local M, A, I = contains(step.name, 'move'), contains(step.name, 'attack'), contains(step.name, 'idle')
 
     if not t._set then
 
         if M then
 
             -- Free way, just move
-            if r == FREE then 
+            if r == 'free' then 
                 self:go(a, t, w)
 
             
-            elseif r == ENEMY or r == BLOCK then
+            elseif r == 'enemy' or r == 'block' then
                 self.facing = { a[1], a[2] }
                 t:set('bumped')
+            
+            elseif r == 'stuck' then
+                t:set('stuck')
             end
         end
 
         if A then
 
             -- damage the player
-            if r == PLAYER then
+            if r == 'player' then
                 -- TODO: be able to specify the attack inside sequence
                 w.player:takeHit(self:getAttack():setDir(a), w)
                 self.facing = { a[1], a[2] }
@@ -288,14 +290,13 @@ function Enemy:setAction(a, r, w)
 
         end
 
-    end
-    
+    end   
 
     
     
     -- TODO: probably refactor
     self.close = self:isClose(w.player)
-    -- self.close_diagonal = self:isCloseDiagonal(w.player)
+    self.close_diagonal = self:isCloseDiagonal(w.player)
     
     
     -- reorient to the player if necessary
@@ -488,15 +489,16 @@ end
 -- make other enemies move if they block way
 function Enemy:performAction(player_action, w)    
     
-    self.doing_action = true
+    self.emitter:emit('performAction:start', self)
+
+    if self.moved then return end
     
+    self.doing_action = true
+
     if not self.sees then
         self.moved = true
         return
     end
-
-    self.emitter:emit('performAction:start', self)
-
 
     local step = self:getSeqStep()
     local acts = self:getAction(player_action, w)
@@ -510,6 +512,10 @@ function Enemy:performAction(player_action, w)
 
     local a, m = contains(step.name, 'attack'), contains(step.name, 'move')
 
+    if self.stuck > 0 and (a or m) then
+        self:setAction({}, 'stuck', w)
+        return
+    end
 
     -- loop throught all actions
     while(true) do
@@ -523,8 +529,8 @@ function Enemy:performAction(player_action, w)
         local rs = {}
 
         local returnOn = {
-            FREE,
-            DIG
+            'free',
+            'dig'
         }
 
         for j = 1, #ps do
@@ -536,11 +542,11 @@ function Enemy:performAction(player_action, w)
 
                 -- if this enemy can destoy the given wall
                 if a and self.dig >= w.walls[x][y].dig_res then 
-                    rs[j] = DIG
+                    rs[j] = 'dig'
                 
                 -- if can move, bump
                 elseif m then
-                    rs[j] = BLOCK
+                    rs[j] = 'block'
                 end
                     
             elseif w.entities_grid[x][y] then
@@ -550,11 +556,11 @@ function Enemy:performAction(player_action, w)
 
                     -- if attacking, attack
                     if a then
-                        rs[j] = PLAYER
+                        rs[j] = 'player'
                     
                     -- if moving, bump
                     elseif m then
-                        rs[j] = ENEMY
+                        rs[j] = 'enemy'
                     end
 
                 -- an enemy
@@ -565,8 +571,8 @@ function Enemy:performAction(player_action, w)
 
                 -- take up the place of a dead enemy
                 elseif m and w.entities_grid[x][y].dead then
-                    rs[j] = FREE
-                    -- return self:setAction(A, FREE, w)
+                    rs[j] = 'free'
+                    -- return self:setAction(A, 'free', w)
 
 
                 elseif m and w.entities_grid[x][y].moved == false and 
@@ -583,18 +589,18 @@ function Enemy:performAction(player_action, w)
                 
                 -- attack empty space
                 elseif a and not m then
-                    -- return self:setAction(A, FREE, w) 
-                    rs[j] = FREE
+                    -- return self:setAction(A, 'free', w) 
+                    rs[j] = 'free'
                     
                 elseif m then
                     -- bump into the enemy if there's no better move
-                    -- responds[i] = ENEMY
-                    rs[j] = ENEMY
+                    -- responds[i] = 'enemy'
+                    rs[j] = 'enemy'
                 end
 
 
             elseif m then -- free way
-                rs[j] = FREE
+                rs[j] = 'free'
 
             else
                 -- do user defined special checks
@@ -604,7 +610,7 @@ function Enemy:performAction(player_action, w)
                     if ret then table.insert(returnOn, rs[j]) end
                     if rep then i = i - 1 break end
                 else
-                    rs[j] = FREE
+                    rs[j] = 'free'
                 end
             end
         end
@@ -623,19 +629,19 @@ function Enemy:performAction(player_action, w)
 
             if go_on then
 
-                -- if met a return condition (FREE, DIG or some other user defined)
+                -- if met a return condition ('free', 'dig' or some other user defined)
                 for j = 1, #returnOn do
                     if table.all(rs, returnOn[j]) then 
                         return self:setAction(A, returnOn[j], w) 
                     end
                 end
 
-                if table.some(rs, BLOCK) then 
-                    responds[i] = BLOCK
-                elseif table.some(rs, ENEMY) then
-                    responds[i] = ENEMY
-                elseif table.some(rs, PLAYER) then
-                    return self:setAction(A, PLAYER, w)
+                if table.some(rs, 'block') then 
+                    responds[i] = 'block'
+                elseif table.some(rs, 'enemy') then
+                    responds[i] = 'enemy'
+                elseif table.some(rs, 'player') then
+                    return self:setAction(A, 'player', w)
                 else
                     responds[i] = rs[1]
                 end

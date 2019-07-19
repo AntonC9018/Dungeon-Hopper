@@ -3,10 +3,14 @@ local Turn = require('turn')
 local Animated = require('animated')
 local Attack = require('attack')
 
-local Entity = Animated:new{}
+local Entity = Animated:new{
+    offset_y_hop = -0.3
+}
+
+
 
 function Entity:new(...)
-    local o = Animated.new(self, ...)
+    local o = Animated.new(self, unpack(arg))
     o.prev_pos = {}
     o.prev_history = {}
     o.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
@@ -24,6 +28,7 @@ Entity.levitating = false
 
 -- these two are a bit special 
 Entity.stuck = 0
+Entity.stuck_res = 0
 Entity.invincible = 0
 
 -- Stats
@@ -77,8 +82,22 @@ function Entity:tickAll()
     for i = 1, #DEBUFFS do
         self[DEBUFFS[i]..'_ed'] = math.max(self[DEBUFFS[i]..'_ed'] - 1, 0)
     end
-    
-    self.stuck = math.max(self.stuck - 1, 0)
+
+
+    local s = self.world.env.tiles[self.x][self.y].stucker
+
+    if not s or (s and s ~= self) then    
+        self.stuck = 0
+    elseif 
+        not self.just_stuck and 
+        Turn.was(self.history, 'stuck')
+    then 
+        self.stuck = math.max(self.stuck - 1, 0)
+    end
+
+    self.just_stuck = false
+
+
     self.invincible = math.max(self.invincible - 1, 0)
 end
 
@@ -590,6 +609,9 @@ function Entity:playAnimation(w, callback)
             
             elseif t.dug then
                 self:_dug(t, ts, cb)
+
+            elseif t.stuck then
+                self:_stuck(t, ts, cb)
             
             else -- custom actions
                 self:_custom(t, ts, cb)
@@ -705,7 +727,7 @@ end
 function Entity:_hopUp(t, ts, cb)
     transition.to(self.sprite, {
         x = t.f_pos.x + self.size[1] / 2,
-        y = t.f_pos.y + self.size[2] / 2 + self.offset_y + self.offset_y_jump,
+        y = t.f_pos.y + self.size[2] / 2 + self.offset_y + self.offset_y_hop,
         time = ts / 2,
         transition = easing.continuousLoop,
         onComplete = function() if cb then cb() end end
@@ -718,6 +740,10 @@ end
 
 function Entity:_dashedHitBumped(...)
     self:_bumped(unpack(arg))
+end
+
+function Entity:_stuck(...)
+    self:_hopUp(unpack(arg))
 end
 
 function Entity:on(...)

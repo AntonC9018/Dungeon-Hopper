@@ -17,7 +17,7 @@ local Player = Entity:new{
 Player:loadAssets(assets.Player)
 
 function Player:new(...)
-    local o = Entity.new(self, ...)
+    local o = Entity.new(self, unpack(arg))
     o.hp = HP:new():set('red', 6)
     o.to_drop = {}
     o.items = {}
@@ -58,6 +58,10 @@ function Player:act(a, w)
     local t = Turn:new(self, a)
 
     self.moved = true
+
+    if self.stuck > 0 then
+        return Turn:new(self):set('stuck'):apply()
+    end
 
     if a[3] then
         self.emitter:emit('act:special', self, dir)

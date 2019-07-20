@@ -1,7 +1,10 @@
 local Animated = require('animated')
 
 local Weapon = Animated:new{
-    run_and_gun = false,
+    -- move, then attack
+    move_attack = false,
+    -- attack, then move
+    attack_move = false,
     hit_all = false
 }
 

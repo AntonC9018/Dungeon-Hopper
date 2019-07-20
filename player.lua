@@ -59,13 +59,7 @@ function Player:createSprite()
         }
     })
     -- place the sprite in the middle of the screen
-    self.sprite.x = self.x
-    self.sprite.y = self.y + self.offset_y
-
-    self.sprite:scale(self.scaleX, self.scaleY)
-    
-    self.sprite:setSequence('idle')
-    self.sprite:play()
+    self:setupSprite()
 end
 
 -- a stands for action
@@ -93,46 +87,93 @@ function Player:act(a, w)
         end
         -- look to the proper direction
         self.facing = { a[1], a[2] }
-        
-        
-        -- attempt to attack
-        local enemy = self:attack(a, t, w)
 
-        -- if attacking set the turn, refresh
-        if t._set then
-            t:apply()
-            t = Turn:new(self, a)
+        local enemy, wall, moved
+
+        local function _at()
+            enemy = self:attack(a, t, w)
         end
-
-        local wall 
-
-        -- if did not attack or can dig after attacking
-        if not enemy or (self.weapon and self.weapon.dig_and_gun) then
-            -- attempt to dig
+        local function _di()
+            moved = self:move(a, t, w)
+        end
+        local function _mo()
             wall = self:dig(a, t, w)
+        end 
+        local function app()
+            t:apply(); t = Turn:new(self, a)
+        end
+        local function at()
+            _at() app()
+        end
+        local function di()
+            _di() app()
+        end
+        local function mo()
+            _mo() app()
+        end
+        local function ma()
+            return self.weapon and self.weapon.move_attack
+        end
+        local function md()
+            return self.spade  and self.spade.move_dig
+        end
+        local function dm()
+            return self.spade  and self.weapon.dig_move
+        end
+        local function am()
+            return self.weapon and self.weapon.attack_move
+        end
+        local function cm()
+            return not areBlocked(self:getPointsFromDirection(dir), w)
         end
 
-        -- if digging set the turn, refresh
-        if t._set then
-            t:apply()
-            t = Turn:new(self, a)
-        end
 
+        -- can move and then attack
+        if ma() then
+            -- way not blocked
+            if cm() then 
+                -- move
+                mo()
+                -- attempt attack
+                at()
+            else
+                -- attempt attack
+                at()
+            end
+        else
+            -- attempt attack
+            at()
+        end
+        -- hasn't attacked
+        if not enemy then
+            -- can move and dig
+            if md() then
+                -- way not blocked
+                if cm() and not moved then
+                    -- move
+                    _mo()
+                    -- attempt dig
+                    di()
+                elseif not enemy then
+                    -- attempt dig
+                    di()
+                end
+            else
+                di()
+            end            
+        end
         if 
-        
-        -- if did not attack or can move after attacking 
-        (not enemy or (self.weapon and self.weapon.run_and_gun))
-
-        -- and did not dig
-        and not dug
-        
+            -- can move after digging / attacking and done some
+            (am() and dm() and (enemy or wall)) or
+            -- can move after attacking and did attack
+            (am() and enemy and not wall) or
+            -- can move after digging and did dig
+            (dm() and not enemy and wall) or
+            -- did neither dig nor attack nor move
+            (not enemy and not wall and not moved)
         then
-            self:move(a, t, w)
-        end
-
-        -- if moved, add the turn
-        if t._set then
-            t:apply()
+            -- attempt to move
+            mo()
         end
     end
 end
@@ -195,16 +236,16 @@ end
 -- attempt to move
 function Player:move(dir, t, w)       
     -- there is no enemies in the way
-    if     
-        w.entities_grid[self.x + dir[1]][self.y + dir[2]] or 
-        w.walls[self.x + dir[1]][self.y + dir[2]]     
+    if not areBlocked(self:getPointsFromDirection(dir), w)  
     then
-        t:set('bumped')
-        self.emitter:emit('move:bump', self, dir)
-    else
         -- go forward
         self:go(dir, t, w)
         self.emitter:emit('move:went', self, dir)
+        return true
+    else
+        t:set('bumped')
+        self.emitter:emit('move:bump', self, dir)   
+        return false     
     end
 end
 

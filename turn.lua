@@ -30,6 +30,7 @@ function Turn:set(...)
 end
 
 function Turn:apply()
+    if not self._set then return end
     table.insert(self.s.history, self)
     -- final position (after the movement)
     self.f_pos = { x = self.s.x, y = self.s.y }

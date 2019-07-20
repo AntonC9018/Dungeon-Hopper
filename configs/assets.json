@@ -73,5 +73,15 @@
         "audio": {
             "hurt": "roblox.mp3"
         }
+    },
+    "Crate": {
+        "sheet": {
+            "path": "crate.png",
+            "options": {
+                "width": 16,
+                "height": 20,
+                "numFrames": 1
+            }
+        }
     }
 }

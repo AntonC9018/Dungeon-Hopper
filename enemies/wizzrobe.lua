@@ -2,6 +2,7 @@
 local Enemy = require('enemies.enemy')
 local Turn = require('turn')
 local MiniWizzrobe = require('enemies.miniWizzrobe')
+local Crate = require('environment.crate')
 
 local Wizzrobe = Enemy:new{
     offset_y = -0.3,
@@ -43,7 +44,8 @@ local Wizzrobe = Enemy:new{
     },
     health = 3,
     dmg = 1,
-    priority = 5000
+    priority = 5000,
+    push_res = 2
 }
 
 Wizzrobe:transformSequence()
@@ -54,11 +56,10 @@ function Wizzrobe:new(...)
     local o = Enemy.new(self, unpack(arg))
     o:createSprite()
     o:setupSprite()
-    o:on('dead', function()
-        local mw = o.world:spawn(o.x, o.y, MiniWizzrobe)
-        mw.emitter:once('computeAction:start', function() mw.seq_step = 2 end)
-        mw.moved = true
-    end)
+    -- o:on('dead', function()
+    --     o.spawned.emitter:once('computeAction:start', function() o.spawned.seq_step = 2 end)
+    -- end)
+    o.innards = Crate
     return o
 end
 

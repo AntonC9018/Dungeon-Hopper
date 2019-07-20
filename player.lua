@@ -10,6 +10,8 @@ local Player = Entity:new{
     invincible = 0,
     invincible_max = 2,
     pierce_ing = 1,
+    push_amount = 1,
+    push_ing = 1,
     size = { 0, 0 },
     priority = 1    
 }
@@ -22,6 +24,21 @@ function Player:new(...)
     o.to_drop = {}
     o.items = {}
     o:createSprite()
+    o:on('hurt:damage', function(p, w)        
+
+        -- taking damage drops beat
+        p:dropBeat()
+
+        -- start flickering
+        p.flicker = transition.to(p.sprite, {
+            alpha = 0,
+            transition = easing.continuousLoop,
+            time = 200,
+            iterations = 0
+        })
+        -- reset fliker count
+        p.invincible = p.invincible_max
+    end)
     return o
 end
 
@@ -191,63 +208,6 @@ function Player:move(dir, t, w)
     end
 end
 
--- take damage from an enemy
-function Player:takeHit(att, w)
-
-    self.emitter:emit('hurt:start', self, weapon)
-
-
-    -- create the turn object
-    local t = Turn:new(self, att.dir or false)    
-
-    -- apply pushing etc
-    self:applySpecials(att, t, w)
-
-    -- if pushed or something
-    if t._set then
-        t:apply()
-    end
-    
-    -- the palyer is invincible, ignore
-    if self.invincible > 0 then return end
-
-    -- calculate the attack damage
-    local dmg = self:calculateAttack(att) 
-
-    -- ignore 0 damage
-    if dmg <= 0 then return end
-    
-    
-    -- taking damage drops beat
-    self:dropBeat() 
-
-    -- take damage
-    self:loseHP(dmg)    
-    -- apply debuffs etc
-    self:applyDebuffs(att, w)
-
-    self.emitter:emit('hurt:damage', self, weapon)
-    
-    t:set('hurt')  
-
-    -- insert the turn if it hasn't been inserted already
-    if not contains(self.history, t) then
-        t:apply()
-    end
-
-
-    -- start flickering
-    self.flicker = transition.to(self.sprite, {
-        alpha = 0,
-        transition = easing.continuousLoop,
-        time = 200,
-        iterations = 0
-    })
-    -- reset fliker count
-    self.invincible = self.invincible_max
-
-    return true
-end
 
 
 -- equipping a weapon 

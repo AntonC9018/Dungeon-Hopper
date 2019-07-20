@@ -49,14 +49,14 @@ function scene:create( event )
     local world = World:new(
         { 
             group = world_group, 
-            width = 5, 
-            height = 5 
+            width = 15, 
+            height = 15 
         }
     )
     -- create the player
     world:initPlayer({ x = 2, y = 2 })
     -- spawn some wizzrobes
-    world:populate(2)
+    world:populate(5)
 
 
     -- local trap = BounceTrap:new(

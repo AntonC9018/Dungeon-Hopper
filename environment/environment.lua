@@ -20,8 +20,7 @@ function Environment:new(...)
         o.world.height, 
         function(i, j)
             local t = math.random()
-            print(t)
-            if t > 0.9 then
+            if t > 0.01 then
                 return Tile:new({
                     x = i,
                     y = j,

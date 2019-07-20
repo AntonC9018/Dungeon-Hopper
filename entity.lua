@@ -16,11 +16,13 @@ function Entity:new(...)
     o.facing = { 0, 0 } -- this is an object, so do not modify it inside some method!
     o.history = {} -- pushing, history and such
     o.emitter = Emitter:new()
+    o:on('dead', function() o:deathrattle() end)
     return o
 end
 
 -- states
 Entity.dead = false
+
 
 -- boolean states
 Entity.sliding = false
@@ -34,7 +36,7 @@ Entity.invincible = 0
 -- Stats
 Entity.dig = 0 -- level of dig (how hard are the walls it can dig)
 Entity.dmg = 0 -- damage
-Entity.armor = 0 -- damage reduction (down to 0.5 hp)
+Entity.armor = 0 -- damage reduction (down to 1 hp)
 
 
 -- set up default values for debuff properties
@@ -65,6 +67,8 @@ Entity.dmg_res = 0 -- minimal amount of damage to punch through
 Entity.explode_res = 0
 Entity.stuck_res = 0
 Entity.slide_res = 0
+
+Entity.size = { 0, 0 }
 
 
 
@@ -106,7 +110,7 @@ end
 function Entity:calculateAttack(a)
     return math.max(
         -- take armor into consideration
-        math.max(a.dmg - self.armor, math.min(a.dmg, 0.5)) -
+        math.max(a.dmg - self.armor, math.min(a.dmg, 1)) -
         -- resist damage if not pierced through
         (self.pierce_res < (a.specials.pierce_ing or -999999) and 0 or self.dmg_res), 0)
 end
@@ -382,8 +386,7 @@ function Entity:getPointsFromDirection(dir)
     return t
 end
 
-
-function Entity:isClose(p)
+function Entity:closeMath(p)
     -- just some vector math, need to rewrite with a math library probably
     local ss =  { (self.size[1] + 1) / 2,  (self.size[2] + 1) / 2  }
     local sp =  { (p.size[1] + 1) / 2,     (p.size[2] + 1) / 2     }
@@ -392,20 +395,23 @@ function Entity:isClose(p)
     local sss = { ss[1]  + sp[1],          ss[2]  + sp[2]          }
     local dcs = { math.abs(cs[1] - cp[1]), math.abs(cs[2] - cp[2]) }
 
-    return sss[1] >= dcs[1] and sss[2] >= dcs[2] and not (dcs[1] == dcs[2])
+    return sss, dcs
 end
 
 
-function Entity:isCloseDiagonal(p, dir)
-    -- just some vector math, need to rewrite with a math library probably
-    local ss =  { (self.size[1] + 1) / 2,  (self.size[2] + 1) / 2  }
-    local sp =  { (p.size[1] + 1) / 2,     (p.size[2] + 1) / 2     }
-    local cs =  { self.x + ss[1],          self.y + ss[2]          }
-    local cp =  { p.x    + sp[1],          p.y    + sp[2]          }
-    local sss = { ss[1]  + sp[1],          ss[2]  + sp[2]          }
-    local dcs = { math.abs(cs[1] - cp[1]), math.abs(cs[2] - cp[2]) }
+function Entity:isClose(p)
+    local sss, dcs = self:closeMath(p)   
+    return sss[1] >= dcs[1] and sss[2] >= dcs[2] and not (dcs[1] == dcs[2])
+end
 
+function Entity:isCloseDiagonal(p)
+    local sss, dcs = self:closeMath(p)   
     return sss[1] >= dcs[1] and sss[2] >= dcs[2] and dcs[1] == dcs[2]
+end
+
+function Entity:isCloseAdjacent(p)
+    local sss, dcs = self:closeMath(p)   
+    return sss[1] >= dcs[1] and sss[2] >= dcs[2]
 end
 
 
@@ -748,6 +754,72 @@ end
 
 function Entity:on(...)
     self.emitter:on(unpack(arg))
+end
+
+function Entity:isObject()
+    return false
+end
+
+
+function Entity:deathrattle()
+    -- spawn what's within
+    if self.innards then
+        self.spawned = self.world:spawn(self.x, self.y, self.innards)
+    end
+end
+
+
+-- take damage from an enemy
+function Entity:takeHit(att, w)
+    
+    if self.dead then return end
+
+    self.emitter:emit('hurt:start', self, weapon)
+
+
+    -- create the turn object
+    local t = Turn:new(self, att.dir or false)    
+
+    -- apply pushing etc
+    self:applySpecials(att, t, w)
+    -- apply debuffs etc
+    self:applyDebuffs(att, w)
+
+    -- if pushed or something
+    if t._set then
+        t:apply()
+    end
+    
+    -- the palyer is invincible, ignore
+    if self.invincible > 0 then return end
+
+    -- calculate the attack damage
+    local dmg = self:calculateAttack(att) 
+
+    -- ignore 0 damage
+    if dmg <= 0 then return end
+
+    -- take damage
+    self:loseHP(dmg)        
+
+    self.emitter:emit('hurt:damage', self, weapon)
+    
+    t:set('hurt')  
+
+    -- insert the turn if it hasn't been inserted already
+    if not contains(self.history, t) then
+        t:apply()
+    end
+
+    return true
+end
+
+
+function Entity:setupSprite()
+    self.sprite.x = self.x + self.size[1] / 2
+    self.sprite.y = self.y + self.offset_y + self.size[2] / 2
+    self.sprite:scale(self.scaleX, self.scaleY)
+    self:anim(1000, 'idle')
 end
 
 return Entity

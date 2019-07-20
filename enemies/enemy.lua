@@ -10,12 +10,25 @@ local Enemy = Entity:new{
     enemy = true,
     size = { 0, 0 },
     seq_count = 1,
-    priority = 1    
+    priority = 1
 }
 
 function Enemy:new(...)
     local o = Entity.new(self, unpack(arg))
     o:on('animation:start', function() if o.dead then o:_die() end end)
+
+    o:on('hurt:start', function() 
+        -- stop moving after taking damage?
+        if not o.resilient then
+            o.moved = true
+        end
+        -- reset the seq_count?
+        if o.weak then
+            o.seq_count = 1
+        end
+    end)
+
+    
     return o
 end
 
@@ -31,14 +44,6 @@ Enemy.reach = 1
 
 -- abstract
 function Enemy:createSprite() end
-
-
-function Enemy:setupSprite()
-    self.sprite.x = self.x + self.size[1] / 2
-    self.sprite.y = self.y + self.offset_y + self.size[2] / 2
-    self.sprite:scale(self.scaleX, self.scaleY)
-    self:anim(1000, 'idle')
-end
 
 
 -- get a list of desirable actions sorted by priority
@@ -311,34 +316,6 @@ function Enemy:setAction(a, r, w)
     -- save the turn in the history
     t:apply()
     
-end
-
-
-function Enemy:takeHit(a, w)
-
-    -- create the turn
-    local t = Turn:new(self, a.dir)
-    t:set('hurt')
-
-    self.emitter:emit('takeHit:start', self, a, t)
-
-    -- stop moving after taking damage?
-    if not self.resilient then
-        self.moved = true
-    end
-    -- reset the seq_count?
-    if self.weak then
-        self.seq_count = 1
-    end
-
-    self:loseHP(self:calculateAttack(a))    
-    self:applyDebuffs(a)
-    self:applySpecials(a, t, w)
-
-    self.emitter:emit('takeHit:end', self, a, t)
-
-
-    t:apply()
 end
 
 

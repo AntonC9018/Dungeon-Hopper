@@ -27,6 +27,7 @@ end
 function Weapon:attemptAttack(dir, t, w, owner)
 
     local hits = {}
+    local objectsToHit = {}
 
     self.sprite.x = dir[1] + owner.x
     self.sprite.y = dir[2] + owner.y
@@ -69,20 +70,35 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
             self:modify(obj)
             
-            self:attack(obj)
-            
-
-            if not self.hit_all then
-                t:set('hit')
-                return { w.entities_grid[x][y] }
+            if 
+                -- if attacking a crate/barrel/jug
+                obj.enemy:isObject() and not (
+                    -- attacking it straight
+                    ((dir[1] == 0 and math.abs(dir[2]) > 0) or 
+                    (math.abs(dir[1]) > 0 and dir[2] == 0)) and
+                    -- standing right next to it
+                    owner:isClose(obj.enemy)
+                )
+            then
+                table.insert(objectsToHit, obj)
             else
-                table.insert(hits, w.entities_grid[x][y])
-            end
+                self:attack(obj)
+
+                if not self.hit_all then
+                    t:set('hit')
+                    return { w.entities_grid[x][y] }
+                else
+                    table.insert(hits, w.entities_grid[x][y])
+                end
+            end 
         end
     end
 
     if #hits > 0 then 
         t:set('hit')
+        for i = 1, #objectsToHit do
+            self:attack(objectsToHit[i])
+        end
         return hits
     end
 

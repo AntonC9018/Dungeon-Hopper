@@ -206,10 +206,6 @@ function World:do_loop(player_action)
             table.remove(self.entities_list, i)                    
         end    
     end
-
-
-
-
 end
 
 function World:getBeatOffset()

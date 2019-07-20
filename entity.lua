@@ -117,7 +117,7 @@ end
 
 
 function Entity:applySpecials(a, t, w)
-    local s = a.specials or a
+    local s = a.specials
     if s['push_ing'] and s['push_ing'] > self['push_res'] then
         self:push(normComps(a.dir), s['push_amount'], t, w)
     end
@@ -497,8 +497,14 @@ function Entity:playAnimation(w, callback)
     local l = w:getAnimLength()
     local ts = #self.history == 0 and l or l / (#self.history)
 
+    
+
     local function _callback()
-        self:_idle()
+        if self.dead then
+            self:_die()
+        else
+            self:_idle()
+        end
         self.emitter:emit('animation:end', self, w)
         if callback then callback() end
     end
@@ -820,6 +826,23 @@ function Entity:setupSprite()
     self.sprite.y = self.y + self.offset_y + self.size[2] / 2
     self.sprite:scale(self.scaleX, self.scaleY)
     self:anim(1000, 'idle')
+end
+
+
+
+function Entity:die()
+    self.emitter:emit('death')
+end
+
+function Entity:_die()
+    transition.to(self.sprite, {
+        alpha = 0,
+        time = 300,
+        transition = easing.linear,
+        onComplete = function()
+            display.remove(self.sprite)
+        end
+    })
 end
 
 return Entity

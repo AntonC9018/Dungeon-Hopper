@@ -5,6 +5,7 @@ local Dagger = Weapon:new{
     yScale = 1 / 24,
     dmg = 1,
     pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }},
+    knockb = {{ 1, 0 }, { 1, 0 }, { 1, 0 }},
     hit_all = true
 }
 

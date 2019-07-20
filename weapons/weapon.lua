@@ -42,6 +42,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
     for i = 1, #self.pattern do
 
         local dir = dot(self.pattern[i], ihat, jhat)
+        local knockb_dir = self.knockb and dot(self.knockb[i], ihat, jhat) or dir
         
         local x, y = owner.x + dir[1], owner.y + dir[2]
 
@@ -57,7 +58,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
         
         then
 
-            local att = owner:getAttack():setDir(dir)
+            local att = owner:getAttack():setDir(knockb_dir)
 
             local obj = {
                 enemy = w.entities_grid[x][y],

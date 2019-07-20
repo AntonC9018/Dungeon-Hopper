@@ -343,20 +343,6 @@ function Enemy:tickAll()
     Entity.tickAll(self)
 end
 
-function Enemy:die()
-    self.emitter:emit('death')
-end
-
-function Enemy:_die()
-    transition.to(self.sprite, {
-        alpha = 0,
-        time = 300,
-        transition = easing.linear,
-        onComplete = function()
-            display.remove(self.sprite)
-        end
-    })
-end
 
 
 function Enemy:getSeqStep()

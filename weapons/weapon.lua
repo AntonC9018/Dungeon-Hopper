@@ -4,7 +4,7 @@ local Weapon = Animated:new{
     -- move, then attack
     move_attack = false,
     -- attack, then move
-    attack_move = true,
+    attack_move = false,
     hit_all = false,
     frail = false,
 
@@ -39,6 +39,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
     self.sprite.y = dir[2] + owner.y
 
     self:orient(dir)
+    self:adaptToSize(dir, owner.size)
 
     local ihat = dir
     local jhat = rotateHalfPi(dir)
@@ -50,7 +51,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
         local dir = dot(self.pattern[i], ihat, jhat)
         local knockb_dir = self.knockb and dot(self.knockb[i], ihat, jhat) or dir
 
-        local ps = owner:getPointsFromDirection(dir, w)
+        local ps = patternDirToPoints(dir, owner, w)
 
         for j = 1, #ps do
 
@@ -90,15 +91,17 @@ function Weapon:attemptAttack(dir, t, w, owner)
                 else
                     self:attack(obj)
 
-                    if not self.hit_all then
-                        t:set('hit')
-                        return { w.entities_grid[x][y] }
-                    else
-                        table.insert(hits, w.entities_grid[x][y])
-                    end
+                    table.insert(hits, w.entities_grid[x][y])
+
+                    t:set('hit')
                 end 
             end
         end
+
+        if not self.hit_all and t.hit then
+            return hits
+        end
+
     end
 
     if #hits > 0 then 
@@ -125,6 +128,21 @@ end
 
 function Weapon:playAnimation(t)
     self:anim(t, 'swipe')
+end
+
+function Weapon:adaptToSize(dir, size)
+    if 
+        math.abs(dir[1]) > 0 and dir[2] == 0
+    then    
+        self.sprite.y = self.sprite.y + size[2] / 2
+    end
+
+    if 
+        math.abs(dir[2]) > 0 and dir[1] == 0
+    then    
+        self.sprite.x = self.sprite.x + size[1] / 2
+    end
+
 end
 
 return Weapon

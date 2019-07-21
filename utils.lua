@@ -130,3 +130,60 @@ function tdArray(w, h, f)
 
     return arr
 end
+
+
+-- convert a pattern of a weapon's attack or of a spade's dig 
+-- into an array of points of impact 
+function patternDirToPoints(dir, p, w)
+    
+    if 
+        -- do not waste computing power if the size
+        -- can be neglected, which will be the case
+        -- in most scenarios
+        p.size[1] == 0 and p.size[2] == 0 
+    then 
+        return { { p.x + dir[1], p.y + dir[2] } }
+    end
+
+    if     
+        -- a diagonal direction
+        math.abs(dir[1]) == math.abs(dir[2]) or
+        -- or an orthogonal direction
+        (math.abs(dir[1]) >= 1 and dir[2] == 0) or
+        (math.abs(dir[2]) >= 1 and dir[1] == 0)    
+    then    
+        -- get the scale of the vector
+        local s = dir[1] ~= 0 and math.abs(dir[1]) or math.abs(dir[2]) 
+        -- scale it down to have components = 1
+        local d = { dir[1] / s, dir[2] / s }
+        -- get points out of that
+        local ps = p:getPointsFromDirection(d, w)
+        -- add to those point that initial vector 
+
+        for i = 1, #ps do
+            ps[i][1] = ps[i][1] + (s - 1) * d[1]
+            ps[i][2] = ps[i][2] + (s - 1) * d[2]
+        end
+
+        return ps
+    end
+
+    -- otherwise we have an irregular pattern like that of a whip
+    -- this way the algorithm would yield just one point as the result
+
+    -- We don't care about the size while attacking up or to the left
+    -- because the player's anchor point is placed at the upper-left corner
+    -- However, when doing it to the right or to the bottom, we'll need
+    -- to account for that by adding the player's size to the direction
+
+    
+    if dir[2] > 0 then
+        dir[2] = dir[2] + p.size[2]
+    end
+
+    if dir[1] > 0 then
+        dir[1] = dir[1] + p.size[1]
+    end
+
+    return { dir }
+end

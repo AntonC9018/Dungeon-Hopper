@@ -4,9 +4,9 @@ local Dagger = Weapon:new{
     xScale = 1 / 24,
     yScale = 1 / 24,
     dmg = 1,
-    pattern = {{ 1, 0 }, { 1, 1 }, { 1, -1 }},
-    knockb = {{ 1, 0 }, { 1, 0 }, { 1, 0 }},
-    hit_all = true
+    pattern = {{ 2, 0 }, { 1, 0 }},
+    knockb = {{ 1, 0 }, { 1, 0 }},
+    hit_all = false
 }
 
 Dagger:loadAssets(assets.Dagger)

@@ -13,7 +13,7 @@ local Player = constructor.new(Entity, {
     pierce_ing = 1,
     push_amount = 1,
     push_ing = 1,
-    size = { 0, 0 },
+    size = { 1, 1 },
     priority = 1    
 })
 

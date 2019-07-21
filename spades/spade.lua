@@ -47,7 +47,7 @@ function Spade:attemptDig(dir, t, w, owner)
 
         local dir = dot(self.pattern[i], ihat, jhat)
 
-        local ps = owner:getPointsFromDirection(dir, w)
+        local ps = patternDirToPoints(dir, owner, w)
 
         for j = 1, #ps do
         

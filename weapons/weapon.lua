@@ -5,7 +5,10 @@ local Weapon = Animated:new{
     move_attack = false,
     -- attack, then move
     attack_move = true,
-    hit_all = false
+    hit_all = false,
+    frail = false,
+
+    weapon = true
 }
 
 
@@ -46,55 +49,55 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
         local dir = dot(self.pattern[i], ihat, jhat)
         local knockb_dir = self.knockb and dot(self.knockb[i], ihat, jhat) or dir
-        
-        local x, y = owner.x + dir[1], owner.y + dir[2]
 
-        if         
-            -- not out of bounds
-            x <= #w.entities_grid and
-            x > 0 and 
-            y <= #w.entities_grid[x] and
-            y > 0 and
-            -- there is somebody
-            w.entities_grid[x][y] and 
-            w.entities_grid[x][y] ~= owner 
-        
-        then
+        local ps = owner:getPointsFromDirection(dir, w)
 
-            local att = owner:getAttack():setDir(knockb_dir)
+        for j = 1, #ps do
 
-            local obj = {
-                enemy = w.entities_grid[x][y],
-                attack = att,
-                pattern = self.pattern[i],
-                t = t,
-                owner = owner,
-                w = w
-            }
+            local x, y = ps[j][1], ps[j][2]
 
-            self:modify(obj)
+            if         
+                -- there is somebody
+                w.entities_grid[x][y] and 
+                w.entities_grid[x][y] ~= owner 
             
-            if 
-                -- if attacking a crate/barrel/jug
-                obj.enemy:isObject() and not (
-                    -- attacking it straight
-                    ((dir[1] == 0 and math.abs(dir[2]) > 0) or 
-                    (math.abs(dir[1]) > 0 and dir[2] == 0)) and
-                    -- standing right next to it
-                    owner:isClose(obj.enemy)
-                )
             then
-                table.insert(objectsToHit, obj)
-            else
-                self:attack(obj)
 
-                if not self.hit_all then
-                    t:set('hit')
-                    return { w.entities_grid[x][y] }
+                local att = owner:getAttack():setDir(knockb_dir)
+
+                local obj = {
+                    enemy = w.entities_grid[x][y],
+                    attack = att,
+                    pattern = self.pattern[i],
+                    t = t,
+                    owner = owner,
+                    w = w
+                }
+
+                self:modify(obj)
+                
+                if 
+                    -- if attacking a crate/barrel/jug
+                    obj.enemy:isObject() and not (
+                        -- attacking it straight
+                        ((dir[1] == 0 and math.abs(dir[2]) > 0) or 
+                        (math.abs(dir[1]) > 0 and dir[2] == 0)) and
+                        -- standing right next to it
+                        owner:isClose(obj.enemy)
+                    )
+                then
+                    table.insert(objectsToHit, obj)
                 else
-                    table.insert(hits, w.entities_grid[x][y])
-                end
-            end 
+                    self:attack(obj)
+
+                    if not self.hit_all then
+                        t:set('hit')
+                        return { w.entities_grid[x][y] }
+                    else
+                        table.insert(hits, w.entities_grid[x][y])
+                    end
+                end 
+            end
         end
     end
 
@@ -120,7 +123,7 @@ function Weapon:playAudio()
     audio.play(self.audio['swipe'])
 end
 
-function Weapon:play_animation(t)
+function Weapon:playAnimation(t)
     self:anim(t, 'swipe')
 end
 

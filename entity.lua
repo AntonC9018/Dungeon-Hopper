@@ -3,6 +3,7 @@ local Turn = require('turn')
 local Animated = require('animated')
 local Attack = require('attack')
 
+
 local Entity = Animated:new{
     offset_y_hop = -0.3
 }
@@ -495,7 +496,18 @@ function Entity:playAnimation(w, callback)
     -- get the animation length, 
     -- scale down if there will be more than one animation (bouncing off traps)
     local l = w:getAnimLength()
-    local ts = #self.history == 0 and l or l / (#self.history)
+
+    -- TODO: rethink
+    local c = 0
+    for i = 1, #self.history do
+        local t = self.history[i]
+        if t.displaced or t.hit or t.dig or t.pushed then
+            c = c + 1
+        end
+    end
+    if c < 1 then c = 1 end
+
+    local ts = l / c
 
     
 

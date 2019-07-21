@@ -1,8 +1,10 @@
 
 local Turn = require('turn')
 local Entity = require('entity')
+local constructor = require('constructor')
 
-local Enemy = Entity:new{
+
+local Enemy = constructor.new(Entity, {
     dmg = 1,
     max_vision = 6,
     health = 1,
@@ -11,7 +13,7 @@ local Enemy = Entity:new{
     size = { 0, 0 },
     seq_count = 1,
     priority = 1
-}
+})
 
 function Enemy:new(...)
     local o = Entity.new(self, unpack(arg))

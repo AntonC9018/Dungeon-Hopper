@@ -4,6 +4,7 @@ local Player = require('player')
 local Wizzrobe = require('enemies.wizzrobe')
 local Dagger = require('weapons.dagger')
 local Camera = require('camera')
+local WoodenSpade = require('spades.woodenSpade')
 
 
 local World = constructor:new()
@@ -26,9 +27,13 @@ end
 
 function World:initPlayer(o)
     o.world = self
-    local dagger = Dagger:new({ world = self })
     self.player = Player:new(o)
+
+    local dagger = Dagger:new({ world = self })
     self.player:equip(dagger)
+
+    local spade = WoodenSpade:new({ world = self })
+    self.player.spade = spade
 
     self.player:on('animation:start', 
         function(p, w) 

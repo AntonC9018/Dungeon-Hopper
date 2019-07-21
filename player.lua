@@ -2,9 +2,10 @@ local Entity = require('entity')
 local HP = require('hp')
 local Turn = require('turn')
 local Attack = require('attack')
+local constructor = require('constructor')
 
 
-local Player = Entity:new{
+local Player = constructor.new(Entity, {
     offset_y = -0.4,
     offset_y_jump = -0.2,
     invincible = 0,
@@ -14,7 +15,7 @@ local Player = Entity:new{
     push_ing = 1,
     size = { 0, 0 },
     priority = 1    
-}
+})
 
 Player:loadAssets(assets.Player)
 
@@ -190,13 +191,11 @@ function Player:attack(dir, t, w)
         return self.weapon:attemptAttack(dir, t, w, self)
     end
 
-    -- if no weapon
-    local x, y = self.x + dir[1], self.y + dir[2]
-    
-    if w.entities_grid[x][y] and w.entities_grid[x][y] ~= self then         
+    -- if no weapon, bump
+    if areBlocked(self:getPointsFromDirection(dir), w) then
         t:set('bumped')
         self.emitter:emit('attack:bump', self, dir)
-        return w.entities_grid[x][y]
+        return true
     end
 end
 
@@ -215,22 +214,18 @@ end
 -- attempt to dig
 function Player:dig(dir, t, w)
 
-    local x, y = self.x + dir[1], self.y + dir[2]
-    
-    -- TODO: reconsider 
-    if w.walls[x][y] then
-        local wall
-        wall, w.walls[x][y] = w.walls[x][y], false
-        t:set('dug')
-        self.emitter:emit('dig:dug', self, dir)
-        return wall
+    if self.spade then
+        return self.spade:attemptDig(dir, t, w, self)
     end
 
-    self.emitter:emit('dig:fail', self, dir)
-
+    -- no spade, bump
+    if areBlocked(self:getPointsFromDirection(dir), w) then
+        t:set('bumped')
+        self.emitter:emit('dig:bump', self, dir)
+        return true
+    end
 
     return false
-
 end
 
 -- attempt to move
@@ -239,10 +234,8 @@ function Player:move(dir, t, w)
     if not areBlocked(self:getPointsFromDirection(dir), w)  
     then
         -- go forward
-        print(self.x)
         self:go(dir, t, w)
-        print(self.x)
-        self.emitter:emit('move:went', self, dir)
+        self.emitter:emit('move:displaced', self, dir)
         return true
     else
         t:set('bumped')
@@ -284,7 +277,7 @@ end
 
 
 function Player:_hit(t, ts, cb)
-    self.weapon:play_animation(ts)
+    self.weapon:playAnimation(ts)
     self.weapon:playAudio()
     if cb then cb() end
 end
@@ -297,6 +290,10 @@ end
 
 function Player:_dug(t, ts, cb)
     self:playAudio('dig')
+    if self.spade then
+        self.spade:playAnimation(ts)
+        self.spade:playAudio()
+    end
     if cb then cb() end
 end
 

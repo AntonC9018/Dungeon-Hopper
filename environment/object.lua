@@ -1,6 +1,8 @@
 local Entity = require('entity')
+local constructor = require('constructor')
 
-local Object = Entity:new({
+
+local Object = constructor.new(Entity, {
     dmg_res = 15,
     push_res = 0,
     health = 1,

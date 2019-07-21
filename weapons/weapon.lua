@@ -4,7 +4,7 @@ local Weapon = Animated:new{
     -- move, then attack
     move_attack = false,
     -- attack, then move
-    attack_move = false,
+    attack_move = true,
     hit_all = false
 }
 

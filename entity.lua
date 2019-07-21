@@ -591,10 +591,17 @@ function Entity:playAnimation(w, callback)
             
             elseif t.hit then
 
-                if t.dashed and t.displaced then
+                -- hit while moving
+                if t.displaced and t.hit and not t.dashed then
+                    self:_displacedHit(t, ts, cb)
+
+                -- hit while dashing having moved forward
+                elseif t.dashed and t.displaced then
                     self:_dashedHit(t, ts, cb)
+
                 elseif t.dashed and t.bumped then
                     self:_dashedHitBumped(t, ts, cb)
+
                 else
                     self:_hit(t, ts, cb)
                 end
@@ -722,6 +729,13 @@ function Entity:_displaced(t, ts, cb, a)
         end
     })
 end
+
+
+function Entity:_displacedHit(t, ts, cb, a)
+    self:_displaced(t, ts, cb, a)
+    self:_hit(t, ts)
+end
+
 
 function Entity:_idle(t, ts, cb, a)
     self:anim(1000, a or 'idle')

@@ -94,10 +94,10 @@ function Player:act(a, w)
             enemy = self:attack(a, t, w)
         end
         local function _di()
-            moved = self:move(a, t, w)
+            wall = self:dig(a, t, w)
         end
         local function _mo()
-            wall = self:dig(a, t, w)
+            moved = self:move(a, t, w)
         end 
         local function app()
             t:apply(); t = Turn:new(self, a)
@@ -124,7 +124,7 @@ function Player:act(a, w)
             return self.weapon and self.weapon.attack_move
         end
         local function cm()
-            return not areBlocked(self:getPointsFromDirection(dir), w)
+            return not areBlocked(self:getPointsFromDirection(a), w)
         end
 
 
@@ -133,7 +133,7 @@ function Player:act(a, w)
             -- way not blocked
             if cm() then 
                 -- move
-                mo()
+                _mo()
                 -- attempt attack
                 at()
             else
@@ -239,7 +239,9 @@ function Player:move(dir, t, w)
     if not areBlocked(self:getPointsFromDirection(dir), w)  
     then
         -- go forward
+        print(self.x)
         self:go(dir, t, w)
+        print(self.x)
         self.emitter:emit('move:went', self, dir)
         return true
     else

@@ -116,16 +116,30 @@ function havePlayer(arr, w)
 end
 
 
-function tdArray(w, h, f)
+function tdArray(w, h, f, reversed)
     if not f then f = function() return false end end
 
     local arr = {}
 
-    for i = 1, w do
-        arr[i] = {}        
-        for j = 1, h do
-            arr[i][j] = f(i, j)
+    if reversed then
+
+        for i = w, 1, -1 do
+            arr[i] = {}        
+            for j = h, 1, -1 do
+                arr[i][j] = f(i, j)
+            end
         end
+
+
+    else
+
+        for i = 1, w do
+            arr[i] = {}        
+            for j = 1, h do
+                arr[i][j] = f(i, j)
+            end
+        end
+
     end
 
     return arr

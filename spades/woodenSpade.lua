@@ -2,11 +2,12 @@ local Spade = require('spades.spade')
 
 local WoodenSpade = Spade:new()
 
-function WoodenSpade:dig(obj)
-    local t = Spade.dig(self, obj)
+function WoodenSpade:digWall(obj)
+    local t = Spade.digWall(self, obj)
     if t then
-        self:destroy()
+        -- self:destroy()
     end
+    return t
 end
 
 return WoodenSpade

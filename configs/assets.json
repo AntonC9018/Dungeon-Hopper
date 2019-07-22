@@ -83,5 +83,15 @@
                 "numFrames": 1
             }
         }
+    },
+    "Dirt": {
+        "sheet": {
+            "path": "dirt2.png",
+            "options": {
+                "width": 16,
+                "height": 27,
+                "numFrames": 3
+            }
+        }
     }
 }

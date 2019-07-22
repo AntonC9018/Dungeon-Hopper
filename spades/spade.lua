@@ -7,7 +7,7 @@ local Spade = Animated:new{
     dig_move = false,
     hit_all = false,
     pattern = {{ 1, 0 }},
-    dig = 1,
+    dig = 2,
     spade = true,
     frail = false
 }
@@ -68,7 +68,7 @@ function Spade:attemptDig(dir, t, w, owner)
                     w = w
                 }
 
-                local dug = self:dig(obj)
+                local dug = self:digWall(obj)
 
                 if dug then
 
@@ -92,10 +92,10 @@ function Spade:attemptDig(dir, t, w, owner)
     return false
 end
 
-function Spade:dig(obj)
+function Spade:digWall(obj)
     -- TODO: enhance
     if self.dig > obj.wall.dig_res then
-        obj.w.walls[obj.ps[1]][obj.ps[2]] = false
+        obj.w:destroyWall(obj.p[1], obj.p[2])
         return true
     end
     return false

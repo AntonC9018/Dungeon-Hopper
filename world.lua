@@ -5,6 +5,7 @@ local Wizzrobe = require('enemies.wizzrobe')
 local Dagger = require('weapons.dagger')
 local Camera = require('camera')
 local WoodenSpade = require('spades.woodenSpade')
+local Dirt = require('walls.dirt')
 
 
 local World = constructor:new()
@@ -18,7 +19,24 @@ function World:new(...)
         world = o
     }
     o.entities_grid = tdArray(o.width, o.height)
-    o.walls = tdArray(o.width, o.height)
+    o.walls = tdArray(
+        o.width, 
+        o.height, 
+        function(i, j) 
+            if math.random() > 0.1 then 
+                return Dirt:new(
+                    { 
+                        world = o,
+                        x = i,
+                        y = j 
+                    
+                    }) 
+            else 
+                return false 
+            end
+        end,
+        false
+    )
     o.camera = Camera:new{}
     o.entities_list = {}
     return o
@@ -73,6 +91,11 @@ function World:spawn(x, y, class)
     return entity
 end
 
+
+function World:destroyWall(x, y)
+    self.walls[x][y]:destroy()
+    self.walls[x][y] = false
+end
 
 function World:do_loop(player_action)
 

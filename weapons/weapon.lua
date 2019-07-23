@@ -33,6 +33,7 @@ end
 function Weapon:attemptAttack(dir, t, w, owner)
 
     local hits = {}
+    local blocked = {}
     local objectsToHit = {}
 
     self.sprite.x = dir[1] + owner.x
@@ -50,7 +51,6 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
         local dir = dot(self.pattern[i], ihat, jhat)
         local knockb_dir = self.knockb and dot(self.knockb[i], ihat, jhat) or dir
-        local reach_dir = self.reach and dot(self.reach, ihat, jhat) or { 1, 0 }
 
         local ps = patternDirToPoints(dir, owner, w)
 
@@ -63,7 +63,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
                 w.entities_grid[x][y] and 
                 w.entities_grid[x][y] ~= owner and
                 -- can reach to it without meeting a block
-                self:canReach(owner, reach_dir, x, y, w, i)
+                self:canReach(i, blocked)
             
             then
 
@@ -75,7 +75,8 @@ function Weapon:attemptAttack(dir, t, w, owner)
                     pattern = self.pattern[i],
                     t = t,
                     owner = owner,
-                    w = w
+                    w = w,
+                    i = i
                 }
 
                 self:modify(obj)
@@ -99,6 +100,16 @@ function Weapon:attemptAttack(dir, t, w, owner)
                     t:set('hit')
                 end 
             end
+
+            if blocked[i] == nil then
+                blocked[i] = false
+            end
+
+            blocked[i] = 
+                (blocked[i] or
+                (w.walls[x][y] or 
+                (w.entities_grid[x][y] and 
+                 w.entities_grid[x][y]:isObject()) or false)) and true
         end
 
         if not self.hit_all and t.hit then
@@ -148,7 +159,16 @@ function Weapon:adaptToSize(dir, size)
 
 end
 
-function Weapon:canReach(...)
-    return canReach(...)
+function Weapon:canReach(i, b)
+    if not self.reach or (self.reach and not self.reach[i]) then return true end
+
+    local u = self.reach[i]
+    for j = 1, #u do
+        if b[u[j]] then
+            return false
+        end
+    end
+
+    return true
 end
 return Weapon

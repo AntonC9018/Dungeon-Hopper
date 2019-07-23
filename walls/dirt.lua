@@ -6,7 +6,7 @@ local Dirt = constructor.new(Wall, {
 })
 
 function Dirt:createSprite()
-    self.sprite = display.newImageRect(self.world.group, self.sheet, 1, 16, 25)
+    self.sprite = display.newImageRect(self.world.group, self.sheet, 1, 16, 32)
     self:setupSprite()
 end
 

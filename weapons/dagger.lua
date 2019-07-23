@@ -6,6 +6,7 @@ local Dagger = Weapon:new{
     dmg = 1,
     pattern = {{ 2, 0 }, { 1, 0 }},
     knockb = {{ 1, 0 }, { 1, 0 }},
+    reach = { 1, 0 },
     hit_all = false
 }
 
@@ -31,7 +32,6 @@ function Dagger:createSprite()
         }
     }, 1, 1)
 
-    self.sprite.x, self.sprite.y = 1, 1
     self.sprite:scale(self.xScale, self.yScale)
     self.sprite.alpha = 0
 

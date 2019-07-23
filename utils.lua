@@ -198,5 +198,77 @@ function patternDirToPoints(dir, p, w)
         dir[1] = dir[1] + p.size[1]
     end
 
-    return { dir }
+    return { { p.x + dir[1], p.y + dir[2] } }
+end
+
+
+function canReach(p, rd, x, y, w) 
+    local _x = p.x < x and (p.x + p.size[1]) or p.x
+    local _y = p.y < y and (p.y + p.size[2]) or p.y  
+
+    local function cx(__y)
+        local dx = x - _x
+        if dx ~= 0 then
+            local sx = sign(dx)
+            for i = sx, sx, dx do
+                if 
+                    w.walls[_x + i][__y] 
+                    -- or 
+                    -- (w.entities_grid[_x + i][__y] and w.entities_grid[_x + i][__y]:isObject()) 
+                then 
+                    return true 
+                end
+            end
+        end
+    end
+
+    local function cy(__x)
+        local dy = y - _y
+        if dy ~= 0 then    
+            local sy = sign(dy)        
+            for i = sy, sy, dy do
+                if 
+                    w.walls[__x][_y + i] 
+                    --or 
+                    -- (w.entities_grid[__x][_y + i] and w.entities_grid[__x][_y + i]:isObject()) 
+                then 
+                    return true 
+                end
+            end
+        end
+    end
+
+    -- rd defines what we should check first. 
+    -- check on x-axis first
+    if math.abs(rd[1]) > math.abs(rd[2]) then
+        if cx(_y) then return false end
+        if cy(x) then return false end
+    -- check on y-axis
+    elseif math.abs(rd[1]) < math.abs(rd[2]) then
+        if cy(_x) then return false end
+        if cx(y) then return false end
+
+    else 
+        -- do a composite check
+        -- (some weird diagonal-like pattern)
+        -- NOTE: this hasn't been tested
+        if dx ~= 0 and dy ~= 0 then
+            _x, _y = _x + rd[1], _y + rd[2]
+            local dx, dy = x - _x, y - _y
+            local sx, sy = sign(dx), sign(dy)
+            local px, py = dx * sx, dy * sy
+            local max = px > py and px or py
+            local scx, scy = dx / max, dy / max 
+
+            for i = 1, max do
+                if
+                    w.walls[_x + math.floor(scx * i)][_y + math.floor(scy * i)]
+                then
+                    return false
+                end
+            end
+        end
+    end
+
+    return true
 end

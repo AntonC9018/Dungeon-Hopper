@@ -3,7 +3,7 @@ local constructor = require('constructor')
 
 local Wall = constructor.new(Entity, {
     dig_res = 1,
-    offset_y = -9/25,
+    offset_y = -3/16,
     scaleX = 1 / 16,
     scaleY = 1 / 16,
     priority = -1

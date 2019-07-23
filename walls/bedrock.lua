@@ -3,7 +3,7 @@ local Wall = require('walls.wall')
 
 local Bedrock = constructor.new(Wall, {
     dig_res = 1,
-    offset_y = -9/48
+    offset_y = -3/16
 })
 
 function Bedrock:createSprite()

@@ -3,6 +3,7 @@ local Environment = require('environment.environment')
 local Player = require('player')
 local Wizzrobe = require('enemies.wizzrobe')
 local Dagger = require('weapons.dagger')
+local Whip = require('weapons.whip')
 local Camera = require('camera')
 local WoodenSpade = require('spades.woodenSpade')
 local Dirt = require('walls.dirt')
@@ -26,8 +27,8 @@ function World:new(...)
         o.width, 
         o.height, 
         function(i, j) 
-            if math.random() > 0.1 then 
-                local d = Bedrock:new(
+            if math.random() > 0.8 then 
+                local d = Dirt:new(
                     { 
                         world = o,
                         x = i,
@@ -51,8 +52,8 @@ function World:initPlayer(o)
     o.world = self
     self.player = Player:new(o)
 
-    local dagger = Dagger:new({ world = self })
-    self.player:equip(dagger)
+    local whip = Whip:new({ world = self })
+    self.player:equip(whip)
 
     local spade = WoodenSpade:new({ world = self })
     self.player.spade = spade

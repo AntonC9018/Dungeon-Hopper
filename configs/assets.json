@@ -86,10 +86,10 @@
     },
     "Dirt": {
         "sheet": {
-            "path": "dirt3.png",
+            "path": "dirt.png",
             "options": {
                 "width": 16,
-                "height": 25,
+                "height": 32,
                 "numFrames": 3
             }
         }

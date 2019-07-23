@@ -50,6 +50,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
 
         local dir = dot(self.pattern[i], ihat, jhat)
         local knockb_dir = self.knockb and dot(self.knockb[i], ihat, jhat) or dir
+        local reach_dir = self.reach and dot(self.reach, ihat, jhat) or { 1, 0 }
 
         local ps = patternDirToPoints(dir, owner, w)
 
@@ -60,7 +61,9 @@ function Weapon:attemptAttack(dir, t, w, owner)
             if         
                 -- there is somebody
                 w.entities_grid[x][y] and 
-                w.entities_grid[x][y] ~= owner 
+                w.entities_grid[x][y] ~= owner and
+                -- can reach to it without meeting a block
+                self:canReach(owner, reach_dir, x, y, w, i)
             
             then
 
@@ -145,4 +148,7 @@ function Weapon:adaptToSize(dir, size)
 
 end
 
+function Weapon:canReach(...)
+    return canReach(...)
+end
 return Weapon

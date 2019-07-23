@@ -6,7 +6,7 @@ local Whip = Weapon:new{
     dmg = 1,
     pattern = { { 1, 0 }, { 1, 1 }, { 1, -1 }, { 1, 2 }, { 1, -2 } },
     knockb = { { 1, 0 }, { 0, 1 }, { 0, -1 }, { 0, 1 }, { 0, -1 } },
-    reach = { false, false, false, {2}, {3} },
+    reach = { false, false, false, 2, 3 },
     hit_all = false
 }
 

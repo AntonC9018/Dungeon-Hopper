@@ -63,7 +63,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
                 w.entities_grid[x][y] and 
                 w.entities_grid[x][y] ~= owner and
                 -- can reach to it without meeting a block
-                self:canReach(i, blocked)
+                self:canReach(i, blocked, owner, w)
             
             then
 
@@ -161,14 +161,7 @@ end
 
 function Weapon:canReach(i, b)
     if not self.reach or (self.reach and not self.reach[i]) then return true end
-
-    local u = self.reach[i]
-    for j = 1, #u do
-        if b[u[j]] then
-            return false
-        end
-    end
-
-    return true
+    return b[self.reach[i]]
 end
+
 return Weapon

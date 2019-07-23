@@ -160,8 +160,6 @@ function patternDirToPoints(dir, p, w)
     end
 
     if     
-        -- a diagonal direction
-        math.abs(dir[1]) == math.abs(dir[2]) or
         -- or an orthogonal direction
         (math.abs(dir[1]) >= 1 and dir[2] == 0) or
         (math.abs(dir[2]) >= 1 and dir[1] == 0)    
@@ -183,6 +181,7 @@ function patternDirToPoints(dir, p, w)
     end
 
     -- otherwise we have an irregular pattern like that of a whip
+    -- or a diagonal direction
     -- this way the algorithm would yield just one point as the result
 
     -- We don't care about the size while attacking up or to the left

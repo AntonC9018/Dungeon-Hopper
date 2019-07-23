@@ -210,7 +210,7 @@ function canReach(p, rd, x, y, w)
         local dx = x - _x
         if dx ~= 0 then
             local sx = sign(dx)
-            for i = sx, sx, dx do
+            for i = sx, dx, sx do
                 if 
                     w.walls[_x + i][__y] 
                     -- or 
@@ -226,7 +226,7 @@ function canReach(p, rd, x, y, w)
         local dy = y - _y
         if dy ~= 0 then    
             local sy = sign(dy)        
-            for i = sy, sy, dy do
+            for i = sy, dy, sy do
                 if 
                     w.walls[__x][_y + i] 
                     --or 

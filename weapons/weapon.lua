@@ -72,6 +72,7 @@ function Weapon:attemptAttack(dir, t, w, owner)
                 local obj = {
                     enemy = w.entities_grid[x][y],
                     attack = att,
+                    dir = dir,
                     pattern = self.pattern[i],
                     t = t,
                     owner = owner,

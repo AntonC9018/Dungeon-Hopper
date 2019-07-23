@@ -86,11 +86,21 @@
     },
     "Dirt": {
         "sheet": {
-            "path": "dirt2.png",
+            "path": "dirt3.png",
             "options": {
                 "width": 16,
-                "height": 27,
+                "height": 25,
                 "numFrames": 3
+            }
+        }
+    },
+    "Bedrock": {
+        "sheet": {
+            "path": "bedrock.png",
+            "options": {
+                "width": 24,
+                "height": 48,
+                "numFrames": 1
             }
         }
     }

@@ -3,9 +3,10 @@ local constructor = require('constructor')
 
 local Wall = constructor.new(Entity, {
     dig_res = 1,
-    offset_y = -0.3,
+    offset_y = -9/25,
     scaleX = 1 / 16,
-    scaleY = 1 / 12
+    scaleY = 1 / 16,
+    priority = -1
 })
 
 function Wall:new(...)
@@ -18,6 +19,15 @@ function Wall:anim() end
 function Wall:playAudio() end
 function Wall:destroy()
     self.sprite:removeSelf()
+    self.dead = true
 end
+function Wall:computeAction() end
+function Wall:performAction()
+    self.moved = true
+end
+function Wall:resetPositions() end
+function Wall:playAnimation(w, cb) cb() end
+
+
 
 return Wall

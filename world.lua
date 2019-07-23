@@ -6,6 +6,7 @@ local Dagger = require('weapons.dagger')
 local Camera = require('camera')
 local WoodenSpade = require('spades.woodenSpade')
 local Dirt = require('walls.dirt')
+local Bedrock = require('walls.bedrock')
 
 
 local World = constructor:new()
@@ -19,18 +20,22 @@ function World:new(...)
         world = o
     }
     o.entities_grid = tdArray(o.width, o.height)
+    o.entities_list = {}
+
     o.walls = tdArray(
         o.width, 
         o.height, 
         function(i, j) 
             if math.random() > 0.1 then 
-                return Dirt:new(
+                local d = Bedrock:new(
                     { 
                         world = o,
                         x = i,
                         y = j 
                     
-                    }) 
+                    })
+                table.insert(o.entities_list, d) 
+                return d
             else 
                 return false 
             end
@@ -38,7 +43,6 @@ function World:new(...)
         false
     )
     o.camera = Camera:new{}
-    o.entities_list = {}
     return o
 end
 
@@ -198,7 +202,6 @@ function World:do_loop(player_action)
 
     self.env:toFront('expls')
 
-
     -- Reset everything only when all animations have finished
     local I = #self.entities_list
 
@@ -228,6 +231,7 @@ function World:do_loop(player_action)
 
     -- animate all enemies
     for i = #self.entities_list, 1, -1 do
+
         self.entities_list[i]:playAnimation(self, tryRefresh)       
 
         if (self.entities_list[i].dead) then

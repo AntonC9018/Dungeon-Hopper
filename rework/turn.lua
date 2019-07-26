@@ -27,8 +27,7 @@ end
 
 
 function Turn:apply()
-    if not self._set then return self end
-
+    if not self._set or self._in then return self end
     self.actor.history:add(self)
 
     self.f = {

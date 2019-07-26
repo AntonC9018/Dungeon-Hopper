@@ -57,28 +57,6 @@ function sign(x)
 end
 
 
-function mul(v, a)
-    v[1] = v[1] * a
-    v[2] = v[2] * a
-    return v
-end
-
-
-function mulCopy(v, a)
-    return { v[1] * a, v[2] * a }
-end
-
-
-function addVecCopy(v1, v2)
-    return { v1[1] + v2[1], v1[2] + v2[2] }
-end
-
-
-function addCopy(v, a)
-    return { v[1] + a, v[2] + a }    
-end
-
-
 table.all = function(arr, it)
     for i = 1, #arr do
         if arr[i] ~= it then return false end

@@ -24,7 +24,7 @@ function Weapon:listenAlpha()
 end
 
 
-function Weapon:orient(dir)
+function Weapon:orient(dir, pattern)
     self.sprite.rotation = angleBetween({ 1, 0 }, dir) / math.pi * 180    
 end
 
@@ -39,7 +39,6 @@ function Weapon:attemptAttack(dir, t, w, owner)
     self.sprite.x = dir[1] + owner.x
     self.sprite.y = dir[2] + owner.y
 
-    self:orient(dir)
     self:adaptToSize(dir, owner.size)
 
     local ihat = dir
@@ -94,10 +93,9 @@ function Weapon:attemptAttack(dir, t, w, owner)
                 then
                     table.insert(objectsToHit, obj)
                 else
+                    self:orient(dir, self.pattern[i])
                     self:attack(obj)
-
                     table.insert(hits, w.entities_grid[x][y])
-
                     t:set('hit')
                 end 
             end
@@ -162,7 +160,7 @@ end
 
 function Weapon:canReach(i, b)
     if not self.reach or (self.reach and not self.reach[i]) then return true end
-    return b[self.reach[i]]
+    return not b[self.reach[i]]
 end
 
 return Weapon

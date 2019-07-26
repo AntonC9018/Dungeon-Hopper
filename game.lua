@@ -38,10 +38,11 @@ function scene:create( event )
 
     local BounceTrap = require('environment.bounceTrap')
     local World = require('world')
+    local UI = require('ui')
 
     -- initialize groups
     local sceneGroup = self.view
-    local world_group = display.newGroup(sceneGroup)
+    local world_group = display.newGroup()
     
     -- display sprites of right size
     world_group:scale(UNIT, UNIT) 
@@ -54,7 +55,7 @@ function scene:create( event )
         }
     )
     -- create the player
-    world:initPlayer({ x = 2, y = 2 })
+    world:initPlayer({ x = 5, y = 5 })
     -- spawn some wizzrobes
     world:populate(5)
 
@@ -78,54 +79,21 @@ function scene:create( event )
     first_input = true
 
 
-    Runtime:addEventListener("tap", function(event)
-        
-        if first_input then first_input = false return end
+    local ui = UI:new({ group = display.newGroup() })
 
+    ui:initControls()
 
-        local _w, _h = display.contentWidth, display.contentHeight
-        local w, h = display.viewableContentWidth, display.viewableContentHeight
-        
-        local x = event.x - (_w - w) / 2
-        local y = event.y - (_h - h) / 2
-
-        local ratio = h / w
-
-
-        local function f(x)
-            return ratio * x
-        end
-
-        local function g(x)
-            return -ratio * x + h
-        end
-
-        local function fInv(y)
-            return 1 / ratio * y
-        end
-
-        local function gInv(y)
-            return 1 / ratio * (h - y)
-        end
-
-        local side
-        
-        if x < w / 2 and y > f(x) and y < g(x) then side = 1 
-        elseif x > w / 2 and y < f(x) and y > g(x) then side = 2
-        elseif y < h / 2 and x < gInv(y) and x > fInv(y) then side = 3 
-        elseif y > h / 2 and x > gInv(y) and x < fInv(y) then side = 4 end
-
-
-        local act = { 
-            (side == 1 and -1) or (side == 2 and 1) or 0, 
-            (side == 3 and -1) or (side == 4 and 1) or 0 
-        }
-
+    ui.emitter:on('click', function(p) 
         if #world.loop_queue == 0 and not world.doing_loop then
-            world:do_loop(act)
+            world:do_loop(p)
         else    
-            table.insert(world.loop_queue, act)
+            table.insert(world.loop_queue, p)
         end
+    end)
+
+    Runtime:addEventListener("tap", function(event)
+
+        
     
     end)
 

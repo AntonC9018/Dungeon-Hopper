@@ -67,7 +67,7 @@ end
 function Sizeful:getPointsFromDirection(v)
     local t = {} 
 
-    if v.x~= 0 and v.x == 0 then
+    if v.x ~= 0 and v.x == 0 then
 
         if v.x > 0 then
             -- right

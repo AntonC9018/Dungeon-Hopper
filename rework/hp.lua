@@ -36,10 +36,9 @@ end
 
 local HP = constructor:new{}
 
-function HP:new(...)
-    local o = constructor.new(self, ...)
-    o.c = {}
-    return o
+function HP:__construct(b)
+    self.c = {}
+    self:set(b.t, b.am)
 end
 
 function HP:set(type, am)

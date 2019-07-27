@@ -61,6 +61,10 @@ vec.__div["number"] = function(self, n)
     )
 end
 
+vec.__lt[vec] = function(self, v)
+    return self.x < v.x, self.y < v.y
+end
+
 function vec:magSq()
     return self.x ^ 2 + self.y ^ 2
 end
@@ -123,6 +127,12 @@ end
 
 function vec:comps()
     return self.x, self.y
+end
+
+function vec:longest()
+    local a = math.abs(self.x)
+    local b = math.abs(self.y)
+    return a > b and a or b
 end
 
 return vec

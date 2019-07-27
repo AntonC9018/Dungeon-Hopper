@@ -113,6 +113,26 @@ function World:destroyWall(x, y)
     self.walls[x][y] = false
 end
 
+
+function World:isBlocked(x, y)
+    if 
+        self.grid[x][y].entity or 
+        self.grid[x][y].object 
+    then
+        return true
+    end
+    return false
+end
+
+function World:areBlockedAny(ps)
+    for i = 1, #ps do
+        if self:isBlocked(ps[i]:comps()) then
+            return true
+        end
+    end
+    return false
+end
+
 function World:do_loop(player_action)
 
     self.doing_loop = true

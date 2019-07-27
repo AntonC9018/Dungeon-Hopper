@@ -36,3 +36,11 @@ function clamp(v, u, l)
     if v <= l then return l end
     return v
 end
+
+function split(s, delimiter)
+    result = {};
+    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
+        table.insert(result, match);
+    end
+    return result;
+end

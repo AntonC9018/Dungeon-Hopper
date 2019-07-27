@@ -1,7 +1,7 @@
 local Turn = class("Turn")
 
 function Turn:__construct(a, actor, ...)
-    -- the action a (vector)
+    -- the action 
     self.a = a
     -- initial values
     self.i = {
@@ -38,6 +38,25 @@ function Turn:apply()
     self._in = true
 
     return self
+end
+
+
+function Turn:satisfies(...)
+    for i = 1, arg.n do
+        if not self[arg[i]] then
+            return false
+        end
+    end
+    return true
+end
+
+function Turn:satisfiesAny(...)
+    for i = 1, arg.n do
+        if self[arg[i]] then
+            return true
+        end
+    end
+    return false
 end
 
 return Turn

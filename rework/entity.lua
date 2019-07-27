@@ -14,6 +14,8 @@ Entity.armor = 0
 -- lower than this threshold
 Entity.dmg_thresh = 1
 
+Entity.priority = 1
+
 
 function Entity:__construct(x, y, world)
     Sizeful.__construct(self, x, y, world)
@@ -34,7 +36,7 @@ function Entity:__construct(x, y, world)
     -- self.levitating = false
 
     -- self.att = Modifiable(self.att_base)
-    -- self.ams = Modifiable(self.amd_base)
+    -- self.ams = Modifiable(self.ams_base)
     -- self.def = Modifiable(self.def_base)
     -- buffs or debuffs (decremented by 1 each turn)
     -- self.buffs = Stats()
@@ -43,7 +45,7 @@ end
 
 function Entity:reset()
     self.phist = self.hist
-    self.ppos = self.pos.copy()
+    self.ppos = self.pos:copy()
     self.hist = History()
 end
 
@@ -68,21 +70,21 @@ function Entity:tick()
     -- end
 end
 
-
-function Entity:takeHit(att, ams)
+-- a is the action object
+function Entity:takeHit(a)
     if self.dead then return end
 
-    local t = Turn(self, att.push_dir)
+    local t = Turn(a, self)
 
     -- defend against attack
-    local s = att - self.def
+    local s = a.att - self.def
     
-    self:applyDebuffs(s, ams, att, t)
+    self:applyDebuffs(s, a, t)
 
     t:apply()
 
     -- figure taken damage
-    local dmg = self:calcDmg(s, ams)
+    local dmg = self:calcDmg(s, a)
     -- ignore 0 damage
     if dmg <= 0 then return end
 
@@ -93,35 +95,35 @@ function Entity:takeHit(att, ams)
 end
 
 
-function Entity:applyDebuffs(s, ams, att, t)
-    self.buffs = self.buffs + ams * s
+function Entity:applyDebuffs(s, a, t)
+    self.buffs = self.buffs + a.ams * s
 
-    if s.push > 0 and ams.push then
-        self:push(att.push_dir:normComps(), ams.push, t)
+    if s.push > 0 and a.ams.push then
+        self:push(a.dir:normComps(), a.ams.push, t)
     end
 end
 
 
-function Entity:push(d, a, t)
-    self:thrust(d, a, t)
+function Entity:push(v, am, t)
+    self:thrust(v, am, t)
     t:set('pushed')
 end
 
 
-function Entity:dash(d, a, t)
-    self:thrust(d, a, t)
+function Entity:dash(v, am, t)
+    self:thrust(v, am, t)
     t:set('dashed')
 end
 
 
--- apply a thrust in direction of v, a times
-function Entity:thrust(v, a, t)
+-- apply a thrust in direction of v, am times
+function Entity:thrust(v, am, t)
 
     local blocked = false
 
     self.world:removeEFromGrid(self)
 
-    for i = 1, amount do
+    for i = 1, am do
 
         -- get the directions taking into consideration
         -- the sizes of the entity
@@ -151,6 +153,12 @@ function Entity:displace(v, t)
     t:set('displaced')
 end
 
+function Entity:go(v, t)
+    self.world:removeEFromGrid(self)
+    self:displace(v, t)
+    self.world:resetEInGrid(self)
+end
+
 
 
 function Entity:calcDmg(s, a)
@@ -170,3 +178,60 @@ function Entity:takeDmg(dmg)
         self.dead = true
     end
 end
+
+
+function Entity:getAttack()
+    return self.att
+end
+
+function Entity:getAms()
+    return self.ams
+end
+
+
+function Entity:bounce(a)
+    local ps = self:getPointsFromDirection(a.dir)
+    local t = Turn(a, self)
+
+    self.facing = a.dir
+    t:set('bounced')
+
+    if self.world:areBlockedAny(ps) then
+        if              
+            -- if we're not a player
+            not self:isPlayer() and
+            -- one of the spot has a player
+            self.world:havePlayer(ps) and
+            -- we intended to attack
+            self.seq:is('attack') and
+            -- and have not
+            not self.hist:was('hit')
+        then
+            t:set('hit')
+            local a = Action(self, 'attack')
+                :setDir(a.dir)
+                :setAtt(self:getAttack())
+                :setAms(self:getAms())
+
+            self.world.player:takeHit(a)
+        else
+            t:set('bumped')
+        end
+    
+    -- the way is not blocked, move
+    else
+        self:go(a.dir, t)
+    end
+
+    return t:apply()
+end
+
+function Entity:isObject()
+    return false
+end
+
+function Entity:isPlayer()
+    return false
+end
+
+return Entity

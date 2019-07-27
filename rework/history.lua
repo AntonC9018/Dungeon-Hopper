@@ -16,14 +16,9 @@ end
 -- satisfied all specified conditions at once
 function History:was(...)
     for i = 1, #self.turns do
-        local all = true
-        for j = 1, arg.n do
-            if not self.turns[i][arg[j]] then
-                all = false
-                break
-            end
+        if self.turns[i]:satisfies(...) then
+            return true
         end
-        if all then return true end
     end
     return false 
 end
@@ -56,10 +51,8 @@ end
 -- check if no turns satisfied the specified conditions
 function History:wasnot(...)
     for i = 1, self.turns do
-        for j = 1, arg.n do
-            if self.turns[i][arg[j]] then
-                return false
-            end
+        if self.turns:satisfies(...) then
+            return false
         end
     end
     return true

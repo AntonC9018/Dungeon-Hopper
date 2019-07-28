@@ -8,7 +8,7 @@
 
 
 local composer = require('composer')
-transition = require('transition2')
+transition = require('lib.transition2')
 
 -- Hide status bar
 display.setStatusBar( display.HiddenStatusBar )

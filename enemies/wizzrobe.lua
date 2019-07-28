@@ -1,13 +1,10 @@
+local Enemy = require('base.enemy')
+local Sequence = require('logic.sequence')
 
-local Enemy = require('enemies.enemy')
-local Turn = require('turn')
-local MiniWizzrobe = require('enemies.miniWizzrobe')
-local Crate = require('environment.crate')
+local Wizzrobe = class('Wizzrobe', Enemy)
 
-local Wizzrobe = Enemy:new{
-    offset_y = -0.3,
-    offset_y_jump = -0.05,
-    sequence = { 
+Wizzrobe.seq = Sequence.transform(
+    { 
         -- do nothing for the first beat
         { 
             name = "idle"
@@ -41,30 +38,19 @@ local Wizzrobe = Enemy:new{
             -- redo this step if the function s3Loop() returns true
             loop = "bumpLoop" 
         } 
-    },
-    health = 3,
-    dmg = 1,
-    priority = 5000,
-    push_res = 2
+    }  
+)
+
+Wizzrobe.hp_base = {
+    t = 'red',
+    am = 3
 }
 
-Wizzrobe:transformSequence()
-Wizzrobe:loadAssets(assets.Wizzrobe)
+Wizzrobe.priority = 5000
 
-
-function Wizzrobe:new(...)
-    local o = Enemy.new(self, unpack(arg))
-    o:createSprite()
-    o:setupSprite()
-    -- o:on('dead', function()
-    --     o.spawned.emitter:once('computeAction:start', function() o.spawned.seq_step = 2 end)
-    -- end)
-    o.innards = Crate
-    return o
-end
-
-function Wizzrobe:createSprite()
-    self.sprite = display.newSprite(self.world.group, self.sheet, {
+function Wizzrobe:__construct(...)
+    Enemy.__construct(self, ...)
+    self:createSprite({
         {
             name = "idle",
             frames = { 1, 3 },
@@ -75,8 +61,7 @@ function Wizzrobe:createSprite()
             name = "ready",
             start = 4,
             count = 1,
-            loopCount = 0,
-            time = 0
+            time = math.huge
         },
         {
             name = "jump",
@@ -88,10 +73,10 @@ function Wizzrobe:createSprite()
             name = "angry",
             start = 5,
             count = 1,
-            loopCount = 0,
-            time = 0
+            time = math.huge
         }
     })
 end
+
 
 return Wizzrobe

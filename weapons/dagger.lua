@@ -1,28 +1,19 @@
-local Weapon = require('weapons.weapon')
+local Weapon = require('base.weapon')
 
-local Dagger = Weapon:new{
-    xScale = 1 / 24,
-    yScale = 1 / 24,
-    dmg = 1,
-    pattern = {{ 2, 0 }, { 1, 0 }},
-    knockb = {{ 1, 0 }, { 1, 0 }},
-    reach = { 1, 0 },
-    hit_all = false
+local Dagger = class('Dagger', Weapon)
+
+Dagger.scale = 1 / 24
+
+Dagger.att_base = {
+    dmg = 1
 }
 
-Dagger:loadAssets(assets.Dagger)
+Dagger.pattern = { vec(1, 0) }
+Dagger.knockb = { vec(1, 0) }
+Dagger.reach = { false }
 
-function Dagger:new(...)
-    local o = Weapon.new(self, ...)
-    o:createSprite()
-    return o
-end
-
-
-
-function Dagger:createSprite()
-    
-    self.sprite = display.newSprite(self.world.group, self.sheet, {
+function Dagger:__construct(...)
+    Weapon.__construct(self, {
         {
             name = "swipe",
             start = 1,
@@ -30,29 +21,7 @@ function Dagger:createSprite()
             time = 1000,
             loopCount = 1
         }
-    }, 1, 1)
-
-    self.sprite:scale(self.xScale, self.yScale)
-    self.sprite.alpha = 0
-
-    self:listenAlpha()
-    
+    }, ...)
 end
-
--- this is a test
--- the dagger now acts like rapier in CoH
--- function Dagger:modify(obj)
---     local p = obj.pattern
---     local att = obj.attack
---     local w = obj.w
---     local t = obj.t
-
---     if (p[2] == 1 or p[2] == -1) and p[1] == 1 then
---         att.dmg = att.dmg + 1 
---         att.specials.push_ing = att.specials.push_ing + 1
---         att.specials.push_amount = att.specials.push_amount + 1  
---         obj.owner:thrust(normComps(obj.owner.facing), 1, t, w)
---     end
--- end
 
 return Dagger

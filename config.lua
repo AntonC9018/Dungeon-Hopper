@@ -8,10 +8,10 @@ application =
 	content =
 	{
 		width = 600,
-		height = 800, 
+		height = 800,
         scale = "zoomEven",
-		fps = 60,
-		
+        fps = 60,
+
 		--[[
 		imageSuffix =
 		{

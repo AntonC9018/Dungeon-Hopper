@@ -2,6 +2,7 @@
 local Wizzrobe = require('enemies.wizzrobe')
 local Player = require('base.player')
 local Dagger = require('weapons.dagger')
+local EnemyDagger = require('weapons.enemydagger')
 local Action = require('logic.action')
 local Camera = require('game.camera')
 local BasicTile = require('tiles.basic')
@@ -14,7 +15,7 @@ function World:__construct(w, h, group)
     self.loop_queue = {}
     self.doing_loop = false
     self.loop_count = 1
-    self.entities = {}
+    self.entities = {}    
 
     self.grid = tdArray(self.width, self.height, 
         function(i, j)
@@ -25,7 +26,7 @@ function World:__construct(w, h, group)
                 -- table.insert(self.entities, d)
             end
 
-            t.tile = BasicTile(i, j, math.random(11), self)
+            t.tile = BasicTile(i, j, self)
 
             return t
         end
@@ -62,6 +63,10 @@ function World:populate(a)
             math.random(self.height), 
             self
         )
+
+        local w = EnemyDagger(self)
+        e.weapon = w
+
         self:resetEInGrid(e)
         table.insert(self.entities, e)
     end

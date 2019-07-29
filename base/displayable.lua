@@ -32,13 +32,14 @@ function Displayable:anim(ts, name)
     end
 end
 
-function Displayable:createSprite(o)
-    self.sprite = display.newSprite(self.world.group, AM[class.name(self)].sheet, o)
+function Displayable:createSprite(o, s)
+    print('h', o, s)
+    self.sprite = display.newSprite(self.world.group, AM[s or class.name(self)].sheet, o)
     self:setupSprite(self.pos.x, self.pos.y)
 end
 
-function Displayable:createImage(i, w, h)
-    self.sprite = display.newImageRect(self.world.group, AM[class.name(self)].sheet, i, w, h)
+function Displayable:createImage(i, w, h, s)
+    self.sprite = display.newImageRect(self.world.group, AM[s or class.name(self)].sheet, i, w, h)
     self:setupSprite(self.pos.x, self.pos.y)
 end
 

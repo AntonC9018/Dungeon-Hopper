@@ -1,12 +1,10 @@
-local Displayable = require('base.displayable')
+local Tile = require('base.tile')
 
-local BasicTile = class('Tile', Displayable)
+local BasicTile = class('BasicTile', Tile)
 
-BasicTile.offset = vec(0, 0)
-
-function BasicTile:__construct(x, y, t, world)
-    Displayable.__construct(self, x, y, world)
-    self:createImage(t, UNIT, UNIT)
+function BasicTile:__construct(...)
+    self.t = math.random(11)
+    Tile.__construct(self, ...)
 end
 
 return BasicTile

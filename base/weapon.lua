@@ -1,17 +1,25 @@
 local Displayable = require('base.displayable')
 
 local Weapon = class("Weapon", Displayable)
+Weapon.scale = 1 / UNIT
 
 Weapon.move_attack = false
 Weapon.hit_all = false
 Weapon.frail = false
-
-
 Weapon.pos = vec(0, 0)
+Weapon.offset = vec(0, 0)
 
-function Weapon:__construct(o, w)
+Weapon.att_base = {
+    dmg = 1
+}
+
+Weapon.pattern = { vec(1, 0) }
+Weapon.knockb = { vec(1, 0) }
+Weapon.reach = { false }
+
+function Weapon:__construct(o, w, s)
     self.world = w
-    self:createSprite(o)
+    self:createSprite(o, s)
     self:listenAlpha()
     self.sprite.alpha = 0
     -- TODO: gfjqklew
@@ -23,9 +31,6 @@ function Weapon:attemptAttack(a, t)
         a.actor:attemptMove(a, t)
     end
 
-    local pat = self:getPattern(a, t)
-    local knockb = self:getKnockb(a, t)
-
     local hits = {}
     local blocked = {}
     local objs = {}
@@ -36,46 +41,53 @@ function Weapon:attemptAttack(a, t)
     local w = a.actor.world
 
 
-    for i = 1, #pat do
-        local dir =   pat[i]:matmul(ihat, jhat)
-        local kndir = knockb[i]:matmul(ihat, jhat)
-        local ps =    self:patternDirToPoints(dir, a)
+    for i = 1, #self.pattern do
 
-        for j = 1, #ps do
-            local x, y = ps[j]:comps()
-            local cell = self.world.grid[x][y]
+        local p = self:getPattern(i, dir, a, t)
+        local kn = self:getKnockb(i, dir, a, t)
 
-            if 
-                cell.entity and
-                cell.entity ~= a.actor and
-                self:canReach(a, blocked, i)
-            then
+        if p and kn then
 
+            local dir =   p:matmul(ihat, jhat)
+            local kndir = kn:matmul(ihat, jhat)
+            local ps =    self:patternDirToPoints(dir, a)
+
+            for j = 1, #ps do
+                local x, y = ps[j]:comps()
+                local cell = self.world.grid[x][y]
                 local a = a:copy():setDir(kndir)
-
                 local y = { a, dir, cell, ps[j], i }
 
-                self:modify( unpack(y) )
 
-                if
-                    self:isTargetingObject(a, dir, cell)
+                if cell.wall then
+                    table.insert(hits, y)
+                elseif
+                    cell.entity and
+                    cell.entity ~= a.actor and
+                    self:canReach(a, blocked, i)
                 then
-                    table.insert(objs, y)
-                else
-                    self:orient(dir, pat[i], i)
-                    self:attack( unpack(y) )
-                    table.insert(hits, cell.entity)
-                    t:set('hit')
-                end
-            end
+                    self:modify( unpack(y) )
 
-            blocked[i] =
-                blocked[i] or
-                w.grid[x][y].wall or
-                (w.grid[x][y].entity and w.grid[x][y].entity:isObject())            
-        end
-        if not self.hit_all and t.hit then
-            break
+                    if
+                        self:isTargetingObject(a, dir, cell)
+                    then
+                        table.insert(objs, y)
+                    else
+                        self:orient(dir, i)
+                        self:attack( unpack(y) )
+                        table.insert(hits, y)
+                        t:set('hit')
+                    end                
+                end                
+
+                blocked[i] =
+                    blocked[i] or
+                    cell.wall or
+                    (cell.entity and cell.entity:isObject())            
+            end
+            if not self.hit_all and t.hit then
+                break
+            end
         end
     end
 
@@ -84,6 +96,7 @@ function Weapon:attemptAttack(a, t)
         a.actor.facing = a.dir
         for i = 1, #objs do
             self:attack( unpack(objs[i]) )
+            table.insert(hits, objs[i])
         end
     end
 
@@ -177,12 +190,12 @@ end
 function Weapon:modify(a, dir, cell, ps, i)
 end
 
-function Weapon:getPattern(a, t)
-    return self.pattern
+function Weapon:getPattern(i)
+    return self.pattern[i]
 end
 
-function Weapon:getKnockb(a, t)
-    return self.knockb
+function Weapon:getKnockb(i)
+    return self.knockb[i]
 end
 
 function Weapon:listenAlpha()
@@ -204,8 +217,8 @@ function Weapon:playAnimation(t, ts)
     self:anim(ts, 'swipe')
 end
 
-function Weapon:orient(dir, pat, i)
-    local a = pat:angleBetween(dir)
+function Weapon:orient(dir, i)
+    local a = self:getPattern(i):angleBetween(dir)
     self.sprite.rotation = a * 180 / math.pi
 end
 

@@ -120,6 +120,7 @@ end
 
 
 function Entity:applyDebuffs(s, a, t)
+    if not a.ams then return end
     self.buffs = self.buffs + a.ams * s
 
     if s:get('push') > 0 and a.ams:get('push') then
@@ -171,6 +172,17 @@ function Entity:thrust(v, am, t)
     return t
 end
 
+function Entity:attemptMove(a, t) 
+
+    local ps = self:getPointsFromDirection(a.dir)
+
+    if self.world:areBlockedAny(ps) then
+        t:set('bumped')
+    else
+        self:go(a.dir, t)
+    end
+end
+
 
 function Entity:displace(v, t)
     self.pos = self.pos + v
@@ -180,17 +192,22 @@ end
 function Entity:go(v, t)
     self.world:removeEFromGrid(self)
     self:displace(v, t)
-    self.facing = v
     self.world:resetEInGrid(self)
 end
 
+function Entity:restorePos(pos, t)
+    self.world:removeEFromGrid(self)
+    self.pos = pos
+    self.world:resetEInGrid(self)
+end
 
 
 function Entity:calcDmg(s, a)
     -- if pierced through
     if s:get('pierce') > 0 and s:get('dmg') > 0 then
-        if s:get('dmg') < self.dmg_thresh then return 0 end
-        return clamp(s:get('dmg'), self.min_dmg, self.max_dmg)
+        local dmg = clamp(s:get('dmg'), self.min_dmg, self.max_dmg)
+        if dmg < self.dmg_thresh then return 0 end
+        return dmg
     end
     return 0
 end
@@ -257,6 +274,10 @@ function Entity:isObject()
 end
 
 function Entity:isPlayer()
+    return false
+end
+
+function Entity:isWall()
     return false
 end
 

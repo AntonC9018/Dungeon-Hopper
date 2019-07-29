@@ -61,7 +61,7 @@ function Player:act(a)
     if self.stuck then
         -- signalize the stuck causer (a water tile)
         -- to let the player out
-        self.stuck:getOut()
+        self.stuck:out()
         return r:set('stuck'):apply()
     end
 
@@ -71,6 +71,8 @@ function Player:act(a)
     else
         -- TODO: implement
         if not a.dir then self:dropBeat() end
+
+        self.facing = a.dir
 
         -- first attempt to attack/dig
         -- this will also attempt to move, if the weapon spec says so
@@ -117,17 +119,6 @@ function Player:attemptAttack(a, t)
     end
 
     return {}
-end
-
-function Player:attemptMove(a, t) 
-
-    local ps = self:getPointsFromDirection(a.dir)
-
-    if self.world:areBlockedAny(ps) then
-        t:set('bumped')
-    else
-        self:go(a.dir, t)
-    end
 end
 
 

@@ -5,6 +5,7 @@ Displayable.scale = 1 / UNIT
 Displayable.offset = vec(0, -0.3)
 Displayable.offset_y_jump = -0.2
 Displayable.pos = vec(0, 0)
+Displayable.size = vec(0, 0)
 
 
 function Displayable:__construct(x, y, w)
@@ -43,8 +44,8 @@ function Displayable:createImage(i, w, h, s)
 end
 
 function Displayable:setupSprite()
-    self.sprite.x = self.pos.x + self.offset.x + (self.size and (self.size.x / 2) or 0)
-    self.sprite.y = self.pos.y + self.offset.y + (self.size and (self.size.y / 2) or 0)
+    self.sprite.x = self.pos.x + self.offset.x + self.size.x / 2
+    self.sprite.y = self.pos.y + self.offset.y + self.size.y / 2
     self.sprite.xScale = self.scale
     self.sprite.yScale = self.scale
 end

@@ -191,8 +191,6 @@ function Enemy:computeAction(player_actions)
     elseif mov == "straight" then
         table.insert(movs, self.facing)
     end
-
-    print(ins(movs))
     
     if #movs > 0 then 
         actions = Action.toActions(self, self.seq:step().name, #movs)            
@@ -220,7 +218,7 @@ function Enemy:act(player_action)
     local M, A = self.seq:is('move'), self.seq:is('attack')   
     
     if self.stuck then
-        return 'stuck'
+        return self:doAction(a, 'stuck')
     end
 
     local acts = self:getAction(player_action)
@@ -240,7 +238,7 @@ function Enemy:act(player_action)
         end
 
         local function set(v)
-            if not respond then respond = v end
+            if not response then response = v end
             return doIter(i + 1)
         end
 
@@ -260,7 +258,7 @@ function Enemy:act(player_action)
     local r = doIter(1)
 
     if not r then
-        self:doAction(acts[1], respond)
+        self:doAction(acts[1], response)
     end
 
 end
@@ -360,12 +358,14 @@ function Enemy:doAction(a, r)
             t:set('bumped')
         end
     
-    elseif r == 'free' then
-        if M then
-            self:go(a.dir, t)
+    elseif r == 'free' then        
         
-        elseif A then
+        if A then
             self.weapon:attemptAttack(a, t)
+        end
+
+        if M and not t.hit and not t.displaced then
+            self:go(a.dir, t)
         end
 
     elseif r == 'player' and A then

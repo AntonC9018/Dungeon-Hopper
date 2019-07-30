@@ -100,14 +100,14 @@ end
 
 function HP:isFull()
     for i = 1, #self.c do
-        if self.c[i] ~= FULL then return false end
+        if self.c[i].f ~= FULL then return false end
     end
     return true
 end
 
 function HP:isEmpty()
     for i = 1, #self.c do
-        if self.c[i] ~= EMPTY then return false end
+        if self.c[i].f ~= EMPTY then return false end
     end
     return true
 end

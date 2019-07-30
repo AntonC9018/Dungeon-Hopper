@@ -13,8 +13,8 @@ Animated.offset_y_jump = -0.2
 
 function Animated:playAnimation(callback)
     local l = self.world:getAnimLength()
-    local ts = l / (#self.hist == 0 and 1 or #self.hist)
     local h = self.hist:arr()
+    local ts = l / (#h == 0 and 1 or #h)
     
 
     local function _callback()
@@ -29,7 +29,9 @@ function Animated:playAnimation(callback)
 
     local function doIteration(i)
 
-        local cb = function() doIteration(i + 1) end
+        local cb = function()
+            doIteration(i + 1)  
+        end
         local t = h[i]
 
         if t then

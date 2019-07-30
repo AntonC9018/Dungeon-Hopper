@@ -12,7 +12,6 @@ function History:add(e)
     table.insert(self.turns, e)
 end
 
-
 -- check if there was at least one turn that
 -- satisfied at least one of the conditions 
 function History:wasAny(...)

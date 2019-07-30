@@ -103,5 +103,15 @@
                 "numFrames": 1
             }
         }
+    },
+    "Gold": {
+        "sheet": {
+            "path": "gold.png",
+            "options": {
+                "width": 16,
+                "height": 16,
+                "numFrames": 10
+            }
+        }
     }
 }

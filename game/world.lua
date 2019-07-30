@@ -2,7 +2,6 @@
 local Wizzrobe = require('enemies.wizzrobe')
 local Player = require('base.player')
 local Dagger = require('weapons.dagger')
-local EnemyDagger = require('weapons.enemydagger')
 local Action = require('logic.action')
 local Camera = require('game.camera')
 local BasicTile = require('tiles.basic')
@@ -77,7 +76,7 @@ function World:populate(a)
 end
 
 
-function World:spawn(x, y, c) 
+function World:spawn(x, y, c, t) 
     local e = c(x, y, self)
     e.moved = true
 
@@ -85,6 +84,19 @@ function World:spawn(x, y, c)
     self:resetEInGrid(e)
 
     return e
+end
+
+
+
+function World:dropGold(x, y, g)
+    print(x, y)
+    local c = self.grid[x][y]
+    if c.gold then
+        c.gold = c.gold + g
+    else
+        c.gold = g
+        g:drop(x, y, self)
+    end
 end
 
 

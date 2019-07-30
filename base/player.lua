@@ -28,6 +28,8 @@ Player.offset = vec(0, -0.4)
 
 Player.priority = 9000000
 
+Player.size = vec(0, 1)
+
 
 function Player:__construct(...)
     Entity.__construct(self, ...)

@@ -24,11 +24,11 @@ Wizzrobe.seq = Sequence.transform(
         },
         {  
             -- attack or move
-            name = { "move" }, 
+            name = { "move", 'attack' }, 
             -- animations for "attack" and for "move" respectively
             -- if not specified, it would default to the name, i.e.
             -- { "move", "attack" }
-            anim = { "jump" }, 
+            anim = { "jump", 'jump' }, 
             -- follow the basic movement pattern (orthogonal movement)
             mov = "basic", 
             -- turn to player if close

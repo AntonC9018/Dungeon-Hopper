@@ -6,6 +6,7 @@ local Action = require('logic.action')
 local Modifiable = require('logic.modifiable')
 local Stats = require('logic.stats')
 local HP = require('logic.hp')
+local Gold = require('environ.gold')
 
 
 local Entity = class('Entity', Sizeful, Animated)
@@ -29,6 +30,7 @@ Entity.priority = 1
 Entity.anims = {
     -- { c = {'dug', 'displaced'},  a = "_displaced" },
     -- { c = {'dug'},               a = "_dug" },
+    { c = {'dead'},              a = "_die"},    
     { c = {'displaced', 'hit'},  a = "_displacedHit" },
     { c = {'displaced', 'hurt'}, a = "_displacedHurt" },
     { c = {'displaced'},         a = "_displaced" },
@@ -37,8 +39,10 @@ Entity.anims = {
     { c = {'hurt'},              a = "_hurt" },
     { c = {'hit'},               a = "_hit" },
     { c = {'stuck'},             a = "_hopUp" },
-    { c = {'pushed'},            a = "_bumped" }    
+    { c = {'pushed'},            a = "_bumped" }
 }
+
+Entity.innards = { { v = vec(0, 0), e = Gold(50), t = 'gold' } }
 
 function Entity:__construct(x, y, world)
     Sizeful.__construct(self, x, y, world)
@@ -112,7 +116,7 @@ function Entity:takeHit(a)
     -- ignore 0 damage
     if dmg <= 0 then return end
 
-    self:takeDmg(dmg)
+    self:takeDmg(dmg, t)
     t:set('hurt'):apply()
 
     return true
@@ -213,12 +217,17 @@ function Entity:calcDmg(s, a)
 end
 
 
-function Entity:takeDmg(dmg)
+function Entity:takeDmg(dmg, t)
     self.hp:take(dmg)
     print(self.hp)
     
     if self.hp:isEmpty() then
         self.dead = true
+        self.moved = true
+        self.world:removeEFromGrid(self)
+        local cen = self:releaseInnards(t)
+        self:deathrattle(t, cen)
+        t:set('dead')
     end
 end
 
@@ -267,6 +276,67 @@ function Entity:bounce(a)
     end
 
     return t:apply()
+end
+
+function Entity:releaseInnards()
+    -- innards is what's inside of the entity 
+    if self.innards then
+
+        local children = {}
+
+        local function trySpawn(x, y, t, e, i)
+            if self.world.grid[x][y][t] then
+                return false
+            else
+                children[i] = self.world:spawn(x, y, e, t)
+                return true
+            end
+        end
+
+
+        for i = 1, #self.innards do
+            local p = self.pos + self.innards[i].v
+            local t = self.innards[i].t
+            local e = self.innards[i].e
+
+            if t == 'gold' then
+                self.world:dropGold(p.x, p.y, e)
+            else
+                if not trySpawn(p.x, p.y, t, e, i) then
+                    local f = {
+                        vec(1, 0),
+                        vec(-1, 0),
+                        vec(0, 1),
+                        vec(0, -1),
+                        vec(1, 1),
+                        vec(-1, 1),
+                        vec(1, -1),
+                        vec(-1, -1)
+                    }
+                    for j = 1, #f do
+                        local np = p + f[j]
+                        if trySpawn(np.x, np.y, t, e, i) then
+                            break
+                        end
+                    end
+                end
+            end
+        end
+        return children
+    end
+end
+
+function Entity:deathrattle() end
+
+function Entity:_die(t, ts, cb)
+    transition.to(self.sprite, {
+        alpha = 0,
+        time = 100,
+        onComplete = function()
+            self.sprite:removeSelf()
+        end
+    })
+    if cb then cb() end
 end
 
 function Entity:isObject()

@@ -57,14 +57,18 @@ end
 
 
 function World:populate(a)
+    local rx = self.width - 8
+    local w = (self.width - rx) / 2
+    local ry = self.height - 8
+    local h = (self.height - ry) / 2
     for i = 1, a do
         local e = Wizzrobe(
-            math.random(self.width), 
-            math.random(self.height), 
+            math.random(rx) + w, 
+            math.random(ry) + h, 
             self
         )
 
-        local w = EnemyDagger(self)
+        local w = Dagger(self)
         e.weapon = w
 
         self:resetEInGrid(e)

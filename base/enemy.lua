@@ -41,6 +41,7 @@ function Enemy:computeAction(player_actions)
 
     local mov = self.seq:mov()
     local pp, sp = self.world.player.pos, self.pos
+    local mpp, msp = pp + self.world.player.size, sp + self.size
 
     if not mov then 
         self.cur_actions = actions
@@ -52,8 +53,9 @@ function Enemy:computeAction(player_actions)
     
     -- Basic orthogonal movement
     elseif mov == "basic" then
-        local gx, gy = pp.x > sp.x, pp.y > sp.y
-        local lx, ly = sp.x > pp.x, sp.y > pp.y
+
+        local gx, gy = pp.x > msp.x, pp.y > msp.y
+        local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
 
         -- So this is basically if-you-look-to-the-left,- 
@@ -93,9 +95,8 @@ function Enemy:computeAction(player_actions)
 
     
     elseif mov == "diagonal" then
-
-        local gx, gy = pp.x > sp.x, pp.y > sp.y
-        local lx, ly = sp.x > pp.x, sp.y > pp.y
+        local gx, gy = pp.x > msp.x, pp.y > msp.y
+        local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
         -- to the left of the player
         if gx then
@@ -151,9 +152,8 @@ function Enemy:computeAction(player_actions)
 
 
     elseif mov == "adjacent" then
-
-        local gx, gy = pp.x > sp.x, pp.y > sp.y
-        local lx, ly = sp.x > pp.x, sp.y > pp.y
+        local gx, gy = pp.x > msp.x, pp.y > msp.y
+        local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
         if gx then
             if gy then  table.insert(movs, vec(  1,  1 )) table.insert(movs, vec( 0,  1 )) end
@@ -192,6 +192,7 @@ function Enemy:computeAction(player_actions)
         table.insert(movs, self.facing)
     end
 
+    print(ins(movs))
     
     if #movs > 0 then 
         actions = Action.toActions(self, self.seq:step().name, #movs)            
@@ -215,16 +216,16 @@ function Enemy:act(player_action)
         self.moved = true
         return
     end
+
+    local M, A = self.seq:is('move'), self.seq:is('attack')   
     
-    local s = self.seq:step()
-    local M, A = s:is('move'), s:is('attack')    
+    if self.stuck then
+        return 'stuck'
+    end
 
     local acts = self:getAction(player_action)
     local resps = {} 
     local hits = {}   
-
-    -- A check over one position
-    
 
     -- A check over one action
     local function doIter(i)
@@ -232,107 +233,110 @@ function Enemy:act(player_action)
         if not a then return false end
         if not a.dir then return doIter(i + 1) end
 
-        local t = Turn(a, self) -- create a fictitional turn
-        local h, r
-
-        if A then
-            h, r = self.weapon:testAttack(a, player_action, t)
-        end
+        local r = self:testMove(a, player_action)
 
         if not r then
             return doIter(i)
         end
 
-        if M and not t.hit then
-            r = self:testMove(a, t)
-        end
-
-        if not r then
-            return doIter(i)
-        end
-
-        local function set()
-            resps[i] = r
-            hits[i] = h
+        local function set(v)
+            if not respond then respond = v end
             return doIter(i + 1)
         end
 
-        local function _set()
-            self:doAction(a, h, r)
+        local function _set(v)
+            self:doAction(a, v)
             return true
         end
 
-        -- if table.all (rs, 'dig')   then return  set('dig')   end
-        if r == 'free'   then return _set() end
-        if r == 'player' then return _set() end
-        return set()
+        if table.all (r, 'free'  ) then return _set('free')   end
+        if table.some(r, 'block' ) then return  set('block')  end
+        if table.some(r, 'player') then return _set('player') end
+        if table.some(r, 'target') then return  set('target') end
+        return set(r[1])
     end
 
 
     local r = doIter(1)
 
     if not r then
-        self:doAction(acts[1], hits[1], resps[1])
+        self:doAction(acts[1], respond)
     end
 
 end
 
 
-function Enemy:testMove(a)
+function Enemy:testMove(a, pa)
     local ps = self:getPointsFromDirection(a.dir)
+    local M, A = self.seq:is('move'), self.seq:is('attack') 
 
     local function posIter(a, p)
         local x, y = p:comps()
         local cell = self.world.grid[x][y]
 
-        -- TODO: support 
-
         if cell.wall then
-            return 'block'
+
+            -- if can attack walls
+            if A and self.attack_wall then
+                return 'target'
+            end
+
+            -- bump into the wall
+            return 'block'    
         
         elseif cell.entity then
 
-            -- if attacking, attack
-            if cell.entity == self.world.player then
-                return 'player'
-
-            -- free way
-            elseif cell.entity.dead then
-                return 'free'
-
-            -- redo the iteration
-            elseif 
+            -- if the entity has not moved
+            if 
                 not cell.entity.moved and
-                not cell.entity.doing_action 
+                not cell.entity.doing_action
             then
+                -- make it move
+                cell.entity:act(pa)
                 return false
             end
 
-            return 'block'
-        end
+            if A then 
+                -- if moving into the player
+                if cell.entity:isPlayer() then
+                    return 'player'
+                
+                -- if attacking other enemies
+                elseif self.attack_fellow then
+                    return 'target'
+                end
+            end
 
-        return 'free'
+            -- bump into the entity
+            return 'block'
+        
+        else 
+            -- no walls / entities
+            return 'free'
+        end
     end
 
     local rs = {}
 
+    local y = true
+
+    -- loop through all positions associated with the movement
     for i = 1, #ps do
         rs[i] = posIter(a, ps[i])
         if not rs[i] then
-            return false
+            -- redo the iteration
+            y = false
         end
     end
 
-    -- if table.all (rs, 'dig')   then return  set('dig')   end
-    if table.all (rs, 'free')   then return 'free'  end
-    if table.some(rs, 'block')  then return 'block' end
-    if table.some(rs, 'enemy')  then return 'enemy' end
-    if table.some(rs, 'player') then return 'player'end
-    return set(rs[1])
+    -- redo the iteration
+    if not y then return false end
+
+    return rs
 end
 
 
-function Enemy:doAction(a, h, r)
+function Enemy:doAction(a, r)
     self.moved = true
 
     -- get the sequence step
@@ -346,45 +350,36 @@ function Enemy:doAction(a, h, r)
     if I then
         t:set('idle')
 
-    elseif r == 'free' then
+    elseif A and self.attack_anyway then
+        self.weapon:attemptAttack(a, t)
 
+    elseif r == 'block' then
+        if M then
+            -- bump
+            self.facing = a.dir
+            t:set('bumped')
+        end
+    
+    elseif r == 'free' then
         if M then
             self:go(a.dir, t)
         
         elseif A then
-            self.weapon:act(a, h, t)
+            self.weapon:attemptAttack(a, t)
         end
 
-    elseif r == 'entity' or r == 'block' then
+    elseif r == 'player' and A then
+        self.weapon:attemptAttack(a, t)
 
-        -- hit all the entities
-        if A and not self.weapon.just_when_player then
-            self.weapon:act(a, h, t)
-        
-        elseif M then
-            self.facing = a.dir
-            t:set('bumped')
-
-        end
-
-    elseif r == 'player' then
-
-        if A then
-            self.weapon:act(a, h, t)
-        
-        else
-            self.facing = a.dir
-            t:set('bumped')
-        end
+    elseif r == 'target' and A then
+        self.weapon:attemptAttack(a, t)
 
     elseif r == 'stuck' then
         -- signalize the stuck causer (a water tile)
         -- to let the player out
         self.stuck:out()
         t:set('stuck')
-    end 
-
-    
+    end     
     
     -- TODO: refactor
     self.close = self:isClose(self.world.player)

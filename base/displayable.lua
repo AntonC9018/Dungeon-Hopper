@@ -33,7 +33,6 @@ function Displayable:anim(ts, name)
 end
 
 function Displayable:createSprite(o, s)
-    print('h', o, s)
     self.sprite = display.newSprite(self.world.group, AM[s or class.name(self)].sheet, o)
     self:setupSprite(self.pos.x, self.pos.y)
 end
@@ -44,7 +43,6 @@ function Displayable:createImage(i, w, h, s)
 end
 
 function Displayable:setupSprite()
-    print(self.size)
     self.sprite.x = self.pos.x + self.offset.x + (self.size and (self.size.x / 2) or 0)
     self.sprite.y = self.pos.y + self.offset.y + (self.size and (self.size.y / 2) or 0)
     self.sprite.xScale = self.scale

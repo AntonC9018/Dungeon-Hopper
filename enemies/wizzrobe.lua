@@ -24,11 +24,11 @@ Wizzrobe.seq = Sequence.transform(
         },
         {  
             -- attack or move
-            name = { "move", "attack" }, 
+            name = { "move" }, 
             -- animations for "attack" and for "move" respectively
             -- if not specified, it would default to the name, i.e.
             -- { "move", "attack" }
-            anim = { "jump", "jump" }, 
+            anim = { "jump" }, 
             -- follow the basic movement pattern (orthogonal movement)
             mov = "basic", 
             -- turn to player if close
@@ -47,6 +47,8 @@ Wizzrobe.hp_base = {
 }
 
 Wizzrobe.priority = 5000
+
+Wizzrobe.size = vec(1, 0)
 
 function Wizzrobe:__construct(...)
     Enemy.__construct(self, ...)

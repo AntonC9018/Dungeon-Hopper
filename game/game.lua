@@ -30,9 +30,9 @@ function scene:create( event )
     -- display sprites of right size
     world_group:scale(SCALE, SCALE) 
 
-    local world = World(5, 5, world_group)
+    local world = World(15, 15, world_group)
     -- create the player
-    world:initPlayer(3, 3)
+    world:initPlayer(7, 7)
     -- spawn some wizzrobes
     world:populate(1)
 

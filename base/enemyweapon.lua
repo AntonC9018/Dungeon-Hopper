@@ -122,9 +122,6 @@ end
 
 function EnemyWeapon:act(a, h, t)
     a.actor.facing = a.dir
-    print(ins(a.dir, {depth = 2}))
-    print(ins(h, {depth = 2}))
-    print(h[1] and h[1][5] or 1)
 
     Weapon.orient(self, a.dir, h[1] and h[1][5] or 1)
     for i = 1, #h do

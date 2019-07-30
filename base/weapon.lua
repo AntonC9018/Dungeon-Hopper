@@ -54,7 +54,7 @@ function Weapon:attemptAttack(a, t)
 
             for j = 1, #ps do
                 local x, y = ps[j]:comps()
-                local cell = self.world.grid[x][y]
+                local cell = a.actor.world.grid[x][y]
                 local a = a:copy():setDir(kndir)
                 local y = { a, dir, cell, ps[j], i }
 

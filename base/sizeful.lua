@@ -155,9 +155,12 @@ function Sizeful:getPointsFromDirection(v)
     return t
 end
 
+function Sizeful:getCenter()
+    return (self.size + 1) * 0.5 + self.pos
+end
+
 
 function Sizeful:closeMath(p)
-
     local ss  = (self.size + 1) * 0.5
     local sp  = (p.size + 1) * 0.5
     local cs  = self.pos + ss

@@ -20,90 +20,57 @@ function UI:initControls()
     -- local ar = display.newImageRect(self.group, arc.path, arc.s, arc.s)
 
     local w = display.safeActualContentWidth / 16
-
-    -- left button
-    widget.newButton({
-        x = display.safeScreenOriginX + w,
-        y = display.contentCenterY,
+    local p = {
         shape = "rect",
-        label = "←",
         width = w,
         height = w,
         fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
         strokeWidth = 1,
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
+        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } }
+    }
 
-        onPress = function() self:ev({ -1, 0 }) end
-    })
+    local a = {
+        {
+            x = display.safeScreenOriginX + w,
+            y = display.contentCenterY,
+            label = "←", 
+            onPress = function() self:ev({ -1, 0 }) end
+        },
+        {
+            x = display.safeScreenOriginX + w,
+            y = display.contentCenterY - w,        
+            label = "↑",
+            onPress = function() self:ev({ 0, -1 }) end
+        },
+        {
+            x = display.safeScreenOriginX + w,
+            y = display.contentCenterY + w,
+            label = "↓",
+            onPress = function() self:ev({ 0, 1 }) end
+        },
+        {
+            x = display.safeActualContentWidth - w,
+            y = display.contentCenterY,
+            label = "→",
+            onPress = function() self:ev({ 1, 0 }) end
+        },
+        {
+            x = display.safeActualContentWidth - w,
+            y = display.contentCenterY - w,
+            label = "↑",
+            onPress = function() self:ev({ 0, -1 }) end
+        },
+        {
+            x = display.safeActualContentWidth - w,
+            y = display.contentCenterY + w,
+            label = "↓",
+            onPress = function() self:ev({ 0, 1 }) end
+        }
+    }
 
-    -- left up button
-    widget.newButton({
-        x = display.safeScreenOriginX + w,
-        y = display.contentCenterY - w,        
-        label = "↑",
-        shape = "rect",
-        width = w,
-        height = w,
-        strokeWidth = 1,
-        fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
-        onPress = function() self:ev({ 0, -1 }) end
-    })
-
-    -- left down button
-    widget.newButton({
-        x = display.safeScreenOriginX + w,
-        y = display.contentCenterY + w,
-        label = "↓",
-        shape = "rect",
-        width = w,
-        height = w,
-        strokeWidth = 1,
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
-        fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
-        onPress = function() self:ev({ 0, 1 }) end
-    })
-
-    -- right button
-    widget.newButton({
-        x = display.safeActualContentWidth - w,
-        y = display.contentCenterY,
-        label = "→",
-        shape = "rect",
-        width = w,
-        height = w,
-        strokeWidth = 1,
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
-        fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
-        onPress = function() self:ev({ 1, 0 }) end
-    })
-
-     -- right up button
-    widget.newButton({
-        x = display.safeActualContentWidth - w,
-        y = display.contentCenterY - w,
-        label = "↑",
-        shape = "rect",
-        width = w,
-        height = w,
-        strokeWidth = 1,
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
-        fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
-        onPress = function() self:ev({ 0, -1 }) end
-    })
-
-     -- right down button
-    widget.newButton({
-        x = display.safeActualContentWidth - w,
-        y = display.contentCenterY + w,
-        label = "↓",
-        shape = "rect",
-        width = w,
-        height = w,
-        strokeWidth = 1,
-        strokeColor = { default = { 0, 0, 0 }, over = { 0.5, 0.5, 0.5 } },
-        fillColor = { default={ 1, 0.2, 0.5, 0.7 }, over={ 1, 0.2, 0.5, 1 } },
-        onPress = function() self:ev({ 0, 1 }) end
-    })
+    for i = 1, #a do
+        widget.newButton(merge(a, p))
+    end
 end
+
 return UI

@@ -31,14 +31,14 @@ table.indexOf = function(a, o)
 end
 
 
-function clamp(v, u, l)
+function clamp(v, l, u)
     if v >= u then return u end
     if v <= l then return l end
     return v
 end
 
 function split(s, delimiter)
-    result = {};
+    local result = {};
     for match in (s..delimiter):gmatch("(.-)"..delimiter) do
         table.insert(result, match);
     end

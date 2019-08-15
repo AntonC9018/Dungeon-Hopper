@@ -69,4 +69,8 @@ function History:wasnot(...)
     return true
 end
 
+function History:getLast()
+    return self.turns[#self.turns]
+end
+
 return History

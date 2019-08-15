@@ -44,7 +44,7 @@ Wizzrobe.seq = Sequence.transform(
 
 Wizzrobe.hp_base = {
     t = 'red',
-    am = 3
+    am = 9
 }
 
 Wizzrobe.priority = 5000

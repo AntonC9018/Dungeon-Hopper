@@ -44,27 +44,32 @@ function Stats:get(stat)
 end
 
 function Stats:incStat(stat, v)
-    if self.c[stat] then 
-        self.c[stat] = self.c[stat] + v 
+    if self.c[stat] then
+        self.c[stat] = self.c[stat] + v
     else
         self.c[stat] = v
     end
     return self.c[stat]
 end
 
-function Stats:inc(v)
+function Stats:setStat(stat, v)    
+    self.c[stat] = v
+    return self.c[stat]
+end
+
+function Stats:inc(val)
     for k, v in pairs(self.c) do
         if not self.c[k] then self.c[k] = 0 end
-        self.c[k] = self.c[k] + v
+        self.c[k] = self.c[k] + val
     end
     return self
 end
 
-function Stats:llim(v)
+function Stats:llim(val)
     for k, v in pairs(self.c) do
         if not self.c[k] then self.c[k] = 0 end
-        if self.c[k] < v then
-            self.c[k] = v
+        if self.c[k] < val then
+            self.c[k] = val
         end
     end
     return self

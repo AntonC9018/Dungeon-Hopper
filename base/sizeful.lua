@@ -64,7 +64,7 @@ end
 
 
 function Sizeful:getPointsFromDirection(v)
-    local t = {} 
+    local t = {}
 
     if v.x ~= 0 and v.y == 0 then
 
@@ -109,21 +109,21 @@ function Sizeful:getPointsFromDirection(v)
                 for i = 1, self.size.y do
                     table.insert(t, self.pos + vec(self.size.x + 1, i))
                 end
-            else 
+            else
                 -- top right
                 table.insert(t, self.pos + vec(self.size.x + 1, -1))
 
                 for i = 1, self.size.x do
                     table.insert(t, self.pos + vec(i, -1))
                 end
-                
+
                 for i = 0, self.size.y - 1 do
                     table.insert(t, self.pos + vec(self.size.x + 1, i))
                 end
             end
 
         else
-            
+
             if v.y > 0 then
                 -- bottom left
                 table.insert(t, self.pos + vec(-1, self.size.y + 1))
@@ -131,7 +131,7 @@ function Sizeful:getPointsFromDirection(v)
                 for i = 0, self.size.x - 1 do
                     table.insert(t, self.pos + vec(i, self.size.y + 1))
                 end
-                
+
                 for i = 1, self.size.y do
                     table.insert(t, self.pos + vec(-1, i))
                 end
@@ -139,11 +139,11 @@ function Sizeful:getPointsFromDirection(v)
             else
                 -- top left
                 table.insert(t, self.pos + vec(-1, -1))
-                
+
                 for i = 0, self.size.x - 1 do
                     table.insert(t, self.pos + vec(i, -1))
                 end
-                
+
                 for i = 0, self.size.y - 1 do
                     table.insert(t, self.pos + vec(-1, i))
                 end
@@ -166,23 +166,23 @@ function Sizeful:closeMath(p)
     local cs  = self.pos + ss
     local cp  = p.pos + sp
     local sss = ss + sp
-    local dcs = cs - cp
+    local dcs = (cs - cp):abs()
 
     return sss, dcs
 end
 
 function Sizeful:isClose(p)
-    local sss, dcs = self:closeMath(p)   
-    return sss.x >= dcs.x and sss.y >= dcs.y and not (dcs.x == dcs.y)
+    local sss, dcs = self:closeMath(p)
+    return sss.x >= dcs.x and sss.y >= dcs.y and dcs.x ~= dcs.y
 end
 
 function Sizeful:isCloseDiagonal(p)
-    local sss, dcs = self:closeMath(p)   
+    local sss, dcs = self:closeMath(p)
     return sss.x >= dcs.x and sss.y >= dcs.y and dcs.x == dcs.y
 end
 
 function Sizeful:isCloseAdjacent(p)
-    local sss, dcs = self:closeMath(p)   
+    local sss, dcs = self:closeMath(p)
     return sss.x >= dcs.x and sss.y >= dcs.y
 end
 

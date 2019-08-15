@@ -1,6 +1,6 @@
 local Turn = class("Turn")
 
-function Turn:__construct(a, actor, ...)
+function Turn:__construct(a, actor, time_share)
     -- the action 
     self.a = a
     -- initial values
@@ -10,8 +10,10 @@ function Turn:__construct(a, actor, ...)
     }
     -- the actor
     self.actor = actor
-    -- any other arguments
-    self.args = ...
+    -- how much a time this turn cost
+    self.time_share = time_share or 1
+
+    self.pickups = {}
 end
 
 

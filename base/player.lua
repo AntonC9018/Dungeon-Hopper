@@ -1,10 +1,11 @@
 local Entity = require('base.entity')
+local Inventory = require('logic.inventory')
 local Turn = require('logic.turn')
 
 local Player = class('Player', Entity)
 
 Player.att_base = {
-    dmg = 1,
+    dmg = 3,
     pierce = 1,
     dig = 1,
     push = 2
@@ -48,6 +49,39 @@ function Player:__construct(...)
             loopCount = 1
         }
     })
+
+    self:on('hit', function(event)
+        if event == 'taken-damage' then
+            self.buffs:setStat('invincible', 2)
+            self:dropBeat()
+            self.flicker = transition.to(self.sprite, {
+                alpha = 0,
+                transition = easing.continuousLoop,
+                time = 200,
+                iterations = 0
+            })
+        end
+    end)
+
+
+    self:on('animation', function(event, t, i)
+        if event == 'step-complete' then
+            -- take gold or items
+            if t.pickup then
+                for i = 1, #t.pickups do
+                    t.pickups[i]:pickup()
+
+                    if class.name(t.pickups[i]) == 'Gold' then
+                        -- TODO: animate the incrementing of gold
+                    end
+                end
+            end
+        end
+    end)
+
+
+
+    self.inventory = Inventory()
 end
 
 function Player:act(a)
@@ -55,7 +89,7 @@ function Player:act(a)
     self.moved = true
 
     if not a then return end
-    
+
     local t = Turn(a, self)
 
     a:setAtt(self:getAttack()):setAms(self:getAms())
@@ -64,15 +98,15 @@ function Player:act(a)
         -- signalize the stuck causer (a water tile)
         -- to let the player out
         self.stuck:out()
-        return r:set('stuck'):apply()
+        return t:set('stuck'):apply()
     end
 
     if a.special then
         -- TODO: implement
-    
+
     else
         -- TODO: implement
-        if not a.dir then self:dropBeat() end
+        if not a.dir then return self:dropBeat() end
 
         self.facing = a.dir
 
@@ -80,10 +114,9 @@ function Player:act(a)
         -- this will also attempt to move, if the weapon spec says so
         local hits = self:attemptAttack(a, t)
 
-        if 
+        if
             not self.hist:wasAny('hit', 'dig')
         then
-            print('here')
             self:attemptMove(a, t)
         end
 
@@ -91,7 +124,7 @@ function Player:act(a)
         -- self:actItems(a, hits)
 
         -- if neither moved nor attacked, drop beat
-        -- if 
+        -- if
         --     not self.hist:wasAny('displaced', 'hit')
         -- then
         -- self:dropBeat()
@@ -106,11 +139,13 @@ function Player:dropBeat()
 end
 
 
-function Player:attemptAttack(a, t)    
+function Player:attemptAttack(a, t)
+
+    local weapon = self.inventory:get('weapon'):get(1)
 
     -- perform the attack defined by the weapon spec
-    if self.weapon then
-        return self.weapon:attemptAttack(a, t)
+    if weapon then
+        return weapon:attemptAttack(a, t)
     end
 
     local ps = self:getPointsFromDirection(a.dir)
@@ -124,11 +159,11 @@ function Player:attemptAttack(a, t)
 end
 
 
-function Player:equip(w)
-    -- self.weapon:retractModification(self)
-    self.weapon = w
-    -- self.weapon:applyModification(self)
-end
+-- function Player:equip(w)
+--     -- self.weapon:retractModification(self)
+--     self.weapon = w
+--     -- self.weapon:applyModification(self)
+-- end
 
 
 function Player:reset()

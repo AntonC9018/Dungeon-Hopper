@@ -16,6 +16,7 @@ function Animated:playAnimation(callback)
     local h = self.hist:arr()
     local ts = l / (#h == 0 and 1 or #h)
 
+    self:emit('animation', 'start')
 
     local function _callback()
         -- if self.dead then
@@ -28,11 +29,13 @@ function Animated:playAnimation(callback)
     end
 
     local function doIteration(i)
+        
+        local t = h[i]
 
         local cb = function()
+            self:emit('animation', 'step-complete', t, i)
             doIteration(i + 1)
         end
-        local t = h[i]
 
         if t then
 

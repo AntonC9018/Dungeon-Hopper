@@ -9,8 +9,8 @@ end
 
 Gold.__add[Gold] = function(self, rhs)
     local g = Gold(self.am + rhs.am)
-    g.pos = self.am
-    g.sprite = rhs.am
+    g.pos = self.pos
+    g.sprite = self.sprite
     if g.sprite then
         self:update()
     end
@@ -37,6 +37,10 @@ function Gold:update()
     local i = self:getImageIndex()
     self.sprite:removeSelf()
     self:createImage(i, UNIT, UNIT)
+end
+
+function Gold:pickup()
+    self.sprite:removeSelf()
 end
 
 return Gold

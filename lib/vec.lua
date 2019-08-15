@@ -135,6 +135,13 @@ function vec:longest()
     return a > b and a or b
 end
 
+function vec:abs()
+    return vec(
+        math.abs(self.x),
+        math.abs(self.y)
+    )
+end
+
 
 function vec:__tostring()
     return '{ x: '..tostring(self.x)..', y: '..tostring(self.y)..' }'

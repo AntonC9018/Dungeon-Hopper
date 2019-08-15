@@ -3,6 +3,7 @@ local Entity = require('base.entity')
 local Object = class('Object', Entity)
 
 Object.anims = {
+    { c = {'dead'},              a = "_die" },
     {c = {'displaced'}, a = '_displaced'},
     {c = {'hurt'}, a = '_hopUp'}
 }
@@ -27,7 +28,7 @@ end
 
 function Object:anim() end
 function Object:playAudio() end
-function Object:act() end
+function Object:act() self.moved = true end
 
 
 return Object

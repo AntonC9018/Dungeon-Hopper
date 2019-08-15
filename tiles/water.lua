@@ -17,7 +17,7 @@ function Water:act()
 
     if e then
         if (self.att - e.def):get('stuck') > 0 then
-            self.subject = e 
+            self.subject = e
             e.stuck = self
         end
     else

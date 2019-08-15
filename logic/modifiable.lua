@@ -6,12 +6,12 @@ Modifiable.id = 0
 
 function Modifiable:__construct(base)
     self.mods = {}
+    self.stats = false
     if base then
         self:add(base)
     end
     self.id = Modifiable.id
     Modifiable.id = Modifiable.id + 1
-    self.stats = false
 end
 
 function Modifiable:add(...)
@@ -25,8 +25,8 @@ function Modifiable:add(...)
         -- got a stats object
         elseif class.name(arg[i]) == 'Stats' then
             table.insert(self.mods, arg[i])
-        
-        else    
+
+        else
             error('Unexpected argument '..tostring(arg[i]))
         end
     end

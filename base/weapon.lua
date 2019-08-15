@@ -4,7 +4,7 @@ local Weapon = class("Weapon", Displayable)
 Weapon.scale = 1 / UNIT
 
 Weapon.move_attack = false
-Weapon.hit_all = false
+Weapon.hit_all = true
 Weapon.frail = false
 Weapon.pos = vec(0, 0)
 Weapon.offset = vec(0, 0)
@@ -69,7 +69,7 @@ function Weapon:attemptAttack(a, t)
                     self:modify( unpack(y) )
 
                     if
-                        self:isTargetingObject(a, dir, cell)
+                        self:isTargetingFarObject(a, dir, cell)
                     then
                         table.insert(objs, y)
                     else
@@ -173,12 +173,12 @@ function Weapon:canReach(a, b, i)
     return not b[self.reach[i]]
 end
 
-function Weapon:isTargetingObject(a, dir, cell)
+function Weapon:isTargetingFarObject(a, dir, cell)
     return
         cell.entity:isObject() and not
-        ((dir.x == 0 and dir.y ~= 0) or
-         (dir.x ~= 0 and dir.y == 0)) and
-        a.actor:isClose(cell.entity)
+            (((dir.x == 0 and dir.y ~= 0) or
+            (dir.x ~= 0 and dir.y == 0)) and
+            a.actor:isClose(cell.entity))
 end
 
 
@@ -220,6 +220,10 @@ end
 function Weapon:orient(dir, i)
     local a = self:getPattern(i):angleBetween(dir)
     self.sprite.rotation = a * 180 / math.pi
+end
+
+function Weapon:getItemType()
+    return 'weapon'
 end
 
 return Weapon

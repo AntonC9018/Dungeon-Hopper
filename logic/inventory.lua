@@ -5,6 +5,7 @@ function InventoryContainer:__construct(params)
     self.size = params.size
     self.name = params.name
     self.inv = params.inventory
+    self.items = {}
 end
 
 function InventoryContainer:addItem(i)
@@ -42,10 +43,10 @@ end
 
 
 function Inventory:equip(i)
-    local type = i:getItemType()
+    local type = i.getItemType()
     if self.c[type] then
         local excess = self.c[type]:addItem(i)
-        print(string.format('An item has been added to the %s container', type))
+        print(string.format('A %s has been added to the %s container', class.name(i), type))
         -- TODO: emit event
 
         if excess then
@@ -75,7 +76,7 @@ function Inventory:activateAll(p, t)
 end
 
 
-function Inventory:getContainer(type)
+function Inventory:get(type)
     return self.c[type]
 end
 

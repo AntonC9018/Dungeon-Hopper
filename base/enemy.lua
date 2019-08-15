@@ -36,29 +36,31 @@ end
 
 
 function Enemy:computeAction(player_actions)
-    local actions = {}   
-    local movs = {} 
+    -- print(string.format('%s is looking %s', class.name(self),
+    --     (self.facing.x > 0 and 'right') or (self.facing.x < 0 and 'left') or
+    --     (self.facing.y > 0 and 'up')    or (self.facing.y < 0 and 'down') or 'nowhere'))
+    local actions = {}
+    local movs = {}
 
     local mov = self.seq:mov()
     local pp, sp = self.world.player.pos, self.pos
     local mpp, msp = pp + self.world.player.size, sp + self.size
 
-    if not mov then 
+    if not mov then
         self.cur_actions = actions
 
     -- got a custom table of actions
     elseif mov == 'table' then
         movs = mov
-        
-    
+
+
     -- Basic orthogonal movement
     elseif mov == "basic" then
 
         local gx, gy = pp.x > msp.x, pp.y > msp.y
         local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
-
-        -- So this is basically if-you-look-to-the-left,- 
+        -- So this is basically if-you-look-to-the-left,
         -- you-would-prefer-to-go-to-the-left action
 
         if self.facing.x > 0 then -- looking right
@@ -93,17 +95,17 @@ function Enemy:computeAction(player_actions)
             if ly then table.insert(movs, vec(  0, -1 )) end
         end
 
-    
+
     elseif mov == "diagonal" then
         local gx, gy = pp.x > msp.x, pp.y > msp.y
         local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
         -- to the left of the player
         if gx then
-            if     gy then table.insert(movs,vec( 1,  1 )) 
+            if     gy then table.insert(movs,vec( 1,  1 ))
             elseif ly then table.insert(movs,vec( 1, -1 ))
             else
-                -- we're on one X with the player 
+                -- we're on one X with the player
                 if self.facing.y > 0 then
                     table.insert(movs, vec( 1,  1 ))
                     table.insert(movs, vec( 1, -1 ))
@@ -115,7 +117,7 @@ function Enemy:computeAction(player_actions)
 
         -- to the right of the player
         elseif lx then
-            if     gy then table.insert(movs, vec( -1,  1 )) 
+            if     gy then table.insert(movs, vec( -1,  1 ))
             elseif ly then table.insert(movs, vec( -1, -1 ))
             else
                 -- we're on one X with the player
@@ -137,7 +139,7 @@ function Enemy:computeAction(player_actions)
             else
                 table.insert(movs, vec(  1,  1 ))
                 table.insert(movs, vec( -1,  1 ))
-            end 
+            end
 
         -- lower than the player
         else
@@ -147,7 +149,7 @@ function Enemy:computeAction(player_actions)
             else
                 table.insert(movs, vec(  1, -1 ))
                 table.insert(movs, vec( -1, -1 ))
-            end 
+            end
         end
 
 
@@ -163,7 +165,7 @@ function Enemy:computeAction(player_actions)
             if gy then  table.insert(movs, vec( -1,  1 )) table.insert(movs, vec( 0,  1 )) end
             if ly then  table.insert(movs, vec( -1, -1 )) table.insert(movs, vec( 0, -1 )) end
                         table.insert(movs, vec( -1,  0 ))
-        
+
         -- on one X with the player
         else
             table.insert(movs, { 0, gy and 1 or -1 })
@@ -178,7 +180,7 @@ function Enemy:computeAction(player_actions)
         local t = { 0, 0 }
         t[i] = x
         table.insert(movs, vec( t[1], t[2] ))
-    
+
     elseif mov == "diagonal-random" then
         table.insert(movs, vec(math.random(0, 1) * 2 - 1, math.random(0, 1) * 2 - 1))
 
@@ -191,9 +193,9 @@ function Enemy:computeAction(player_actions)
     elseif mov == "straight" then
         table.insert(movs, self.facing)
     end
-    
-    if #movs > 0 then 
-        actions = Action.toActions(self, self.seq:step().name, #movs)            
+
+    if #movs > 0 then
+        actions = Action.toActions(self, self.seq:step().name, #movs)
         Action.eachBoth(actions, 'setDir', movs)
         Action.each    (actions, 'setAtt', self:getAttack())
         Action.each    (actions, 'setAms', self:getAms())
@@ -215,15 +217,14 @@ function Enemy:act(player_action)
         return
     end
 
-    local M, A = self.seq:is('move'), self.seq:is('attack')   
-    
+    local M, A = self.seq:is('move'), self.seq:is('attack')
+
     if self.stuck then
-        return self:doAction(a, 'stuck')
+        return self:doAction(false, 'stuck')
     end
 
     local acts = self:getAction(player_action)
-    local resps = {} 
-    local hits = {}   
+    local response
 
     -- A check over one action
     local function doIter(i)
@@ -266,7 +267,7 @@ end
 
 function Enemy:testMove(a, pa)
     local ps = self:getPointsFromDirection(a.dir)
-    local M, A = self.seq:is('move'), self.seq:is('attack') 
+    local M, A = self.seq:is('move'), self.seq:is('attack')
 
     local function posIter(a, p)
         local x, y = p:comps()
@@ -280,12 +281,12 @@ function Enemy:testMove(a, pa)
             end
 
             -- bump into the wall
-            return 'block'    
-        
+            return 'block'
+
         elseif cell.entity then
 
             -- if the entity has not moved
-            if 
+            if
                 not cell.entity.moved and
                 not cell.entity.doing_action
             then
@@ -294,11 +295,11 @@ function Enemy:testMove(a, pa)
                 return false
             end
 
-            if A then 
+            if A then
                 -- if moving into the player
                 if cell.entity:isPlayer() then
                     return 'player'
-                
+
                 -- if attacking other enemies
                 elseif self.attack_fellow then
                     return 'target'
@@ -307,8 +308,8 @@ function Enemy:testMove(a, pa)
 
             -- bump into the entity
             return 'block'
-        
-        else 
+
+        else
             -- no walls / entities
             return 'free'
         end
@@ -345,6 +346,10 @@ function Enemy:doAction(a, r)
 
     local M, A, I = s:is('move'), s:is('attack'), s:is('idle')
 
+    if a.dir then
+        self.facing = a.dir
+    end
+
     if I then
         t:set('idle')
 
@@ -354,12 +359,11 @@ function Enemy:doAction(a, r)
     elseif r == 'block' then
         if M then
             -- bump
-            self.facing = a.dir
             t:set('bumped')
         end
-    
-    elseif r == 'free' then        
-        
+
+    elseif r == 'free' then
+
         if A then
             self.weapon:attemptAttack(a, t)
         end
@@ -379,13 +383,13 @@ function Enemy:doAction(a, r)
         -- to let the player out
         self.stuck:out()
         t:set('stuck')
-    end     
-    
+    end
+
     -- TODO: refactor
     self.close = self:isClose(self.world.player)
     self.close_diagonal = self:isCloseDiagonal(self.world.player)
-    
-    
+
+
     -- reorient to the player if necessary
     -- TODO: REFACTOR!!!
     if s.reorient then
@@ -393,7 +397,7 @@ function Enemy:doAction(a, r)
     elseif s.p_close and self.close and s.p_close.reorient then
         self:orientTo(self.world.player)
     end
-    
+
     -- save the turn in the history
     t:apply()
 
@@ -424,15 +428,15 @@ function Enemy:orientTo(p)
     elseif p.pos.y > self.pos.y then self.facing = vec( 0,  1)
     elseif p.pos.y < self.pos.y then self.facing = vec( 0, -1)
 
-    -- TODO: give it a random val when no player is around 
+    -- TODO: give it a random val when no player is around
     else   self.facing = vec(0, 0) end
 end
 
 
 function Enemy:bumpLoop()
-    if 
+    if
         -- if was preparing to attack
-        self.seq:is('attack') and 
+        self.seq:is('attack') and
         -- but has bumped into an enemy
         self.hist:was('bumped') and
         -- hasn't attacked or bounced
@@ -440,10 +444,10 @@ function Enemy:bumpLoop()
     then
         -- TODO: Refactor this animation thing
         if self.close then
-            self:anim(1000, "angry") 
+            self:anim(1000, "angry")
         else
-            self:anim(1000, "ready") 
-        end        
+            self:anim(1000, "ready")
+        end
         return true
     end
     return false

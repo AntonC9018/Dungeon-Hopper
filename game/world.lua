@@ -5,6 +5,8 @@ local Dagger = require('weapons.dagger')
 local Action = require('logic.action')
 local Camera = require('game.camera')
 local BasicTile = require('tiles.basic')
+local Coals = require('tiles.coals')
+local Crate = require('environ.crate')
 local World = class('World')
 
 function World:__construct(w, h, group)
@@ -16,19 +18,36 @@ function World:__construct(w, h, group)
     self.loop_count = 1
     self.entities = {}
 
+    self.env_special_tiles = {}
+    self.env_objects = {}
+    self.env_bombs = {}
+    self.env_explosions = {}
+    self.env_traps = {}
+
     self.grid = tdArray(self.width, self.height,
         function(i, j)
-            local t = {}
+            local cell = {}
+
+            -- if math.random() > 0.8 then
+            --     -- t.wall = Dirt(i, j, self)
+            --     -- table.insert(self.entities, d)
+            --     cell.tile = Coals(i, j, self)
+            --     table.insert(self.env_special_tiles, cell.tile)
+            -- else
+            --     cell.tile = BasicTile(i, j, self)
+            -- end
 
             if math.random() > 0.8 then
-                -- t.wall = Dirt(i, j, self)
-                -- table.insert(self.entities, d)
+                cell.entity = Crate(i, j, self)
+                table.insert(self.entities, cell.entity)
             end
 
-            t.tile = BasicTile(i, j, self)
-            t.items = {}
+            cell.tile = BasicTile(i, j, self)
 
-            return t
+
+            cell.items = {}
+
+            return cell
         end
     )
     self.camera = Camera()
@@ -40,17 +59,25 @@ function World:initPlayer(x, y)
     self.player = Player(x, y, self)
 
     local dagger = Dagger(self)
-    self.player:equip(dagger)
+    self.player.inventory:equip(dagger)
 
-    -- local spade = WoodenSpade(self)
-    -- self.player.spade = spade
+    self.player:on('displaced', function(event, t)
+        local x, y = self.player.pos:comps()
+        local cell = self.grid[x][y]
 
-    -- self.player:on('animation:start',
-    --     function(p)
-    --         self.camera:sync(p, self:getAnimLength())
-    --     end
-    -- )
+        if cell.gold or #cell.items > 0 then
 
+            t:set('pickup')
+
+            if cell.gold then
+                print(string.format("%d gold has been collected", cell.gold.am))
+                table.insert(t.pickups, cell.gold)
+                cell.gold = false
+            end
+        end
+
+        
+    end)
 
     table.insert(self.entities, self.player)
 end
@@ -71,6 +98,8 @@ function World:populate(am)
         local w = Dagger(self)
         e.weapon = w
 
+        e:orientTo(self.player)
+
         self:resetEInGrid(e)
         table.insert(self.entities, e)
     end
@@ -90,7 +119,7 @@ end
 
 
 function World:dropGold(x, y, g)
-    print(x, y)
+    print(string.format("%d gold has been dropped", g.am))
     local cell = self.grid[x][y]
     if cell.gold then
         cell.gold = cell.gold + g
@@ -185,6 +214,10 @@ function World:do_loop(player_action)
     -- self:actTiles()
     -- self.env:updateSprites()
 
+    for i = 1, #self.env_special_tiles do
+        self.env_special_tiles[i]:act()
+    end
+
     -- bring the entities that have higher y to the front
     self:sortByY()
     self:toFront()
@@ -193,6 +226,7 @@ function World:do_loop(player_action)
     local I = #self.entities
 
     local function refresh()
+
         for i = 1, #self.entities do
             self.entities[i]:tick()
             self.entities[i]:reset()

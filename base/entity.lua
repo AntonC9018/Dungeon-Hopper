@@ -11,7 +11,7 @@ local Gold = require('environ.gold')
 
 local Entity = class('Entity', Sizeful, Animated)
 
--- minimum and maximum amount of damage 
+-- minimum and maximum amount of damage
 -- that it can take
 Entity.min_dmg = 1
 Entity.max_dmg = 10
@@ -20,7 +20,7 @@ Entity.max_dmg = 10
 -- down to min_dmg
 Entity.armor = 0
 
--- do not take damage if it turned out 
+-- do not take damage if it turned out
 -- lower than this threshold
 Entity.dmg_thresh = 1
 
@@ -30,7 +30,7 @@ Entity.priority = 1
 Entity.anims = {
     -- { c = {'dug', 'displaced'},  a = "_displaced" },
     -- { c = {'dug'},               a = "_dug" },
-    { c = {'dead'},              a = "_die"},    
+    { c = {'dead'},              a = "_die" },
     { c = {'displaced', 'hit'},  a = "_displacedHit" },
     { c = {'displaced', 'hurt'}, a = "_displacedHurt" },
     { c = {'displaced'},         a = "_displaced" },
@@ -57,7 +57,7 @@ function Entity:__construct(x, y, world)
 
     -- logic states
     self.dead = false
-    self.moved = false    
+    self.moved = false
 
     -- self.sliding = false
     -- self.levitating = false
@@ -68,6 +68,8 @@ function Entity:__construct(x, y, world)
     -- buffs or debuffs (decremented by 1 each turn)
     self.buffs = Stats({ invincible = 0 })
     self.hp = HP(self.hp_base)
+
+    self.emitter = Emitter()
 end
 
 function Entity:reset()
@@ -79,29 +81,48 @@ end
 
 
 function Entity:tick()
+    -- print(string.format( "%s ticking stats [Before]. invincible = %d",
+    --     class.name(self), self.buffs:get('invincible')))
     self.buffs:inc(-1):llim(0)
+    -- print(string.format( "%s ticking stats [After]. invincible = %d",
+    --     class.name(self), self.buffs:get('invincible')))
 end
 
 --- Apply damage and special effects to the entity
 function Entity:takeHit(a)
     if self.dead then return end
 
+    print(string.format("%s is getting hit by %s", class.name(self), class.name(a.actor)))
+
     local t = Turn(a, self)
+    -- t:apply()
 
     -- defend against attack
     local s = a.att - self.def
-    
-    self:applyDebuffs(s, a, t)
 
-    t:apply()
+    -- do not take damage if invincible
+    if self.buffs:get('invincible') > 0 then
+        return true
+    end
 
     -- figure taken damage
     local dmg = self:calcDmg(s, a)
-    -- ignore 0 damage
-    if dmg <= 0 then return end
 
-    self:takeDmg(dmg, t)
-    t:set('hurt'):apply()
+    -- ignore 0 damage
+    if dmg > 0 then
+
+        print(string.format("%s is taking %d damage", class.name(self), dmg))
+
+        self:takeDmg(dmg, t)
+        t:set('hurt'):apply()
+        self:emit('hit', 'taken-damage', dmg, s, a)
+
+    end
+
+    if not self.dead then
+        -- apply debuffs after being hit
+        self:applyDebuffs(s, a, t)
+    end
 
     return true
 end
@@ -142,7 +163,7 @@ function Entity:thrust(v, am, t)
         -- the sizes of the entity
         local ps = self:getPointsFromDirection(v)
 
-        if not self.world:areBlockedAny(ps) then  
+        if not self.world:areBlockedAny(ps) then
             -- update position
             self:displace(v, t)
         else
@@ -160,7 +181,7 @@ function Entity:thrust(v, am, t)
     return t
 end
 
-function Entity:attemptMove(a, t) 
+function Entity:attemptMove(a, t)
 
     local ps = self:getPointsFromDirection(a.dir)
 
@@ -175,6 +196,7 @@ end
 function Entity:displace(v, t)
     self.pos = self.pos + v
     t:set('displaced')
+    self:emit('displaced', '', t)
 end
 
 function Entity:go(v, t)
@@ -203,8 +225,7 @@ end
 
 function Entity:takeDmg(dmg, t)
     self.hp:take(dmg)
-    print(self.hp)
-    
+    print(string.format('%s\'s health: %s', class.name(self), tostring(self.hp)))
     if self.hp:isEmpty() then
         self.dead = true
         self.moved = true
@@ -233,7 +254,7 @@ function Entity:bounce(a)
     t:set('bounced')
 
     if self.world:areBlockedAnyAny(ps) then
-        if              
+        if
             -- if we're not a player
             not self:isPlayer() and
             -- one of the spot has a player
@@ -253,7 +274,7 @@ function Entity:bounce(a)
         else
             t:set('bumped')
         end
-    
+
     -- the way is not blocked, move
     else
         self:go(a.dir, t)
@@ -263,7 +284,7 @@ function Entity:bounce(a)
 end
 
 function Entity:releaseInnards()
-    -- innards is what's inside of the entity 
+    -- innards is what's inside of the entity
     if self.innards then
 
         local children = {}
@@ -333,6 +354,18 @@ end
 
 function Entity:isWall()
     return false
+end
+
+function Entity:on(...)
+    self.emitter:on(...)
+end
+
+function Entity:once(...)
+    self.emitter:once(...)
+end
+
+function Entity:emit(...)
+    self.emitter:emit(...)
 end
 
 return Entity

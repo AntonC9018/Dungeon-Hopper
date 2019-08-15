@@ -26,7 +26,7 @@ Entity.dmg_thresh = 1
 
 Entity.priority = 1
 
--- Animation methods
+-- Basic animation methods (overwritable)
 Entity.anims = {
     -- { c = {'dug', 'displaced'},  a = "_displaced" },
     -- { c = {'dug'},               a = "_dug" },
@@ -80,25 +80,9 @@ end
 
 function Entity:tick()
     self.buffs:inc(-1):llim(0)
-
-    -- TODO: implement
-    -- local s = self.world:getTileAt(self.x, self.y)
-
-    -- -- got pushed away from the tile or 
-    -- -- something wrong happened
-    -- if not s or (s and s.subj ~= self) then
-    --     self.buffs.stuck = 0
-    -- elseif
-    --     -- incremented the stuck stat while did not need to
-    --     not self.hist:was('stuck')
-    --     -- and has been stuck
-    --     (s and s.subj == self)
-    -- then
-    --     self.buffs:incStat('stuck', 1)
-    -- end
 end
 
--- a is the action object
+--- Apply damage and special effects to the entity
 function Entity:takeHit(a)
     if self.dead then return end
 
@@ -145,7 +129,7 @@ function Entity:dash(v, am, t)
 end
 
 
--- apply a thrust in direction of v, am times
+-- Apply a thrust in direction of v, am times
 function Entity:thrust(v, am, t)
 
     local blocked = false
@@ -187,7 +171,7 @@ function Entity:attemptMove(a, t)
     end
 end
 
-
+--- Move v and reset the turn accordingly
 function Entity:displace(v, t)
     self.pos = self.pos + v
     t:set('displaced')

@@ -20,6 +20,7 @@ function Dagger:__construct(...)
             count = 3,
             time = 1000,
             loopCount = 1
+            
         }
     }, ...)
 end

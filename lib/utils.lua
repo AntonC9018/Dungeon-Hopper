@@ -115,3 +115,11 @@ function merge(t1, t2)
     end
     return t1
 end
+
+
+function merge_array(arr1, arr2)
+    for i = 1, #arr2 do
+        arr1[#arr1] = arr2[i]
+    end
+    return arr1
+end

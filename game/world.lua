@@ -14,9 +14,9 @@ function World:__construct(w, h, group)
     self.loop_queue = {}
     self.doing_loop = false
     self.loop_count = 1
-    self.entities = {}    
+    self.entities = {}
 
-    self.grid = tdArray(self.width, self.height, 
+    self.grid = tdArray(self.width, self.height,
         function(i, j)
             local t = {}
 
@@ -26,6 +26,7 @@ function World:__construct(w, h, group)
             end
 
             t.tile = BasicTile(i, j, self)
+            t.items = {}
 
             return t
         end
@@ -44,9 +45,9 @@ function World:initPlayer(x, y)
     -- local spade = WoodenSpade(self)
     -- self.player.spade = spade
 
-    -- self.player:on('animation:start', 
-    --     function(p) 
-    --         self.camera:sync(p, self:getAnimLength())    
+    -- self.player:on('animation:start',
+    --     function(p)
+    --         self.camera:sync(p, self:getAnimLength())
     --     end
     -- )
 
@@ -55,15 +56,15 @@ function World:initPlayer(x, y)
 end
 
 
-function World:populate(a)
+function World:populate(am)
     local rx = self.width - 8
     local w = (self.width - rx) / 2
     local ry = self.height - 8
     local h = (self.height - ry) / 2
-    for i = 1, a do
+    for i = 1, am do
         local e = Wizzrobe(
-            math.random(rx) + w, 
-            math.random(ry) + h, 
+            math.random(rx) + w,
+            math.random(ry) + h,
             self
         )
 
@@ -76,25 +77,25 @@ function World:populate(a)
 end
 
 
-function World:spawn(x, y, c, t) 
-    local e = c(x, y, self)
-    e.moved = true
+function World:spawn(x, y, classname, t)
+    local entity = classname(x, y, self)
+    entity.moved = true
 
-    table.insert(self.entities, e)
-    self:resetEInGrid(e)
+    table.insert(self.entities, entity)
+    self:resetEInGrid(entity)
 
-    return e
+    return entity
 end
 
 
 
 function World:dropGold(x, y, g)
     print(x, y)
-    local c = self.grid[x][y]
-    if c.gold then
-        c.gold = c.gold + g
+    local cell = self.grid[x][y]
+    if cell.gold then
+        cell.gold = cell.gold + g
     else
-        c.gold = g
+        cell.gold = g
         g:drop(x, y, self)
     end
 end
@@ -145,8 +146,8 @@ end
 
 
 function World:isBlocked(x, y)
-    if 
-        self.grid[x][y].entity or 
+    if
+        self.grid[x][y].entity or
         self.grid[x][y].object or
         self.grid[x][y].wall
     then
@@ -172,18 +173,18 @@ function World:do_loop(player_action)
     -- test of explosion
     -- self.env:explode(math.random(4, 6), math.random(4, 6), 1, self)
 
-    -- TODO: 
+    -- TODO:
     -- self:actProjectiles()
 
     -- sort them by priority
     self:sortByPriority()
     self:actEntities(player_action)
 
-    --TODO: 
+    --TODO:
     -- self:actTraps()
-    -- self:actTiles()   
+    -- self:actTiles()
     -- self.env:updateSprites()
-    
+
     -- bring the entities that have higher y to the front
     self:sortByY()
     self:toFront()
@@ -192,9 +193,9 @@ function World:do_loop(player_action)
     local I = #self.entities
 
     local function refresh()
-        for i = 1, #self.entities do   
-            self.entities[i]:tick()         
-            self.entities[i]:reset()            
+        for i = 1, #self.entities do
+            self.entities[i]:tick()
+            self.entities[i]:reset()
         end
 
         -- update the iteration count
@@ -211,18 +212,18 @@ function World:do_loop(player_action)
     local function tryRefresh()
         I = I - 1
         if I == 0 then refresh() end
-    end  
+    end
 
     self.camera:sync(self.player, self:getAnimLength())
 
     -- animate all entities
     for i = #self.entities, 1, -1 do
 
-        self.entities[i]:playAnimation(tryRefresh)       
+        self.entities[i]:playAnimation(tryRefresh)
 
         if (self.entities[i].dead) then
-            table.remove(self.entities, i)                    
-        end    
+            table.remove(self.entities, i)
+        end
     end
 end
 
@@ -235,7 +236,7 @@ function World:getAnimLength()
     return 230
 end
 
-function World:on_beat() 
+function World:on_beat()
     return true
 end
 

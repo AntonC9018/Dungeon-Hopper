@@ -1,9 +1,10 @@
 local Tile = require('base.tile')
 local Stats = require('logic.stats')
+local Action = require('logic.action')
 
 local Coals = class('Coals', Tile)
 
-self.att = Stats({ dmg = 2, pierce = 5 })
+Coals.att = Stats({ dmg = 2, pierce = 5 })
 
 function Coals:__construct(...)
     self.t = 13
@@ -16,7 +17,7 @@ function Coals:act()
     local e = cell.entity
 
     if e then
-        if 
+        if
             self.subject == e and
             not e.hist:was('displaced')
         then

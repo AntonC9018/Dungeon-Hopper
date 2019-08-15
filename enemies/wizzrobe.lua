@@ -4,41 +4,42 @@ local Sequence = require('logic.sequence')
 local Wizzrobe = class('Wizzrobe', Enemy)
 
 Wizzrobe.seq = Sequence.transform(
-    { 
+    {
         -- do nothing for the first beat
-        { 
+        {
             name = "idle"
-        }, 
-        { 
-            -- do nothing too
-            name = "idle", 
-            -- play the ready animation
-            anim = "ready", 
-            -- if the player is close
-            p_close = { 
-                -- play the angry animation
-                anim = "angry", 
-                -- turn to player 
-                reorient = true 
-            } 
         },
-        {  
+        {
+            -- do nothing too
+            name = "idle",
+            -- play the ready animation
+            anim = "ready",
+            -- if the player is close
+            p_close = {
+                -- play the angry animation
+                anim = "angry",
+                -- turn to player
+                reorient = true
+            }
+        },
+        {
             -- attack or move
-            name = { "move", 'attack' }, 
+            name = { "move", 'attack' },
             -- animations for "attack" and for "move" respectively
             -- if not specified, it would default to the name, i.e.
             -- { "move", "attack" }
-            anim = { "jump", 'jump' }, 
+            anim = { "jump", 'jump' },
             -- follow the basic movement pattern (orthogonal movement)
-            mov = "basic", 
+            mov = "basic",
             -- turn to player if close
             p_close = {
                 reorient = true
             },
-            -- redo this step if the function s3Loop() returns true
-            loop = "bumpLoop" 
-        } 
-    }  
+            -- redo this step if the function bumpLoop() returns true
+            -- bumpLoop() is a function defined in the Enemy class
+            loop = "bumpLoop"
+        }
+    }
 )
 
 Wizzrobe.hp_base = {
@@ -48,7 +49,7 @@ Wizzrobe.hp_base = {
 
 Wizzrobe.priority = 5000
 
-Wizzrobe.size = vec(1, 0)
+Wizzrobe.size = vec(0, 0)
 
 function Wizzrobe:__construct(...)
     Enemy.__construct(self, ...)

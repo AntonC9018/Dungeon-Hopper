@@ -35,12 +35,12 @@ end
 
 function Displayable:createSprite(o, s)
     self.sprite = display.newSprite(self.world.group, AM[s or class.name(self)].sheet, o)
-    self:setupSprite(self.pos.x, self.pos.y)
+    self:setupSprite()
 end
 
 function Displayable:createImage(i, w, h, s)
     self.sprite = display.newImageRect(self.world.group, AM[s or class.name(self)].sheet, i, w, h)
-    self:setupSprite(self.pos.x, self.pos.y)
+    self:setupSprite()
 end
 
 function Displayable:setupSprite()

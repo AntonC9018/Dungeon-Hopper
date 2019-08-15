@@ -3,7 +3,7 @@ local Stats = require('logic.stats')
 
 local Water = class('Water', Tile)
 
-self.att = Stats({ stuck = 5 })
+Water.att = Stats({ stuck = 5 })
 
 function Water:__construct(...)
     self.t = 12

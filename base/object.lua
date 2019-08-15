@@ -1,6 +1,6 @@
 local Entity = require('base.entity')
 
-local Object = class('Object', Enemy)
+local Object = class('Object', Entity)
 
 Object.anims = {
     {c = {'displaced'}, a = '_displaced'},

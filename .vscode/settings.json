@@ -1,0 +1,9 @@
+{
+    "Lua.diagnostics.globals": [
+        "unpack",
+        "display",
+        "audio",
+        "newproxy",
+        "easing"
+    ]
+}

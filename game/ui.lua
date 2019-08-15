@@ -69,7 +69,7 @@ function UI:initControls()
     }
 
     for i = 1, #a do
-        widget.newButton(merge(a, p))
+        widget.newButton(merge(a[i], p))
     end
 end
 

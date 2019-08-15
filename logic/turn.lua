@@ -4,9 +4,9 @@ function Turn:__construct(a, actor, ...)
     -- the action 
     self.a = a
     -- initial values
-    self.i = {
-        p = actor.pos,
-        f = actor.facing
+    self.initial = {
+        pos = actor.pos,
+        facing = actor.facing
     }
     -- the actor
     self.actor = actor
@@ -30,9 +30,9 @@ function Turn:apply()
     if not self._set or self._in then return self end
     self.actor.hist:add(self)
 
-    self.f = {
-        p = self.actor.pos,
-        f = self.actor.facing
+    self.final = {
+        pos = self.actor.pos,
+        facing = self.actor.facing
     }
     
     self._in = true

@@ -37,14 +37,14 @@ function Weapon:attemptAttack(a, t)
 
     local ihat = a.dir
     local jhat = ihat:rotate(-math.pi / 2)
-    
+
     local w = a.actor.world
 
 
     for i = 1, #self.pattern do
 
-        local p = self:getPattern(i, dir, a, t)
-        local kn = self:getKnockb(i, dir, a, t)
+        local p = self:getPattern(i, a, t)
+        local kn = self:getKnockb(i, a, t)
 
         if p and kn then
 
@@ -77,13 +77,13 @@ function Weapon:attemptAttack(a, t)
                         self:attack( unpack(y) )
                         table.insert(hits, y)
                         t:set('hit')
-                    end                
-                end                
+                    end
+                end
 
                 blocked[i] =
                     blocked[i] or
                     cell.wall or
-                    (cell.entity and cell.entity:isObject())            
+                    (cell.entity and cell.entity:isObject())
             end
             if not self.hit_all and t.hit then
                 break
@@ -111,20 +111,20 @@ function Weapon:patternDirToPoints(dir, a)
 
     local p = a.actor
 
-    if 
+    if
         -- do not waste computing power if the size
         -- can be neglected, which will be the case
         -- in most scenarios
-        p.size.x == 0 and p.size.y == 0 
-    then 
+        p.size.x == 0 and p.size.y == 0
+    then
         return { p.pos + dir }
     end
 
-    if     
+    if
         -- or an orthogonal direction
         (math.abs(dir.x) >= 1 and dir.y == 0) or
-        (math.abs(dir.y) >= 1 and dir.x == 0)    
-    then    
+        (math.abs(dir.y) >= 1 and dir.x == 0)
+    then
         -- get the scale of the vector
         local s = dir:longest()
         -- scale it down to have components = 1
@@ -133,7 +133,7 @@ function Weapon:patternDirToPoints(dir, a)
         local ps = p:getPointsFromDirection(d)
         -- rescale the vector
         local v = d * (s - 1)
-        -- add to those points that initial vector 
+        -- add to those points that initial vector
         for i = 1, #ps do
             ps[i] = ps[i] + v
         end
@@ -150,7 +150,7 @@ function Weapon:patternDirToPoints(dir, a)
     -- However, when doing it to the right or to the bottom, we'll need
     -- to account for that by adding the player's size to the direction
 
-    
+
     if dir.y > 0 then
         dir.y = dir.y + p.size.y
     end
@@ -164,11 +164,11 @@ end
 
 
 function Weapon:canReach(a, b, i)
-    if 
-        not self.reach or 
-        (self.reach and not self.reach[i]) 
-    then 
-        return true 
+    if
+        not self.reach or
+        (self.reach and not self.reach[i])
+    then
+        return true
     end
     return not b[self.reach[i]]
 end
@@ -209,7 +209,7 @@ function Weapon:listenAlpha()
     end)
 end
 
-function Weapon:playAudio()    
+function Weapon:playAudio()
     audio.play(AM[class.name(self)].audio['swipe'])
 end
 

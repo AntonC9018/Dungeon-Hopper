@@ -139,4 +139,12 @@ function Animated:_hopUp(t, ts, cb)
     })
 end
 
+function Animated:_hit(t, ts, cb)
+    if self.weapon then
+        self.weapon:playAnimation(t, ts)
+        self.weapon:playAudio()
+    end
+    if cb then cb() end
+end
+
 return Animated

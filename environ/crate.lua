@@ -1,5 +1,6 @@
 local Object = require('base.object')
 local Gold = require('environ.gold')
+local Wizzrobe = require('enemies.wizzrobe')
 
 local Crate = class('Crate', Object)
 
@@ -9,7 +10,10 @@ Crate.offset_y_hop = -0.3
 
 Crate.scale = Object.scale * 0.75
 
-Crate.innards= { { v = vec(0, 0), e = Gold(250), t = 'gold' } }
+Crate.innards= {
+    { v = vec(0, 0), am = 250, t = 'gold'        },
+    { v = vec(1, 0), cl = Wizzrobe, t = 'entity' }
+}
 
 function Crate:__construct(...)
     Object.__construct(self, ...)
@@ -21,10 +25,10 @@ function Crate:__construct(...)
     --         for i = 1, #arr do
     --             print(ins(arr[i], {depth = 1}))
     --         end
-    --     end)    
+    --     end)
     -- end)
 
-    
+
 end
 
 return Crate

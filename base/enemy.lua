@@ -453,4 +453,18 @@ function Enemy:bumpLoop()
     return false
 end
 
+
+function Enemy.enemifyWeapon(weapon)
+    weapon.ignore_enemies = true
+    weapon.ignore_objects = true
+    weapon.ignore_player = false
+    weapon.ignore_walls = false
+    return weapon
+end
+
+function Enemy:isEnemy()
+    return true
+end
+
+
 return Enemy

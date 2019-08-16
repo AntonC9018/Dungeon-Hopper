@@ -17,6 +17,11 @@ Weapon.pattern = { vec(1, 0) }
 Weapon.knockb = { vec(1, 0) }
 Weapon.reach = { false }
 
+Weapon.ignore_enemies = false
+Weapon.ignore_objects = false
+Weapon.ignore_walls = false
+Weapon.ignore_players = false
+
 function Weapon:__construct(o, w, s)
     self.world = w
     self:createSprite(o, s)
@@ -59,24 +64,54 @@ function Weapon:attemptAttack(a, t)
                 local y = { a, dir, cell, ps[j], i }
 
 
-                if cell.wall then
+                if
+                    -- whether to ignore walls
+                    cell.wall and not
+                    self.ignore_walls
+                then
                     table.insert(hits, y)
+                
                 elseif
+                    -- attacking an enemy / player / object
                     cell.entity and
                     cell.entity ~= a.actor and
                     self:canReach(a, blocked, i)
                 then
+
                     self:modify( unpack(y) )
 
-                    if
-                        self:isTargetingFarObject(a, dir, cell)
-                    then
-                        table.insert(objs, y)
-                    else
+                    local function doAttack()
                         self:orient(dir, i)
                         self:attack( unpack(y) )
                         table.insert(hits, y)
                         t:set('hit')
+                    end
+
+                    if
+                        -- if targeting an object
+                        cell.entity:isObject() and not
+                        self.ignore_objects
+                    then
+                        if not self:isNextTo(a, dir, cell) then
+                            -- store in objs array in case attacking multiple things
+                            -- or other side effects
+                            table.insert(objs, y)
+                        else
+                            -- attack the object as standing right next to it
+                            doAttack()
+                        end
+                    
+                    elseif
+                        cell.entity:isPlayer() and not
+                        self.ignore_players
+                    then
+                        doAttack()
+                    
+                    elseif
+                        cell.entity:isEnemy() and not
+                        self.ignore_enemies
+                    then
+                        doAttack()
                     end
                 end
 
@@ -173,12 +208,11 @@ function Weapon:canReach(a, b, i)
     return not b[self.reach[i]]
 end
 
-function Weapon:isTargetingFarObject(a, dir, cell)
+function Weapon:isNextTo(a, dir, cell)
     return
-        cell.entity:isObject() and not
-            (((dir.x == 0 and dir.y ~= 0) or
-            (dir.x ~= 0 and dir.y == 0)) and
-            a.actor:isClose(cell.entity))
+        a.actor:isClose(cell.entity) and
+        ((dir.x == 0 and dir.y ~= 0) or
+        (dir.x ~= 0 and dir.y == 0))
 end
 
 

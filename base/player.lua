@@ -88,6 +88,10 @@ function Player:act(a)
 
     self.moved = true
 
+    -- alias the weapon to make API the same for
+    -- the player and the enemies
+    self.weapon = self.inventory:get('weapon'):get(1)
+
     if not a then return end
 
     local t = Turn(a, self)
@@ -141,11 +145,9 @@ end
 
 function Player:attemptAttack(a, t)
 
-    local weapon = self.inventory:get('weapon'):get(1)
-
     -- perform the attack defined by the weapon spec
-    if weapon then
-        return weapon:attemptAttack(a, t)
+    if self.weapon then
+        return self.weapon:attemptAttack(a, t)
     end
 
     local ps = self:getPointsFromDirection(a.dir)
@@ -184,14 +186,6 @@ end
 
 function Player:isPlayer()
     return true
-end
-
-function Player:_hit(t, ts, cb)
-    if self.weapon then
-        self.weapon:playAnimation(t, ts)
-        self.weapon:playAudio()
-    end
-    if cb then cb() end
 end
 
 

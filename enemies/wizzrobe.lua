@@ -1,5 +1,6 @@
 local Enemy = require('base.enemy')
 local Sequence = require('logic.sequence')
+local Dagger = require('weapons.dagger')
 
 local Wizzrobe = class('Wizzrobe', Enemy)
 
@@ -79,6 +80,7 @@ function Wizzrobe:__construct(...)
             time = math.huge
         }
     })
+    self.weapon = Enemy.enemifyWeapon( Dagger(self.world) )
 end
 
 

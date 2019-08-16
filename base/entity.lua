@@ -42,7 +42,7 @@ Entity.anims = {
     { c = {'pushed'},            a = "_bumped" }
 }
 
-Entity.innards = { { v = vec(0, 0), e = Gold(50), t = 'gold' } }
+Entity.innards = { { v = vec(0, 0), am = 50, t = 'gold' } }
 
 function Entity:__construct(x, y, world)
     Sizeful.__construct(self, x, y, world)
@@ -95,7 +95,6 @@ function Entity:takeHit(a)
     print(string.format("%s is getting hit by %s", class.name(self), class.name(a.actor)))
 
     local t = Turn(a, self)
-    -- t:apply()
 
     -- defend against attack
     local s = a.att - self.def
@@ -122,6 +121,8 @@ function Entity:takeHit(a)
     if not self.dead then
         -- apply debuffs after being hit
         self:applyDebuffs(s, a, t)
+
+        t:apply()
     end
 
     return true
@@ -289,38 +290,41 @@ function Entity:releaseInnards()
 
         local children = {}
 
-        local function trySpawn(x, y, t, e, i)
+        local function trySpawn(p, t, cl, i)
+            local x, y = p:comps()
             if self.world.grid[x][y][t] then
                 return false
             else
-                children[i] = self.world:spawn(x, y, e, t)
+                children[i] = self.world:spawn(x, y, cl, t)
                 return true
             end
         end
 
 
         for i = 1, #self.innards do
-            local p = self.pos + self.innards[i].v
-            local t = self.innards[i].t
-            local e = self.innards[i].e
+            local pos = self.pos + self.innards[i].v
+            local type = self.innards[i].t
 
-            if t == 'gold' then
-                self.world:dropGold(p.x, p.y, e)
+            if type == 'gold' then
+                self.world:dropGold(pos.x, pos.y, Gold(self.innards[i].am))
             else
-                if not trySpawn(p.x, p.y, t, e, i) then
+                local classname = self.innards[i].cl
+
+                if not trySpawn(pos, type, classname, i) then
                     local f = {
-                        vec(1, 0),
-                        vec(-1, 0),
-                        vec(0, 1),
-                        vec(0, -1),
-                        vec(1, 1),
-                        vec(-1, 1),
-                        vec(1, -1),
+                        vec( 0,  0),
+                        vec( 1,  0),
+                        vec(-1,  0),
+                        vec( 0,  1),
+                        vec( 0, -1),
+                        vec( 1,  1),
+                        vec(-1,  1),
+                        vec( 1, -1),
                         vec(-1, -1)
                     }
                     for j = 1, #f do
-                        local np = p + f[j]
-                        if trySpawn(np.x, np.y, t, e, i) then
+                        local new_pos = self.pos + f[j]
+                        if trySpawn(new_pos, type, classname, i) then
                             break
                         end
                     end
@@ -353,6 +357,10 @@ function Entity:isPlayer()
 end
 
 function Entity:isWall()
+    return false
+end
+
+function Entity:isEnemy()
     return false
 end
 

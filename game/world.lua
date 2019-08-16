@@ -95,9 +95,6 @@ function World:populate(am)
             self
         )
 
-        local w = Dagger(self)
-        e.weapon = w
-
         e:orientTo(self.player)
 
         self:resetEInGrid(e)

@@ -123,3 +123,8 @@ function merge_array(arr1, arr2)
     end
     return arr1
 end
+
+
+function printf(...)
+    print(string.format(...))
+end

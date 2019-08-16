@@ -4,6 +4,8 @@
         "display",
         "audio",
         "newproxy",
-        "easing"
+        "easing",
+        "graphics",
+        "system"
     ]
 }

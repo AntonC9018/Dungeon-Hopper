@@ -9,10 +9,12 @@ end
 
 Gold.__add[Gold] = function(self, rhs)
     local g = Gold(self.am + rhs.am)
-    g.pos = self.pos
-    g.sprite = self.sprite
-    if g.sprite then
-        self:update()
+    printf("Adding %d gold to %d gold", rhs.am, self.am)
+    if self.sprite then
+        g.sprite = self.sprite
+        g.pos = self.pos
+        g.world = self.world
+        g:update()
     end
     return g
 end
@@ -30,7 +32,7 @@ function Gold:getImageIndex()
         if self.am >= steps[i] then
             return i
         end
-    end    
+    end
 end
 
 function Gold:update()

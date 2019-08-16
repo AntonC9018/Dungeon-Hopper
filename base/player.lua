@@ -22,7 +22,7 @@ Player.ams_base = {
 
 Player.hp_base = {
     t = 'red',
-    am = 6
+    am = 60
 }
 
 Player.offset = vec(0, -0.4)

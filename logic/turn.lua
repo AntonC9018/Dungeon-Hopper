@@ -1,7 +1,7 @@
-local Turn = class("Turn")
+local Turn = class('Turn')
 
 function Turn:__construct(a, actor, time_share)
-    -- the action 
+    -- the action
     self.a = a
     -- initial values
     self.initial = {
@@ -36,7 +36,7 @@ function Turn:apply()
         pos = self.actor.pos,
         facing = self.actor.facing
     }
-    
+
     self._in = true
 
     return self

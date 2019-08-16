@@ -8,6 +8,7 @@ local BasicTile = require('tiles.basic')
 local Coals = require('tiles.coals')
 local Water = require('tiles.water')
 local Crate = require('environ.crate')
+local Explosion = require('environ.explosion')
 local World = class('World')
 
 function World:__construct(w, h, group)
@@ -29,24 +30,24 @@ function World:__construct(w, h, group)
         function(i, j)
             local cell = {}
 
-            if math.random() > 0.8 then
-                cell.tile = Coals(i, j, self)
-                table.insert(self.env_special_tiles, cell.tile)
+            -- if math.random() > 0.8 then
+            --     cell.tile = Coals(i, j, self)
+            --     table.insert(self.env_special_tiles, cell.tile)
 
-            elseif math.random() > 0.8 then
-                cell.tile = Water(i, j, self)
-                table.insert(self.env_special_tiles, cell.tile)
+            -- elseif math.random() > 0.8 then
+            --     cell.tile = Water(i, j, self)
+            --     table.insert(self.env_special_tiles, cell.tile)
 
-            else
-                cell.tile = BasicTile(i, j, self)
-            end
+            -- else
+            --     cell.tile = BasicTile(i, j, self)
+            -- end
 
-            if math.random() > 0.8 then
-                cell.entity = Crate(i, j, self)
-                table.insert(self.entities, cell.entity)
-            end
+            -- if math.random() > 0.8 then
+            --     cell.entity = Crate(i, j, self)
+            --     table.insert(self.entities, cell.entity)
+            -- end
 
-            -- cell.tile = BasicTile(i, j, self)
+            cell.tile = BasicTile(i, j, self)
 
 
             cell.items = {}
@@ -142,7 +143,7 @@ end
 function World:resetEInGrid(e)
     local ps = e:getPositions()
     for i = 1, #ps do
-        self.grid[ps[i].x][ps[i].y].entity = e
+        self.grid[ ps[i].x ][ ps[i].y ].entity = e
     end
 end
 
@@ -166,6 +167,9 @@ end
 function World:toFront()
     for i = 1, #self.entities do
         self.entities[i].sprite:toFront()
+    end
+    for i = 1, #self.env_explosions do
+        self.env_explosions[i].sprite:toFront()
     end
 end
 
@@ -195,13 +199,29 @@ function World:areBlockedAny(ps)
     return false
 end
 
+
+-- explode the tiles within radius of r around the specified coordinate
+function World:explode(x, y, r)
+    -- the idea is to create an explosion for each of the tiles
+    -- of a square, centered at (x, y), that has width of r
+    for i = -r, r do
+        for j = -r, r do
+            self:explodeAt(x + i, y + j, vec(i, j):normComps())
+        end
+    end
+end
+
+function World:explodeAt(x, y, dir)
+    local explosion = Explosion(dir, x, y, self)
+    explosion:explode()
+    table.insert(self.env_explosions, explosion)
+end
+
+
 function World:do_loop(player_action)
     player_action = Action(self.player, 'move/attack'):setDir(player_action)
 
     self.doing_loop = true
-
-    -- test of explosion
-    -- self.env:explode(math.random(4, 6), math.random(4, 6), 1, self)
 
     -- TODO:
     -- self:actProjectiles()
@@ -210,10 +230,14 @@ function World:do_loop(player_action)
     self:sortByPriority()
     self:actEntities(player_action)
 
+    -- test of explosion
+    self:explode(math.random(4, 6), math.random(4, 6), 1)
+
     --TODO:
     -- self:actTraps()
     -- self:actTiles()
     -- self.env:updateSprites()
+
 
     for i = 1, #self.env_special_tiles do
         self.env_special_tiles[i]:act()
@@ -224,13 +248,17 @@ function World:do_loop(player_action)
     self:toFront()
 
     -- Reset everything only when all animations have finished
-    local I = #self.entities
+    local I = #self.entities + #self.env_explosions
 
     local function refresh()
 
         for i = 1, #self.entities do
             self.entities[i]:tick()
             self.entities[i]:reset()
+        end
+
+        for i = 1, #self.env_explosions do
+            self.env_explosions[i]:tick()
         end
 
         -- update the iteration count
@@ -258,6 +286,14 @@ function World:do_loop(player_action)
 
         if (self.entities[i].dead) then
             table.remove(self.entities, i)
+        end
+    end
+
+    for i = #self.env_explosions, 1, -1 do
+        self.env_explosions[i]:playAnimation(tryRefresh)
+
+        if (self.env_explosions[i].dead) then
+            table.remove(self.env_explosions, i)
         end
     end
 end

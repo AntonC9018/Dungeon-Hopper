@@ -99,6 +99,10 @@ function Entity:takeHit(a)
     -- defend against attack
     local s = a.att - self.def
 
+    self:applyDebuffs(s, a, t)
+
+    t:apply()
+
     -- do not take damage if invincible
     if self.buffs:get('invincible') > 0 then
         return true
@@ -113,16 +117,9 @@ function Entity:takeHit(a)
         printf("%s is taking %d damage", class.name(self), dmg)
 
         self:takeDmg(dmg, t)
-        t:set('hurt'):apply()
+        t:set('hurt')
         self:emit('hit', 'damage:after', dmg, s, a)
 
-    end
-
-    if not self.dead then
-        -- apply debuffs after being hit
-        self:applyDebuffs(s, a, t)
-
-        t:apply()
     end
 
     return true
@@ -158,7 +155,7 @@ end
 -- Apply a thrust in direction of v, am times
 function Entity:thrust(v, am, t)
 
-    local blocked = false
+    printf('%s is being displaced. History length: %d', class.name(self), #self.hist:arr())
 
     self.world:removeEFromGrid(self)
 
@@ -171,13 +168,10 @@ function Entity:thrust(v, am, t)
         if not self.world:areBlockedAny(ps) then
             -- update position
             self:displace(v, t)
-        else
-            blocked = true
-            break
         end
     end
 
-    if blocked then
+    if t.displaced then
         t:set('bumped')
     end
 
@@ -219,8 +213,19 @@ end
 
 function Entity:calcDmg(s, a)
     -- if pierced through
-    if s:get('pierce') > 0 and s:get('dmg') > 0 then
+    if
+        (
+            -- if it's not an explosion
+            a.att:get('expl') == 0 or
+            -- if it's an unblocked explosion
+            (a.att:get('expl') > 0 and s:get('expl') > 0)
+        ) and
+        -- pierced through armor and done damage
+        (s:get('pierce') > 0 and s:get('dmg') > 0)
+    then
+        -- limit the minimum and maximum amount of damage
         local dmg = clamp(s:get('dmg'), self.min_dmg, self.max_dmg)
+        -- ignore damage below the threshold
         if dmg < self.dmg_thresh then return 0 end
         return dmg
     end
@@ -236,7 +241,7 @@ function Entity:takeDmg(dmg, t)
         self.moved = true
         self.world:removeEFromGrid(self)
         local cen = self:releaseInnards(t)
-        self:deathrattle(t, cen)
+        self:deathrattle(cen, t)
         t:set('dead')
     end
 end
@@ -252,41 +257,39 @@ end
 
 
 function Entity:bounce(a)
-    local ps = self:getPointsFromDirection(a.dir)
     local t = Turn(a, self)
-
-    self.facing = a.dir
     t:set('bounced')
 
-    if self.world:areBlockedAnyAny(ps) then
-        if
-            -- if we're not a player
-            not self:isPlayer() and
-            -- one of the spot has a player
-            self.world:havePlayer(ps) and
-            -- we intended to attack
-            self.seq:is('attack') and
-            -- and have not
-            not self.hist:was('hit')
-        then
-            t:set('hit')
-            local a = Action(self, 'attack')
-                :setDir(a.dir)
-                :setAtt(self:getAttack())
-                :setAms(self:getAms())
+    self.facing = a.dir
 
-            self.world.player:takeHit(a)
-        else
-            t:set('bumped')
+    if
+        not self:isPlayer() and
+        -- we intended to attack
+        self.seq:is('attack') and
+        -- and have not
+        not self.hist:was('hit')
+    then
+        -- prepare the attack
+        local action = Action(self, 'attack')
+            :setDir(a.dir)
+            :setAtt(self:getAttack())
+            :setAms(self:getAms())
+
+        -- attampt to attack
+        self:attemptAttack(action, t)
+
+        -- attack not successful
+        if not t.hit then
+            self:attemptMove(a, t)
         end
 
-    -- the way is not blocked, move
     else
-        self:go(a.dir, t)
+        self:attemptMove(a, t)
     end
 
-    return t:apply()
+    t:apply()
 end
+
 
 function Entity:releaseInnards()
     -- innards is what's inside of the entity

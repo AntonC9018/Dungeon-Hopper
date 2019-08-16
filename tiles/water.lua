@@ -1,6 +1,5 @@
 local Tile = require('base.tile')
 local Stats = require('logic.stats')
-local Modifiable = require('logic.modifiable')
 
 local Water = class('Water', Tile)
 
@@ -25,6 +24,10 @@ function Water:act()
         end
     else
         self:out()
+    end
+
+    if cell.entity ~= self.prev_subject then
+        self.prev_subject = false
     end
 end
 

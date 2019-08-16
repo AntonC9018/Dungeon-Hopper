@@ -92,7 +92,7 @@ end
 function Entity:takeHit(a)
     if self.dead then return end
 
-    print(string.format("%s is getting hit by %s", class.name(self), class.name(a.actor)))
+    printf("%s is getting hit by %s", class.name(self), class.name(a.actor))
 
     local t = Turn(a, self)
 
@@ -110,7 +110,7 @@ function Entity:takeHit(a)
     -- ignore 0 damage
     if dmg > 0 then
 
-        print(string.format("%s is taking %d damage", class.name(self), dmg))
+        printf("%s is taking %d damage", class.name(self), dmg)
 
         self:takeDmg(dmg, t)
         t:set('hurt'):apply()

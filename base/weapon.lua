@@ -61,7 +61,15 @@ function Weapon:attemptAttack(a, t)
                 local x, y = ps[j]:comps()
                 local cell = a.actor.world.grid[x][y]
                 local a = a:copy():setDir(kndir)
-                local y = { a, dir, cell, ps[j], i }
+
+                local y = {
+                    action = a,
+                    dir = dir,
+                    target = cell.entity,
+                    pos = ps[j],
+                    index = i,
+                    cell = cell
+                }
 
 
                 if
@@ -70,7 +78,8 @@ function Weapon:attemptAttack(a, t)
                     self.ignore_walls
                 then
                     table.insert(hits, y)
-                
+                    y.target = cell.wall
+
                 elseif
                     -- attacking an enemy / player / object
                     cell.entity and
@@ -78,11 +87,10 @@ function Weapon:attemptAttack(a, t)
                     self:canReach(a, blocked, i)
                 then
 
-                    self:modify( unpack(y) )
-
+                    
                     local function doAttack()
+                        self:modify( y )
                         self:orient(dir, i)
-                        self:attack( unpack(y) )
                         table.insert(hits, y)
                         t:set('hit')
                     end
@@ -100,13 +108,13 @@ function Weapon:attemptAttack(a, t)
                             -- attack the object as standing right next to it
                             doAttack()
                         end
-                    
+
                     elseif
                         cell.entity:isPlayer() and not
                         self.ignore_players
                     then
                         doAttack()
-                    
+
                     elseif
                         cell.entity:isEnemy() and not
                         self.ignore_enemies
@@ -129,9 +137,9 @@ function Weapon:attemptAttack(a, t)
     if #hits > 0 then
         t:set('hit')
         a.actor.facing = a.dir
-        for i = 1, #objs do
-            self:attack( unpack(objs[i]) )
-            table.insert(hits, objs[i])
+        merge_array(hits, objs)
+        for i = 1, #hits do
+            self:attack( hits[i] )
         end
     end
 
@@ -216,12 +224,12 @@ function Weapon:isNextTo(a, dir, cell)
 end
 
 
-function Weapon:attack(a, dir, cell, ps, i)
-    cell.entity:takeHit(a)
-    self.sprite.x, self.sprite.y = ps:comps()
+function Weapon:attack(params)
+    params.target:takeHit(params.action)
+    self.sprite.x, self.sprite.y = params.pos:comps()
 end
 
-function Weapon:modify(a, dir, cell, ps, i)
+function Weapon:modify(params)
 end
 
 function Weapon:getPattern(i)

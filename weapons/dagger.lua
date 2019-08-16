@@ -10,7 +10,7 @@ Dagger.att_base = {
 
 Dagger.pattern = { vec(1, 0), vec(2, 0) }
 Dagger.knockb = { vec(1, 0), vec(1, 0) }
-Dagger.reach = { false, 1 }
+Dagger.reach = { false, false }
 
 function Dagger:__construct(...)
     Weapon.__construct(self, {

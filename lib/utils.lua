@@ -118,8 +118,9 @@ end
 
 
 function merge_array(arr1, arr2)
+    local len = #arr1
     for i = 1, #arr2 do
-        arr1[#arr1] = arr2[i]
+        arr1[len + i] = arr2[i]
     end
     return arr1
 end

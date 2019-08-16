@@ -42,10 +42,10 @@ function World:__construct(w, h, group)
             --     cell.tile = BasicTile(i, j, self)
             -- end
 
-            -- if math.random() > 0.8 then
-            --     cell.entity = Crate(i, j, self)
-            --     table.insert(self.entities, cell.entity)
-            -- end
+            if math.random() > 0.8 then
+                cell.entity = Crate(i, j, self)
+                table.insert(self.entities, cell.entity)
+            end
 
             cell.tile = BasicTile(i, j, self)
 

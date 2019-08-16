@@ -117,7 +117,7 @@ function Entity:takeHit(a)
         printf("%s is taking %d damage", class.name(self), dmg)
 
         self:takeDmg(dmg, t)
-        t:set('hurt')
+        t:set('hurt'):apply()
         self:emit('hit', 'damage:after', dmg, s, a)
 
     end
@@ -313,7 +313,12 @@ function Entity:releaseInnards()
             local type = self.innards[i].t
 
             if type == 'gold' then
-                self.world:dropGold(pos.x, pos.y, Gold(self.innards[i].am))
+                local g = self.world:dropGold(pos.x, pos.y, Gold(self.innards[i].am))
+                self:on('animation', function(event, t)
+                    if event == 'step:complete' and t.dead then
+                        g:appear()
+                    end
+                end)
             else
                 local classname = self.innards[i].cl
 

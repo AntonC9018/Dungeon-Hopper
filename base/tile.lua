@@ -15,6 +15,6 @@ function Tile:createImage(i, w, h)
 end
 
 function Tile:act() end
-function Tile:reset() end 
-    
+function Tile:reset() end
+
 return Tile

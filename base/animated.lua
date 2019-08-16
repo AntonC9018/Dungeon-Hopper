@@ -14,7 +14,7 @@ Animated.offset_y_hop = -0.2
 
 function Animated:playAnimation(callback)
 
-    printf('%s is playing animation. History length: %d', class.name(self), #self.hist:arr())
+    -- printf('%s is playing animation. History length: %d', class.name(self), #self.hist:arr())
 
     local l = self.world:getAnimLength()
     local h = self.hist:arr()

@@ -24,6 +24,7 @@ function Gold:drop(x, y, w)
     self.world = w
     local i = self:getImageIndex()
     self:createImage(i, UNIT, UNIT)
+    self.sprite.aplha = 0
 end
 
 function Gold:getImageIndex()
@@ -43,6 +44,10 @@ end
 
 function Gold:pickup()
     self.sprite:removeSelf()
+end
+
+function Gold:appear()
+    self.sprite.alpha = 1
 end
 
 return Gold

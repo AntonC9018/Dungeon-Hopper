@@ -6,8 +6,9 @@ local Animated = class('Animated', Displayable)
 --     self.anims = anims
 -- end
 
-Animated.offset_y = -0.3
+Animated.offset = vec(0, -0.3)
 Animated.offset_y_jump = -0.2
+Animated.offset_y_hop = -0.2
 
 
 
@@ -31,9 +32,10 @@ function Animated:playAnimation(callback)
     local function doIteration(i)
         
         local t = h[i]
+        self:emit('animation', 'step:start', t, i)
 
         local cb = function()
-            self:emit('animation', 'step-complete', t, i)
+            self:emit('animation', 'step:complete', t, i)
             doIteration(i + 1)
         end
 

@@ -6,6 +6,7 @@ local Action = require('logic.action')
 local Camera = require('game.camera')
 local BasicTile = require('tiles.basic')
 local Coals = require('tiles.coals')
+local Water = require('tiles.water')
 local Crate = require('environ.crate')
 local World = class('World')
 
@@ -28,21 +29,24 @@ function World:__construct(w, h, group)
         function(i, j)
             local cell = {}
 
-            -- if math.random() > 0.8 then
-            --     -- t.wall = Dirt(i, j, self)
-            --     -- table.insert(self.entities, d)
-            --     cell.tile = Coals(i, j, self)
-            --     table.insert(self.env_special_tiles, cell.tile)
-            -- else
-            --     cell.tile = BasicTile(i, j, self)
-            -- end
+            if math.random() > 0.8 then
+                cell.tile = Coals(i, j, self)
+                table.insert(self.env_special_tiles, cell.tile)
+
+            elseif math.random() > 0.8 then
+                cell.tile = Water(i, j, self)
+                table.insert(self.env_special_tiles, cell.tile)
+
+            else
+                cell.tile = BasicTile(i, j, self)
+            end
 
             if math.random() > 0.8 then
                 cell.entity = Crate(i, j, self)
                 table.insert(self.entities, cell.entity)
             end
 
-            cell.tile = BasicTile(i, j, self)
+            -- cell.tile = BasicTile(i, j, self)
 
 
             cell.items = {}
@@ -76,7 +80,7 @@ function World:initPlayer(x, y)
             end
         end
 
-        
+
     end)
 
     table.insert(self.entities, self.player)

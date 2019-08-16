@@ -41,6 +41,16 @@ Modifiable.__add[Modifiable] = function(self, rhs)
     return self:getStats() + rhs:getStats()
 end
 
+-- define some convenient ops for Stats
+Stats.__sub[Modifiable] = function(self, rhs)
+    return self - rhs:getStats()
+end
+
+Stats.__add[Modifiable] = function(self, rhs)
+    return self + rhs:getStats()
+end
+
+
 Modifiable.__mul[Stats] = function(self, rhs)
     return self:getStats() * rhs
 end

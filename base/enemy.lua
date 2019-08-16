@@ -220,7 +220,7 @@ function Enemy:act(player_action)
     local M, A = self.seq:is('move'), self.seq:is('attack')
 
     if self.stuck then
-        return self:doAction(false, 'stuck')
+        return self:doAction({}, 'stuck')
     end
 
     local acts = self:getAction(player_action)

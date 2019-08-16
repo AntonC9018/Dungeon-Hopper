@@ -87,7 +87,7 @@ function Weapon:attemptAttack(a, t)
                     self:canReach(a, blocked, i)
                 then
 
-                    
+
                     local function doAttack()
                         self:modify( y )
                         self:orient(dir, i)

@@ -51,7 +51,7 @@ function Player:__construct(...)
     })
 
     self:on('hit', function(event)
-        if event == 'taken-damage' then
+        if event == 'damage:after' then
             self.buffs:setStat('invincible', 2)
             self:dropBeat()
             self.flicker = transition.to(self.sprite, {
@@ -65,7 +65,7 @@ function Player:__construct(...)
 
 
     self:on('animation', function(event, t, i)
-        if event == 'step-complete' then
+        if event == 'step:complete' then
             -- take gold or items
             if t.pickup then
                 for i = 1, #t.pickups do

@@ -42,7 +42,7 @@ Entity.anims = {
     { c = {'pushed'},            a = "_bumped" }
 }
 
-Entity.innards = { { v = vec(0, 0), am = 50, t = 'gold' } }
+Entity.innards = { { v = vec(0, 0), am = 1, t = 'gold' } }
 
 function Entity:__construct(x, y, world)
     Sizeful.__construct(self, x, y, world)
@@ -114,7 +114,7 @@ function Entity:takeHit(a)
 
         self:takeDmg(dmg, t)
         t:set('hurt'):apply()
-        self:emit('hit', 'taken-damage', dmg, s, a)
+        self:emit('hit', 'damage:after', dmg, s, a)
 
     end
 
@@ -133,7 +133,11 @@ function Entity:applyDebuffs(s, a, t)
     if not a.ams then return end
     self.buffs = self.buffs + a.ams * s
 
-    if s:get('push') > 0 and a.ams:get('push') then
+    if
+        s:get('push') > 0 and
+        a.ams:get('push') and
+        not self.stuck
+    then
         self:push(a.dir:normComps(), a.ams:get('push'), t)
     end
 end

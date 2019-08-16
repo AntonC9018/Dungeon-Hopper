@@ -39,6 +39,8 @@ Stats.__mul[Stats] = function(self, rhs)
     return s
 end
 
+
+
 function Stats:get(stat)
     return stat and (self.c[stat] or 0) or self.c
 end

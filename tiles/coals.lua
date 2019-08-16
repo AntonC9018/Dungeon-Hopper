@@ -5,7 +5,7 @@ local Modifiable = require('logic.modifiable')
 
 local Coals = class('Coals', Tile)
 
-Coals.att = Modifiable(Stats({ dmg = 2, pierce = 5 }))
+Coals.att = Stats({ dmg = 2, pierce = 5 })
 
 function Coals:__construct(...)
     self.t = 13

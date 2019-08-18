@@ -26,6 +26,8 @@ Entity.dmg_thresh = 1
 
 Entity.priority = 1
 
+Entity.zIndex = 5
+
 -- Basic animation methods (overwritable)
 Entity.anims = {
     -- { c = {'dug', 'displaced'},  a = "_displaced" },
@@ -92,7 +94,7 @@ end
 function Entity:takeHit(a)
     if self.dead then return end
 
-    printf("%s is getting hit by %s", class.name(self), class.name(a.actor))
+    -- printf("%s is getting hit by %s", class.name(self), class.name(a.actor))
 
     local t = Turn(a, self)
 
@@ -114,7 +116,7 @@ function Entity:takeHit(a)
     -- ignore 0 damage
     if dmg > 0 then
 
-        printf("%s is taking %d damage", class.name(self), dmg)
+        -- printf("%s is taking %d damage", class.name(self), dmg)
 
         self:takeDmg(dmg, t)
         t:set('hurt'):apply()
@@ -155,7 +157,7 @@ end
 -- Apply a thrust in direction of v, am times
 function Entity:thrust(v, am, t)
 
-    printf('%s is being displaced. History length: %d', class.name(self), #self.hist:arr())
+    -- printf('%s is being displaced. History length: %d', class.name(self), #self.hist:arr())
 
     self.world:removeEFromGrid(self)
 
@@ -189,6 +191,7 @@ function Entity:attemptMove(a, t)
     else
         self:go(a.dir, t)
     end
+
 end
 
 --- Move v and reset the turn accordingly
@@ -262,6 +265,9 @@ function Entity:bounce(a)
 
     self.facing = a.dir
 
+    -- printf('%s trying to bounce', class.name(self))
+
+
     if
         not self:isPlayer() and
         -- we intended to attack
@@ -275,8 +281,10 @@ function Entity:bounce(a)
             :setAtt(self:getAttack())
             :setAms(self:getAms())
 
-        -- attampt to attack
-        self:attemptAttack(action, t)
+        -- attempt to attack
+        if self.weapon then
+            self.weapon:attemptAttack(action, t)
+        end
 
         -- attack not successful
         if not t.hit then
@@ -313,12 +321,18 @@ function Entity:releaseInnards()
             local type = self.innards[i].t
 
             if type == 'gold' then
-                local g = self.world:dropGold(pos.x, pos.y, Gold(self.innards[i].am))
-                self:on('animation', function(event, t)
-                    if event == 'step:complete' and t.dead then
-                        g:appear()
+                local g = Gold(self.innards[i].am)
+
+                if self.world:dropGold(pos.x, pos.y, g) then
+                    local function appear(event, t)
+                        if event == 'step:complete' and t.dead then
+                            g:appear()
+                            self.emitter:removeListener('animation', appear)
+                        end
                     end
-                end)
+                    self:on('animation', appear)
+                end
+
             else
                 local classname = self.innards[i].cl
 
@@ -386,6 +400,14 @@ end
 
 function Entity:emit(...)
     self.emitter:emit(...)
+end
+
+function Entity:untilTrue(...)
+    self.emitter:untilTrue(...)
+end
+
+function Entity:getRace()
+    return 'none'
 end
 
 return Entity

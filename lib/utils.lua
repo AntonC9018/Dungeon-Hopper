@@ -129,3 +129,32 @@ end
 function printf(...)
     print(string.format(...))
 end
+
+
+table.shuffle = function(t)
+    local rand = math.random 
+    assert(t, "table.shuffle() expected a table, got nil")
+    local iterations = #t
+    local j
+
+    for i = iterations, 2, -1 do
+        j = rand(i)
+        t[i], t[j] = t[j], t[i]
+    end
+end
+
+
+function array_join_all(...)
+    local r = {}
+    for i = 1, arg.n do
+        merge_array(r, arg[i])
+    end
+    return r
+end
+
+function table.containsKey(t, k)
+    for key, _ in pairs(t) do
+        if key == k then return true end
+    end
+    return false
+end

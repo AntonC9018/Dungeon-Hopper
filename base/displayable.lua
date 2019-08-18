@@ -36,11 +36,14 @@ end
 function Displayable:createSprite(o, s)
     self.sprite = display.newSprite(self.world.group, AM[s or class.name(self)].sheet, o)
     self:setupSprite()
+    return self.sprite
 end
 
 function Displayable:createImage(i, w, h, s)
+    -- end
     self.sprite = display.newImageRect(self.world.group, AM[s or class.name(self)].sheet, i, w, h)
     self:setupSprite()
+    return self.sprite
 end
 
 function Displayable:setupSprite()
@@ -48,6 +51,19 @@ function Displayable:setupSprite()
     self.sprite.y = self.pos.y + self.offset.y + self.size.y / 2
     self.sprite.xScale = self.scale
     self.sprite.yScale = self.scale
+end
+
+Displayable.newImage = function(tab)
+    local sprite = display.newImageRect(tab.world, AM[tab.class], tab.index, tab.width, tab.height)
+    sprite.x = tab.owner.pos.x + tab.owner.offset.x + tab.owner.size.x / 2
+    sprite.y = tab.owner.pos.y + tab.owner.offset.y + tab.owner.size.y / 2
+    sprite.xScale = tab.owner.scale
+    sprite.yScale = tab.owner.scale
+    return sprite
+end
+
+function Displayable:toFront()
+    self.sprite:toFront()
 end
 
 return Displayable

@@ -9,6 +9,8 @@ local Coals = require('tiles.coals')
 local Water = require('tiles.water')
 local Crate = require('environ.crate')
 local Explosion = require('environ.explosion')
+local BounceTrap = require('traps.bouncetrap')
+
 local World = class('World')
 
 function World:__construct(w, h, group)
@@ -18,23 +20,27 @@ function World:__construct(w, h, group)
     self.loop_queue = {}
     self.doing_loop = false
     self.loop_count = 1
-    self.entities = {}
 
+    self.entities = {}
     self.env_special_tiles = {}
     self.env_objects = {}
     self.env_bombs = {}
     self.env_explosions = {}
     self.env_traps = {}
+    self.env_items = {}
+    self.walls = {}
 
     self.grid = tdArray(self.width, self.height,
         function(i, j)
             local cell = {}
 
-            -- if math.random() > 0.8 then
+            local rntiles = math.random()
+
+            -- if rntiles < 0.3 then
             --     cell.tile = Coals(i, j, self)
             --     table.insert(self.env_special_tiles, cell.tile)
 
-            -- elseif math.random() > 0.8 then
+            -- elseif rntiles < 0.6 then
             --     cell.tile = Water(i, j, self)
             --     table.insert(self.env_special_tiles, cell.tile)
 
@@ -42,9 +48,17 @@ function World:__construct(w, h, group)
             --     cell.tile = BasicTile(i, j, self)
             -- end
 
-            if math.random() > 0.8 then
-                cell.entity = Crate(i, j, self)
-                table.insert(self.entities, cell.entity)
+            local rnents = math.random()
+
+            -- if rnents < 0.2 then
+            --     cell.entity = Crate(i, j, self)
+            --     table.insert(self.entities, cell.entity)
+            
+
+            if rnents < 0.8 then
+                local v = vec( math.random(-1, 1), math.random(-1, 1) )
+                cell.trap = BounceTrap(v, i, j, self)
+                table.insert(self.env_traps, cell.trap)
             end
 
             cell.tile = BasicTile(i, j, self)
@@ -128,7 +142,9 @@ function World:dropGold(x, y, g)
     else
         cell.gold = g
         g:drop(x, y, self)
+        return true
     end
+    return false
 end
 
 
@@ -149,11 +165,23 @@ end
 
 
 function World:sortByPriority()
-    table.sort(self.entities, function(a, b) return a.priority > b.priority end)
+    table.sort(self.entities, function(a, b)
+        if a.priority == b.priority then
+            return (a.pos - self.player.pos):mag() > (b.pos - self.player.pos):mag()
+        else
+            return a.priority > b.priority
+        end
+    end)
 end
 
-function World:sortByY()
-    table.sort(self.entities, function(a, b) return a.pos.y < b.pos.y end)
+function World:sortByY(arr)
+    table.sort(arr, function(a, b)
+        if (a.pos.y == b.pos.y) then
+            return a.zIndex < b.zIndex
+        else
+            return a.pos.y < b.pos.y
+        end
+    end)
 end
 
 function World:actEntities(player_action)
@@ -164,12 +192,9 @@ function World:actEntities(player_action)
     end
 end
 
-function World:toFront()
-    for i = 1, #self.entities do
-        self.entities[i].sprite:toFront()
-    end
-    for i = 1, #self.env_explosions do
-        self.env_explosions[i].sprite:toFront()
+function World:toFront(arr)
+    for i = 1, #arr do
+        arr[i]:toFront()
     end
 end
 
@@ -231,24 +256,42 @@ function World:do_loop(player_action)
     self:actEntities(player_action)
 
     -- test of explosion
-    self:explode(math.random(4, 6), math.random(4, 6), 1)
+    -- self:explode(math.random(4, 10), math.random(4, 10), 1)
 
     --TODO:
     -- self:actTraps()
-    -- self:actTiles()
     -- self.env:updateSprites()
 
+    for i = 1, #self.env_traps do
+        if not self.env_traps[i].moved then
+            self.env_traps[i]:act()
+        end
+    end
 
     for i = 1, #self.env_special_tiles do
         self.env_special_tiles[i]:act()
     end
 
+    local things = {
+        self.entities,
+        self.walls,
+        self.env_explosions,
+        -- self.env_objects, -- not required, these are inside entities
+        self.env_traps,
+        self.env_bombs,
+        self.env_items
+    }
+
+    local things_to_display = array_join_all(
+        unpack( things )
+    )
+
     -- bring the entities that have higher y to the front
-    self:sortByY()
-    self:toFront()
+    self:sortByY(things_to_display)
+    self:toFront(things_to_display)
 
     -- Reset everything only when all animations have finished
-    local I = #self.entities + #self.env_explosions
+    local I = #things_to_display
 
     local function refresh()
 
@@ -260,6 +303,13 @@ function World:do_loop(player_action)
         for i = 1, #self.env_explosions do
             self.env_explosions[i]:tick()
         end
+
+        for i = 1, #self.env_traps do
+            self.env_traps[i]:tick()
+            self.env_traps[i]:reset()
+        end
+
+        print('------------------- LOOP ENDED ------------------')
 
         -- update the iteration count
         self.loop_count = self.loop_count + 1
@@ -279,21 +329,14 @@ function World:do_loop(player_action)
 
     self.camera:sync(self.player, self:getAnimLength())
 
-    -- animate all entities
-    for i = #self.entities, 1, -1 do
+    -- animate all everything that needs to be animated
+    for i = 1, #things do
+        for j = #things[i], 1, -1 do
+            things[i][j]:playAnimation(tryRefresh)
 
-        self.entities[i]:playAnimation(tryRefresh)
-
-        if (self.entities[i].dead) then
-            table.remove(self.entities, i)
-        end
-    end
-
-    for i = #self.env_explosions, 1, -1 do
-        self.env_explosions[i]:playAnimation(tryRefresh)
-
-        if (self.env_explosions[i].dead) then
-            table.remove(self.env_explosions, i)
+            if (things[i][j].dead) then
+                table.remove(things[i], j)
+            end
         end
     end
 end

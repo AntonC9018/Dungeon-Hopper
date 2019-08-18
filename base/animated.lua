@@ -18,6 +18,7 @@ function Animated:playAnimation(callback)
 
     local l = self.world:getAnimLength()
     local h = self.hist:arr()
+
     local ts = l / (#h == 0 and 1 or #h)
 
     self:emit('animation', 'start')
@@ -33,9 +34,9 @@ function Animated:playAnimation(callback)
     end
 
     local function doIteration(i)
-        
+
         local t = h[i]
-        self:emit('animation', 'step:start', t, i)
+        
 
         local cb = function()
             self:emit('animation', 'step:complete', t, i)
@@ -43,6 +44,7 @@ function Animated:playAnimation(callback)
         end
 
         if t then
+            self:emit('animation', 'step:start', t, i)
 
             -- TODO:rework
             if t.final.facing.x ~= 0 then

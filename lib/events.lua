@@ -164,14 +164,14 @@ function Events:removeListener(ev, listener)
     local lsnCount = 0
     assert(listener ~= nil, "listener is nil")
     -- normal listener
-    rmEntry(evtbl, listener)
+    rmEntry(evtbl, function(v) return v == listener end)
 
     if (#evtbl == 0) then self._on[pfx_ev] = nil end
 
     -- emit-once listener
     pfx_ev = pfx_ev .. ':once'
     evtbl = self:evTable(pfx_ev)
-    rmEntry(evtbl, listener)
+    rmEntry(evtbl, function(v) return v == listener end)
 
     if (#evtbl == 0) then self._on[pfx_ev] = nil end
     return self

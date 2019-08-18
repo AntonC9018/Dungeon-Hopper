@@ -35,7 +35,7 @@
             }
         },
         "audio": {
-            "action": "spring_bounce.mp3"
+            "pushed": "spring_bounce.mp3"
         }
     },
     "Explosion": {

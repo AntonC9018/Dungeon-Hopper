@@ -7,7 +7,7 @@ local scene = composer.newScene()
 -- Scene event functions
 -- -----------------------------------------------------------------------------------
 ins = require('lib.inspect')
-Emitter = require('lib.events')
+Emitter = require('lib.emitter')
 Luaoop = require('lib.Luaoop')
 class = Luaoop.class
 AM = require('game.assets')
@@ -34,7 +34,7 @@ function scene:create( event )
     -- create the player
     world:initPlayer(7, 7)
     -- spawn some wizzrobes
-    world:populate(1)
+    -- world:populate(1)
 
 
     -- local trap = BounceTrap:new(

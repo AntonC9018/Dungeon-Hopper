@@ -175,18 +175,35 @@ function Enemy:computeAction(player_actions)
     -- at least make the enemies point in the direction they are going to move
     -- like bats in CoH as opposed to the bats of CotND
     elseif mov == "basic-random" then
-        local x = math.random(0, 1) * 2 - 1
-        local i = math.random(1, 2)
-        local t = { 0, 0 }
-        t[i] = x
-        table.insert(movs, vec( t[1], t[2] ))
+        -- it doesn't matter what direction exactly the vector should point
+        -- I chose the right direction
+        local t = vec(1, 0)
+        -- insert that direction as the first element
+        table.insert(movs, t)
+        -- rotate it around, inserting each time
+        for j = 1, 3 do
+            table.insert(movs, t:rotate(math.pi / 2 * j))
+        end
+        table.shuffle(movs)
 
     elseif mov == "diagonal-random" then
-        table.insert(movs, vec(math.random(0, 1) * 2 - 1, math.random(0, 1) * 2 - 1))
+        local t = vec(1, 1)
+
+        table.insert(movs, t)
+        for j = 1, 3 do
+            table.insert(movs, t:rotate(math.pi / 2 * j))
+        end
+        table.shuffle(movs)
 
 
     elseif mov == "adjacent-random" then
-        table.insert(movs, vec(math.random(-1, 1), math.random(-1, 1)))
+        local t = vec(1, 0)
+
+        table.insert(movs, t)
+        for j = 1, 7 do
+            table.insert(movs, t:rotate(math.pi / 4 * j):normComps())
+        end
+        table.shuffle(movs)
 
 
     -- move continuously in a straight line

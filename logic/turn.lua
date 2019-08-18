@@ -1,5 +1,7 @@
 local Turn = class('Turn')
 
+local id = 1
+
 function Turn:__construct(a, actor, time_share)
     -- the action
     self.a = a
@@ -12,6 +14,9 @@ function Turn:__construct(a, actor, time_share)
     self.actor = actor
     -- how much a time this turn cost
     self.time_share = time_share or 1
+
+    id = id + 1
+    self.id = id
 
     self.pickups = {}
 end
@@ -59,6 +64,11 @@ function Turn:satisfiesAny(...)
         end
     end
     return false
+end
+
+
+function Turn:__tostring()
+    return string.format('<Turn> id: %d', self.id)
 end
 
 return Turn

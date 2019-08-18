@@ -4,6 +4,7 @@ local Tile = class('Tile', Displayable)
 
 Tile.offset = vec(0, 0)
 
+
 function Tile:__construct(x, y, world)
     Displayable.__construct(self, x, y, world)
     self:createImage(self.t, UNIT, UNIT)

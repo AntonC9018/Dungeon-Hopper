@@ -55,22 +55,24 @@ function Trap:act()
                 end
             end)
 
-        
-        
+
+
         local last_turn = entity.hist:getLast()
 
-        entity:untilTrue('animation', function(animation_event, current_turn)
+        entity:untilTrue('animation',
 
-            if 
-                animation_event == 'step:complete' and 
-                current_turn == last_turn 
-            then
-                self:swapImage({ pushed = true })
-                self:playAudio('pushed')
-                return true
-            end
-            
-        end)
+            function(animation_event, current_turn)
+
+                if
+                    animation_event == 'step:complete' and
+                    current_turn == last_turn
+                then
+                    self:swapImage({ pushed = true })
+                    self:playAudio('pushed')
+                    return true
+                end
+
+            end)
 
         self.subject = entity
         self.pushed = true

@@ -7,8 +7,5 @@
         "easing",
         "graphics",
         "system"
-    ],
-    "Lua.diagnostics.disable": [
-        "trailing-space"
     ]
 }

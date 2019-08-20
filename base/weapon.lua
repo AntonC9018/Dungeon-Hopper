@@ -1,7 +1,10 @@
-local Displayable = require('base.displayable')
+local Item = require('base.item')
 
 -- TODO: inherit from item
-local Weapon = class("Weapon", Displayable)
+local Weapon = class("Weapon", Item)
+
+Weapon.item_slot = 'weapon'
+
 Weapon.scale = 1 / UNIT
 
 Weapon.move_attack = false
@@ -23,11 +26,12 @@ Weapon.ignore_objects = false
 Weapon.ignore_walls = true
 Weapon.ignore_players = false
 
-function Weapon:__construct(o, w, s)
-    self.world = w
-    self:createSprite(o, s)
-    self:listenAlpha()
-    self.sprite.alpha = 0
+function Weapon:__construct(world, x, y, im1, im2)
+    Item.__construct(self, world, x, y, im1, im2)
+    -- self.world = w
+    -- self:createSprite(o, s)
+    -- self:listenAlpha()
+    -- self.sprite.alpha = 0
     -- TODO: gfjqklew
 end
 

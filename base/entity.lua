@@ -163,6 +163,8 @@ function Entity:thrust(v, am, t)
 
     self.world:removeFromGrid(self)
 
+    local broke = false
+
     for i = 1, am do
 
         -- get the directions taking into consideration
@@ -172,10 +174,13 @@ function Entity:thrust(v, am, t)
         if not self.world:areBlockedAny(ps) then
             -- update position
             self:displace(v, t)
+        else
+            broke = true
+            break
         end
     end
 
-    if not t.displaced then
+    if broke then
         t:set('bumped')
     end
 

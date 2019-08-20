@@ -1,7 +1,9 @@
-local Displayable = require('base.displayable')
+local Item = require('base.item')
 
 -- TODO: inherit from item
-local Shovel = class("Shovel", Displayable)
+local Shovel = class("Shovel", Item)
+
+Shovel.item_slot = 'shovel'
 
 Shovel.scale = 1 / UNIT
 Shovel.frail = false
@@ -12,13 +14,13 @@ Shovel.att_base = {
     dig = 1
 }
 
--- function Shovel:__construct(o, w, s)
-function Shovel:__construct(w)
-    self.world = w
-    -- self:createSprite(o, s)
-    -- self:listenAlpha()
-    -- self.sprite.alpha = 0
-end
+
+-- function Shovel:__construct(world, x, y, im1, im2)
+--     Item.__construct(self, world, x, y, im1, im2)
+--     -- self:createSprite(o, s)
+--     -- self:listenAlpha()
+--     -- self.sprite.alpha = 0
+-- end
 
 function Shovel:attemptDig(a, t)
 
@@ -43,13 +45,13 @@ function Shovel:digAt(x, y, a, t)
 end
 
 
-function Shovel:listenAlpha()
-    self.sprite:addEventListener("sprite", function(event)
+function Shovel:listenAlpha(sprite)
+    sprite:addEventListener("sprite", function(event)
         if event.phase == "began" then
-            self.sprite:toFront()
-            self.sprite.alpha = 1
+            sprite:toFront()
+            sprite.alpha = 1
         elseif event.phase == "ended" then
-            self.sprite.alpha = 0
+            sprite.alpha = 0
         end
     end)
 end

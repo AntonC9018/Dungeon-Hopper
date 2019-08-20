@@ -1,8 +1,9 @@
 local Displayable = require('base.displayable')
+local Entity = require('base.entity')
 local Action = require('logic.action')
 local Stats = require('logic.stats')
 
-local Trap = class('Trap', Displayable)
+local Trap = class('Trap', Entity)
 
 Trap.zIndex = 3
 Trap.offset = vec(0, 0)
@@ -125,9 +126,7 @@ end
 
 -- TODO: make this at least as generic as in Entity
 function Trap:die()
-    local x, y = self.pos:comps()
-    local cell = self.world.grid[x][y]
-    cell.trap = false
+    self.world:removeFromGrid(self)
     self.dead = true
 end
 

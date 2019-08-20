@@ -12,6 +12,7 @@ local Crate = require('environ.crate')
 local Explosion = require('environ.explosion')
 local BounceTrap = require('traps.bouncetrap')
 local Dirt = require('walls.dirt')
+local Item = require('base.item')
 
 local World = class('World')
 
@@ -84,10 +85,11 @@ end
 function World:initPlayer(x, y)
     self.player = Player(x, y, self)
 
-    local dagger = Dagger(self)
+    -- TODO: add sprites for dropped and undropped state
+    local dagger = Item.createUndropped(Dagger, self)
     self.player.inventory:equip(dagger)
     
-    local shovel = Shovel(self)
+    local shovel = Item.createUndropped(Shovel, self)
     self.player.inventory:equip(shovel)
 
     self.player:on('displaced', function(event, t)

@@ -43,7 +43,7 @@ end
 
 
 function Inventory:equip(i)
-    local type = i.getItemType()
+    local type = i.item_slot
     if self.c[type] then
         local excess = self.c[type]:addItem(i)
         print(string.format('A %s has been added to the %s container', class.name(i), type))

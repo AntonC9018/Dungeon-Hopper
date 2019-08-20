@@ -19,7 +19,7 @@ vec.__add[vec] = function(self, v)
     )
 end
 
--- hagamard product (component-wise mult)
+-- hadamard product (component-wise mult)
 vec.__mul[vec] = function(self, v)
     return vec(
         self.x * v.x,
@@ -27,7 +27,7 @@ vec.__mul[vec] = function(self, v)
     )
 end
 
--- dot product 
+-- dot (inner) product 
 function vec:dot(v)
     return self.x * v.x + self.y * v.y
 end
@@ -59,10 +59,6 @@ vec.__div["number"] = function(self, n)
         self.x / n, 
         self.y / n
     )
-end
-
-vec.__lt[vec] = function(self, v)
-    return self.x < v.x, self.y < v.y
 end
 
 function vec:magSq()

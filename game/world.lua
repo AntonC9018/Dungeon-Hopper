@@ -2,6 +2,7 @@
 local Wizzrobe = require('enemies.wizzrobe')
 local Player = require('base.player')
 local Dagger = require('weapons.dagger')
+local Shovel = require('base.shovel')
 local Action = require('logic.action')
 local Camera = require('game.camera')
 local BasicTile = require('tiles.basic')
@@ -10,6 +11,7 @@ local Water = require('tiles.water')
 local Crate = require('environ.crate')
 local Explosion = require('environ.explosion')
 local BounceTrap = require('traps.bouncetrap')
+local Dirt = require('walls.dirt')
 
 local World = class('World')
 
@@ -55,10 +57,15 @@ function World:__construct(w, h, group)
             --     table.insert(self.entities, cell.entity)
             
 
-            if rnents < 0.8 then
-                local v = vec( math.random(-1, 1), math.random(-1, 1) )
-                cell.trap = BounceTrap(v, i, j, self)
-                table.insert(self.env_traps, cell.trap)
+            -- if rnents < 0.4 then
+            --     local v = vec( math.random(-1, 1), math.random(-1, 1) )
+            --     cell.trap = BounceTrap(v, i, j, self)
+            --     table.insert(self.env_traps, cell.trap)
+            -- end
+
+            if rnents < 0.2 then
+                cell.wall = Dirt(i, j, self)
+                table.insert(self.walls, cell.wall)
             end
 
             cell.tile = BasicTile(i, j, self)
@@ -79,6 +86,9 @@ function World:initPlayer(x, y)
 
     local dagger = Dagger(self)
     self.player.inventory:equip(dagger)
+    
+    local shovel = Shovel(self)
+    self.player.inventory:equip(shovel)
 
     self.player:on('displaced', function(event, t)
         local x, y = self.player.pos:comps()
@@ -116,7 +126,7 @@ function World:populate(am)
 
         e:orientTo(self.player)
 
-        self:resetEInGrid(e)
+        self:resetInGrid(e)
         table.insert(self.entities, e)
     end
 end
@@ -127,7 +137,7 @@ function World:spawn(x, y, classname, t)
     entity.moved = true
 
     table.insert(self.entities, entity)
-    self:resetEInGrid(entity)
+    self:resetInGrid(entity)
 
     return entity
 end
@@ -148,18 +158,18 @@ function World:dropGold(x, y, g)
 end
 
 
-function World:removeEFromGrid(e)
+function World:removeFromGrid(e)
     local ps = e:getPositions()
     for i = 1, #ps do
         local x, y = ps[i]:comps()
-        self.grid[x][y].entity = false
+        self.grid[x][y][ e.socket_type ] = false
     end
 end
 
-function World:resetEInGrid(e)
+function World:resetInGrid(e)
     local ps = e:getPositions()
     for i = 1, #ps do
-        self.grid[ ps[i].x ][ ps[i].y ].entity = e
+        self.grid[ ps[i].x ][ ps[i].y ][ e.socket_type ] = e
     end
 end
 
@@ -256,11 +266,8 @@ function World:do_loop(player_action)
     self:actEntities(player_action)
 
     -- test of explosion
-    -- self:explode(math.random(4, 10), math.random(4, 10), 1)
+    self:explode(math.random(4, 10), math.random(4, 10), 1)
 
-    --TODO:
-    -- self:actTraps()
-    -- self.env:updateSprites()
 
     for i = 1, #self.env_traps do
         if not self.env_traps[i].moved then
@@ -309,7 +316,7 @@ function World:do_loop(player_action)
             self.env_traps[i]:reset()
         end
 
-        print('------------------- LOOP ENDED ------------------')
+        print('------------------- LOOP ENDED -------------------')
 
         -- update the iteration count
         self.loop_count = self.loop_count + 1
@@ -329,7 +336,7 @@ function World:do_loop(player_action)
 
     self.camera:sync(self.player, self:getAnimLength())
 
-    -- animate all everything that needs to be animated
+    -- animate everything that needs to be animated
     for i = 1, #things do
         for j = #things[i], 1, -1 do
             things[i][j]:playAnimation(tryRefresh)

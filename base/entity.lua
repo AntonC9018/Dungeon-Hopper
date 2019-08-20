@@ -27,6 +27,8 @@ Entity.dmg_thresh = 1
 Entity.priority = 1
 
 Entity.zIndex = 5
+Entity.socket_type = 'entity'
+
 
 -- Basic animation methods (overwritable)
 Entity.anims = {
@@ -159,7 +161,7 @@ function Entity:thrust(v, am, t)
 
     -- printf('%s is being displaced. History length: %d', class.name(self), #self.hist:arr())
 
-    self.world:removeEFromGrid(self)
+    self.world:removeFromGrid(self)
 
     for i = 1, am do
 
@@ -173,11 +175,11 @@ function Entity:thrust(v, am, t)
         end
     end
 
-    if t.displaced then
+    if not t.displaced then
         t:set('bumped')
     end
 
-    self.world:resetEInGrid(self)
+    self.world:resetInGrid(self)
 
     return t
 end
@@ -202,15 +204,15 @@ function Entity:displace(v, t)
 end
 
 function Entity:go(v, t)
-    self.world:removeEFromGrid(self)
+    self.world:removeFromGrid(self)
     self:displace(v, t)
-    self.world:resetEInGrid(self)
+    self.world:resetInGrid(self)
 end
 
 function Entity:restorePos(pos, t)
-    self.world:removeEFromGrid(self)
+    self.world:removeFromGrid(self)
     self.pos = pos
-    self.world:resetEInGrid(self)
+    self.world:resetInGrid(self)
 end
 
 
@@ -242,7 +244,7 @@ function Entity:takeDmg(dmg, t)
     if self.hp:isEmpty() then
         self.dead = true
         self.moved = true
-        self.world:removeEFromGrid(self)
+        self.world:removeFromGrid(self)
         local cen = self:releaseInnards(t)
         self:deathrattle(cen, t)
         t:set('dead')
@@ -288,11 +290,11 @@ function Entity:bounce(a)
 
         -- attack not successful
         if not t.hit then
-            self:attemptMove(a, t)
+            self:thrust(a.dir, 1, t)
         end
 
     else
-        self:attemptMove(a, t)
+        self:thrust(a.dir, 1, t)
     end
 
     t:apply()
@@ -323,15 +325,19 @@ function Entity:releaseInnards()
             if type == 'gold' then
                 local g = Gold(self.innards[i].am)
 
-                if self.world:dropGold(pos.x, pos.y, g) then
-                    local function appear(event, t)
-                        if event == 'step:complete' and t.dead then
+                self:untilTrue('animation',
+
+                    function(current_event, current_turn)
+
+                        if
+                            current_turn.dead and
+                            current_event == 'step:complete'
+                        then
                             g:appear()
-                            self.emitter:removeListener('animation', appear)
+                            return true
                         end
-                    end
-                    self:on('animation', appear)
-                end
+
+                    end)
 
             else
                 local classname = self.innards[i].cl
@@ -373,6 +379,7 @@ function Entity:_die(t, ts, cb)
     })
     if cb then cb() end
 end
+
 
 function Entity:isObject()
     return false

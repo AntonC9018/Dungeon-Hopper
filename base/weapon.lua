@@ -1,5 +1,6 @@
 local Displayable = require('base.displayable')
 
+-- TODO: inherit from item
 local Weapon = class("Weapon", Displayable)
 Weapon.scale = 1 / UNIT
 
@@ -19,7 +20,7 @@ Weapon.reach = { false }
 
 Weapon.ignore_enemies = false
 Weapon.ignore_objects = false
-Weapon.ignore_walls = false
+Weapon.ignore_walls = true
 Weapon.ignore_players = false
 
 function Weapon:__construct(o, w, s)

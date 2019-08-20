@@ -6,6 +6,7 @@ local Trap = class('Trap', Displayable)
 
 Trap.zIndex = 3
 Trap.offset = vec(0, 0)
+Trap.socket_type = 'tile'
 
 function Trap:__construct(...)
     Displayable.__construct(self, ...)
@@ -82,7 +83,15 @@ function Trap:act()
 
 end
 
-function Trap:playAnimation(cb) cb() end
+function Trap:playAnimation(cb)
+
+    if self.dead then
+        self:_die()
+    end
+
+    cb()
+
+end
 
 function Trap:tick() end
 function Trap:reset() self.moved = false end
@@ -107,6 +116,19 @@ end
 function Trap:toFront()
     self.sprite_pushed:toFront()
     self.sprite_unpushed:toFront()
+end
+
+function Trap:_die()
+    self.sprite_pushed:removeSelf()
+    self.sprite_unpushed:removeSelf()
+end
+
+-- TODO: make this at least as generic as in Entity
+function Trap:die()
+    local x, y = self.pos:comps()
+    local cell = self.world.grid[x][y]
+    cell.trap = false
+    self.dead = true
 end
 
 return Trap

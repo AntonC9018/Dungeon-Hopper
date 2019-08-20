@@ -31,7 +31,7 @@ function Explosion:playAnimation(cb)
 
     if not self.dead then
         self:swapImage(self.framecount)
-    
+
     else
         for i = 1, #self.sprites do
             self.sprites[i]:removeSelf()
@@ -65,6 +65,10 @@ function Explosion:explode()
 
     if cell.entity then
         cell.entity:takeHit(a)
+    end
+
+    if cell.trap then
+        cell.trap:die()
     end
 end
 

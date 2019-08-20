@@ -7,7 +7,7 @@ local Player = class('Player', Entity)
 Player.att_base = {
     dmg = 3,
     pierce = 1,
-    dig = 1,
+    dig = 2,
     push = 2
 }
 
@@ -91,6 +91,7 @@ function Player:act(a)
     -- alias the weapon to make API the same for
     -- the player and the enemies
     self.weapon = self.inventory:get('weapon'):get(1)
+    self.shovel = self.inventory:get('shovel'):get(1)
 
     if not a then return end
 
@@ -118,11 +119,40 @@ function Player:act(a)
         -- this will also attempt to move, if the weapon spec says so
         local hits = self:attemptAttack(a, t)
 
+        t:apply()
+        t = Turn(a, self)
+
         if
-            not self.hist:wasAny('hit', 'dig')
+            not self.hist:was('hit')
         then
-            self:attemptMove(a, t)
+            self:attemptDig(a, t)
+            t:apply()
+            t = Turn(a, self)
+
+            if
+                not self.hist:wasAny('dug', 'displaced')
+            then
+                self:attemptMove(a, t)
+                t:apply()
+                t = Turn(a, self)
+            end
+
+            if
+                not self.hist:was('dugout')
+            then
+                self:dropBeat()
+            end
         end
+
+
+        if
+            not self.hist:wasAny('hit', 'dug', 'displaced')
+        then
+            self:attemptBump(a, t)
+            t:apply()
+            t = Turn(a, self)
+        end
+
 
         -- TODO: item actions
         -- self:actItems(a, hits)
@@ -149,15 +179,24 @@ function Player:attemptAttack(a, t)
     if self.weapon then
         return self.weapon:attemptAttack(a, t)
     end
+end
+
+function Player:attemptDig(a, t)
+
+    -- perform the attack defined by the weapon spec
+    if self.shovel then
+        return self.shovel:attemptDig(a, t)
+    end
+end
+
+function Player:attemptBump(a, t)
 
     local ps = self:getPointsFromDirection(a.dir)
 
-    -- try to bump
     if self.world:areBlockedAny(ps) then
         t:set('bumped')
     end
 
-    return {}
 end
 
 

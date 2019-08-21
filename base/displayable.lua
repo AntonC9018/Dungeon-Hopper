@@ -9,7 +9,7 @@ Displayable.size = vec(0, 0)
 
 
 function Displayable:__construct(x, y, w)
-    self.pos = vec(x or 1, y or 1)
+    self.pos = vec(x, y)
     self.world = w
 end
 

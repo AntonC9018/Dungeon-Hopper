@@ -14,6 +14,8 @@ local BounceTrap = require('traps.bouncetrap')
 local Dirt = require('walls.dirt')
 local Item = require('base.item')
 
+local Cat = require('weapons.cat')
+
 local World = class('World')
 
 function World:__construct(w, h, group)
@@ -51,25 +53,26 @@ function World:__construct(w, h, group)
             --     cell.tile = BasicTile(i, j, self)
             -- end
 
+            cell.tile = BasicTile(i, j, self)
+
+
             local rnents = math.random()
 
-            -- if rnents < 0.2 then
-            --     cell.entity = Crate(i, j, self)
-            --     table.insert(self.entities, cell.entity)
+            if rnents < 0.2 then
+                cell.entity = Crate(i, j, self)
+                table.insert(self.entities, cell.entity)
             
 
-            -- if rnents < 0.4 then
-            --     local v = vec( math.random(-1, 1), math.random(-1, 1) )
-            --     cell.trap = BounceTrap(v, i, j, self)
-            --     table.insert(self.env_traps, cell.trap)
-            -- end
+            elseif rnents < 0.4 then
+                -- local v = vec( math.random(-1, 1), math.random(-1, 1) )
+                -- cell.trap = BounceTrap(v, i, j, self)
+                -- table.insert(self.env_traps, cell.trap)
+            
 
-            if rnents < 0.2 then
+            elseif rnents < 0.8 then
                 cell.wall = Dirt(i, j, self)
                 table.insert(self.walls, cell.wall)
             end
-
-            cell.tile = BasicTile(i, j, self)
 
 
             cell.items = {}
@@ -86,8 +89,8 @@ function World:initPlayer(x, y)
     self.player = Player(x, y, self)
 
     -- TODO: add sprites for dropped and undropped state
-    local dagger = Item.createUndropped(Dagger, self)
-    self.player.inventory:equip(dagger)
+    local weapon = Item.createUndropped(Cat, self)
+    self.player.inventory:equip(weapon)
     
     local shovel = Item.createUndropped(Shovel, self)
     self.player.inventory:equip(shovel)
@@ -154,9 +157,8 @@ function World:dropGold(x, y, g)
     else
         cell.gold = g
         g:drop(x, y, self)
-        return true
     end
-    return false
+    return cell.gold
 end
 
 
@@ -268,7 +270,7 @@ function World:do_loop(player_action)
     self:actEntities(player_action)
 
     -- test of explosion
-    self:explode(math.random(4, 10), math.random(4, 10), 1)
+    -- self:explode(math.random(4, 10), math.random(4, 10), 1)
 
 
     for i = 1, #self.env_traps do

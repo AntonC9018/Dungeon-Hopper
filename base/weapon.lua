@@ -8,7 +8,7 @@ Weapon.item_slot = 'weapon'
 Weapon.scale = 1 / UNIT
 
 Weapon.move_attack = false
-Weapon.hit_all = true
+Weapon.hit_all = false
 Weapon.frail = false
 Weapon.pos = vec(0, 0)
 Weapon.offset = vec(0, 0)
@@ -28,18 +28,15 @@ Weapon.ignore_players = false
 
 function Weapon:__construct(world, x, y, im1, im2)
     Item.__construct(self, world, x, y, im1, im2)
-    -- self.world = w
-    -- self:createSprite(o, s)
-    -- self:listenAlpha()
-    -- self.sprite.alpha = 0
+    self.sprite = {}
     -- TODO: gfjqklew
 end
 
 function Weapon:attemptAttack(a, t)
 
-    if self.move_attack then
-        a.actor:attemptMove(a, t)
-    end
+    -- if self.move_attack then
+    --     a.actor:attemptMove(a, t)
+    -- end
 
     local hits = {}
     local blocked = {}
@@ -73,7 +70,8 @@ function Weapon:attemptAttack(a, t)
                     target = cell.entity,
                     pos = ps[j],
                     index = i,
-                    cell = cell
+                    cell = cell,
+                    turn = t
                 }
 
 
@@ -95,7 +93,7 @@ function Weapon:attemptAttack(a, t)
 
                     local function doAttack()
                         self:modify( y )
-                        self:orient(dir, i)
+                        self:orient( i, a, t )
                         table.insert(hits, y)
                         t:set('hit')
                     end
@@ -146,6 +144,10 @@ function Weapon:attemptAttack(a, t)
         for i = 1, #hits do
             self:attack( hits[i] )
         end
+    end
+
+    if self:isShouldMove(hits) then
+        a.actor:attemptMove(a, t)
     end
 
     t:apply()
@@ -256,21 +258,24 @@ function Weapon:listenAlpha()
     end)
 end
 
+function Weapon:isShouldMove(hits)
+    return self.move_attack
+end
+
 function Weapon:playAudio()
-    audio.play(AM[class.name(self)].audio['swipe'])
+    -- audio.play(AM[class.name(self)].audio['swipe'])
+    audio.play(AM['Dagger'].audio['swipe'])
 end
 
 function Weapon:playAnimation(t, ts)
-    self:anim(ts, 'swipe')
+    if class.name(self) == 'Dagger' then
+        self:anim(ts, 'swipe')
+    end
 end
 
-function Weapon:orient(dir, i)
-    local a = self:getPattern(i):angleBetween(dir)
+function Weapon:orient(i, a, t)
+    local a = self:getPattern(i, a, t):angleBetween(a.dir)
     self.sprite.rotation = a * 180 / math.pi
-end
-
-function Weapon:getItemType()
-    return 'weapon'
 end
 
 return Weapon

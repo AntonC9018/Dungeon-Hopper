@@ -119,22 +119,22 @@ function Player:act(a)
         -- this will also attempt to move, if the weapon spec says so
         local hits = self:attemptAttack(a, t)
 
-        t:apply()
-        t = Turn(a, self)
-
-        if
-            not self.hist:was('hit')
-        then
-            self:attemptDig(a, t)
+        local function refreshTurn()
             t:apply()
             t = Turn(a, self)
+        end
+
+        if
+            not self.hist:wasAny('hit', 'displaced')
+        then
+            self:attemptDig(a, t)
+            refreshTurn()
 
             if
-                not self.hist:wasAny('dug', 'displaced')
+                not self.hist:wasAny('dug')
             then
                 self:attemptMove(a, t)
-                t:apply()
-                t = Turn(a, self)
+                refreshTurn()
             end
 
             if
@@ -149,8 +149,7 @@ function Player:act(a)
             not self.hist:wasAny('hit', 'dug', 'displaced')
         then
             self:attemptBump(a, t)
-            t:apply()
-            t = Turn(a, self)
+            refreshTurn()
         end
 
 

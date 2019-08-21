@@ -11,6 +11,7 @@ Gold.__add[Gold] = function(self, rhs)
     local g = Gold(self.am + rhs.am)
     printf("Adding %d gold to %d gold", rhs.am, self.am)
     if self.sprite then
+        print('sprite found')
         g.sprites = self.sprites
         g.sprite = self.sprite
         g.pos = self.pos
@@ -33,6 +34,9 @@ function Gold:drop(x, y, w)
 
     -- find the needed exact image
     local i = self:getImageIndex()
+
+    print(i)
+
     self.sprite = self.sprites[i]
 end
 

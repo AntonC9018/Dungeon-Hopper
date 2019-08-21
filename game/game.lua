@@ -34,18 +34,7 @@ function scene:create( event )
     -- create the player
     world:initPlayer(7, 7)
     -- spawn some wizzrobes
-    -- world:populate(1)
-
-
-    -- local trap = BounceTrap:new(
-    --     { 
-    --         x = 4, 
-    --         y = 4, 
-    --         world = world
-    --     }
-    -- )
-
-    -- table.insert(world.env.traps, trap)
+    world:populate(10)
 
     
     world_group.x, world_group.y =

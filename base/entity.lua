@@ -314,7 +314,7 @@ function Entity:releaseInnards()
 
         local function trySpawn(p, t, cl, i)
             local x, y = p:comps()
-            if self.world.grid[x][y][t] then
+            if self.world:isBlocked(p.x, p.y) then
                 return false
             else
                 children[i] = self.world:spawn(x, y, cl, t)
@@ -330,13 +330,15 @@ function Entity:releaseInnards()
             if type == 'gold' then
                 local g = Gold(self.innards[i].am)
 
+                g = self.world:dropGold(pos.x, pos.y, g)
+
                 self:untilTrue('animation',
 
                     function(current_event, current_turn)
 
                         if
-                            current_turn.dead and
-                            current_event == 'step:complete'
+                            current_event == 'step:complete' and
+                            current_turn.dead
                         then
                             g:appear()
                             return true

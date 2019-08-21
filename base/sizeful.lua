@@ -100,7 +100,7 @@ function Sizeful:getPointsFromDirection(v)
 
             if v.y > 0 then
                 -- bottom right
-                table.insert(t, self.size + vec(1, 1))
+                table.insert(t, self.pos + self.size + vec(1, 1))
 
                 for i = 1, self.size.x do
                     table.insert(t, self.pos + vec(i, self.size.y + 1))

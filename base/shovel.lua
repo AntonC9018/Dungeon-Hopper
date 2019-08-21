@@ -69,8 +69,5 @@ function Shovel:orient(dir, i)
     self.sprite.rotation = a * 180 / math.pi
 end
 
-function Shovel:getItemType()
-    return 'shovel'
-end
 
 return Shovel

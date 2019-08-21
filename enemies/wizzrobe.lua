@@ -6,10 +6,10 @@ local Wizzrobe = class('Wizzrobe', Enemy)
 
 Wizzrobe.seq = Sequence.transform(
     {
-        -- do nothing for the first beat
-        {
-            name = "idle"
-        },
+        -- -- do nothing for the first beat
+        -- {
+        --     name = "idle"
+        -- },
         {
             -- do nothing too
             name = "idle",
@@ -45,7 +45,7 @@ Wizzrobe.seq = Sequence.transform(
 
 Wizzrobe.hp_base = {
     t = 'red',
-    am = 9
+    am = 2
 }
 
 Wizzrobe.priority = 5000

@@ -28,7 +28,6 @@ Weapon.ignore_players = false
 
 function Weapon:__construct(world, x, y, im1, im2)
     Item.__construct(self, world, x, y, im1, im2)
-    self.sprite = {}
     -- TODO: gfjqklew
 end
 
@@ -93,7 +92,6 @@ function Weapon:attemptAttack(a, t)
 
                     local function doAttack()
                         self:modify( y )
-                        self:orient( i, a, t )
                         table.insert(hits, y)
                         t:set('hit')
                     end
@@ -136,6 +134,8 @@ function Weapon:attemptAttack(a, t)
             end
         end
     end
+
+    t.hits = hits
 
     if #hits > 0 then
         t:set('hit')
@@ -233,7 +233,6 @@ end
 
 function Weapon:attack(params)
     params.target:takeHit(params.action)
-    self.sprite.x, self.sprite.y = params.pos:comps()
 end
 
 function Weapon:modify(params)
@@ -248,12 +247,12 @@ function Weapon:getKnockb(i)
 end
 
 function Weapon:listenAlpha()
-    self.sprite:addEventListener("sprite", function(event)
+    self.swipe:addEventListener("sprite", function(event)
         if event.phase == "began" then
-            self.sprite:toFront()
-            self.sprite.alpha = 1
+            self.swipe:toFront()
+            self.swipe.alpha = 1
         elseif event.phase == "ended" then
-            self.sprite.alpha = 0
+            self.swipe.alpha = 0
         end
     end)
 end
@@ -263,19 +262,38 @@ function Weapon:isShouldMove(hits)
 end
 
 function Weapon:playAudio()
-    -- audio.play(AM[class.name(self)].audio['swipe'])
-    audio.play(AM['Dagger'].audio['swipe'])
+    audio.play(AM[class.name(self)].audio['swipe'])
+    -- audio.play(AM['Dagger'].audio['swipe'])
 end
 
 function Weapon:playAnimation(t, ts)
-    if class.name(self) == 'Dagger' then
-        self:anim(ts, 'swipe')
-    end
+
+    local hit = t['hits'][1]
+
+    self:orient(hit)
+    self:position(hit)
+
+    self:anim(ts, 'swipe')
 end
 
-function Weapon:orient(i, a, t)
-    local a = self:getPattern(i, a, t):angleBetween(a.dir)
-    self.sprite.rotation = a * 180 / math.pi
+function Weapon:orient(params)
+    local a = self:getPattern(params.index, params.action, params.turn)
+        :angleBetween(params.action.dir)
+    self.swipe.rotation = a * 180 / math.pi
+end
+
+function Weapon:position(params)
+    local pos = params.turn.final.pos + params.action.actor.size / 2 + params.dir
+    self.swipe.x = pos.x
+    self.sprite.y = pos.y
+end
+
+function Weapon:anim(ts, name)
+    if not self.swipe.isPlaying or self.swipe.sequence ~= name then
+        self.swipe.timeScale = 1000 / ts
+        self.swipe:setSequence(name)
+        self.swipe:play()
+    end
 end
 
 return Weapon

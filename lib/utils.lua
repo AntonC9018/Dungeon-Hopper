@@ -158,3 +158,20 @@ function table.containsKey(t, k)
     end
     return false
 end
+
+function averageByKey(arr, key)
+    local sum = arr[1]
+    for i = 2, #arr do
+        sum = sum + arr[i][key]
+    end
+    return sum / #arr
+end
+
+
+function average(arr)
+    local sum = arr[1]
+    for i = 2, # arr do
+        sum = sum + arr[i]
+    end
+    return sum
+end

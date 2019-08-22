@@ -15,18 +15,17 @@ Dagger.reach = { false }
 function Dagger:__construct(...)
     Weapon.__construct(self, ...)
     
-    self:createSprite({
+    self.swipe = self:createSprite({
         {
             name = "swipe",
             start = 1,
             count = 3,
             time = 1000,
-            loopCount = 1
-            
+            loopCount = 1            
         }
     })
     self:listenAlpha()
-    self.sprite.alpha = 0
+    self.swipe.alpha = 0
 end
 
 return Dagger

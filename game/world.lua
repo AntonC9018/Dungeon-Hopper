@@ -14,7 +14,7 @@ local BounceTrap = require('traps.bouncetrap')
 local Dirt = require('walls.dirt')
 local Item = require('base.item')
 
-local Cat = require('weapons.cat')
+local Whip = require('weapons.whip')
 
 local World = class('World')
 
@@ -61,15 +61,15 @@ function World:__construct(w, h, group)
             if rnents < 0.2 then
                 cell.entity = Crate(i, j, self)
                 table.insert(self.entities, cell.entity)
-            
+
 
             elseif rnents < 0.4 then
                 -- local v = vec( math.random(-1, 1), math.random(-1, 1) )
                 -- cell.trap = BounceTrap(v, i, j, self)
                 -- table.insert(self.env_traps, cell.trap)
-            
 
-            elseif rnents < 0.8 then
+
+            elseif rnents < 0.5 then
                 cell.wall = Dirt(i, j, self)
                 table.insert(self.walls, cell.wall)
             end
@@ -89,9 +89,9 @@ function World:initPlayer(x, y)
     self.player = Player(x, y, self)
 
     -- TODO: add sprites for dropped and undropped state
-    local weapon = Item.createUndropped(Cat, self)
+    local weapon = Item.createUndropped(Whip, self)
     self.player.inventory:equip(weapon)
-    
+
     local shovel = Item.createUndropped(Shovel, self)
     self.player.inventory:equip(shovel)
 

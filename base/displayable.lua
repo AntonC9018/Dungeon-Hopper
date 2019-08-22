@@ -53,15 +53,6 @@ function Displayable:setupSprite()
     self.sprite.yScale = self.scale
 end
 
-Displayable.newImage = function(tab)
-    local sprite = display.newImageRect(tab.world, AM[tab.class], tab.index, tab.width, tab.height)
-    sprite.x = tab.owner.pos.x + tab.owner.offset.x + tab.owner.size.x / 2
-    sprite.y = tab.owner.pos.y + tab.owner.offset.y + tab.owner.size.y / 2
-    sprite.xScale = tab.owner.scale
-    sprite.yScale = tab.owner.scale
-    return sprite
-end
-
 function Displayable:toFront()
     self.sprite:toFront()
 end

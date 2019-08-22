@@ -12,6 +12,19 @@
             "swipe": "pound.wav"
         }
     },
+    "Whip": {
+        "sheet": {
+            "path": "whip_test.png",
+            "options": {
+                "width": 48,
+                "height": 16,
+                "numFrames": 9
+            }
+        },
+        "audio": {
+            "swipe": "pound.wav"
+        }
+    },
     "Player": {
         "sheet": {
             "path": "elf_girl.png",

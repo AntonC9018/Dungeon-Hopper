@@ -35,29 +35,4 @@ function Action:copy()
         :setAtt(self.att)
 end
 
-
-Action.toActions = function(a, c, l)
-    local s = {}
-    for i = 1, l do
-        s[i] = Action(a, c)
-    end
-    return s
-end
-
-Action.each = function(arr, cmd, val)
-    for i = 1, #arr do
-        arr[i][cmd](arr[i], val)
-    end
-    return arr
-end
-
-Action.eachBoth = function(arr, cmd, arr2)
-    for i = 1, #arr do
-        arr[i][cmd](arr[i], arr2[i])
-    end
-    return arr
-end
-
-
-
 return Action

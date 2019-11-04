@@ -6,13 +6,13 @@ local BounceTrap = class('BounceTrap', Trap)
 
 function BounceTrap:__construct(dir, ...)
     Trap.__construct(self, ...)
-    if dir.x == 0 and dir.y == 0 then dir = vec(1, 0) end
+    if dir.x == 0 and dir.y == 0 then dir = Vec(1, 0) end
     self.dir = dir
 
     -- rotate the sprites according to dir
     -- by default, they look to the left
     -- ?figure another way?
-    local rad = vec.angleBetween(vec(1, 0), self.dir)
+    local rad = Vec.angleBetween(Vec(1, 0), self.dir)
     local deg = math.deg(rad)
     self.sprite_unpushed.rotation = deg
     self.sprite_pushed.rotation = deg

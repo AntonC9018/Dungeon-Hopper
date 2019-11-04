@@ -8,8 +8,8 @@ Whip.att_base = {
     dmg = 1
 }
 
-Whip.pattern = { vec(1, 0), vec(1, 1), vec(1, -1), vec(1, 2), vec(1, -2) }
-Whip.knockb = { vec(1, 0), vec(0, 1), vec(0, -1), vec(0, 1), vec(0, -1) }
+Whip.pattern = { Vec(1, 0), Vec(1, 1), Vec(1, -1), Vec(1, 2), Vec(1, -2) }
+Whip.knockb = { Vec(1, 0), Vec(0, 1), Vec(0, -1), Vec(0, 1), Vec(0, -1) }
 Whip.reach = { false, false, false, 2, 3 }
 
 function Whip:__construct(...)
@@ -66,8 +66,8 @@ function Whip:orient(hits)
     local knb = self:getKnockb(hits[1].index)
 
     local a =
-        vec(1, 0):angleBetween( hits[1].turn.final.facing ) +
-        vec(1, 0):angleBetween( knb )
+        Vec(1, 0):angleBetween( hits[1].turn.final.facing ) +
+        Vec(1, 0):angleBetween( knb )
 
     self.swipe.rotation = math.deg(a)
 

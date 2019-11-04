@@ -8,8 +8,8 @@ Dagger.att_base = {
     dmg = 1
 }
 
-Dagger.pattern = { vec(1, 0) }
-Dagger.knockb = { vec(1, 0) }
+Dagger.pattern = { Vec(1, 0) }
+Dagger.knockb = { Vec(1, 0) }
 Dagger.reach = { false }
 
 function Dagger:__construct(...)

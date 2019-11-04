@@ -2,7 +2,7 @@ local Displayable = require('base.displayable')
 
 local Tile = class('Tile', Displayable)
 
-Tile.offset = vec(0, 0)
+Tile.offset = Vec(0, 0)
 Tile.socket_type = 'tile'
 
 

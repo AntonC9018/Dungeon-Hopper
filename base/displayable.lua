@@ -2,14 +2,14 @@
 local Displayable = class("Displayable")
 
 Displayable.scale = 1 / UNIT
-Displayable.offset = vec(0, -0.3)
+Displayable.offset = Vec(0, -0.3)
 Displayable.offset_y_jump = -0.2
-Displayable.pos = vec(1, 1)
-Displayable.size = vec(0, 0)
+Displayable.pos = Vec(1, 1)
+Displayable.size = Vec(0, 0)
 
 
 function Displayable:__construct(x, y, w)
-    self.pos = vec(x, y)
+    self.pos = Vec(x, y)
     self.world = w
 end
 

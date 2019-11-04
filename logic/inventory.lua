@@ -28,16 +28,16 @@ local Inventory = class('Inventory')
 function Inventory:__construct()
     -- the container for containers
     self.c = {}
-    self.c.weapon =      InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'weapon', inv = self })
-    self.c.body =        InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'body', inv = self })
-    self.c.boots =       InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'boots', inv = self })
-    self.c.hat =         InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'hat', inv = self })
-    self.c.ring =        InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'ring', inv = self })
-    self.c.shovel =       InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'shovel', inv = self })
-    self.c.trinket =     InventoryContainer({ anchor = vec(0, 0), size = 75, name = 'trinket', inv = self })
-    self.c.consumable =  InventoryContainer({ anchor = vec(0, 0), size = 2, name = 'consumable', inv = self })
-    self.c.magic =       InventoryContainer({ anchor = vec(0, 0), size = 2, name = 'magic', inv = self })
-    self.c.bag =         InventoryContainer({ anchor = vec(0, 0), size = 1, name = 'bag', inv = self })
+    self.c.weapon =      InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'weapon', inv = self })
+    self.c.body =        InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'body', inv = self })
+    self.c.boots =       InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'boots', inv = self })
+    self.c.hat =         InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'hat', inv = self })
+    self.c.ring =        InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'ring', inv = self })
+    self.c.shovel =      InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'shovel', inv = self })
+    self.c.trinket =     InventoryContainer({ anchor = Vec(0, 0), size = 75, name = 'trinket', inv = self })
+    self.c.consumable =  InventoryContainer({ anchor = Vec(0, 0), size = 2, name = 'consumable', inv = self })
+    self.c.magic =       InventoryContainer({ anchor = Vec(0, 0), size = 2, name = 'magic', inv = self })
+    self.c.bag =         InventoryContainer({ anchor = Vec(0, 0), size = 1, name = 'bag', inv = self })
     self.to_drop = {}
 end
 

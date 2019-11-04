@@ -65,34 +65,34 @@ function Enemy:computeAction(player_actions)
 
         if self.facing.x > 0 then -- looking right
             -- prioritize going to the right
-            if gx then table.insert(movs, vec(  1,  0 )) end
-            if gy then table.insert(movs, vec(  0,  1 )) end
-            if ly then table.insert(movs, vec(  0, -1 )) end
-            if lx then table.insert(movs, vec( -1,  0 )) end
+            if gx then table.insert(movs, Vec(  1,  0 )) end
+            if gy then table.insert(movs, Vec(  0,  1 )) end
+            if ly then table.insert(movs, Vec(  0, -1 )) end
+            if lx then table.insert(movs, Vec( -1,  0 )) end
         elseif self.facing.x < 0 then -- looking left
             -- prioritize going to the left
-            if lx then table.insert(movs, vec( -1,  0 )) end
-            if gy then table.insert(movs, vec(  0,  1 )) end
-            if ly then table.insert(movs, vec(  0, -1 )) end
-            if gx then table.insert(movs, vec(  1,  0 )) end
+            if lx then table.insert(movs, Vec( -1,  0 )) end
+            if gy then table.insert(movs, Vec(  0,  1 )) end
+            if ly then table.insert(movs, Vec(  0, -1 )) end
+            if gx then table.insert(movs, Vec(  1,  0 )) end
         elseif self.facing.y > 0 then -- looking down
             --- ...
-            if gy then table.insert(movs, vec(  0,  1 )) end
-            if gx then table.insert(movs, vec(  1,  0 )) end
-            if lx then table.insert(movs, vec( -1,  0 )) end
-            if ly then table.insert(movs, vec(  0, -1 )) end
+            if gy then table.insert(movs, Vec(  0,  1 )) end
+            if gx then table.insert(movs, Vec(  1,  0 )) end
+            if lx then table.insert(movs, Vec( -1,  0 )) end
+            if ly then table.insert(movs, Vec(  0, -1 )) end
         elseif self.facing.y < 0 then -- looking up
             --- ...
-            if ly then table.insert(movs, vec(  0, -1 )) end
-            if gx then table.insert(movs, vec(  1,  0 )) end
-            if lx then table.insert(movs, vec( -1,  0 )) end
-            if gy then table.insert(movs, vec(  0,  1 )) end
+            if ly then table.insert(movs, Vec(  0, -1 )) end
+            if gx then table.insert(movs, Vec(  1,  0 )) end
+            if lx then table.insert(movs, Vec( -1,  0 )) end
+            if gy then table.insert(movs, Vec(  0,  1 )) end
         else -- no direction. Default order!
             -- ...
-            if gx then table.insert(movs, vec(  1,  0 )) end
-            if lx then table.insert(movs, vec( -1,  0 )) end
-            if gy then table.insert(movs, vec(  0,  1 )) end
-            if ly then table.insert(movs, vec(  0, -1 )) end
+            if gx then table.insert(movs, Vec(  1,  0 )) end
+            if lx then table.insert(movs, Vec( -1,  0 )) end
+            if gy then table.insert(movs, Vec(  0,  1 )) end
+            if ly then table.insert(movs, Vec(  0, -1 )) end
         end
 
 
@@ -102,31 +102,31 @@ function Enemy:computeAction(player_actions)
 
         -- to the left of the player
         if gx then
-            if     gy then table.insert(movs,vec( 1,  1 ))
-            elseif ly then table.insert(movs,vec( 1, -1 ))
+            if     gy then table.insert(movs,Vec( 1,  1 ))
+            elseif ly then table.insert(movs,Vec( 1, -1 ))
             else
                 -- we're on one X with the player
                 if self.facing.y > 0 then
-                    table.insert(movs, vec( 1,  1 ))
-                    table.insert(movs, vec( 1, -1 ))
+                    table.insert(movs, Vec( 1,  1 ))
+                    table.insert(movs, Vec( 1, -1 ))
                 else
-                    table.insert(movs, vec( 1, -1 ))
-                    table.insert(movs, vec( 1,  1 ))
+                    table.insert(movs, Vec( 1, -1 ))
+                    table.insert(movs, Vec( 1,  1 ))
                 end
             end
 
         -- to the right of the player
         elseif lx then
-            if     gy then table.insert(movs, vec( -1,  1 ))
-            elseif ly then table.insert(movs, vec( -1, -1 ))
+            if     gy then table.insert(movs, Vec( -1,  1 ))
+            elseif ly then table.insert(movs, Vec( -1, -1 ))
             else
                 -- we're on one X with the player
                 if self.facing.y > 0 then
-                    table.insert(movs, vec( -1,  1 ))
-                    table.insert(movs, vec( -1, -1 ))
+                    table.insert(movs, Vec( -1,  1 ))
+                    table.insert(movs, Vec( -1, -1 ))
                 else
-                    table.insert(movs, vec( -1, -1 ))
-                    table.insert(movs, vec( -1,  1 ))
+                    table.insert(movs, Vec( -1, -1 ))
+                    table.insert(movs, Vec( -1,  1 ))
                 end
             end
 
@@ -134,21 +134,21 @@ function Enemy:computeAction(player_actions)
         -- higher than the player
         elseif gy then
             if self.facing.x > 0 then
-                table.insert(movs, vec( -1,  1 ))
-                table.insert(movs, vec(  1,  1 ))
+                table.insert(movs, Vec( -1,  1 ))
+                table.insert(movs, Vec(  1,  1 ))
             else
-                table.insert(movs, vec(  1,  1 ))
-                table.insert(movs, vec( -1,  1 ))
+                table.insert(movs, Vec(  1,  1 ))
+                table.insert(movs, Vec( -1,  1 ))
             end
 
         -- lower than the player
         else
             if self.facing.x > 0 then
-                table.insert(movs, vec( -1, -1 ))
-                table.insert(movs, vec(  1, -1 ))
+                table.insert(movs, Vec( -1, -1 ))
+                table.insert(movs, Vec(  1, -1 ))
             else
-                table.insert(movs, vec(  1, -1 ))
-                table.insert(movs, vec( -1, -1 ))
+                table.insert(movs, Vec(  1, -1 ))
+                table.insert(movs, Vec( -1, -1 ))
             end
         end
 
@@ -158,13 +158,13 @@ function Enemy:computeAction(player_actions)
         local lx, ly = sp.x > mpp.x, sp.y > mpp.y
 
         if gx then
-            if gy then  table.insert(movs, vec(  1,  1 )) table.insert(movs, vec( 0,  1 )) end
-            if ly then  table.insert(movs, vec(  1, -1 )) table.insert(movs, vec( 0, -1 )) end
-                        table.insert(movs, vec(  1,  0 ))
+            if gy then  table.insert(movs, Vec(  1,  1 )) table.insert(movs, Vec( 0,  1 )) end
+            if ly then  table.insert(movs, Vec(  1, -1 )) table.insert(movs, Vec( 0, -1 )) end
+                        table.insert(movs, Vec(  1,  0 ))
         elseif lx then
-            if gy then  table.insert(movs, vec( -1,  1 )) table.insert(movs, vec( 0,  1 )) end
-            if ly then  table.insert(movs, vec( -1, -1 )) table.insert(movs, vec( 0, -1 )) end
-                        table.insert(movs, vec( -1,  0 ))
+            if gy then  table.insert(movs, Vec( -1,  1 )) table.insert(movs, Vec( 0,  1 )) end
+            if ly then  table.insert(movs, Vec( -1, -1 )) table.insert(movs, Vec( 0, -1 )) end
+                        table.insert(movs, Vec( -1,  0 ))
 
         -- on one X with the player
         else
@@ -177,7 +177,7 @@ function Enemy:computeAction(player_actions)
     elseif mov == "basic-random" then
         -- it doesn't matter what direction exactly the vector should point
         -- I chose the right direction
-        local t = vec(1, 0)
+        local t = Vec(1, 0)
         -- insert that direction as the first element
         table.insert(movs, t)
         -- rotate it around, inserting each time
@@ -187,7 +187,7 @@ function Enemy:computeAction(player_actions)
         table.shuffle(movs)
 
     elseif mov == "diagonal-random" then
-        local t = vec(1, 1)
+        local t = Vec(1, 1)
 
         table.insert(movs, t)
         for j = 1, 3 do
@@ -197,7 +197,7 @@ function Enemy:computeAction(player_actions)
 
 
     elseif mov == "adjacent-random" then
-        local t = vec(1, 0)
+        local t = Vec(1, 0)
 
         table.insert(movs, t)
         for j = 1, 7 do
@@ -212,10 +212,16 @@ function Enemy:computeAction(player_actions)
     end
 
     if #movs > 0 then
-        actions = Action.toActions(self, self.seq:step().name, #movs)
-        Action.eachBoth(actions, 'setDir', movs)
-        Action.each    (actions, 'setAtt', self:getAttack())
-        Action.each    (actions, 'setAms', self:getAms())
+
+        actions = table.map(movs, function(act)
+            return Action(self, self.seq:step().name) end)
+
+        table.each2(actions, movs, function(a, b) a.setDir(b) end)
+
+        table.each(actions, function(a)
+            a.setAtt(self:getAttack())
+            a.setAms(self:getAms())            
+        end)
     else
         actions = { Action(self, 'idle') }
     end
@@ -440,13 +446,13 @@ function Enemy:orientTo(p)
        self.facing.y > 0 and p.pos.y > self.pos.y or
        self.facing.y < 0 and p.pos.y < self.pos.y then return end
 
-    if     p.pos.x > self.pos.x then self.facing = vec( 1,  0)
-    elseif p.pos.x < self.pos.x then self.facing = vec(-1,  0)
-    elseif p.pos.y > self.pos.y then self.facing = vec( 0,  1)
-    elseif p.pos.y < self.pos.y then self.facing = vec( 0, -1)
+    if     p.pos.x > self.pos.x then self.facing = Vec( 1,  0)
+    elseif p.pos.x < self.pos.x then self.facing = Vec(-1,  0)
+    elseif p.pos.y > self.pos.y then self.facing = Vec( 0,  1)
+    elseif p.pos.y < self.pos.y then self.facing = Vec( 0, -1)
 
     -- TODO: give it a random val when no player is around
-    else   self.facing = vec(0, 0) end
+    else   self.facing = Vec(0, 0) end
 end
 
 

@@ -17,7 +17,7 @@ Item.create = function(self, world, x, y, im1, im2)
     local item = self(world)
 
     if x and y then
-        item.pos = vec(x, y)
+        item.pos = Vec(x, y)
     end
 
     if im2 then
@@ -42,7 +42,7 @@ Item.createDropped = function(self, world, x, y, im1, im2)
 
     local item = self(world)
 
-    item.pos = vec(x, y)
+    item.pos = Vec(x, y)
 
     if im2 then
         item.sprite_picked = item:createImage( unpack(im2) )
@@ -63,7 +63,7 @@ Item.createUndropped = function(self, world, x, y, im1, im2)
     local item = self(world)
 
     if x and y then
-        item.pos = vec(x, y)
+        item.pos = Vec(x, y)
     end
 
     -- an image for undropped is not necessary

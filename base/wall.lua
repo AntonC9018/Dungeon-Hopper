@@ -11,7 +11,7 @@ Wall.socket_type = 'wall'
 
 
 Wall.priority = 0
-Wall.offset = vec(0, -3 / 16)
+Wall.offset = Vec(0, -3 / 16)
 
 Wall.dmg_thresh = 10
 

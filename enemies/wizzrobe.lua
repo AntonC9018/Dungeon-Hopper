@@ -50,7 +50,7 @@ Wizzrobe.hp_base = {
 
 Wizzrobe.priority = 5000
 
-Wizzrobe.size = vec(0, 0)
+Wizzrobe.size = Vec(0, 0)
 
 function Wizzrobe:__construct(...)
     Enemy.__construct(self, ...)

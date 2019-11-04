@@ -10,8 +10,8 @@ Cat.att_base = {
 
 Cat.move_attack = true
 
-Cat.pattern = { vec(1, 0), vec(1, 1), vec(1, -1), vec(0, 1), vec(0, -1) }
-Cat.knockb =  { vec(1, 0), vec(1, 1), vec(1, -1), vec(0, 1), vec(0, -1) }
+Cat.pattern = { Vec(1, 0), Vec(1, 1), Vec(1, -1), Vec(0, 1), Vec(0, -1) }
+Cat.knockb =  { Vec(1, 0), Vec(1, 1), Vec(1, -1), Vec(0, 1), Vec(0, -1) }
 Cat.reach =   { false,     false,     false,      false,     false      }
 
 -- function Dagger:__construct(...)
@@ -36,7 +36,7 @@ function Cat:getPattern(i, a, t)
             return false
         else
             -- bring all patterns closer to the attacker
-            return self.pattern[i] - vec(1, 0)
+            return self.pattern[i] - Vec(1, 0)
         end
     end
 

@@ -41,17 +41,17 @@ function World:__construct(w, h, group)
 
             local rntiles = math.random()
 
-            -- if rntiles < 0.3 then
-            --     cell.tile = Coals(i, j, self)
-            --     table.insert(self.env_special_tiles, cell.tile)
+            if rntiles < 0.3 then
+                cell.tile = Coals(i, j, self)
+                table.insert(self.env_special_tiles, cell.tile)
 
-            -- elseif rntiles < 0.6 then
-            --     cell.tile = Water(i, j, self)
-            --     table.insert(self.env_special_tiles, cell.tile)
+            elseif rntiles < 0.6 then
+                cell.tile = Water(i, j, self)
+                table.insert(self.env_special_tiles, cell.tile)
 
-            -- else
-            --     cell.tile = BasicTile(i, j, self)
-            -- end
+            else
+                cell.tile = BasicTile(i, j, self)
+            end
 
             cell.tile = BasicTile(i, j, self)
 
@@ -64,9 +64,9 @@ function World:__construct(w, h, group)
 
 
             elseif rnents < 0.4 then
-                -- local v = vec( math.random(-1, 1), math.random(-1, 1) )
-                -- cell.trap = BounceTrap(v, i, j, self)
-                -- table.insert(self.env_traps, cell.trap)
+                local v = Vec( math.random(-1, 1), math.random(-1, 1) )
+                cell.trap = BounceTrap(v, i, j, self)
+                table.insert(self.env_traps, cell.trap)
 
 
             elseif rnents < 0.5 then
@@ -89,7 +89,7 @@ function World:initPlayer(x, y)
     self.player = Player(x, y, self)
 
     -- TODO: add sprites for dropped and undropped state
-    local weapon = Item.createUndropped(Whip, self)
+    local weapon = Item.createUndropped(Dagger, self)
     self.player.inventory:equip(weapon)
 
     local shovel = Item.createUndropped(Shovel, self)
@@ -245,7 +245,7 @@ function World:explode(x, y, r)
     -- of a square, centered at (x, y), that has width of r
     for i = -r, r do
         for j = -r, r do
-            self:explodeAt(x + i, y + j, vec(i, j):normComps())
+            self:explodeAt(x + i, y + j, Vec(i, j):normComps())
         end
     end
 end
@@ -257,7 +257,7 @@ function World:explodeAt(x, y, dir)
 end
 
 
-function World:do_loop(player_action)
+function World:doLoop(player_action)
     player_action = Action(self.player, 'move/attack'):setDir(player_action)
 
     self.doing_loop = true
@@ -270,7 +270,7 @@ function World:do_loop(player_action)
     self:actEntities(player_action)
 
     -- test of explosion
-    -- self:explode(math.random(4, 10), math.random(4, 10), 1)
+    self:explode(math.random(4, 10), math.random(4, 10), 1)
 
 
     for i = 1, #self.env_traps do
@@ -327,7 +327,7 @@ function World:do_loop(player_action)
 
         -- if there are actions in the queue, do them
         if #self.loop_queue > 0 then
-            self:do_loop(table.remove(self.loop_queue, 1))
+            self:doLoop(table.remove(self.loop_queue, 1))
         else
             self.doing_loop = false
         end

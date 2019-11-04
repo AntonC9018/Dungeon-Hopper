@@ -4,12 +4,12 @@ local Action = require('logic.action')
 
 local Explosion = class('Explosion', Displayable)
 
-Explosion.offset = vec(0, 0)
+Explosion.offset = Vec(0, 0)
 
 Explosion.att = Stats({ dmg = 4, push = 10, pierce = 2, expl = 10, dig = 4 })
 Explosion.ams = Stats({ push = 1 })
 
--- how many frames the explosion fades away
+-- for how many frames the explosion dissipates
 Explosion.numFrames = 3
 
 Explosion.zIndex = 5

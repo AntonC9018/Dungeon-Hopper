@@ -8,8 +8,8 @@ LongSword.att_base = {
     dmg = 1
 }
 
-LongSword.pattern = { vec(1, 0), vec(2, 0) }
-LongSword.knockb = { vec(1, 0), vec(1, 0) }
+LongSword.pattern = { Vec(1, 0), Vec(2, 0) }
+LongSword.knockb = { Vec(1, 0), Vec(1, 0) }
 LongSword.reach = { false, 1 }
 
 -- function Dagger:__construct(...)

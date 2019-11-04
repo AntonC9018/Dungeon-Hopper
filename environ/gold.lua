@@ -1,7 +1,7 @@
 local Displayable = require('base.displayable')
 local Gold = class('Gold', Displayable)
 
-Gold.offset = vec(0, 0)
+Gold.offset = Vec(0, 0)
 
 function Gold:__construct(am)
     self.am = am
@@ -22,7 +22,7 @@ Gold.__add[Gold] = function(self, rhs)
 end
 
 function Gold:drop(x, y, w)
-    self.pos = vec(x, y)
+    self.pos = Vec(x, y)
     self.world = w
 
     -- initialize the sprites for each gold step

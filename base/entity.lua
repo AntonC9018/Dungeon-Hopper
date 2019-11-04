@@ -46,7 +46,7 @@ Entity.anims = {
     { c = {'pushed'},            a = "_bumped" }
 }
 
-Entity.innards = { { v = vec(0, 0), am = 1, t = 'gold' } }
+Entity.innards = { { v = Vec(0, 0), am = 1, t = 'gold' } }
 
 function Entity:__construct(x, y, world)
     Sizeful.__construct(self, x, y, world)
@@ -56,7 +56,7 @@ function Entity:__construct(x, y, world)
     -- previous position
     self.ppos = {}
 
-    self.facing = vec(0, 0)
+    self.facing = Vec(0, 0)
     self.hist = History()
 
     -- logic states
@@ -351,15 +351,15 @@ function Entity:releaseInnards()
 
                 if not trySpawn(pos, type, classname, i) then
                     local f = {
-                        vec( 0,  0),
-                        vec( 1,  0),
-                        vec(-1,  0),
-                        vec( 0,  1),
-                        vec( 0, -1),
-                        vec( 1,  1),
-                        vec(-1,  1),
-                        vec( 1, -1),
-                        vec(-1, -1)
+                        Vec( 0,  0),
+                        Vec( 1,  0),
+                        Vec(-1,  0),
+                        Vec( 0,  1),
+                        Vec( 0, -1),
+                        Vec( 1,  1),
+                        Vec(-1,  1),
+                        Vec( 1, -1),
+                        Vec(-1, -1)
                     }
                     for j = 1, #f do
                         local new_pos = self.pos + f[j]

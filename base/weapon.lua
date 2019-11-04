@@ -10,15 +10,15 @@ Weapon.scale = 1 / UNIT
 Weapon.move_attack = false
 Weapon.hit_all = false
 Weapon.frail = false
-Weapon.pos = vec(0, 0)
-Weapon.offset = vec(0, 0)
+Weapon.pos = Vec(0, 0)
+Weapon.offset = Vec(0, 0)
 
 Weapon.att_base = {
     dmg = 1
 }
 
-Weapon.pattern = { vec(1, 0) }
-Weapon.knockb = { vec(1, 0) }
+Weapon.pattern = { Vec(1, 0) }
+Weapon.knockb = { Vec(1, 0) }
 Weapon.reach = { false }
 
 Weapon.ignore_enemies = false

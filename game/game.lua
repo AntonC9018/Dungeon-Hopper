@@ -12,7 +12,7 @@ Luaoop = require('lib.Luaoop')
 class = Luaoop.class
 AM = require('game.assets')
 AM:loadAssets()
-vec = require('lib.vec')
+Vec = require('lib.vec')
 require('constants')
 require('lib.utils')
 
@@ -35,7 +35,6 @@ function scene:create( event )
     world:initPlayer(7, 7)
     -- spawn some wizzrobes
     world:populate(10)
-
     
     world_group.x, world_group.y =
         -world.player.pos.x * UNIT + display.contentCenterX,
@@ -47,10 +46,10 @@ function scene:create( event )
 
     ui.emitter:on('click', function(p) 
 
-        p = vec(p[1], p[2])
+        p = Vec(p[1], p[2])
 
         if #world.loop_queue == 0 and not world.doing_loop then
-            world:do_loop(p)
+            world:doLoop(p)
         else    
             table.insert(world.loop_queue, p)
         end

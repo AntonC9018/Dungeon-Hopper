@@ -1,3 +1,6 @@
+
+-- TODO: centralize all animations!!!!!!!!!!!
+
 local Displayable = require('base.displayable')
 
 local Animated = class('Animated', Displayable)
@@ -6,7 +9,7 @@ local Animated = class('Animated', Displayable)
 --     self.anims = anims
 -- end
 
-Animated.offset = vec(0, -0.3)
+Animated.offset = Vec(0, -0.3)
 Animated.offset_y_jump = -0.2
 Animated.offset_y_hop = -0.2
 

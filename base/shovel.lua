@@ -7,8 +7,8 @@ Shovel.item_slot = 'shovel'
 
 Shovel.scale = 1 / UNIT
 Shovel.frail = false
-Shovel.pos = vec(0, 0)
-Shovel.offset = vec(0, 0)
+Shovel.pos = Vec(0, 0)
+Shovel.offset = Vec(0, 0)
 
 Shovel.att_base = {
     dig = 1
@@ -65,7 +65,7 @@ function Shovel:playAnimation(t, ts)
 end
 
 function Shovel:orient(dir, i)
-    local a = vec(1, 0):angleBetween(dir)
+    local a = Vec(1, 0):angleBetween(dir)
     self.sprite.rotation = a * 180 / math.pi
 end
 

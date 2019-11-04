@@ -8,7 +8,7 @@ function UI:__construct(g)
 end
 
 
-function UI:ev(p)
+function UI:fireEvent(p)
     self.emitter:emit('click', p)
 end
 
@@ -34,37 +34,37 @@ function UI:initControls()
             x = display.safeScreenOriginX + w,
             y = display.contentCenterY,
             label = "←", 
-            onPress = function() self:ev({ -1, 0 }) end
+            onPress = function() self:fireEvent({ -1, 0 }) end
         },
         {
             x = display.safeScreenOriginX + w,
             y = display.contentCenterY - w,        
             label = "↑",
-            onPress = function() self:ev({ 0, -1 }) end
+            onPress = function() self:fireEvent({ 0, -1 }) end
         },
         {
             x = display.safeScreenOriginX + w,
             y = display.contentCenterY + w,
             label = "↓",
-            onPress = function() self:ev({ 0, 1 }) end
+            onPress = function() self:fireEvent({ 0, 1 }) end
         },
         {
             x = display.safeActualContentWidth - w,
             y = display.contentCenterY,
             label = "→",
-            onPress = function() self:ev({ 1, 0 }) end
+            onPress = function() self:fireEvent({ 1, 0 }) end
         },
         {
             x = display.safeActualContentWidth - w,
             y = display.contentCenterY - w,
             label = "↑",
-            onPress = function() self:ev({ 0, -1 }) end
+            onPress = function() self:fireEvent({ 0, -1 }) end
         },
         {
             x = display.safeActualContentWidth - w,
             y = display.contentCenterY + w,
             label = "↓",
-            onPress = function() self:ev({ 0, 1 }) end
+            onPress = function() self:fireEvent({ 0, 1 }) end
         }
     }
 

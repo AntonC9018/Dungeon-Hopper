@@ -175,3 +175,34 @@ function average(arr)
     end
     return sum
 end
+
+
+function table.map(arr, func)
+    local result = {}
+    for i = 1, #arr do
+        result[i] = func(arr[i])
+    end
+    return result
+end
+
+function table.map2(arr, arr2, func)
+    local result = {}
+    for i = 1, #arr do
+        result[i] = func(arr[i], arr2[i])
+    end
+    return result
+end
+
+
+function table.each(arr, func)
+    for i = 1, #arr do
+        func(arr[i])
+    end
+end
+
+
+function table.each2(arr, arr2, func)
+    for i = 1, #arr do
+        func(arr[i], arr2[i])
+    end
+end

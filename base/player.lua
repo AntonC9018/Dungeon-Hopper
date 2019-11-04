@@ -25,11 +25,11 @@ Player.hp_base = {
     am = 60
 }
 
-Player.offset = vec(0, -0.4)
+Player.offset = Vec(0, -0.4)
 
 Player.priority = 9000000
 
-Player.size = vec(0, 0)
+Player.size = Vec(0, 0)
 
 
 function Player:__construct(...)

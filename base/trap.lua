@@ -6,7 +6,7 @@ local Stats = require('logic.stats')
 local Trap = class('Trap', Entity)
 
 Trap.zIndex = 3
-Trap.offset = vec(0, 0)
+Trap.offset = Vec(0, 0)
 Trap.socket_type = 'tile'
 
 function Trap:__construct(...)

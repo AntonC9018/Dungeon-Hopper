@@ -10,8 +10,8 @@ Crate.offset_y_hop = -0.3
 Crate.scale = Object.scale * 0.75
 
 Crate.innards= {
-    { v = vec(0, 0), am = 2,       t = 'gold'    },
-    { v = vec(1, 0), cl = Wizzrobe, t = 'entity' }
+    { v = Vec(0, 0), am = 2,        t = 'gold'   },
+    { v = Vec(1, 0), cl = Wizzrobe, t = 'entity' }
 }
 
 function Crate:__construct(...)

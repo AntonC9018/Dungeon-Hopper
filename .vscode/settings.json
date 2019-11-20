@@ -7,5 +7,10 @@
         "easing",
         "graphics",
         "system"
+    ],
+    "Lua.diagnostics.disable": [
+        "unused-function",
+        "trailing-space",
+        "unused-local"
     ]
 }

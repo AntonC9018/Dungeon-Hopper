@@ -1,16 +1,17 @@
-# Dungeon-Hopper
+# Why
 
-This project has grown way out of hand.
-I'm scared of touching, reworking or refactoring anything, so I'm gonna abandon it, probably forever.
+So the idea is to refactor the hell out of this project.
 
-I kinda like some aspects of my implementation. 
+I'm planning on reworking everything almost from scratch, reimagining my design decisions. I sure see they were pretty poor, nonetheless fine for the first attempt, and good for the initial momentum.
 
-It can be made manageable with refactoring. A LOT of refactoring.
+I'm going to separate logic from graphics completely. 
 
-Also animations and the complexity of logic need to be addressed. Right now they are not very structured.
+# What we got right now
 
+I will put a drawing or a graph of it here if or when I figure it out myself, but the essence is that most of code is unmanageable trash and should be rethought. Right now most things, especially Asset Management and Global control is total garbage. 
 
-# Perhaps
+# First step
 
-Perhaps some day when I have the will, I will do this game from scratch.
-I feel like the abstractions in Corona don't befit me.
+I'm going to write most of the code from scratch, probably starting from high-level stuff until the code feels good. 
+
+The drawing methods need not be intermixed with other logic as to allow for possible change of the underlying graphics framework.   

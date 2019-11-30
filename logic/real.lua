@@ -1,0 +1,8 @@
+-- 
+-- real.lua
+--
+-- This is the base of any real in the game
+-- A real is an entity, which is a player, an enemy or an environmental object
+--
+-- The Entity class already provides high-level methods for adding and
+-- removing handlers for particular actions, such as attacking.

@@ -61,8 +61,6 @@ function Emitter:emit(event, ...)
         self.events[once_event] = nil
     end
 
-    self:cleanUp()
-
 end
 
 function Emitter:cleanUp()
@@ -108,9 +106,11 @@ function Emitter:untilTrue(event, listener, finally)
 
     local function wrapper(...)
         local args = listener(...)
-        if args then
+        if args ~= nil then
             self:removeListener(event, wrapper)
-            if finally then finally(args, ...) end
+            if finally ~= nil then 
+                finally(args, ...) 
+            end
         end
     end
 

@@ -1,0 +1,4 @@
+--
+-- entity.lua
+--
+-- This is the base class for any entity in the game

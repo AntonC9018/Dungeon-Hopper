@@ -1,7 +1,6 @@
-
 -- TODO: fully implement
-local function takeHit(event)
-    event.entity:takeDamage(event.action.attack.damage)
+local function beExploded(event)
+    event.entity:takeDamage(event.action.special.damage)
     return event
 end
 
@@ -13,27 +12,18 @@ local function die(event)
     return event
 end
 
-local function armor(armor, max)
-    return function(event)
-        event.attack.damage = 
-            clamp(event.attack.damage - armor, 1, max or math.huge)
-        return event
-    end
-end
 
-
-local Attackable = function(entityClass)
+local Explodable = function(entityClass)
     local template = entityClass.chainTemplate
     if template:isNil("defense") then
         template:addChain("defense")
         template:addHandler("defense", armor(entityClass.base.armor))
     end
-    
-    template:addChain("beHit")
-    template:addHandler("beHit", takeHit)
-    template:addHandler("beHit", die)
+    template:addChain("beingExploded")
+    template:addHandler("beingExploded", beExploded)
+    template:addHandler("beingExploded", die)
 
-    function entityClass:beAttacked(action)
+     function entityClass:beAttacked(action)
         local event = Event(self, action)
         local result = 
             self.chains.defence:pass(event, Chain.checkPropagate)
@@ -42,8 +32,8 @@ local Attackable = function(entityClass)
             return
         end
 
-        self.chains.beHit:pass(event, Chain.checkPropagate)
+        self.chains.beingExploded:pass(event, Chain.checkPropagate)
     end
 end
 
-return Attackable
+return Explodable

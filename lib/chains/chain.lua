@@ -13,7 +13,7 @@
 -- a stop condition is explicitly specified and, obviously, met.
 -- 
 -- The code allows the handler objects to be whatever, as long as 
--- they have an 'activation' method, which is what handles the event.
+-- they have a 'handle' method, which is what handles the event.
 --
 -- The event objects are also not specified, but the following
 -- construction is going to be used frequently
@@ -55,7 +55,7 @@ end
 -- The logic
 
 function Chain:addHandler(handler)
-    assert(type(handler.activation) == 'function')
+    assert(type(handler) == 'function')
     table.insert(self.toAdd, handler) 
 end
 
@@ -82,7 +82,7 @@ end
 function Chain:pass(propagatingEvent, checkStopCondition)
     self:cleanUp()
     for i = 1, #self.handlers do
-        propagatingEvent = self.handlers[i]['activation'](propagatingEvent)
+        propagatingEvent = self.handlers[i](propagatingEvent)
 
         -- if stop condition is specified, check it, and stop
         -- propagation if it is met

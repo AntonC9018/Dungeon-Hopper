@@ -48,10 +48,16 @@ function World:gameLoop(userInput)
     self:sortByPriority()
     -- create a copy of the grid
     -- substitute it, and store the real one
-    self:substituteGridCopy()
-    -- calculate and execute all actions on a fake grid
-    -- this will alter the grid state,
-    -- however !!!! any damage will be prevented !!!!
+    -- UPDATE: Here, we don't need a new copy. They should just calculate
+    -- what type of action they're going to do, not in what direction
+    -- it would be wacky otherwise
+
+    -- self:substituteGridCopy()
+    
+    -- execute player actions 
+    self:executePlayerActions()
+    self:advancePhase()
+
     self:calculateActions()
     
     -- now sort reals depending on the speed that
@@ -63,10 +69,8 @@ function World:gameLoop(userInput)
     -- We just use that array instead
 
     -- return the stored grid
-    self:restoreGrid()
-    -- execute player actions 
-    self:executePlayerActions()
-    self:advancePhase()
+    -- self:restoreGrid()
+
     -- projectiles are also here. they have least priority
     -- and their action depends on the action of the player
     -- dropped items are too picked up here, as well as gold

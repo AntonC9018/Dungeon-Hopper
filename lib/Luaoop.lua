@@ -356,6 +356,7 @@ function class.instantiate(classdef, ...)
 
       local constructor = t.__construct
       local destructor = t.__destruct
+      local classEmitter = t.__emitter
 
       if destructor then
         local mtable, luaoop = force_custom_mtable(luaoop.meta, t) -- gc requires custom properties
@@ -375,6 +376,7 @@ function class.instantiate(classdef, ...)
 
       -- construct
       if constructor then constructor(t, ...) end
+      if classEmitter then classEmitter:emit("create") 
       return t
     end
   end

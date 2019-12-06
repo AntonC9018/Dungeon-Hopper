@@ -1,4 +1,5 @@
 local Chain = require("chain")
+local StatelessHandler = require("handler").StatelessHandler
 
 local ChainsTemplate = class("ChainTemplate")
 

@@ -210,6 +210,12 @@ end
 
 -- RESET methods
 
+-- the one generic method
+function Grid:reset(entity)
+    local cell = self:getCellAt(player.pos)
+    cell:set(entity)
+end
+
 function Grid:resetPlayer(player)
     local cell = self:getCellAt(player.pos)
     cell:setReal(player)
@@ -294,6 +300,12 @@ end
 
 
 -- REMOVE methods
+
+-- the one generic method
+function Grid:remove(object)
+    local cell = self:getCellAt(object.pos)
+    cell:clear(object.layer)
+end
 
 -- TODO: modify to allow different sizes
 function Grid:removeReal(real)

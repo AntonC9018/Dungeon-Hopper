@@ -182,3 +182,27 @@ function World:filterDead()
     self.grid:filterDeadTraps()
     self.grid:filterDeadProjectiles()    
 end
+
+
+-- Decorator + game logic stuff
+local Move = require "logic.action.move"
+
+function World:displace(target, move)
+    local coord = Move.posFromMove(self.grid, target, move)
+    if coord == nil then
+        return false
+    end
+    self.grid:remove(target)
+    target.coord = coord
+    self.grid:reset(target)
+    return true
+end
+
+function World:doAttack(target, attack)
+end
+
+function World:doPush(target, push)
+end
+
+function World:doStatus(target, status)
+end

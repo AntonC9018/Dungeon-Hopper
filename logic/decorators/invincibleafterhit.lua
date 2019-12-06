@@ -35,7 +35,7 @@ function InvincibleHandler:__construct(instance)
 end
 
 
-local InvincibleAfterAttack = function(entityClass)
+local InvincibleAfterHit = function(entityClass)
     
     local template = entityClass.chainTemplate
 
@@ -45,7 +45,7 @@ local InvincibleAfterAttack = function(entityClass)
         end
     )
 
-    table.insert(entityClass.decorators, InvincibleAfterAttack)
+    table.insert(entityClass.decorators, InvincibleAfterHit)
 end4
 
-return InvincibleAfterAttack
+return InvincibleAfterHit

@@ -79,6 +79,19 @@ function Cell:setProjectile(projectile)
     return prev
 end
 
+-- The one generic method
+function Cell:set(object)
+    local prev = self.layers[object.layer]
+    self.layers[object.layer] = { object }
+    return prev
+end
+
+function Cell:clear(layer)
+    local prev = self.layers[layer]
+    self.layers[layer] = { }
+    return prev
+end
+
 
 function Cell:dropGold(amount)
     local gold = self:getGold()

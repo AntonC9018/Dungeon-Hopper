@@ -41,3 +41,7 @@ Here is an overview of what happens during the game loop and in what order.
 
 4. Destroyed (*dead*) things are filtered out, things are rendered and then *reset*. *Resetting* means deleting the actions that the objects chose inside those objects and some other variables for doing those action calculations. 
 
+
+# Useful World Methods
+
+## World

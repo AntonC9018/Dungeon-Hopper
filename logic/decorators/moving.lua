@@ -1,6 +1,6 @@
 
 local function getBaseMove(action)
-    local move = Move(action.direction, action.entity.base.moveDistance)
+    local move = Move(action.direction, action.entity.base.move)
     event.move = move
     return event
 end
@@ -8,7 +8,7 @@ end
 
 local function displace(event)    
     local move = event.move
-    event.entity.world:doMove(event.entity, event.move)    
+    event.entity.world:displace(event.entity, event.move)    
     return event
 end
 
@@ -23,7 +23,7 @@ local Moving = function(entityClass)
     template:addHandler("getMove", getBaseMove)
     template:addHandler("move", displace)
 
-    function entityClass:doMove(action)
+    function entityClass:executeMove(action)
         
         local event = Event(self, action)
 

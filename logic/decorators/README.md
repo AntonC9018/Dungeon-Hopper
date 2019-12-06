@@ -62,3 +62,4 @@ Adds *the chain template, the __emitter*  to your Entity class and the *handlers
 ## `Decorators.Explodable`
 ## `Decorators.InvincibleAfterAttack`
 ## `Decorators.Statused`
+## `Decorators.Moving`

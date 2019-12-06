@@ -52,6 +52,9 @@ local Attacking = function(entityClass)
 
         return result.propagate
     end
+
+    table.insert(entityClass.decorators, Attacking)
+
 end
 
 return Attacking

@@ -34,6 +34,8 @@ local Explodable = function(entityClass)
 
         self.chains.beingExploded:pass(event, Chain.checkPropagate)
     end
+
+    table.insert(entityClass.decorators, Explodable)
 end
 
 return Explodable

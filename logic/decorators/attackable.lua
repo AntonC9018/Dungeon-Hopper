@@ -44,6 +44,8 @@ local Attackable = function(entityClass)
 
         self.chains.beHit:pass(event, Chain.checkPropagate)
     end
+
+    table.insert(entityClass.decorators, Attackable)
 end
 
 return Attackable

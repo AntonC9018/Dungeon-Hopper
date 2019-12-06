@@ -8,6 +8,7 @@ local Start = function(entityClass)
         function(instance)
             instance.handlers = {}
         end)
+    entityClass.decorators = {}
 end
 
 return Start

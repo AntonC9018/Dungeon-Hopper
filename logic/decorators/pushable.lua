@@ -30,4 +30,8 @@ local Pushable = function(entityClass)
         return result.propagate
     end
 
+    table.insert(entityClass.decorators, Pushable)
+
 end
+
+return Pushable

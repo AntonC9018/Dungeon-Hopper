@@ -44,4 +44,8 @@ local InvincibleAfterAttack = function(entityClass)
             local inv = InvincibleHandler(instance)      
         end
     )
-end
+
+    table.insert(entityClass.decorators, InvincibleAfterAttack)
+end4
+
+return InvincibleAfterAttack

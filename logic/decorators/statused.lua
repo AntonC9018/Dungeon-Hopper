@@ -4,7 +4,7 @@ local identity = function(event)
 end
 
 -- TODO: implemet these methods
-local push = identity
+local checkStatus = identity
 local applyStatus = identity
 
 local Statused = function(entityClass)
@@ -13,18 +13,26 @@ local Statused = function(entityClass)
     template:addChain("checkStatus")
     template:addChain("applyStatus")
 
+    -- TODO: implement
+    template:addHandler("checkStatus", checkStatus)
+    template:addHandler("applyStatus", applyStatus)
+
     function entityClass:bePushed(action)
         local event = Event(self, action)
 
         local result = 
-            self.chains.getAttack:pass(event, Chain.checkPropagate)
+            self.chains.checkStatus:pass(event, Chain.checkPropagate)
 
         if not result.propagate then    
             return false
         end
 
-        self.chains.attack:pass(event, Chain.checkPropagate)
+        self.chains.applyStatus:pass(event, Chain.checkPropagate)
 
         return result.propagate
     end
+
+    table.insert(entityClass.decorators, Statused)
 end
+
+return Statused

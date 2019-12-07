@@ -1,4 +1,4 @@
-
+local funcs = require "funcs" 
 local function getBase(event)
     event.attack = Attack(event.entity.baseStats.attack)
     event.status = Amounts(event.entity.baseStats.status)
@@ -38,20 +38,7 @@ local Attacking = function(entityClass)
     template:addHandler("attack", applyPush)
     template:addHandler("attack", applyStatus)
 
-    function entityClass:executeAttack(action)
-        local event = Event(self, action)
-
-        local result = 
-            self.chains.getAttack:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return false
-        end
-
-        self.chains.attack:pass(event, Chain.checkPropagate)
-
-        return result.propagate
-    end
+    entityClass.executeAttack = funcs.checkApplyCycle("getAttack", "attack")
 
     table.insert(entityClass.decorators, Attacking)
 

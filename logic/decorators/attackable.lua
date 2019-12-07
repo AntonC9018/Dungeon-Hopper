@@ -1,3 +1,4 @@
+local funcs = require "funcs" 
 
 -- TODO: fully implement
 local function takeHit(event)
@@ -24,6 +25,7 @@ end
 
 local Attackable = function(entityClass)
     local template = entityClass.chainTemplate
+
     if template:isNil("defense") then
         template:addChain("defense")
         template:addHandler("defense", armor(entityClass.base.armor))
@@ -33,17 +35,7 @@ local Attackable = function(entityClass)
     template:addHandler("beHit", takeHit)
     template:addHandler("beHit", die)
 
-    function entityClass:beAttacked(action)
-        local event = Event(self, action)
-        local result = 
-            self.chains.defence:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return
-        end
-
-        self.chains.beHit:pass(event, Chain.checkPropagate)
-    end
+    entityClass.beAttacked = funcs.checkApplyCycle("defense", "beHit")
 
     table.insert(entityClass.decorators, Attackable)
 end

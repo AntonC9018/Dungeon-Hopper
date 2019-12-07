@@ -63,10 +63,6 @@ function World:gameLoop(userInput)
     -- now sort reals depending on the speed that
     -- they figured out the actions with
     -- the ones that did it fast, will be the first ones
-    -- When the reals calculate their next action, they push themselves
-    -- into an array here, at world, that reflect that order
-    -- this is why we actually don't need to sort anything!
-    -- We just use that array instead
 
     -- return the stored grid
     -- self:restoreGrid()
@@ -160,7 +156,7 @@ end
 function World:executeActions()
     for i = 1, #self.orderedReals do
         if not self.orderedReals[i].didAction then
-            self.orderedReals[i]:executeSavedAction()
+            self.orderedReals[i]:chainActions()
         end
     end
 end
@@ -198,11 +194,29 @@ function World:displace(target, move)
     return true
 end
 
-function World:doAttack(target, attack)
+function World:doAttack(actor, action)
+    local weapon = actor.weapon
+    
+    local coord
+    if weapon ~= nil then
+        coord = weapon:posFromAction(action)
+    else
+        coord = actor.pos + action.direction
+    end
+
+    local target = self.grid:getRealAt(coord)
+    
+    if target == nil then
+        return false
+    end
+
+    action.target = target
+
+    return target:beAttacked(action)
 end
 
-function World:doPush(target, push)
+function World:doPush(actor, action)
 end
 
-function World:doStatus(target, status)
+function World:doStatus(actor, action)
 end

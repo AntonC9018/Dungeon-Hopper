@@ -1,3 +1,4 @@
+local funcs = require "funcs" 
 
 local function getBaseMove(action)
     local move = Move(action.direction, action.entity.base.move)
@@ -23,22 +24,7 @@ local Moving = function(entityClass)
     template:addHandler("getMove", getBaseMove)
     template:addHandler("move", displace)
 
-    function entityClass:executeMove(action)
-        
-        local event = Event(self, action)
-
-        local result = 
-            self.chains.getMove:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return false
-        end
-
-        self.chains.move:pass(event, Chain.checkPropagate)
-
-        return result.propagate
-    
-    end
+    entityClass.executeMove = funcs.checkApplyCycle("getMove", "move")
 
     table.insert(entityClass.decorators, Moving)
 end

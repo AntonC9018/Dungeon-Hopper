@@ -1,3 +1,5 @@
+local funcs = require "funcs" 
+
 local identity = function(event)
     return event
 end
@@ -15,20 +17,7 @@ local Pushable = function(entityClass)
     template:addHandler("checkPush", checkPush)
     template:addHandler("applyPush", applyPush)
 
-    function entityClass:executePush(action)
-        local event = Event(self, action)
-
-        local result = 
-            self.chains.checkPush:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return false
-        end
-
-        self.chains.applyPush:pass(event, Chain.checkPropagate)
-
-        return result.propagate
-    end
+    entityClass.executePush = funcs.checkApplyCycle("checkPush", "applyPush")
 
     table.insert(entityClass.decorators, Pushable)
 

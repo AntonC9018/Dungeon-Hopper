@@ -1,4 +1,4 @@
-local Decoartors = {}
+local Decorators = {}
 
 Decorators.Attackable = require "attackable"
 Decorators.Attacking = require "attacking"
@@ -8,3 +8,5 @@ Decorators.Pushable = require "pushable"
 Decorators.Start = require "start"
 Decorators.Statused = require "statused"
 Decorators.Moving = require "moving"
+
+return Decorators

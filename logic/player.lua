@@ -12,3 +12,4 @@ Decorators.Moving    .decorate(Player)
 Decorators.Statused  .decorate(Player)
 -- Decorators.Real      .decorate(Player)
 
+-- TODO: Call the character Candace

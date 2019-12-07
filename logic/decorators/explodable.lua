@@ -1,3 +1,4 @@
+local funcs = require "funcs" 
 -- TODO: fully implement
 local function beExploded(event)
     event.entity:takeDamage(event.action.special.damage)
@@ -23,17 +24,7 @@ local Explodable = function(entityClass)
     template:addHandler("beingExploded", beExploded)
     template:addHandler("beingExploded", die)
 
-     function entityClass:beAttacked(action)
-        local event = Event(self, action)
-        local result = 
-            self.chains.defence:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return
-        end
-
-        self.chains.beingExploded:pass(event, Chain.checkPropagate)
-    end
+    entityClass.beAttacked = funcs.checkApplyCycle("defence", "beingExploded")
 
     table.insert(entityClass.decorators, Explodable)
 end

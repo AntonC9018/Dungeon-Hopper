@@ -344,3 +344,9 @@ end
 -- TODO: spawn in the closest cell
 function Grid:spawnReal(real)
 end
+
+
+-- TODO: go around the point in a consistent way
+function Grid:closest(coord)
+
+end

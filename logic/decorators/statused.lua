@@ -1,3 +1,4 @@
+local funcs = require "funcs" 
 
 local identity = function(event)
     return event
@@ -17,20 +18,7 @@ local Statused = function(entityClass)
     template:addHandler("checkStatus", checkStatus)
     template:addHandler("applyStatus", applyStatus)
 
-    function entityClass:bePushed(action)
-        local event = Event(self, action)
-
-        local result = 
-            self.chains.checkStatus:pass(event, Chain.checkPropagate)
-
-        if not result.propagate then    
-            return false
-        end
-
-        self.chains.applyStatus:pass(event, Chain.checkPropagate)
-
-        return result.propagate
-    end
+    entityClass.beStatused = funcs.checkApplyCycle("checkStatus", "applyStatus")
 
     table.insert(entityClass.decorators, Statused)
 end

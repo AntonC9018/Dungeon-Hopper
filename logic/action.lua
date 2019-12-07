@@ -28,7 +28,6 @@ Action.Types =
 
 -- the none action means doing nothing
 local None = class("NoneAction", Action)
-Action.None = None
 
 function None:__construct()
     self.type = Action.Types.NONE
@@ -37,7 +36,6 @@ end
 
 
 local Attack = class("AttackAction", Action)
-Action.Attack = Attack
 function Attack:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos
@@ -47,7 +45,6 @@ end
 
 
 local Move = class("MoveAction", Action)
-Action.Move = Move
 function Move:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos 
@@ -56,7 +53,6 @@ end
 
 
 local Dig = class("DigAction", Action)
-Action.Dig = Dig
 function Dig:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos
@@ -66,7 +62,6 @@ end
 
 
 local AttackMove = class("AttackMove", Action)
-Action.AttackMove = AttackMove
 function AttackMove:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos 
@@ -77,7 +72,6 @@ end
 
 
 local AttackDig = class("AttackDig", Action)
-Action.AttackDig = AttackDig
 function AttackDig:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos 
@@ -88,7 +82,6 @@ end
 
 
 local AttackDigMove = class("AttackDigMove", Action)
-Action.AttackDigMove = AttackDigMove
 function AttackDigMove:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos 
@@ -99,7 +92,6 @@ function AttackDigMove:__construct(obj)
 end
 
 local Special = class("SpecialAction", Action)
-Action.Special = Special
 function Special:__construct(obj)
     self.direction = obj.direction
     self.pos = obj.pos

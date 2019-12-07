@@ -16,10 +16,12 @@ end
 
 local Explodable = function(entityClass)
     local template = entityClass.chainTemplate
+
     if template:isNil("defense") then
         template:addChain("defense")
         template:addHandler("defense", armor(entityClass.base.armor))
     end
+    
     template:addChain("beingExploded")
     template:addHandler("beingExploded", beExploded)
     template:addHandler("beingExploded", die)

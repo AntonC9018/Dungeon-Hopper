@@ -6,18 +6,23 @@ end
 
 -- TODO: implemet these methods
 local checkPush = identity
-local applyPush = identity
+local executePush = function(event)
+    local move = event.push:toMove()
+    -- target is myself here
+    event.target.world:displace(event.target, move)
+    return event
+end
 
 local Pushable = function(entityClass)
     local template = entityClass.chainTemplate
 
     template:addChain("checkPush")
-    template:addChain("applyPush")
+    template:addChain("executePush")
 
     template:addHandler("checkPush", checkPush)
-    template:addHandler("applyPush", applyPush)
+    template:addHandler("executePush", executePush)
 
-    entityClass.executePush = funcs.checkApplyCycle("checkPush", "applyPush")
+    entityClass.executePush = funcs.checkApplyCycle("checkPush", "executePush")
 
     table.insert(entityClass.decorators, Pushable)
 

@@ -7,6 +7,7 @@ local Start = function(entityClass)
     entityClass.__emitter:on("create", 
         function(instance)
             instance.handlers = {}
+            entityClass.chainTemplate:init(instance)
         end)
     entityClass.decorators = {}
 end

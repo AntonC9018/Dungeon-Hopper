@@ -1,5 +1,5 @@
-local Entity = require("Entity")
-local Decorators = Entity.Decorators
+local Entity = require "entity"
+local Decorators = require "decorators.decorators"
 
 
 local Player = class("Player", Entity)

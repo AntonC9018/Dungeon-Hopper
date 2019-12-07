@@ -185,12 +185,15 @@ local Move = require "logic.action.move"
 
 function World:displace(target, move)
     local coord = Move.posFromMove(self.grid, target, move)
+
     if coord == nil then
         return false
     end
+
     self.grid:remove(target)
     target.coord = coord
     self.grid:reset(target)
+
     return true
 end
 
@@ -216,6 +219,8 @@ function World:doAttack(actor, action)
 end
 
 function World:doPush(actor, action)
+    local push = action.push
+    
 end
 
 function World:doStatus(actor, action)

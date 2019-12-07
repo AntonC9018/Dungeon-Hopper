@@ -1,7 +1,7 @@
 local funcs = {}
 
 funcs.checkApplyCycle = function(nameCheck, nameApply)
-    return function(self)
+    return function(self, action)
         local event = Event(self, action)
 
         self.chains[nameCheck]:pass(event, Chain.checkPropagate)

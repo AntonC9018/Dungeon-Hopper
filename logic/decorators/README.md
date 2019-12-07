@@ -7,12 +7,15 @@
 
 # How to use the decorators
 
-Assume you have an entity you'd like to decorate. For that, just do the following:
+Assume you have an entity class you'd like to decorate. For that, just do the following:
 ```lua
 local Decorators = require "logic.decorators"
 Decorators.Start(MyEntity)        -- create the chain template on that object
 Decorators.MyDecorator(MyEntity)  -- add stuff to that template, add stuff to your entity
 ```
+> NOTE: You cannot decorate instances! You can apply the decorators only to classes!
+> So, in order to, e.g., stop your entities from taking damage while they are in some phase of their lifecycle, use some other logic, e.g. adding handlers to chains. 
+> In our example, this would mean stopping event from propagating in `myEntity.chains.defence` chain by adding a nullifier handler to it 
 
 ### Here is a list of all available decorators:
 
@@ -22,6 +25,8 @@ Adds *the chain template, the __emitter*  to your Entity class and the *handlers
 > You must call this first if you want your next decorators to work at all.
 
 ## `Decorators.Attackable`
+
+This decorator enables the entity to take normal hits
 
 | Added chain | Automatically added handlers | Description |
 |-------------|------------------------------| ----------- |
@@ -38,6 +43,8 @@ Adds *the chain template, the __emitter*  to your Entity class and the *handlers
 
 ## `Decorators.Attacking`
 
+This decorator enables the entity to do normal hits
+
 | Added chain | Automatically added handlers | Description |
 |-------------|------------------------------| ----------- |
 | `getAttack` | `setBase` | Used for creating the Attack object and modifying it with e.g. more damage |
@@ -50,16 +57,22 @@ Adds *the chain template, the __emitter*  to your Entity class and the *handlers
 
 ## `Decorators.Pushable`
 
+Enables the entity to be pushed
+
 | Added chain | Automatically added handlers | Description |
 |-------------|------------------------------| ----------- |
 | `checkPush` | `checkPush` | |
-| `applyPush` | `applyPush` | |
+| `executePush` | `executePush` | |
 
 | Added method | Description |
 | ------------ | ----------- |
 | `executePush`| |
 
 ## `Decorators.Explodable`
-## `Decorators.InvincibleAfterAttack`
+Enables the entity to be exploded
+## `Decorators.InvincibleAfterHit`
+Makes the entity invincible for 2 loop after it's taken a hit
 ## `Decorators.Statused`
+Makes the entity vulnerable to status effects
 ## `Decorators.Moving`
+Enables entity to displace via the `executeMove` method

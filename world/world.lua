@@ -197,7 +197,7 @@ function World:displace(target, move)
     return true
 end
 
-function World:doAttack(actor, action)
+function World:getTargetedReal(actor, action)
     local weapon = actor.weapon
     
     local coord
@@ -207,7 +207,12 @@ function World:doAttack(actor, action)
         coord = actor.pos + action.direction
     end
 
-    local target = self.grid:getRealAt(coord)
+    return self.grid:getRealAt(coord)
+end
+
+function World:doAttack(actor, action)
+    
+    local target = self:getTargetedReal(actor, action)
     
     if target == nil then
         return false
@@ -220,7 +225,7 @@ end
 
 function World:doPush(actor, action)
     local push = action.push
-    
+
 end
 
 function World:doStatus(actor, action)

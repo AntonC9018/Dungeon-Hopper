@@ -12,6 +12,8 @@ local GameObject = class("GameObject")
 -- fallback options
 GameObject.layer = Cell.Layers.misc
 GameObject.priority = 0
+GameObject.executeActionAlgorithm = 
+    function(self) end
 
 -- every game object must have a position coordinate pair
 function GameObject:init(pos, world)
@@ -26,6 +28,7 @@ function GameObject:init(pos, world)
     self.state = 1
     -- @type Action
     self.nextAction = nil
+    self.doneAction = false
 end
 
 function GameObject:toRendererEntity()
@@ -41,8 +44,10 @@ function GameObject:calculateAction()
     self.nextAction = Action.None()
 end
 
-
 function GameObject:executeAction()
-    return
+    self.doingAction = true
+    self.executeActionAlgorithm(self)
+    self.doingAction = false
+    self.doneAction = true 
 end
 

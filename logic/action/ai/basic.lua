@@ -1,20 +1,9 @@
-
-local calculateRelativeness = function(actor)
-    local player = 
-        actor.world.grid:getClosestPlayer(actor.pos)
-    local gx, gy = 
-        player.pos.x > actor.pos.x, player.pos.y > actor.pos.y
-    local lx, ly = 
-        actor.pos.x > player.pos.x, actor.pos.y > player.pos.y
-
-    return gx, gy, lx, ly
-end
-
+local calculateRelativeness = require("logic.action.ai.utils").calculateRelativeness
 
 local getMovs = function(actor, action)
 
     local gx, gy, lx, ly = calculateRelativeness(actor)
-
+ 
     -- So this is basically if-you-look-to-the-left,
     -- you-would-prefer-to-go-to-the-left action
     local movs = {}

@@ -350,3 +350,114 @@ end
 function Grid:closest(coord)
 
 end
+
+local function sortByPriority(t)
+    table.sort(t, function(a, b) return a.priority > b.priority end)  
+end
+
+-- Sort by priority methods
+function Grid:sortReals()
+    sortByPriority(self.reals)
+end
+
+function Grid:sortFloors()
+    sortByPriority(self.floors)
+end
+
+function Grid:sortWalls()
+    sortByPriority(self.walls)
+end
+
+function Grid:sortTraps()
+    sortByPriority(self.traps)
+end
+
+function Grid:sortProjectiles()
+    sortByPriority(self.projectiles)
+end
+
+
+local function calculateActions(t)
+    for i = 1, #t do
+        t[i]:calculateAction()
+    end
+end
+
+
+function Grid:calculateActionsReals()
+    calculateActions(self.reals)
+end
+
+function Grid:calculateActionsFloors()
+    calculateActions(self.floors)
+end
+
+function Grid:calculateActionsWalls()
+    calculateActions(self.walls)
+end
+
+function Grid:calculateActionsTraps()
+    calculateActions(self.traps)
+end
+
+function Grid:calculateActionsProjectiles()
+    calculateActions(self.projectiles)
+end
+
+
+function Grid:tick()
+    for i = 1, #t do
+        t[i]:tick()
+    end
+end
+
+function Grid:tickReals()
+    tick(self.reals)
+end
+
+function Grid:tickFloors()
+    tick(self.floors)
+end
+
+function Grid:tickWalls()
+    tick(self.walls)
+end
+
+function Grid:tickTraps()
+    tick(self.traps)
+end
+
+function Grid:tickProjectiles()
+    tick(self.projectiles)
+end
+
+
+local function filterDead(t)
+    for i = 1, #t do
+        if t.dead then
+            table.remove(t, i)
+        end
+    end
+end
+
+function Grid:filterDeadReals()
+    filterDead(self.reals)
+end
+
+function Grid:filterDeadFloors()
+    filterDead(self.floors)
+end
+
+function Grid:filterDeadWalls()
+    filterDead(self.walls)
+end
+
+function Grid:filterDeadTraps()
+    filterDead(self.traps)
+end
+
+function Grid:filterDeadProjectiles()
+    filterDead(self.projectiles)
+end
+
+return Grid

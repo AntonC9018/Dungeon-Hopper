@@ -100,4 +100,9 @@ Chain.checkPropagate = function(event)
     return not event.propagate 
 end
 
+Chain.fromList = function(listOfHandlers)
+    local chain = Chain()
+    chain.handlers = listOfHandlers
+end
+
 return Chain

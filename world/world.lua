@@ -2,7 +2,6 @@ local Grid = require("world.grid")
 
 local World = class("World")
 
-
 function World:__construct()
     self.grid = Grid(25, 25)
     self.orderedReals = {}
@@ -40,19 +39,12 @@ function World:gameLoopIfSet()
     return true
 end
 
-function World:gameLoop(userInput)
+function World:gameLoop()
 
     self.emitter:emit('game-loop:start')
 
     -- sort all game objects by prority
     self:sortByPriority()
-    -- create a copy of the grid
-    -- substitute it, and store the real one
-    -- UPDATE: Here, we don't need a new copy. They should just calculate
-    -- what type of action they're going to do, not in what direction
-    -- it would be wacky otherwise
-
-    -- self:substituteGridCopy()
     
     -- execute player actions 
     self:executePlayerActions()
@@ -60,31 +52,24 @@ function World:gameLoop(userInput)
 
     self:calculateActions()
     
-    -- now sort reals depending on the speed that
-    -- they figured out the actions with
-    -- the ones that did it fast, will be the first ones
-
-    -- return the stored grid
-    -- self:restoreGrid()
-
-    -- projectiles are also here. they have least priority
-    -- and their action depends on the action of the player
-    -- dropped items are too picked up here, as well as gold
-    -- things that are not gere are:
-    --      1. explosions
-    --      2. traps
-    --      3. floor
-    --      4. walls
-    self:executeActions()
+    -- execute projectile actions
+    self:activateProjectiles()
+    self.grid:tickProjectiles()
+    self:advancePhase()
+    -- execute reals' actions
+    self:activateReals()
+    self.grid:tickReals()
     self:advancePhase()
     -- explode explosions
     self:activateExplosions()
     self:advancePhase()
     -- activate floor hazards
-    self:activateFloorHazards()
+    self:activateFloors()
+    self.grid:tickFloors()
     self:advancePhase()
     -- activate traps
     self:activateTraps()
+    self.grid:tickTraps()
     self:advancePhase()
     -- filter out dead things
     self:filterDead()
@@ -124,11 +109,12 @@ function World:sortByPriority()
 end
 
 
-function World:substituteGridCopy()
-    self.storedGrid = self.grid
-    self.grid = self.grid:createSafeCopy()
-end
-
+-- NOTE: this should select an action (Attack, Move etc)
+-- and set it as the nextAction at that object
+-- it should not care much about direction
+-- These functions should not be used to tick internal state,
+-- that is, e.g. the sequence step. The thing that tick stuff 
+-- is the tick() method
 function World:calculateActions()
     self.grid:calculateActionReals()    
     self.grid:calculateActionFloors()
@@ -143,7 +129,7 @@ end
 
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
-        self.grid.players[i]:executeSavedAction()
+        self.grid.players[i]:executeAction()
     end
 end
 
@@ -153,10 +139,10 @@ function World:actionSelectedByReal(real)
 end
 
 
-function World:executeActions()
-    for i = 1, #self.orderedReals do
-        if not self.orderedReals[i].didAction then
-            self.orderedReals[i]:chainActions()
+function World:activateReals()
+    for i = 1, #self.grid.reals do
+        if not self.grid.reals[i].didAction then
+            self.grid.reals[i]:executeAction()
         end
     end
 end
@@ -187,7 +173,7 @@ function World:displace(target, move)
     local coord = Move.posFromMove(self.grid, target, move)
 
     if coord == nil then
-        return false
+        return nil
     end
 
     self.grid:remove(target)
@@ -215,7 +201,7 @@ function World:doAttack(actor, action)
     local target = self:getTargetedReal(actor, action)
     
     if target == nil then
-        return false
+        return nil
     end
 
     action.target = target
@@ -225,7 +211,6 @@ end
 
 function World:doPush(actor, action)
     local push = action.push
-
 end
 
 function World:doStatus(actor, action)

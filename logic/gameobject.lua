@@ -28,7 +28,7 @@ function GameObject:init(pos, world)
     self.state = 1
     -- @type Action
     self.nextAction = nil
-    self.doneAction = false
+    self.didAction = false
 end
 
 function GameObject:toRendererEntity()
@@ -48,6 +48,6 @@ function GameObject:executeAction()
     self.doingAction = true
     self.executeActionAlgorithm(self)
     self.doingAction = false
-    self.doneAction = true 
+    self.didAction = true 
 end
 

@@ -1,13 +1,11 @@
+-- these are for non-player reals
 
-
-local checkApplyHandler = function(nameCheck, nameApplyMethod)
+local applyHandler = function(nameApplyMethod)
     return function(outerEvent)
         local actor = outerEvent.entity
         local action = outerEvent.action
 
         local event = Event(actor, action)
-
-        actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
         if event.propagate then    
             event = actor[nameApplyMethod](actor, action)
@@ -22,10 +20,10 @@ local checkApplyHandler = function(nameCheck, nameApplyMethod)
     end
 end
 
-local AttackHandler = checkApplyHandler("shouldAttack", "executeAttack")
-local MoveHandler = checkApplyHandler("shouldMove", "executeMove")
-local DigHandler = checkApplyHandler("shouldDig", "executeDig")
-local SpecialHandler = checkApplyHandler("shouldSpecial", "executeSpecial")
+local AttackHandler = applyHandler("executeAttack")
+local MoveHandler = applyHandler("executeMove")
+local DigHandler = applyHandler("executeDig")
+local SpecialHandler = applyHandler("executeSpecial")
 
 local Handlers = {}
 
@@ -34,6 +32,6 @@ Handlers.MoveHandler = MoveHandler
 Handlers.DigHandler = DigHandler
 Handlers.SpecialHandler = SpecialHandler
 
-Hnadlers.checkApplyHandler = checkApplyHandler
+Hnadlers.applyHandler = applyHandler
 
 return Handlers

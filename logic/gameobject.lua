@@ -31,12 +31,6 @@ function GameObject:init(pos, world)
     self.didAction = false
 end
 
-function GameObject:toRendererEntity()
-    return {
-
-    }
-end
-
 
 -- get the next action based on the game state
 -- the default is doing nothing
@@ -51,3 +45,4 @@ function GameObject:executeAction()
     self.didAction = true 
 end
 
+return GameObject

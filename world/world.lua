@@ -183,30 +183,38 @@ function World:displace(target, move)
     return true
 end
 
-function World:getTargetedReal(actor, action)
+local Target = require "weapons.target"
+local Piece = require "weapons.piece"
+
+function World:getTargets(actor, action)
     local weapon = actor.weapon
-    
-    local coord
+
     if weapon ~= nil then
-        coord = weapon:posFromAction(action)
-    else
-        coord = actor.pos + action.direction
+        return weapon:hitsFromAction(actor, action)
     end
 
-    return self.grid:getRealAt(coord)
-end
+    local coord = actor.pos + action.direction
+    local real = self.grid:getRealAt(coord)
 
-function World:doAttack(actor, action)
-    
-    local target = self:getTargetedReal(actor, action)
-    
-    if target == nil then
+    if real == nil then
         return nil
     end
 
-    action.target = target
+    local piece = Piece(coord, action.direction, false)
+    local target = Target(real, piece, 1)
+    return { target }
+end
 
-    return target:beAttacked(action)
+function World:doAttack(targets, action)
+
+    local events = {}
+
+    for i = 1, #targets do
+        action.direction = targets[i].piece.dir
+        events[i] = target:beAttacked(action)
+    end
+
+    return events
 end
 
 function World:doPush(actor, action)

@@ -1,28 +1,41 @@
 local funcs = require "funcs" 
 local function getBase(event)
-    event.attack = Attack(event.entity.baseStats.attack)
-    event.status = Amounts(event.entity.baseStats.status)
-    event.push = Push(event.entity.baseStats.push)
+    event.attack = Attack(event.actor.baseStats.attack)
+    event.status = Amounts(event.actor.baseStats.status)
+    event.push = Push(event.actor.baseStats.push)
+    return event
+end
+
+local function getTargets(event)
+    local targets = event.actor.world:getTargets(event.actor, event.action)
+    
+    if 
+        targets == nil
+        or targets[1] == nil
+    then
+        event.propagate = false    
+    else
+        event.targets = targets
+    end
+
     return event
 end
 
 local function applyAttack(event)
-    local hit = event.entity.world:doAttack(event.entity, event.attack)
-    if hit ~= nil then
-        event.target = hit
-    else
-        event.propagate = false
-    end
+    local events = event.actor.world:doAttack(event.actor, event.attack)
+    event.attackEvents = events
     return event
 end
 
 local function applyPush(event)
-    event.entity.world:doPush(event.entity, event.push)
+    local events = event.actor.world:doPush(event.targets, event.push)
+    event.pushEvents = events
     return event
 end
 
 local function applyStatus(event)
-    event.entity.world:doStatus(event.entity, event.status)
+    local events = event.actor.world:doStatus(event.targets, event.status)
+    event.statusEvents = events
     return event
 end
 
@@ -34,6 +47,7 @@ local Attacking = function(entityClass)
     template:addHandler("getAttack", setBase)
 
     template:addChain("attack")
+    tamplate:addHandler("attack", getTargets)
     template:addHandler("attack", applyAttack)
     template:addHandler("attack", applyPush)
     template:addHandler("attack", applyStatus)
@@ -41,7 +55,6 @@ local Attacking = function(entityClass)
     entityClass.executeAttack = funcs.checkApplyCycle("getAttack", "attack")
 
     table.insert(entityClass.decorators, Attacking)
-
 end
 
 return Attacking

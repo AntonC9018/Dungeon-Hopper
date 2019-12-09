@@ -9,7 +9,7 @@ end
 
 local function displace(event)    
     local move = event.move
-    event.entity.world:displace(event.entity, event.move)    
+    event.actor.world:displace(event.actor, event.move)    
     return event
 end
 

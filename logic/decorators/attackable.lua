@@ -2,14 +2,14 @@ local funcs = require "funcs"
 
 -- TODO: fully implement
 local function takeHit(event)
-    event.entity:takeDamage(event.action.attack.damage)
+    event.actor:takeDamage(event.action.attack.damage)
     return event
 end
 
 local function die(event)
-    if event.entity.hp:get() <= 0 then
-        event.entity.dead = true
-        event.entity:die()
+    if event.actor.hp:get() <= 0 then
+        event.actor.dead = true
+        event.actor:die()
     end
     return event
 end

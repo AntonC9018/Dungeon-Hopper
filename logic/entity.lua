@@ -10,21 +10,33 @@ function Entity:isDecorated(decorator)
 end
 
 function Entity:executeMove(action)
-    return false
+    return nil
 end
 
 function Entity:executeAttack(action)
-    return false
+    return nil
 end
 
 function Entity:beAttacked(action)
-    return false
+    return nil
 end
 
 function Entity:bePushed(action)
-    return false
+    return nil
 end
 
 function Entity:beStatused(action)
-    return false
+    return nil
 end
+
+
+-- make these a bit more efficient
+function Entity:isAttackableOnlyWhenNextToAttacker()
+    return self:isDecorated(Decorators.AttackableOnlyWhenNextToAttacker)  
+end
+
+function Entity:isAttackable()
+    return self:isDecorated(Decorators.Attackable)
+end
+
+return Entity

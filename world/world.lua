@@ -223,3 +223,16 @@ end
 
 function World:doStatus(actor, action)
 end
+
+
+function World:getOneFromTopAt(pos)
+    local result
+    result = self.grid:getRealAt(pos)
+    if result ~= nil then return result end
+    result = self.grid:getProjectileAt(pos)
+    if result ~= nil then return result end
+    result = self.grid:getWallAt(pos)
+    if result ~= nil then return result end
+    result = self.grid:getTrapAt(pos)
+    return result
+end

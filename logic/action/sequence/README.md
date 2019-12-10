@@ -1,8 +1,8 @@
 # Overview
 
-*Sequences* represent series of consequent *steps*, that is, action, an entity does.
+*Sequences* represent series of consequent *steps*, that is, actions, an entity does.
 
-Such entity is called *sequential* and is decorated with `Decorators.Sequential`.
+Such entities are called *sequential* and are decorated with `Decorators.Sequential`.
 
 Sequence is basically an array of such steps.
 

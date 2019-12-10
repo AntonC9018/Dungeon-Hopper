@@ -39,6 +39,7 @@ step2 =
 Now take the case of, e.g., an armadillo:
 1. Turn to player, stand still
 2. Attack / Dig / Move
+3. Don't do anything at all for 2 loops
 
 The first step is more complex
 
@@ -63,7 +64,7 @@ step2 = {
     -- this one is simpler
     action = ATTACK_DIG_MOVE,
     -- for success we again need a custom chain
-    success = checkNotMove(1),
+    success = checkNotMove(3),
     -- in case frozen, keep rolling
     failed = 2,
     -- also, we're invincible while rolling
@@ -72,4 +73,9 @@ step2 = {
     exit = removeInfiniteArmor
 }
 
+step3 = {
+    action = NONE,
+    repeat = 2, -- repeat this step 2 times before going to the next one
+    success = 1 -- this and the failed can be omitted, as the sequence loops by default
+}
 ```

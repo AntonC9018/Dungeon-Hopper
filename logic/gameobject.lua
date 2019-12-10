@@ -12,7 +12,7 @@ local GameObject = class("GameObject")
 -- fallback options
 GameObject.layer = Cell.Layers.misc
 GameObject.priority = 0
-GameObject.executeActionAlgorithm = 
+GameObject.actionAlgorithm = 
     function(self) end
 
 -- every game object must have a position coordinate pair
@@ -40,7 +40,7 @@ end
 
 function GameObject:executeAction()
     self.doingAction = true
-    self.executeActionAlgorithm(self)
+    self.actionAlgorithm(self)
     self.doingAction = false
     self.didAction = true 
 end

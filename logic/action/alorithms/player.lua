@@ -1,15 +1,17 @@
 
 local function PlayerAlgo(instance, action)
-    local event = Event(actor, action)
+    local event = Event(instance, action)
     action.chains.player:pass(event, Chain.checkPropagate)
+    
+    local postActionEvent = Event(instance, action)
+    postActionEvent.actionEvent = event
 
     if event.propagate then
         -- traverse failedAction chain
-        local event = Event(instance, action)
-        return instance.chains.failedAction:pass(event)
+        return instance.chains.failedAction:pass(postActionEvent)
     end
 
-    return event
+    return instance.chains.succeedAction:pass(postActionEvent)
 end
 
 return PlayerAlgo

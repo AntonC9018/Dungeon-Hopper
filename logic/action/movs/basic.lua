@@ -1,4 +1,4 @@
-local calculateRelativeness = require("logic.action.ai.utils").calculateRelativeness
+local calculateRelativeness = require("logic.action.movs.utils").calculateRelativeness
 
 local getMovs = function(actor, action)
 

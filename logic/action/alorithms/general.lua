@@ -66,13 +66,15 @@ local function GeneralAlgo(instance, action)
         end
     end
 
-    if not succeed then
-        -- traverse failedAction chain
-        local event = Event(instance, action)
-        event.movs = movs
+    local postActionEvent = Event(instance, action)
+    event.movs = movs
 
-        return instance.chains.failedAction:pass(event)
+    if not succeed then
+        return instance.chains.failedAction:pass(postActionEvent)
     end
+
+    return instance.chains.succeedAction:pass(postActionEvent)
+
 end
 
 return GeneralAlgo

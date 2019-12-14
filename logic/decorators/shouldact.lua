@@ -1,7 +1,7 @@
 
 -- Multimov means
 --
--- An entity that uses a movs algorithm, that is, selects a set of possible
+-- An entity that uses a dirs algorithm, that is, selects a set of possible
 -- next actions by an algorithm, and then tries to apply those possible actions
 -- by some other algorithm (generally, it would be the general algorithm)
 --

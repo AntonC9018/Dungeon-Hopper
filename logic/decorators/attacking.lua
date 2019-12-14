@@ -3,7 +3,7 @@ local function getBase(event)
     event.attack = Attack(event.actor.baseStats.attack)
     event.status = Amounts(event.actor.baseStats.status)
     event.push = Push(event.actor.baseStats.push)
-    return event
+    
 end
 
 local function getTargets(event)
@@ -18,25 +18,25 @@ local function getTargets(event)
         event.targets = targets
     end
 
-    return event
+    
 end
 
 local function applyAttack(event)
     local events = event.actor.world:doAttack(event.actor, event.attack)
     event.attackEvents = events
-    return event
+    
 end
 
 local function applyPush(event)
     local events = event.actor.world:doPush(event.targets, event.push)
     event.pushEvents = events
-    return event
+    
 end
 
 local function applyStatus(event)
     local events = event.actor.world:doStatus(event.targets, event.status)
     event.statusEvents = events
-    return event
+    
 end
 
 

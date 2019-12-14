@@ -3,14 +3,14 @@ local funcs = require "funcs"
 local function getBaseMove(action)
     local move = Move(action.direction, action.entity.base.move)
     event.move = move
-    return event
+    
 end
 
 
 local function displace(event)    
     local move = event.move
     event.actor.world:displace(event.actor, event.move)    
-    return event
+    
 end
 
 

@@ -41,7 +41,7 @@ function Weapon:posFromAction(actor, action)
 
     self.chain:pass(event, self.check)
 
-    return event.targets
+    .targets
 end
 
 return Weapon

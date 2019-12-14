@@ -3,7 +3,7 @@ local funcs = require "funcs"
 -- TODO: fully implement
 local function takeHit(event)
     event.actor:takeDamage(event.action.attack.damage)
-    return event
+    
 end
 
 local function die(event)
@@ -11,14 +11,14 @@ local function die(event)
         event.actor.dead = true
         event.actor:die()
     end
-    return event
+    
 end
 
 local function armor(armor, max)
     return function(event)
         event.attack.damage = 
             clamp(event.attack.damage - armor, 1, max or math.huge)
-        return event
+        
     end
 end
 

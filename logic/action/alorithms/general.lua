@@ -16,9 +16,7 @@ local function askMove(actor, action)
 end
 
 
-local function Iterate(instance, action)
-
-    local event = Event(instance, action)
+local function Iterate(event)
 
     -- Iterate over added checks and thereupon execute actions.
     -- These checks are predefined algorithms on action types.
@@ -49,32 +47,34 @@ end
 
 
 -- This is a very general algo that allows one action at a time to be done
-local function GeneralAlgo(instance, action)
+local function GeneralAlgo(outerEvent)
+    
+    local instance = outerEvent.instance
+    local action  = outerEvent.action
 
     -- TODO: put this method onto instances. right now it's in the algorithms folder
-    local movs = instance:getMovs()
+    local dirs = instance:getMovs()
+    event.directions = dirs
 
-    for i = 1, #movs do
+    for i = 1, #dirs do
 
-        action.direction = movs[i]
+        local event = Event(instance, action)
+        event.direction = dirs[i]
 
-        local succeed = Iterate(instance, action)
+        local succeed = Iterate(event)
 
         -- stop iteration after one of the ations completed successfully
         if succeed then
-            return true
+            outerEvent.success = true
+            outerEvent.successEvent = event
+            return outerEvent
         end
     end
 
-    local postActionEvent = Event(instance, action)
-    event.movs = movs
+    event.success = false
+    outerEvent.successEvent = nil
 
-    if not succeed then
-        return instance.chains.failedAction:pass(postActionEvent)
-    end
-
-    return instance.chains.succeedAction:pass(postActionEvent)
-
+    
 end
 
 return GeneralAlgo

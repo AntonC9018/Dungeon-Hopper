@@ -1,6 +1,6 @@
 local invincible = function(event)
     event.propagate = false
-    return event
+    
 end
 
 
@@ -15,7 +15,7 @@ function InvincibleHandler:__construct(instance)
             self.invincible = 
                 self.invincible > 0 and self.invincible or 2 
             end
-            return event
+            
         end)
 
     instance.chains.defence:addHandler(
@@ -23,7 +23,7 @@ function InvincibleHandler:__construct(instance)
             if self.invincible > 0 then
                 event.propagate = false
             end
-            return event 
+             
         end)
     
     instance.emitter:on("reset", 

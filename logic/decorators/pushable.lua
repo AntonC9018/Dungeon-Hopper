@@ -1,7 +1,7 @@
 local funcs = require "funcs" 
 
 local identity = function(event)
-    return event
+    
 end
 
 -- TODO: implemet these methods
@@ -10,7 +10,7 @@ local executePush = function(event)
     local move = event.push:toMove()
     -- target is myself here
     event.target.world:displace(event.target, move)
-    return event
+    
 end
 
 local Pushable = function(entityClass)

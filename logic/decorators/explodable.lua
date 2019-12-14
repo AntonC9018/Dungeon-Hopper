@@ -2,7 +2,7 @@ local funcs = require "funcs"
 -- TODO: fully implement
 local function beExploded(event)
     event.actor:takeDamage(event.action.special.damage)
-    return event
+    
 end
 
 local function die(event)
@@ -10,7 +10,7 @@ local function die(event)
         event.actor.dead = true
         event.actor:die()
     end
-    return event
+    
 end
 
 

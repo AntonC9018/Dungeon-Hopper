@@ -39,9 +39,6 @@ function GameObject:calculateAction()
 end
 
 function GameObject:executeAction()
-    self.doingAction = true
-    self.actionAlgorithm(self)
-    self.doingAction = false
     self.didAction = true 
 end
 

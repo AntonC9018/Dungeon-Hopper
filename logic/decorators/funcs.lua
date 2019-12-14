@@ -10,7 +10,7 @@ funcs.checkApplyCycle = function(nameCheck, nameApply)
             self.chains[nameApply]:pass(event, Chain.checkPropagate)
         end
 
-        return event
+        
     end
 end
 

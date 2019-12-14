@@ -1,4 +1,4 @@
-local calculateRelativeness = require("logic.action.movs.utils").calculateRelativeness
+local calculateRelativeness = require("logic.action.dirs.utils").calculateRelativeness
 
 local getMovs = function(actor, action)
 
@@ -6,9 +6,9 @@ local getMovs = function(actor, action)
  
     -- So this is basically if-you-look-to-the-left,
     -- you-would-prefer-to-go-to-the-left action
-    local movs = {}
+    local dirs = {}
 
-    local addMov = function(x, y) table.insert(movs, Vec(x, y)) end
+    local addMov = function(x, y) table.insert(dirs, Vec(x, y)) end
 
     if actor.facing.x > 0 then -- looking right
         -- prioritize going to the right
@@ -46,6 +46,6 @@ local getMovs = function(actor, action)
         if ly then addMov( 0, -1) end
     end
 
-    return movs
+    return dirs
 
 end

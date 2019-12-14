@@ -82,7 +82,7 @@ end
 function Chain:pass(propagatingEvent, checkStopCondition)
     self:cleanUp()
     for i = 1, #self.handlers do
-        propagatingEvent = self.handlers[i](propagatingEvent)
+        self.handlers[i](propagatingEvent)
 
         -- if stop condition is specified, check it, and stop
         -- propagation if it is met

@@ -23,7 +23,7 @@ So the steps would look something like this:
 step1 = 
 {
     action = ATTACK_MOVE, -- try to attack, then to move
-    mov = basic, -- require this predefined mov set
+    dir = basic, -- require this predefined dirs algorithm
     failed = 1, -- in case all those fail, go back to step < 1 >
     success = 2 -- this option can be omitted, as steps are considered in sequence by default
 }

@@ -12,7 +12,7 @@ local function next(event)
 
     -- if the first one is anything but nil, leave the list unchanged
     if event.targets[1] ~= nil
-        return event
+        
     end
 
     -- otherwise, check if not everything is Attackable...blah-blah 
@@ -30,7 +30,7 @@ local function next(event)
         event.targets = nil
     end
 
-    return event
+    
 end
 
 
@@ -38,7 +38,7 @@ local function hitAll(event)
     if event.actor.hitAll then
         event.propagate = false
     end
-    return event
+    
 end
 
 
@@ -68,7 +68,7 @@ local function unreachable(event)
             table.insert(newTargets, event.targets[i])
         end                   
     end
-    return event
+    
 end
 
 
@@ -84,13 +84,13 @@ local function eliminate(event)
         end
     end
     event.targets = newTargets
-    return event
+    
 end
 
 
 local function takeFirst(event)
     event.targets = { event.targets[1] }
-    return event
+    
 end
 
 

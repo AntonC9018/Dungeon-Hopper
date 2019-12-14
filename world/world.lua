@@ -210,6 +210,7 @@ function World:doAttack(targets, action)
     local events = {}
 
     for i = 1, #targets do
+        local target = targets[i].target
         action.direction = targets[i].piece.dir
         events[i] = target:beAttacked(action)
     end
@@ -217,11 +218,11 @@ function World:doAttack(targets, action)
     return events
 end
 
-function World:doPush(actor, action)
+function World:doPush(targets, action)
     local push = action.push
 end
 
-function World:doStatus(actor, action)
+function World:doStatus(targets, action)
 end
 
 

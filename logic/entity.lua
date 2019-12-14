@@ -29,6 +29,12 @@ function Entity:beStatused(action)
     return nil
 end
 
+-- TODO: ADD base stuff, that is
+--      1. base attack stats
+--      2. base push stats
+--      3. base status stats
+--      4. base armor
+
 
 -- make these a bit more efficient
 function Entity:isAttackableOnlyWhenNextToAttacker()

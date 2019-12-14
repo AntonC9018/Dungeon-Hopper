@@ -55,7 +55,11 @@ step1 = {
         -- for this, we create a custom chain on which we hang that function
         -- that chain in the end returns the next step in sequence
         -- so in this example the the next sequence step is not constant
-        checkOrthogonalChain(2)
+        checkOrthogonalChain(2),
+
+        -- the result from this function should unfold to:        
+        -- { index: 2, chain: theChain }
+
     -- in case this fails, e.g. we're frozen, remain at the 1st step
     failed = 1
 }
@@ -75,7 +79,7 @@ step2 = {
 
 step3 = {
     action = NONE,
-    repeat = 2, -- repeat this step 2 times before going to the next one
+    repet = 2, -- repeat this step 2 times before going to the next one
     success = 1 -- this and the failed can be omitted, as the sequence loops by default
 }
 ```

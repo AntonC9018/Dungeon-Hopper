@@ -1,9 +1,8 @@
-local funcs = require "funcs" 
+local utils = require "utils" 
 
 -- TODO: fully implement
 local function takeHit(event)
-    event.actor:takeDamage(event.action.attack.damage)
-    
+    event.actor:takeDamage(event.action.attack.damage)    
 end
 
 local function die(event)
@@ -17,8 +16,7 @@ end
 local function armor(armor, max)
     return function(event)
         event.attack.damage = 
-            clamp(event.attack.damage - armor, 1, max or math.huge)
-        
+            clamp(event.attack.damage - armor, 1, max or math.huge)        
     end
 end
 
@@ -35,7 +33,7 @@ local Attackable = function(entityClass)
     template:addHandler("beHit", takeHit)
     template:addHandler("beHit", die)
 
-    entityClass.beAttacked = funcs.checkApplyCycle("defense", "beHit")
+    entityClass.beAttacked = utils.checkApplyCycle("defense", "beHit")
 
     table.insert(entityClass.decorators, Attackable)
 end

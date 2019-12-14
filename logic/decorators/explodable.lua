@@ -1,4 +1,4 @@
-local funcs = require "funcs" 
+local utils = require "utils" 
 -- TODO: fully implement
 local function beExploded(event)
     event.actor:takeDamage(event.action.special.damage)
@@ -26,7 +26,7 @@ local Explodable = function(entityClass)
     template:addHandler("beingExploded", beExploded)
     template:addHandler("beingExploded", die)
 
-    entityClass.beAttacked = funcs.checkApplyCycle("defence", "beingExploded")
+    entityClass.beAttacked = utils.checkApplyCycle("defence", "beingExploded")
 
     table.insert(entityClass.decorators, Explodable)
 end

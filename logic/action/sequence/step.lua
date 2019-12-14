@@ -1,3 +1,5 @@
+local Event = require "lib.chains.event"
+
 local Step = class("Step")
 
 
@@ -14,8 +16,8 @@ end
 
 function Step:__construct(config)
 
-    self.successStepCount = nil
-    self.failureStepCount = nil
+    self.successStepIndex = nil
+    self.failureStepIndex = nil
 
     local actionClass = config.action
     -- action must be specified
@@ -34,16 +36,16 @@ function Step:__construct(config)
 
     if config.success ~= nil then
         if type(config.success) == 'number' then
-            self.successStepCount = config.success
+            self.successStepIndex = config.success
         
         else
-            self.successStepCount = config.success[1]
-            self.successChain = config.success[2]
+            self.successStepIndex = config.success.index
+            self.successChain = config.success.chain
         end
     end
 
     if config.failure ~= nil then
-        self.failureStepCount = config.failure
+        self.failureStepIndex = config.failure
     end
 
     if config.enter ~= nil then
@@ -54,10 +56,19 @@ function Step:__construct(config)
         self.exit = config.exit
     end
 
-    if config.repet ~= nil then
-        
-    end
+    self.repet = config.repet
 
+end
+
+
+function Step:nextStep(event)
+    local stepSuccessful = self:checkSuccess(event) 
+
+    if stepSuccessful then
+        return successStepIndex
+    else
+        return failureStepIndex
+    end
 end
 
 
@@ -67,12 +78,7 @@ function Step:checkSuccess(event)
     self.successChain:pass()
     return outerEvent.propagate
 end
-function Step:success() 
-    return self.successStepCount 
-end
-function Step:failure() 
-    return self.failureStepCount
-end
+
 function Step:enter() end
 function Step:exit() end
 

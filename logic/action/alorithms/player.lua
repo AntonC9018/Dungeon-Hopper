@@ -1,7 +1,7 @@
 
 local function PlayerAlgo(instance, action)
     local event = Event(instance, action)
-    action.chains.player:pass(event, Chain.checkPropagate)
+    action:getPlayerChain():pass(event, Chain.checkPropagate)
     
     local postActionEvent = Event(instance, action)
     postActionEvent.actionEvent = event

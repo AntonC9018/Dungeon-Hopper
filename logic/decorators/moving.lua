@@ -1,4 +1,4 @@
-local funcs = require "funcs" 
+local utils = require "utils" 
 
 local function getBaseMove(action)
     local move = Move(action.direction, action.entity.base.move)
@@ -24,7 +24,7 @@ local Moving = function(entityClass)
     template:addHandler("getMove", getBaseMove)
     template:addHandler("move", displace)
 
-    entityClass.executeMove = funcs.checkApplyCycle("getMove", "move")
+    entityClass.executeMove = utils.checkApplyCycle("getMove", "move")
 
     table.insert(entityClass.decorators, Moving)
 end

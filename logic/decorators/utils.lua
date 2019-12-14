@@ -1,6 +1,6 @@
-local funcs = {}
+local utils = {}
 
-funcs.checkApplyCycle = function(nameCheck, nameApply)
+utils.checkApplyCycle = function(nameCheck, nameApply)
     return function(self, action)
         local event = Event(self, action)
 
@@ -8,10 +8,10 @@ funcs.checkApplyCycle = function(nameCheck, nameApply)
 
         if event.propagate then    
             self.chains[nameApply]:pass(event, Chain.checkPropagate)
-        end
+        end        
 
-        
+        return event
     end
 end
 
-return funcs
+return utils

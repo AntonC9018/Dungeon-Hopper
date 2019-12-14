@@ -11,9 +11,8 @@
 -- They might also stop the propagation of the event. 
 -- The propagation never stops completely, though, unless 
 -- a stop condition is explicitly specified and, obviously, met.
--- 
--- The code allows the handler objects to be whatever, as long as 
--- they have a 'handle' method, which is what handles the event.
+--
+-- The hadlers are just functions
 --
 -- The event objects are also not specified, but the following
 -- construction is going to be used frequently
@@ -65,6 +64,10 @@ function Chain:addHandlers(handlerList)
     end
 end
 
+function Chain:removeHandler(handler)
+    table.insert(self.toRemove, handler)
+end
+
 function Chain:cleanUp(handler)
     for i = 1, #self.toRemove do
         for j = 1, #self.handlers do
@@ -103,6 +106,13 @@ end
 Chain.fromList = function(listOfHandlers)
     local chain = Chain()
     chain.handlers = listOfHandlers
+    return chain
+end
+
+Chain.fromHandler = function(handler)
+    local chain = Chain()
+    chain:addHandler(handler)
+    return chain
 end
 
 return Chain

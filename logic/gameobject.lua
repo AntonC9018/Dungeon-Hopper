@@ -28,6 +28,8 @@ function GameObject:init(pos, world)
     self.state = 1
     -- @type Action
     self.nextAction = nil
+
+    self.currentActionEvent = nil
     self.didAction = false
 end
 

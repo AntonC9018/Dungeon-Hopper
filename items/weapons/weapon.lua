@@ -9,6 +9,10 @@ local Weapon = class("Weapon")
 -- for the sake of argument, a fallback pattern is presented here
 local Pattern = require("pattern")
 Weapon.pattern = Pattern()
+-- attack directly in front, 
+-- apply push in the same direction,
+-- do not care about the previous attacks 
+-- (that is, attack even if some previous attacks were blocked by e.g. a wall)
 Weapon.pattern:add( Vec(1, 0), Vec(1, 0), false )
 
 Weapon.check = General.check
@@ -17,7 +21,7 @@ Weapon.hitAll = false
 
 function Weapon:posFromAction(actor, action)
 
-    local actor = action.entity
+    local actor = action.actor
 
     local map = {}
 
@@ -41,7 +45,7 @@ function Weapon:posFromAction(actor, action)
 
     self.chain:pass(event, self.check)
 
-    .targets
+    return event.targets
 end
 
 return Weapon

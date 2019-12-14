@@ -23,14 +23,12 @@ end
 local AttackHandler = applyHandler("executeAttack")
 local MoveHandler = applyHandler("executeMove")
 local DigHandler = applyHandler("executeDig")
-local SpecialHandler = applyHandler("executeSpecial")
 
 local Handlers = {}
 
 Handlers.AttackHandler = AttackHandler
 Handlers.MoveHandler = MoveHandler
 Handlers.DigHandler = DigHandler
-Handlers.SpecialHandler = SpecialHandler
 
 Hnadlers.applyHandler = applyHandler
 

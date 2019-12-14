@@ -25,14 +25,12 @@ end
 local AttackHandler = checkApplyHandler("shouldAttack", "executeAttack")
 local MoveHandler = checkApplyHandler("shouldMove", "executeMove")
 local DigHandler = checkApplyHandler("shouldDig", "executeDig")
-local SpecialHandler = checkApplyHandler("shouldSpecial", "executeSpecial")
 
 local Handlers = {}
 
 Handlers.AttackHandler = AttackHandler
 Handlers.MoveHandler = MoveHandler
 Handlers.DigHandler = DigHandler
-Handlers.SpecialHandler = SpecialHandler
 
 Hnadlers.checkApplyHandler = checkApplyHandler
 

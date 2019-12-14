@@ -19,4 +19,18 @@ Action.Types =
 }
 
 
+function Action:getPlayerChain()
+    return self.chains.player
+end
+
+function Action:getNonPlayerChain()
+    return self.chains.nonPlayer
+end
+
+
+-- Action.chain = {
+--     player = Chain(),
+--     nonPlayer = Chain()
+-- }
+
 return Action

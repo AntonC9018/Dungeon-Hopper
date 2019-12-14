@@ -1,9 +1,9 @@
-local funcs = require "funcs" 
+local utils = require "utils" 
+
 local function getBase(event)
     event.attack = Attack(event.actor.baseStats.attack)
     event.status = Amounts(event.actor.baseStats.status)
-    event.push = Push(event.actor.baseStats.push)
-    
+    event.push = Push(event.actor.baseStats.push)    
 end
 
 local function getTargets(event)
@@ -16,27 +16,22 @@ local function getTargets(event)
         event.propagate = false    
     else
         event.targets = targets
-    end
-
-    
+    end    
 end
 
 local function applyAttack(event)
     local events = event.actor.world:doAttack(event.actor, event.attack)
     event.attackEvents = events
-    
 end
 
 local function applyPush(event)
     local events = event.actor.world:doPush(event.targets, event.push)
-    event.pushEvents = events
-    
+    event.pushEvents = events    
 end
 
 local function applyStatus(event)
     local events = event.actor.world:doStatus(event.targets, event.status)
-    event.statusEvents = events
-    
+    event.statusEvents = events    
 end
 
 
@@ -52,7 +47,7 @@ local Attacking = function(entityClass)
     template:addHandler("attack", applyPush)
     template:addHandler("attack", applyStatus)
 
-    entityClass.executeAttack = funcs.checkApplyCycle("getAttack", "attack")
+    entityClass.executeAttack = utils.checkApplyCycle("getAttack", "attack")
 
     table.insert(entityClass.decorators, Attacking)
 end

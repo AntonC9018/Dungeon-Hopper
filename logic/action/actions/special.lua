@@ -8,14 +8,7 @@ local Special = class("SpecialAction", Action)
 
 Special.type = Action.Types.SPECIAL
 
-Special.chains = {
-    nonPlayer = Chain.fromList({ 
-        NonPlayerHandlers.Special,
-    }),
-    player = Chain.fromList({
-        PlayerHandlers.Special,
-    })
-}
+-- Special is the Action you provide your custom chains to
 
 function Special:__construct(obj)
     self.direction = obj.direction
@@ -23,5 +16,18 @@ function Special:__construct(obj)
     self.special = obj.special -- TODO: figure what this should be
     self.type = Action.Types.SPECIAL
 end
+
+-- override get chains methods
+-- chain is assumed to have been provided to the class definition
+-- of the new action, that would override this 'abstract' Special Action
+-- So if this class (Special) were to be written in e.g. C#, it would've been abstract
+function Special:getPlayerChain()
+    return self.chain
+end
+
+function Special:getNonPlayerChain()
+    return self.chain
+end
+
 
 return Special

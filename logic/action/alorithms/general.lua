@@ -27,7 +27,7 @@ local function Iterate(event)
     -- PROBLEM: the problem is that the player is assumed to use the same action objects
     -- but they can't! they should use a separate action type that would include all
     -- actions in order and without checks
-    action.chains.nonPlayer:pass(event, Chain.checkPropagate)
+    action.getNonPlayerChain():pass(event, Chain.checkPropagate)
     
     -- TODO: add this succeed or refactor
     -- This stuff is still a bit vague in my own mind
@@ -72,9 +72,7 @@ local function GeneralAlgo(outerEvent)
     end
 
     event.success = false
-    outerEvent.successEvent = nil
-
-    
+    outerEvent.successEvent = nil    
 end
 
 return GeneralAlgo

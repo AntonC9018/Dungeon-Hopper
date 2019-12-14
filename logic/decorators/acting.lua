@@ -1,6 +1,5 @@
 
 
-
 local Acting = function(entityClass)
 
     local template = entityClass.chainTemplate
@@ -9,7 +8,7 @@ local Acting = function(entityClass)
         template:addChain("checkAction")
     end
     template:addChain("action")
-    
+
     template:addChain("failedAction")
     tamplate:addChain("succeedAction")
 
@@ -19,6 +18,7 @@ local Acting = function(entityClass)
 
         local event = Event(instance, instance.nextAction)
         event.success = false
+        instance.currentActionEvent = event
 
         -- check if action should event be done
         -- checks to this are added mainly by statused
@@ -44,9 +44,7 @@ local Acting = function(entityClass)
         end
 
         instance.doingAction = false
-        instance.didAction = true
-        
-        
+        instance.didAction = true        
     end
 
     instance.executeAction = executeAction

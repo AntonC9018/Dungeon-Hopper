@@ -1,4 +1,4 @@
-local funcs = require "funcs" 
+local utils = require "utils" 
 
 local identity = function(event)
     
@@ -25,7 +25,7 @@ local Statused = function(entityClass)
     template:addHandler("checkStatus", checkStatus)
     template:addHandler("applyStatus", applyStatus)
 
-    entityClass.beStatused = funcs.checkApplyCycle("checkStatus", "applyStatus")
+    entityClass.beStatused = utils.checkApplyCycle("checkStatus", "applyStatus")
 
     template:addHandler("checkAction", checkStatuses)
 

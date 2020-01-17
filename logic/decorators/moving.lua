@@ -1,7 +1,7 @@
 local utils = require "utils" 
 
 local function getBaseMove(action)
-    local move = Move(action.direction, action.entity.base.move)
+    local move = Move(action.direction, action.actor.base.move)
     event.move = move
     
 end

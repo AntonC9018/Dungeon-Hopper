@@ -21,9 +21,9 @@ local function Iterate(event)
     -- Iterate over added checks and thereupon execute actions.
     -- These checks are predefined algorithms on action types.
     -- They traverse appropriate chains on the instance.
-    -- e.g. for an AttackAction action, the chain would traverse
-    -- just the shouldAttack chain of the instance and then
-    -- call executeAttack().
+    -- e.g. for an AttackAction action, it would traverse
+    -- just the shouldAttack chain of the instance (actor) and then
+    -- call executeAttack() on that instance (actor).
     -- PROBLEM: the problem is that the player is assumed to use the same action objects
     -- but they can't! they should use a separate action type that would include all
     -- actions in order and without checks
@@ -49,7 +49,7 @@ end
 -- This is a very general algo that allows one action at a time to be done
 local function GeneralAlgo(outerEvent)
     
-    local instance = outerEvent.instance
+    local instance = outerEvent.actor
     local action  = outerEvent.action
 
     -- TODO: put this method onto instances. right now it's in the algorithms folder

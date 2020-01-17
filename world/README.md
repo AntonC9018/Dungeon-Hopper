@@ -42,6 +42,42 @@ Here is an overview of what happens during the game loop and in what order.
 4. Destroyed (*dead*) things are filtered out, things are rendered and then *reset*. *Resetting* means deleting the actions that the objects chose inside those objects and some other variables for doing those action calculations. 
 
 
+# Action Execution
+
+The action execution process is pretty convoluted. 
+Let's break it down into components to clarify how it works.
+
+## Structure
+
+Each `Acting NonPlayerReal` (`Acting` is a decorator) has a set of fields that reflect the action execution state:
+1. `Acting.didAction` is set `true` once the action has been completely executed. The `game loop`, naturally, ignores them, so that the action is not repeated for many times over (remember, the `Acting` entities may make others act).
+2. `Acting.doingAction` is set `true` once the `executeAction()` has been called, and `false` once exited.
+
+Now we'll examine **the final event** structure once it comes out of `executeAction()` (assume `GeneralAlgo`). It does not 'come out' as such, the function always returns nothing. The final event is saved as `Acting.currentActionEvent`.
+
+This event has a special structure, so let's call it the `EnclosingEvent`:
+1. `EnclosingEvent.actor` - who does the action (this field is on each event as well).
+2. `EnclosingEvent.action` - the action selected by the actor (this field is on each event as well).
+3. `EnclosingEvent.propagate` - (boolean) really is of no practical value after the action. It is used to keep track of handlers while executing it (this field is on each event as well).
+4. `EnclosingEvent.checkSuccess` - (boolean) same as 3, except not inherited.
+5. `EnclosingEvent.success` - (boolean) comes paired with the next field.
+6. `EnclosingEvent.successEvent` - The one event that actually occured, with the action and the direction, i.e.:
+    1. Inherited `EnclosingEvent.successEvent.actor` and `EnclosingEvent.successEvent.action` and `EnclosingEvent.propagate`
+    2. `EnclosingEvent.successEvent.direction` contains the actual final `dir` (see more on this in /algorithms)
+    3. Wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
+        1. `EnclosingEvent.successEvent.attack` 
+        2. `EnclosingEvent.successEvent.push`
+        3. `EnclosingEvent.successEvent.status` (none of these have been implemented yet)
+        4. `EnclosingEvent.successEvent.targets` - a list of the `Target` objects, containing the reals actually hit. This list is formed by the weapon's spec or by taking the cell the actor is facing and getting the real out of it.
+        5. `EnclosingEvent.successEvent.attackEvents` - list of events generated as a result of reals being attacked
+        5. `EnclosingEvent.successEvent.pushEvents` - similarly, pushed
+        5. `EnclosingEvent.successEvent.statusEvents` - similarly, statused
+
+## Prerequisites for becoming an `Acting`
+
+`Acting` is a decorator for entities. Entities decorated with `Acting` have the function `executeAction()` actually doing something interesting.
+
+
 # Useful World Methods
 
 ## World

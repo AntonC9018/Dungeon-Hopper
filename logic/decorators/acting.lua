@@ -30,6 +30,8 @@ local Acting = function(entityClass)
         event.checkSuccess = event.propagate
 
         -- if the checks have succeeded, try to do the action
+        -- in most cases, the action chain is going to include just the
+        -- GeneralAlgo function
         if event.checkSuccess then
             event.propagate = true
             instance.chains.action:pass(event)
@@ -38,7 +40,7 @@ local Acting = function(entityClass)
         event.propagate = true
 
         if event.success then
-            instance.chains.successAction:pass(event)
+            instance.chains.succeedAction:pass(event)
         else
             instance.chains.failedAction:pass(event)            
         end

@@ -15,3 +15,4 @@ function Decorator:__construct(methods)
     self.methods = methods
 end
 
+return Decorator

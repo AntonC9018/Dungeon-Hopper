@@ -1,6 +1,6 @@
 -- use general algorithm, that is
 --      1. make the entity Acting, that is, allow it to do stuff
---      2. make it MultiMov
+--      2. give it the necessary ShouldAct chains
 --      3. make it use the GeneralAlgo
 --      4. make it Sequential
 
@@ -13,7 +13,8 @@ local function General(entityClass)
 
     Acting(entityClass)
     ShouldAct(entityClass)
-    entityClass.actionAlgorithm = GeneralAlgo
+    -- entityClass.actionAlgorithm = GeneralAlgo
+    entityClass.chainTemplate:addHandler('action', GeneralAlgo)
     Sequential(entityClass)
 
 end

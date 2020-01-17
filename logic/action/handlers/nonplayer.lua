@@ -2,7 +2,7 @@
 
 local checkApplyHandler = function(nameCheck, nameApplyMethod)
     return function(outerEvent)
-        local actor = outerEvent.entity
+        local actor = outerEvent.actor
         local action = outerEvent.action
 
         local event = Event(actor, action)

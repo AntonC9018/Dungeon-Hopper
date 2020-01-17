@@ -2,14 +2,10 @@
 
 local applyHandler = function(nameApplyMethod)
     return function(outerEvent)
-        local actor = outerEvent.entity
+        local actor = outerEvent.actor
         local action = outerEvent.action
 
-        local event = Event(actor, action)
-
-        if event.propagate then    
-            event = actor[nameApplyMethod](actor, action)
-        end
+        event = actor[nameApplyMethod](actor, action)  
 
         if event.propagate then
             -- previous action successful

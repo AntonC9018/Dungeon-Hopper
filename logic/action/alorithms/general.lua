@@ -18,6 +18,8 @@ end
 
 local function Iterate(event)
 
+    local actor = event.actor
+
     -- Iterate over added checks and thereupon execute actions.
     -- These checks are predefined algorithms on action types.
     -- They traverse appropriate chains on the instance.
@@ -34,11 +36,11 @@ local function Iterate(event)
     if not event.propagate then
         -- lets the real that blocks the way do its thing first
         -- if it does exist and did do something, succeed would be true
-        local succeed = askMove(instance, action)
+        local succeed = askMove(actor, action)
         
         -- after this, we should repeat this iteration
         if succeed then
-            return Iterate(instance, action)    
+            return Iterate(event)    
         end
     end
 
@@ -59,7 +61,7 @@ local function GeneralAlgo(outerEvent)
     for i = 1, #dirs do
 
         local event = Event(instance, action)
-        event.direction = dirs[i]
+        event.action.direction = dirs[i]
 
         local succeed = Iterate(event)
 

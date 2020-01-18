@@ -47,6 +47,12 @@ Here is an overview of what happens during the game loop and in what order.
 The action execution process is pretty convoluted. 
 Let's break it down into components to clarify how it works.
 
+## Prerequisites for becoming an `Acting`
+
+`Acting` is a decorator for entities. Entities decorated with `Acting` have the function `executeAction()` actually doing something interesting, instead of just setting `Acting.didAction` to `true`.
+
+The `Acting` decorator can be applied to both player and non-player entities. Once done, though, you'll still have to provide the algorithm for action, that is, put an `Algo` handler into the new `action` chain received from the `Acting` decorator. 
+
 ## Structure
 
 Each `Acting NonPlayerReal` (`Acting` is a decorator) has a set of fields that reflect the action execution state:
@@ -63,8 +69,7 @@ This event has a special structure, so let's call it the `EnclosingEvent`:
 5. `EnclosingEvent.success` - (boolean) comes paired with the next field.
 6. `EnclosingEvent.successEvent` - The one event that actually occured, with the action and the direction, i.e.:
     1. Inherited `EnclosingEvent.successEvent.actor` and `EnclosingEvent.successEvent.action` and `EnclosingEvent.propagate`
-    2. `EnclosingEvent.successEvent.direction` contains the actual final `dir` (see more on this in /algorithms)
-    3. Wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
+    2. Wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
         1. `EnclosingEvent.successEvent.attack` 
         2. `EnclosingEvent.successEvent.push`
         3. `EnclosingEvent.successEvent.status` (none of these have been implemented yet)
@@ -73,9 +78,25 @@ This event has a special structure, so let's call it the `EnclosingEvent`:
         5. `EnclosingEvent.successEvent.pushEvents` - similarly, pushed
         5. `EnclosingEvent.successEvent.statusEvents` - similarly, statused
 
-## Prerequisites for becoming an `Acting`
+You can find the one direction that suceeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
 
-`Acting` is a decorator for entities. Entities decorated with `Acting` have the function `executeAction()` actually doing something interesting.
+## The algorithms
+
+Most common algorithms, which act by doing something in a direction, are the `GeneralAlgo` for non-player entities and `PlayerAlgo` for the player. 
+
+The difference between these two is that the `GeneralAlgo` tests out a couple of desirable actions, which it would get from `???.getMovs()` function (the ??? is probably a decorator, not yet implemented), gets the most desirable one out of them, and executes that single one, while the `PlayerAlgo` just does the selected action in the only direction provided (which came from user input). 
+
+As a result, **these algorithms support just one action of one type at a time**. That is, with the `GeneralAlgo` it is impossible to program an enemy that e.g. would attack to the left, while spitting out a projectile to the right (it is possible, but hacky), which is also true for the `PlayerAlgo`.
+
+Another difference is that the `GeneralAlgo` would traverse the chains of the selected action dedicated for non-player entities, while the `PlayerAlgo` would traverse those for the player, the difference between them being that in the non-player case, there is a verification stage, that is, e.g. for attacking, the handler first traverses the `ShouldAttack` chain to figure out whether the entity needs to be attacking in the first place, doing the next possible action if it should not, while the player case all actions, e.g. attacking then digging then moving, will be tried one after the other, the one terminating being the one actually done.
+
+The result of this is that the actions resulting in no avail for the player, e.g. attacking empty space, won't be executed, while for non-player entities this must be foreseen.
+
+Both of these algorithms also save the action that succeeded and set success to true. See Structure.
+
+## An action 'succeeding'
+
+I'm not clear on this one myself, gonna edit once I clarify that.
 
 
 # Useful World Methods

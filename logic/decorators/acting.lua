@@ -20,7 +20,7 @@ local Acting = function(entityClass)
         event.success = false
         instance.currentActionEvent = event
 
-        -- check if action should event be done
+        -- check if action should even be done
         -- checks to this are added mainly by statused
         -- to control, e.g., being frozen and stuff
         -- if a character is frozen, all his actions are

@@ -13,7 +13,6 @@ local function General(entityClass)
 
     Acting(entityClass)
     ShouldAct(entityClass)
-    -- entityClass.actionAlgorithm = GeneralAlgo
     entityClass.chainTemplate:addHandler('action', GeneralAlgo)
     Sequential(entityClass)
 

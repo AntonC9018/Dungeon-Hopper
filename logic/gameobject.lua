@@ -12,8 +12,6 @@ local GameObject = class("GameObject")
 -- fallback options
 GameObject.layer = Cell.Layers.misc
 GameObject.priority = 0
-GameObject.actionAlgorithm = 
-    function(self) end
 
 -- every game object must have a position coordinate pair
 function GameObject:init(pos, world)

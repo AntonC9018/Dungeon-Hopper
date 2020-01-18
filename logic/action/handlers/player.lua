@@ -1,4 +1,4 @@
--- these are for non-player reals
+-- these are for player reals
 
 local applyHandler = function(nameApplyMethod)
     return function(outerEvent)

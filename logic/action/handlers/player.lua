@@ -1,18 +1,20 @@
 -- these are for player reals
 
 local applyHandler = function(nameApplyMethod)
-    return function(outerEvent)
-        local actor = outerEvent.actor
-        local action = outerEvent.action
+    return function(algoEvent)
+        local actor = algoEvent.actor
+        local action = algoEvent.action
 
-        event = actor[nameApplyMethod](actor, action)  
+        local resultEvent = actor[nameApplyMethod](actor, action)  
 
-        if event.propagate then
+        if resultEvent.propagate then
             -- previous action successful
-            outerEvent.propagate = false
+            algoEvent.propagate = false
+            algoEvent.success = true
+            algoEvent.resultEvent = resultEvent
         end
 
-        return outerEvent
+        return algoEvent
     end
 end
 

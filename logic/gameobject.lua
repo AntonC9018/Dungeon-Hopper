@@ -27,7 +27,7 @@ function GameObject:init(pos, world)
     -- @type Action
     self.nextAction = nil
 
-    self.currentActionEvent = nil
+    self.enclosingEvent = nil
     self.didAction = false
 end
 

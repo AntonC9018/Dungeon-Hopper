@@ -16,9 +16,9 @@ local function askMove(actor, action)
 end
 
 
-local function Iterate(event)
+local function Iterate(algoEvent)
 
-    local actor = event.actor
+    local actor = algoEvent.actor
 
     -- Iterate over added checks and thereupon execute actions.
     -- These checks are predefined algorithms on action types.
@@ -29,52 +29,51 @@ local function Iterate(event)
     -- PROBLEM: the problem is that the player is assumed to use the same action objects
     -- but they can't! they should use a separate action type that would include all
     -- actions in order and without checks
-    action.getNonPlayerChain():pass(event, Chain.checkPropagate)
+    action.getNonPlayerChain():pass(algoEvent, Chain.checkPropagate)
     
-    -- TODO: add this succeed or refactor
-    -- This stuff is still a bit vague in my own mind
-    if not event.propagate then
+
+    if not algoEvent.success then
         -- lets the real that blocks the way do its thing first
-        -- if it does exist and did do something, succeed would be true
-        local succeed = askMove(actor, action)
+        -- if it does exist and did do something, succees would be true
+        local succees = askMove(actor, action)
         
         -- after this, we should repeat this iteration
-        if succeed then
-            return Iterate(event)    
+        if succees then
+            return Iterate(algoEvent)    
         end
     end
 
-    return not event.propagate
+    return algoEvent.success
 end
 
 
 -- This is a very general algo that allows one action at a time to be done
-local function GeneralAlgo(outerEvent)
+local function GeneralAlgo(enclosingEvent)
     
-    local instance = outerEvent.actor
-    local action  = outerEvent.action
+    local instance = enclosingEvent.actor
+    local action  = enclosingEvent.action
 
     -- TODO: put this method onto instances. right now it's in the algorithms folder
     local dirs = instance:getMovs()
-    event.directions = dirs
+    enclosingEvent.directions = dirs
 
     for i = 1, #dirs do
 
-        local event = Event(instance, action)
-        event.action.direction = dirs[i]
+        local algoEvent = Event(instance, action)
+        algoEvent.action.direction = dirs[i]
 
-        local succeed = Iterate(event)
+        local succeed = Iterate(algoEvent)
 
         -- stop iteration after one of the ations completed successfully
         if succeed then
-            outerEvent.success = true
-            outerEvent.successEvent = event
-            return outerEvent
+            enclosingEvent.success = true
+            enclosingEvent.algoEvent = algoEvent
+            return enclosingEvent
         end
     end
 
-    event.success = false
-    outerEvent.successEvent = nil    
+    enclosingEvent.success = false
+    enclosingEvent.algoEvent = nil    
 end
 
 return GeneralAlgo

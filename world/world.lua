@@ -237,3 +237,7 @@ function World:getOneFromTopAt(pos)
     result = self.grid:getTrapAt(pos)
     return result
 end
+
+
+
+return World

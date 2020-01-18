@@ -1,24 +1,23 @@
 -- these are for non-player reals
 
 local checkApplyHandler = function(nameCheck, nameApplyMethod)
-    return function(outerEvent)
-        local actor = outerEvent.actor
-        local action = outerEvent.action
+    return function(algoEvent)
+        local actor = algoEvent.actor
+        local action = algoEvent.action
 
-        local event = Event(actor, action)
+        local internalEvent = Event(actor, action)
 
-        actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
+        actor.chains[nameCheck]:pass(internalEvent, Chain.checkPropagate)
 
-        if event.propagate then    
-            event = actor[nameApplyMethod](actor, action)
+        if internalEvent.propagate then    
+            local resultEvent = actor[nameApplyMethod](actor, action)
+
+            algoEvent.propagate = false
+            algoEvent.success = true
+            algoEvent.resultEvent = resultEvent
         end
 
-        if event.propagate then
-            -- previous action successful
-            outerEvent.propagate = false
-        end
-
-        return outerEvent
+        return algoEvent
     end
 end
 

@@ -1,25 +1,17 @@
 
-local function PlayerAlgo(outerEvent)
+local function PlayerAlgo(enclosingEvent)
 
-    local actor = outerEvent.actor
+    local actor = enclosingEvent.actor
     -- action already has the action.direction here
-    local action = outerEvent.action
+    local action = enclosingEvent.action
 
-    local event = Event(actor, action)
+    local algoEvent = Event(actor, action)
 
-    action:getPlayerChain():pass(event, Chain.checkPropagate)
+    action:getPlayerChain():pass(algoEvent, Chain.checkPropagate)
 
-    if event.propagate then
-        -- traverse failedAction chain
-        -- return instance.chains.failedAction:pass(postActionEvent)
-        outerEvent.success = false
-        outerEvent.successEvent = nil
-        return outerEvent
-    end
+    -- resultEvent is already set here, see handlers/player.lua
 
-    outerEvent.success = true
-    outerEvent.successEvent = event
-    return outerEvent
+    return enclosingEvent
 end
 
 return PlayerAlgo

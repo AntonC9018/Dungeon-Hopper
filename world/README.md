@@ -66,28 +66,21 @@ Each `Acting NonPlayerReal` (`Acting` is a decorator) has a set of fields that r
 1. `Acting.didAction` is set `true` once the action has been completely executed. The `game loop`, naturally, ignores them, so that the action is not repeated for many times over (remember, the `Acting` entities may make others act).
 2. `Acting.doingAction` is set `true` once the `Acting.executeAction()` has been called, and `false` once exited.
 
-Now we'll examine **the final event** structure once it comes out of `Acting.executeAction()` (assume `GeneralAlgo`). It does not 'come out' as such, the function always returns nothing. The final event is saved as `Acting.enclosingEvent`.
+Now we'll examine **the final event** structure once it comes out of `Acting.executeAction()` (assume `GeneralAlgo`). It does not 'come out' as such, the function always returns nothing. The final event is saved as `Acting.enclosingEvent`. The standart fields of any event, which are `event.actor`, `event.action` and `event.propagate`, exist on each of the event structures examined, so they will be consequently omitted.
 
 This event has a special structure, and consequently will be called `EnclosingEvent`:
-1. `EnclosingEvent.actor` - who does the action (this field is on each event as well).
-2. `EnclosingEvent.action` - the action selected by the actor (this field is on each event as well).
-3. `EnclosingEvent.propagate` - (boolean) really is of no practical value after the action. It is used to keep track of handlers while executing it (this field is on each event as well).
-4. `EnclosingEvent.checkSuccess` - (boolean) same as 3, except not inherited.
-5. `EnclosingEvent.success` - (boolean) comes paired with the next field.
-6. `EnclosingEvent.algoEvent` - The one event that actually occured, with the action and the direction, i.e.:
-    1. Inherited `EnclosingEvent.algoEvent.actor` and `EnclosingEvent.algoEvent.action` and `EnclosingEvent.propagate`
-    2. `EnclosingEvent.algoEvent.success`
-    3. A nested `resultEvent` with a wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
-        1. `algoEvent.resultEvent.actor`
-        1. `algoEvent.resultEvent.action`
-        1. `algoEvent.resultEvent.propagate`
-        1. `algoEvent.resultEvent.attack` 
-        2. `algoEvent.resultEvent.push`
-        3. `algoEvent.resultEvent.status` (none of these have been implemented yet)
+1. `EnclosingEvent.checkSuccess` - (boolean) same as 3, except not inherited.
+2. `EnclosingEvent.success` - (boolean) comes paired with the next field.
+3. `EnclosingEvent.algoEvent` - The one event that actually occured, with the action and the direction, i.e.:
+    1. `EnclosingEvent.algoEvent.success`
+    2. A nested `resultEvent` with a wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
+        1. `algoEvent.resultEvent.attack` - the attack object applied
+        2. `algoEvent.resultEvent.push` - the push object applied
+        3. `algoEvent.resultEvent.status` - the status object applied
         4. `algoEvent.resultEvent.targets` - a list of the `Target` objects, containing the reals actually hit. This list is formed by the weapon's spec or by taking the cell the actor is facing and getting the real out of it.
         5. `algoEvent.resultEvent.attackEvents` - list of events generated as a result of reals being attacked
-        5. `algoEvent.resultEvent.pushEvents` - similarly, pushed
-        5. `algoEvent.resultEvent.statusEvents` - similarly, statused
+        6. `algoEvent.resultEvent.pushEvents` - similarly, pushed
+        7. `algoEvent.resultEvent.statusEvents` - similarly, statused
 
 You can find the one direction that suceeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
 
@@ -99,7 +92,7 @@ The difference between these two is that the `GeneralAlgo` tests out a couple of
 
 As a result, **these algorithms support just one action of one type at a time**. That is, with the `GeneralAlgo` it is impossible to program an enemy that e.g. would attack to the left, while spitting out a projectile to the right (it is possible, but hacky), which is also true for the `PlayerAlgo`.
 
-Another difference is that the `GeneralAlgo` would traverse the chains of the selected action dedicated for non-player entities, while the `PlayerAlgo` would traverse those for the player, the difference between them being that in the non-player case, there is a verification stage, that is, e.g. for attacking, the handler first traverses the `ShouldAttack` chain to figure out whether the entity needs to be attacking in the first place, doing the next possible action if it should not, while the player case all actions, e.g. attacking then digging then moving, will be tried one after the other, the one terminating being the one actually done.
+Another difference is that the `GeneralAlgo` would traverse the chains of the selected action dedicated for non-player entities, while the `PlayerAlgo` would traverse those for the player, the difference between them being that in the non-player case, there is a verification stage, that is, e.g. for attacking, the handler first traverses the `ShouldAttack` chain to figure out whether the entity needs to be attacking in the first place, doing the next possible action if it should not, while in the player case all actions, e.g. attacking then digging then moving, will be tried one after the other, the one terminating being the one actually done.
 
 The result of this is that the actions resulting in no avail for the player, e.g. attacking empty space, won't be executed, while for non-player entities this must be foreseen.
 
@@ -107,7 +100,13 @@ Both of these algorithms also save the action that succeeded and set success to 
 
 ## An action 'succeeding'
 
-I'm not clear on this one myself, gonna edit once I clarify that.
+Actions may be multi-step. That is, they may have multiple components to them. For example, there is the `AttackMoveAction` which indicates first attacking, then moving. So, attacking and moving are both **action components** in this case.
+
+An action component is considered to have **succeeded**, if its `resultEvent` went through every single handler in the action component handler chains (that is, following our `Attack` example,  both getting stats for an attack and actually doing the attack were successful), while the `resultEvent.propagate` field remained `true`.
+
+This, however, must not be confused with whether the effects of the action were relevant. For example, even if an enemy with a shield blocked the attack, the action component may still succeed. In fact, the individual subevents of the `resultEvent` are saved on it. See Structure.
+
+In the case of an action component succeeding, the action as a whole would return, then the `resultEvent` would be saved on `algoEvent` and `algoEvent.succeed` would be set to `true`. Otherwise, `algoEvent.succeed` would be `false`, while `resultEvent` would be `nil`. 
 
 
 # Useful World Methods

@@ -17,7 +17,7 @@ end
 local Explodable = function(entityClass)
     local template = entityClass.chainTemplate
 
-    if template:isSetChain("defense") then
+    if not template:isSetChain("defense") then
         template:addChain("defense")
         template:addHandler("defense", armor(entityClass.base.armor))
     end

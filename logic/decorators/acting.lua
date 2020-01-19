@@ -4,7 +4,7 @@ local Acting = function(entityClass)
 
     local template = entityClass.chainTemplate
 
-    if template:isSetChain("checkAction") then
+    if not template:isSetChain("checkAction") then
         template:addChain("checkAction")
     end
     template:addChain("action")

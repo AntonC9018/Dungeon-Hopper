@@ -14,7 +14,7 @@ function ChainsTemplate:addChain(name)
 end
 
 function ChainsTemplate:isSetChain(name)
-    return self.chains[name] == nil
+    return self.chains[name] ~= nil
 end
 
 function ChainsTemplate:addHandler(name, handler)

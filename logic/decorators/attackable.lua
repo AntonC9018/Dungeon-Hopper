@@ -24,7 +24,7 @@ end
 local Attackable = function(entityClass)
     local template = entityClass.chainTemplate
 
-    if template:isNil("defense") then
+    if template:isSetChain("defense") then
         template:addChain("defense")
         template:addHandler("defense", armor(entityClass.base.armor))
     end

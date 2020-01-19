@@ -14,7 +14,7 @@ local checkStatuses = identity
 local Statused = function(entityClass)
     local template = entityClass.chainTemplate
 
-    if template:isNil("checkAction") then
+    if template:isSetChain("checkAction") then
         template:addChain("checkAction")
     end
 

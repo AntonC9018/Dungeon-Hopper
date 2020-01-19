@@ -13,7 +13,7 @@ function ChainsTemplate:addChain(name)
     end
 end
 
-function ChainsTemplate:isNil(name)
+function ChainsTemplate:isSetChain(name)
     return self.chains[name] == nil
 end
 

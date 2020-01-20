@@ -1,8 +1,3 @@
-local invincible = function(event)
-    event.propagate = false
-    
-end
-
 
 local InvincibleHandler = class("InvincibleHandler")
 
@@ -46,6 +41,6 @@ local InvincibleAfterHit = function(entityClass)
     )
 
     table.insert(entityClass.decorators, InvincibleAfterHit)
-end4
+end
 
 return InvincibleAfterHit

@@ -73,6 +73,6 @@ Enables the entity to be exploded
 ## `Decorators.InvincibleAfterHit`
 Makes the entity invincible for 2 loop after it's taken a hit
 ## `Decorators.Statused`
-Makes the entity vulnerable to status effects
+Makes the entity vulnerable to status effects. Status effects are being frozen, stunned, on fire, poisoned and so on. 
 ## `Decorators.Moving`
 Enables entity to displace via the `executeMove` method

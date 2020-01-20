@@ -1,15 +1,11 @@
 local utils = require "utils" 
 
-local identity = function(event)
-    
-end
+local nothing = function(event) end
 
 -- TODO: implemet these methods
-local checkStatus = identity
-local applyStatus = identity
-
--- TODO: traverse a chain of statuses
-local checkStatuses = identity
+local checkStatus = nothing
+local applyStatus = nothing
+local checkStatuses = nothing
 
 local Statused = function(entityClass)
     local template = entityClass.chainTemplate

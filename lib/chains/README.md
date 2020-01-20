@@ -119,12 +119,7 @@ template:addHandler('chain1', handler10)
 -- add a chain with 0 handlers
 template:addChain('chain2')
 
-local actor = {}
-
-local chains = template:init(actor)
-
-print(chains == actor.chains)
--- true
+local chains = template:init()
 
 inspect(chains)
 -- {

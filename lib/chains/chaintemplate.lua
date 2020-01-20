@@ -22,9 +22,8 @@ function ChainsTemplate:addHandler(name, handler)
     table.insert(self.chains[name], handler)
 end
 
-function ChainsTemplate:init(instance)
+function ChainsTemplate:init()
     local chains = {}
-    instance.chains = chains
     for key,hArr in pairs(self.chains) do
         local chain = Chain()
         chain:addHandlers(hArr)

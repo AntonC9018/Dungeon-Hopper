@@ -28,11 +28,13 @@ function HP:takeDamage(amount)
     while damage > 0 do
         if self.containers[i].amount ~= 0 then
             
-            local previousAmount = self.container[i].amount 
+            local previousAmount 
             
             if damage > self.container[i].amount then
+                previousAmount = self.container[i].amount
                 self.container[i].amount = 0
             else
+                previousAmount = damage
                 self.container[i].amount =
                     self.container[i].amount - damage
             end

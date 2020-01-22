@@ -12,7 +12,6 @@ Special.type = Action.Types.SPECIAL
 
 function Special:__construct(obj)
     self.direction = obj.direction
-    self.pos = obj.pos
     self.special = obj.special -- TODO: figure what this should be
     self.type = Action.Types.SPECIAL
 end

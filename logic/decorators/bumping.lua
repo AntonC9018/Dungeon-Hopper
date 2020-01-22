@@ -10,7 +10,7 @@ local function Bumping(entityClass)
 
     local template = entityClass.chainTemplate
 
-    template:addHandler("failedAction", bump)
+    template:addHandler("failAction", bump)
 
 end
 

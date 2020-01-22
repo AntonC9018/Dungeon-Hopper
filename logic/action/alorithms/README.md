@@ -16,4 +16,4 @@ For example, an `ATTACK_MOVE_ACTION` is going to try attacking (after checking i
 
 4. If another real is blocking their way of moving / attacking, they will pass them the turn. They will call `executeAction()` on that real. If it has already executed their action, though, the current `dir` will fail.
 
-5. If all the `dirs` have failed, the `failedAction` chain is traversed on the actor entity.
+5. If all the `dirs` have fail, the `failAction` chain is traversed on the actor entity.

@@ -19,7 +19,6 @@ Attack.chains = {
 
 function Attack:__construct(obj)
     self.direction = obj.direction
-    self.pos = obj.pos
     self.attack = obj.attack 
 end
 

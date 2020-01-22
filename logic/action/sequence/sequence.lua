@@ -12,14 +12,14 @@ end
 function Sequence:setStep(index)
     local nextStepIndex = index % #self.steps + 1
     self.repet = 0
-    return self.steps[currentStepIndex]
+    return self.steps[self.currentStepIndex]
 end
 
 
 function Sequence:tick(event)
 
     -- get the current step
-    local step = steps[currentStepIndex]
+    local step = steps[self.currentStepIndex]
 
     -- as the steps are stateless, we have to do
     -- this check outside the others
@@ -31,15 +31,21 @@ function Sequence:tick(event)
     end
 
     local nextStepIndex = step:nextStep(event) 
-        or (currentStepIndex + 1)    
+        or (self.currentStepIndex + 1)    
         
         
-    if nextStepIndex ~= currentStepIndex then
+    if nextStepIndex ~= self.currentStepIndex then
         local nextStep = self:setStep(nextStepIndex)
         step:exit(event)
         nextStep:enter(event)
     end
+
+    self.currentStepIndex = nextStepIndex
 end
 
+
+function Sequence:getCurrentAction()
+    return self.steps[self.currentStepIndex].ActionClass()
+end
 
 return Sequence

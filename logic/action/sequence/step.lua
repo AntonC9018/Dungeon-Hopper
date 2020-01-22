@@ -17,11 +17,11 @@ end
 function Step:__construct(config)
 
     self.successStepIndex = nil
-    self.failureStepIndex = nil
+    self.failStepIndex = nil
 
-    local actionClass = config.action
+    local ActionClass = config.action
     -- action must be specified
-    assert(actionClass ~= nil)
+    assert(ActionClass ~= nil)
 
     -- what is an action exactly?
     --
@@ -32,7 +32,7 @@ function Step:__construct(config)
     -- in our case provides handlers for attacking an entity
     -- For more examples, see `actions`.
 
-    self.actionClass = actionClass
+    self.ActionClass = ActionClass
 
     if config.success ~= nil then
         if type(config.success) == 'number' then
@@ -44,8 +44,8 @@ function Step:__construct(config)
         end
     end
 
-    if config.failure ~= nil then
-        self.failureStepIndex = config.failure
+    if config.fail ~= nil then
+        self.failStepIndex = config.fail
     end
 
     if config.enter ~= nil then
@@ -67,7 +67,7 @@ function Step:nextStep(event)
     if stepSuccessful then
         return successStepIndex
     else
-        return failureStepIndex
+        return failStepIndex
     end
 end
 
@@ -75,7 +75,7 @@ end
 function Step:checkSuccess(event) 
     local outerEvent = Event(self, nil)
     outerEvent.triggerEvent = event
-    self.successChain:pass()
+    self.successChain:pass(outerEvent)
     return outerEvent.propagate
 end
 

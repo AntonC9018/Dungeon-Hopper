@@ -20,7 +20,6 @@ Dig.chains = {
 
 function Dig:__construct(obj)
     self.direction = obj.direction
-    self.pos = obj.pos
     self.dig = obj.dig    
     self.type = Action.Types.DIG
 end

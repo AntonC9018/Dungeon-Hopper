@@ -9,7 +9,7 @@ local Acting = function(entityClass)
     end
     template:addChain("action")
 
-    template:addChain("failedAction")
+    template:addChain("failAction")
     tamplate:addChain("succeedAction")
 
     local function executeAction(instance)
@@ -24,7 +24,7 @@ local Acting = function(entityClass)
         -- checks to this are added mainly by statused
         -- to control, e.g., being frozen and stuff
         -- if a character is frozen, all his actions are
-        -- considered failed, and the checkSuccess on the Event is set to false
+        -- considered fail, and the checkSuccess on the Event is set to false
         instance.chain.checkAction:pass(enclosingEvent)
 
         enclosingEvent.checkSuccess = enclosingEvent.propagate
@@ -42,7 +42,7 @@ local Acting = function(entityClass)
         if enclosingEvent.success then
             instance.chains.succeedAction:pass(enclosingEvent)
         else
-            instance.chains.failedAction:pass(enclosingEvent)            
+            instance.chains.failAction:pass(enclosingEvent)            
         end
 
         instance.doingAction = false

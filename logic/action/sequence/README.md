@@ -4,7 +4,7 @@
 
 Such entities are called *sequential* and are decorated with `Decorators.Sequential`.
 
-Sequence is basically an array of such steps.
+A `Sequence` is basically an array of such steps.
 
 # Step
 
@@ -24,7 +24,7 @@ step1 =
 {
     action = ATTACK_MOVE, -- try to attack, then to move
     dir = basic, -- require this predefined dirs algorithm
-    failed = 1, -- in case all those fail, go back to step < 1 >
+    fail = 1, -- in case all those fail, go back to step < 1 >
     success = 2 -- this option can be omitted, as steps are considered in sequence by default
 }
 
@@ -61,7 +61,7 @@ step1 = {
         -- { index: 2, chain: theChain }
 
     -- in case this fails, e.g. we're frozen, remain at the 1st step
-    failed = 1
+    fail = 1
 }
 
 step2 = {
@@ -70,7 +70,7 @@ step2 = {
     -- for success we again need a custom chain
     success = checkNotMove(3),
     -- in case frozen, keep rolling
-    failed = 2,
+    fail = 2,
     -- also, we're invincible while rolling
     enter = addInfiniteArmor,
     -- and we shouldn't be while not rolling
@@ -80,6 +80,6 @@ step2 = {
 step3 = {
     action = NONE,
     repet = 2, -- repeat this step 2 times before going to the next one
-    success = 1 -- this and the failed can be omitted, as the sequence loops by default
+    success = 1 -- this and the fail can be omitted, as the sequence loops by default
 }
 ```

@@ -19,8 +19,7 @@ Move.chains = {
 }
 
 function Move:__construct(obj)
-    self.direction = obj.direction
-    self.pos = obj.pos 
+    self.direction = obj.direction 
     self.type = Action.Types.MOVE
 end
 

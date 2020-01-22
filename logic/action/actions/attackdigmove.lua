@@ -23,8 +23,7 @@ AttackDigMove.chains = {
 }
 
 function AttackDigMove:__construct(obj)
-    self.direction = obj.direction
-    self.pos = obj.pos 
+    self.direction = obj.direction 
     self.attack = obj.attack
     self.dig = obj.dig
     self.move = obj.move

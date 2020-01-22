@@ -7,14 +7,15 @@ local HEART_SIZE = 2
 -- for now I'll keep it simple. health is a number
 function HP:__construct(health)
     self.containers = {}
+    
     local i = health
 
     while i > 0 do
         local container
         if i > HEART_SIZE then
-            container =  = HPContainer(HEART_SIZE)
+            container = HPContainer(HEART_SIZE)
         else
-            container =  = HPContainer(i)
+            container = HPContainer(i)
         end
         table.insert(self.containers, container)
         i = i - HEART_SIZE

@@ -1,4 +1,6 @@
+-- this is not my stuff, this is his:
 -- https://github.com/ImagicTheCat/Luaoop
+-- I have modified the code at one place so that it includes an emitter and a "create" event
 
 local Luaoop = {}
 

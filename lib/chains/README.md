@@ -72,6 +72,8 @@ chain:pass(event)
 -- event.propagate = true
 ```
 
+A chain's handler may not merely check something, but also perform any action and update the event according to the results of that action. Believe me, these things are immensely useful! 
+
 ## Stop condition
 
 One more thing, the stop condition may be programmed as a function. The `Chain.checkPropagate` you've seen previously is actually just a simple function. Here's how it's defined.
@@ -121,7 +123,7 @@ template:addChain('chain2')
 
 local chains = template:init()
 
-inspect(chains)
+print(inspect(chains))
 -- {
 --     chain0 = Chain,
 --     chain1 = Chain,

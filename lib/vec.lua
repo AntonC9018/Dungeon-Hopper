@@ -141,6 +141,7 @@ end
 
 function Vec:__tostring()
     return '{ x: '..tostring(self.x)..', y: '..tostring(self.y)..' }'
-
 end
+
+
 return Vec

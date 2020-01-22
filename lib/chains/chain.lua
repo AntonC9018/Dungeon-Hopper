@@ -98,6 +98,10 @@ function Chain:pass(propagatingEvent, checkStopCondition)
     return propagatingEvent
 end
 
+function Chain:__tostring()
+    return string.format("Chain(%i)", #self.handlers)
+end
+
 -- the typical checkStopCondition function is also provided
 Chain.checkPropagate = function(event)
     return not event.propagate 

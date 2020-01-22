@@ -24,6 +24,7 @@ List of important things not implemented:
 3. Moving
 4. Sequential decorator
 5. Ticking
+6. HP
 6. Basic Controls
 
 List of less significant things not implemented:

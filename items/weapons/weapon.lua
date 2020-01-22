@@ -42,6 +42,7 @@ function Weapon:posFromAction(actor, action)
     -- after that, analyze it
     local event = Event(actor, action)
     event.targets = map
+    event.hitAll = self.hitAll
 
     self.chain:pass(event, self.check)
 

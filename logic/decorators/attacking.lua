@@ -1,9 +1,9 @@
 local utils = require "utils" 
 
 local function getBase(event)
-    event.attack = Attack(event.actor.baseStats.attack)
-    event.status = Amounts(event.actor.baseStats.status)
-    event.push = Push(event.actor.baseStats.push)    
+    event.attack = Attack(event.actor.baseModifiers.attack)
+    event.status = Amounts(event.actor.baseModifiers.status)
+    event.push = Push(event.actor.baseModifiers.push)    
 end
 
 local function getTargets(event)

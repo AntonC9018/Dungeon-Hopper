@@ -26,7 +26,7 @@ local Attackable = function(entityClass)
 
     if not template:isSetChain("defense") then
         template:addChain("defense")
-        template:addHandler("defense", armor(entityClass.base.armor))
+        template:addHandler("defense", armor(entityClass.baseModifiers.armor))
     end
     
     template:addChain("beHit")

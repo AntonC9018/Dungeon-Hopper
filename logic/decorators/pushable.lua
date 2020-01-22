@@ -1,11 +1,7 @@
 local utils = require "utils" 
 
-local identity = function(event)
-    
-end
-
--- TODO: implemet these methods
-local checkPush = identity
+-- TODO: implement these methods
+local checkPush = utils.nothing
 
 local executePush = function(event)
     local move = event.push:toMove()

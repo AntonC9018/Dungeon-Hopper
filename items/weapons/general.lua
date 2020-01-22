@@ -12,7 +12,7 @@ local function next(event)
 
     -- if the first one is anything but nil, leave the list unchanged
     if event.targets[1] ~= nil
-        
+        return
     end
 
     -- otherwise, check if not everything is Attackable...blah-blah 
@@ -35,7 +35,7 @@ end
 
 
 local function hitAll(event)
-    if event.actor.hitAll then
+    if event.hitAll then
         event.propagate = false
     end
     
@@ -106,7 +106,7 @@ end
 
 
 local function checkStop(event)
-    return Chain.stopPropagate(event) or stopIfNil(event)
+    return Chain.stopPropagate(event) or stopIfEmpty(event)
 end
 
 -- define a general chain

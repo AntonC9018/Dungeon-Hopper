@@ -1,16 +1,14 @@
 local utils = require "utils" 
 
 local function getBaseMove(action)
-    local move = Move(action.direction, action.actor.base.move)
-    event.move = move
-    
+    local move = Move(action.direction, action.actor.baseModifiers.move)
+    event.move = move    
 end
 
 
 local function displace(event)    
     local move = event.move
-    event.actor.world:displace(event.actor, event.move)    
-    
+    event.actor.world:displace(event.actor, event.move)     
 end
 
 

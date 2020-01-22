@@ -1,11 +1,9 @@
 local utils = require "utils" 
 
-local nothing = function(event) end
-
 -- TODO: implemet these methods
-local checkStatus = nothing
-local applyStatus = nothing
-local checkStatuses = nothing
+local checkStatus = utils.nothing
+local applyStatus = utils.nothing
+local checkStatuses = utils.nothing
 
 local Statused = function(entityClass)
     local template = entityClass.chainTemplate

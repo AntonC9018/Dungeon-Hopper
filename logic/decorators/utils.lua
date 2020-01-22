@@ -14,4 +14,7 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     end
 end
 
+utils.nothing = function(event)    
+end
+
 return utils

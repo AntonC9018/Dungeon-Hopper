@@ -1,6 +1,6 @@
 local utils = require "utils" 
 
--- TODO: implemet these methods
+-- TODO: implement these methods
 local checkStatus = utils.nothing
 local applyStatus = utils.nothing
 local checkStatuses = utils.nothing

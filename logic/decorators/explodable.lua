@@ -2,7 +2,7 @@ local utils = require "utils"
 
 -- TODO: fully implement
 local function beExploded(event)
-    event.actor:takeDamage(event.action.special.damage)11    
+    event.actor:takeDamage(event.action.special.damage)    
 end
 
 local function die(event)

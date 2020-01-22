@@ -1,12 +1,16 @@
 local utils = require "utils" 
 
 -- TODO: implement these methods
-local checkPush = utils.nothing
+local checkPush = function(event)
+    if event.action.push.power < event.actor.baseModifiers.resistance.push then
+        event.propagate = false
+    end
+end
 
 local executePush = function(event)
-    local move = event.push:toMove()
-    -- target is myself here
-    event.target.world:displace(event.target, move)    
+    local move = event.action.push:toMove(event.action.direction)
+    -- actor is the thing being pushed
+    event.actor.world:displace(event.actor, move)    
 end
 
 local Pushable = function(entityClass)

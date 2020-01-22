@@ -13,10 +13,17 @@ local function die(event)
     
 end
 
-local function armor(armor, max)
+local function armor(protectionModifier)
     return function(event)
         event.attack.damage = 
-            clamp(event.attack.damage - armor, 1, max or math.huge)        
+            clamp(
+                event.attack.damage - protectionModifier.armor, 
+                1, 
+                protectionModifier.maxDamage or math.huge
+            )
+        if event.attack.pierce > protectionModifier.pierce then
+            event.attack.damage = 0  
+        end
     end
 end
 
@@ -26,7 +33,7 @@ local Attackable = function(entityClass)
 
     if not template:isSetChain("defense") then
         template:addChain("defense")
-        template:addHandler("defense", armor(entityClass.baseModifiers.armor))
+        template:addHandler("defense", armor(entityClass.baseModifiers.protection))
     end
     
     template:addChain("beHit")

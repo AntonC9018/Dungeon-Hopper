@@ -6,7 +6,7 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
 
         self.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
-        if event.propagate then    
+        if event.propagate then
             self.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 

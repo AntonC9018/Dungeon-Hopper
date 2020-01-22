@@ -1,5 +1,11 @@
 local Move = class("Move")
 
+function Move:__construct(moveModifier, direction)
+    self.isThrough = false
+    self.direction = direction
+    self.distance = moveModifier.distance or 1
+end
+
 Move.posFromMove = function(grid, target, move)
     if move.isThrough then
         return grid:closest(move.target)

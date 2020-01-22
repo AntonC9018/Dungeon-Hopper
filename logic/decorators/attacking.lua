@@ -2,7 +2,7 @@ local utils = require "utils"
 
 local function getBase(event)
     event.attack = Attack(event.actor.baseModifiers.attack)
-    event.status = Amounts(event.actor.baseModifiers.status)
+    event.status = Stats.fromTable(event.actor.baseModifiers.status)
     event.push = Push(event.actor.baseModifiers.push)    
 end
 

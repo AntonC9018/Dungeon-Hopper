@@ -29,14 +29,8 @@ function Entity:beStatused(action)
     return nil
 end
 
--- TODO: ADD base stuff, that is
---      1. base attack stats
---      2. base push stats
---      3. base status stats
---      4. base armor
 
-
--- make these a bit more efficient
+-- TODO: make these a bit more efficient
 function Entity:isAttackableOnlyWhenNextToAttacker()
     return self:isDecorated(Decorators.AttackableOnlyWhenNextToAttacker)  
 end
@@ -44,5 +38,32 @@ end
 function Entity:isAttackable()
     return self:isDecorated(Decorators.Attackable)
 end
+
+
+-- fallback base modifiers
+Entity.baseModifiers = {
+
+    attack = {
+        damage = 1,
+        pierce = 1
+    },
+
+    move = {
+        distance = 1
+    },
+
+    push = {
+        distance = 1,
+        power = 1
+    }
+
+    resistance = {
+        armor = 0,
+        maxDamage = math.huge,
+        push = 1,
+        pierce = 1
+    }
+}
+
 
 return Entity

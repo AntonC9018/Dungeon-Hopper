@@ -2,11 +2,13 @@ local Grid = require("world.grid")
 
 local World = class("World")
 
+
 function World:__construct()
     self.grid = Grid(25, 25)
     self.orderedReals = {}
     self.emitter = Emitter()
 end
+
 
 function World:init()
 end
@@ -38,6 +40,7 @@ function World:gameLoopIfSet()
     self:gameLoop()
     return true
 end
+
 
 function World:gameLoop()
 
@@ -91,13 +94,16 @@ function World:reset()
     self:resetObjects()
 end
 
+
 function World:resetPhase()
     self.phase = 0
 end
 
+
 function World:resetObjects()
 
 end
+
 
 function World:sortByPriority()
     -- sort everything in grid by priority
@@ -123,9 +129,11 @@ function World:calculateActions()
     self.grid:calculateActionProjectiles()
 end
 
+
 function World:restoreGrid()
     self.grid = self.storedGrid
 end
+
 
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
@@ -151,11 +159,14 @@ end
 function World:activateExplosions()
 end
 
+
 function World:activateFloorHazards()
 end
 
+
 function World:activateTraps()
 end
+
 
 function World:filterDead()
     self.grid:filterDeadReals()
@@ -166,8 +177,10 @@ function World:filterDead()
 end
 
 
+
 -- Decorator + game logic stuff
 local Move = require "logic.action.move"
+
 
 function World:displace(target, move)
     local coord = Move.posFromMove(self.grid, target, move)
@@ -183,8 +196,11 @@ function World:displace(target, move)
     return true
 end
 
+
+
 local Target = require "weapons.target"
 local Piece = require "weapons.piece"
+
 
 function World:getTargets(actor, action)
     local weapon = actor.weapon
@@ -205,24 +221,33 @@ function World:getTargets(actor, action)
     return { target }
 end
 
+
 function World:doAttack(targets, action)
-
     local events = {}
-
     for i = 1, #targets do
         local target = targets[i].target
         action.direction = targets[i].piece.dir
         events[i] = target:beAttacked(action)
     end
-
     return events
 end
 
+
 function World:doPush(targets, action)
-    local push = action.push
+    local events = {}
+    for i = 1, #targets do
+        events[i] = targets[i]:executePush(action)
+    end
+    return events
 end
 
+
 function World:doStatus(targets, action)
+    local events = {}
+    for i = 1, #targets do
+        events[i] = targets[i]:executeStatus(action)
+    end
+    return events
 end
 
 

@@ -2,23 +2,12 @@
 local HP = require "logic.hp.hp"
 
 
-local function takeDamage(actor, damage)
+function WithHP:activate(actor, damage)
     actor.hp:takeDamage(damage)
 end
 
-
-local WithHP = function(entityClass)
-    entityClass.takeDamage = takeDamage
-
-    entityClass.__emitter:on("create", 
-    
-        function(instance)
-            instance.hp = HP(instance.baseModifiers.hp)
-        end
-    )
-
-    table.insert(entityClass.decorators, WithHP)
+function WithHP:__construct(instance)
+    instance.hp = HP(instance.baseModifiers.hp)
 end
-
 
 return WithHP

@@ -1,5 +1,8 @@
 local utils = require "utils" 
 
+local Decorator = require 'decorator'
+local Moving = class('Moving', Decorator)
+
 local function getBaseMove(action)
     local move = Move(action.actor.baseModifiers.move, action.direction)
     event.move = move    
@@ -11,20 +14,13 @@ local function displace(event)
     event.actor.world:displace(event.actor, event.move)     
 end
 
+Moving.affectedChains = {
+    { "getMove", { getBaseMove }},
+    { "move", { displace } }
+}
 
-local Moving = function(entityClass)
-
-    local template = entityClass.chainTemplate
+Moving.activate = 
+    utils.checkApplyCycle("getMove", "move")
     
-    template:addChain("getMove")
-    template:addChain("move")
-
-    template:addHandler("getMove", getBaseMove)
-    template:addHandler("move", displace)
-
-    entityClass.executeMove = utils.checkApplyCycle("getMove", "move")
-
-    table.insert(entityClass.decorators, Moving)
-end
 
 return Moving

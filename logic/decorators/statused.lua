@@ -5,25 +5,16 @@ local checkStatus = utils.nothing
 local applyStatus = utils.nothing
 local checkStatuses = utils.nothing
 
-local Statused = function(entityClass)
-    local template = entityClass.chainTemplate
+local Decorator = require 'decorator'
+local Statused = class('Statused', Decorator)
 
-    if not template:isSetChain("checkAction") then
-        template:addChain("checkAction")
-    end
+Statused.affectedChains = {
+    { "checkStatus", { checkStatus }},
+    { "applyStatus", { applyStatus } }
+}
 
-    template:addChain("checkStatus")
-    template:addChain("applyStatus")
+Statused.activate = 
+    utils.checkApplyCycle("checkStatus", "applyStatus")
 
-    -- TODO: implement
-    template:addHandler("checkStatus", checkStatus)
-    template:addHandler("applyStatus", applyStatus)
-
-    entityClass.beStatused = utils.checkApplyCycle("checkStatus", "applyStatus")
-
-    template:addHandler("checkAction", checkStatuses)
-
-    table.insert(entityClass.decorators, Statused)
-end
 
 return Statused

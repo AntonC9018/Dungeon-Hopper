@@ -1,5 +1,6 @@
 
-local InvincibleHandler = class("InvincibleHandler")
+local Decorator = require 'decorator'
+local InvincibleHandler = class('InvincibleHandler', Decorator)
 
 function InvincibleHandler:__construct(instance)
     self.invincible = 0
@@ -27,20 +28,6 @@ function InvincibleHandler:__construct(instance)
                 self.invincible = self.invincible - 1
             end
         end)
-end
-
-
-local InvincibleAfterHit = function(entityClass)
-    
-    local template = entityClass.chainTemplate
-
-    entityClass.__emitter:on("create", 
-        function(instance) 
-            local inv = InvincibleHandler(instance)      
-        end
-    )
-
-    table.insert(entityClass.decorators, InvincibleAfterHit)
 end
 
 return InvincibleAfterHit

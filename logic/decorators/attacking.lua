@@ -1,5 +1,8 @@
 local utils = require "utils" 
 
+local Decorator = require 'decorator'
+local Attacking = class('Attacking', Decorator)
+
 local function getBase(event)
     event.attack = Attack(event.actor.baseModifiers.attack)
     event.status = Stats.fromTable(event.actor.baseModifiers.status)
@@ -34,22 +37,13 @@ local function applyStatus(event)
     event.statusEvents = events    
 end
 
+Attacking.affectedChains = {
+    { "getAttack", { setBase } },
+    { "attack", { getTargets, applyAttack, applyPush, applyStatus } }
+}
 
-local Attacking = function(entityClass)
-    local template = entityClass.chainTemplate
 
-    template:addChain("getAttack")
-    template:addHandler("getAttack", setBase)
-
-    template:addChain("attack")
-    tamplate:addHandler("attack", getTargets)
-    template:addHandler("attack", applyAttack)
-    template:addHandler("attack", applyPush)
-    template:addHandler("attack", applyStatus)
-
-    entityClass.executeAttack = utils.checkApplyCycle("getAttack", "attack")
-
-    table.insert(entityClass.decorators, Attacking)
-end
+Attacking.activate = 
+    utils.checkApplyCycle("getAttack", "attack")
 
 return Attacking

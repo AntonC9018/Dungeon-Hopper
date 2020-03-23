@@ -1,5 +1,9 @@
 local utils = require "utils" 
 
+local Decorator = require 'decorator'
+local Pushable = class('Pushable', Decorator)
+
+
 -- TODO: implement these methods
 local checkPush = function(event)
     if event.action.push.power < event.actor.baseModifiers.resistance.push then
@@ -13,19 +17,14 @@ local executePush = function(event)
     event.actor.world:displace(event.actor, move)    
 end
 
-local Pushable = function(entityClass)
-    local template = entityClass.chainTemplate
 
-    template:addChain("checkPush")
-    template:addChain("executePush")
+Pushable.affectedChains = {
+    { "checkPush", { checkPush } },
+    { "executePush", { executePush } }
+}
 
-    template:addHandler("checkPush", checkPush)
-    template:addHandler("executePush", executePush)
-
-    entityClass.executePush = utils.checkApplyCycle("checkPush", "executePush")
-
-    table.insert(entityClass.decorators, Pushable)
-
-end
+Pushable.activate = 
+    utils.checkApplyCycle("checkPush", "executePush")
+ 
 
 return Pushable

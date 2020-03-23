@@ -11,10 +11,10 @@ local Sequential = require "sequential"
 
 local function General(entityClass)
 
-    Acting(entityClass)
-    ShouldAct(entityClass)
+    Acting.decorate(entityClass)
+    ShouldAct.decorate(entityClass)
     entityClass.chainTemplate:addHandler('action', GeneralAlgo)
-    Sequential(entityClass)
+    Sequential.decorate(entityClass)
 
 end
 

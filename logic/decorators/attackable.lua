@@ -1,5 +1,9 @@
 local utils = require "utils" 
 
+local Decorator = require 'decorator'
+local Attackable = class('Attackable', Decorator)
+
+
 -- TODO: fully implement
 local function takeHit(event)
     event.actor:takeDamage(event.action.attack.damage)    
@@ -28,21 +32,14 @@ local function armor(protectionModifier)
 end
 
 
-local Attackable = function(entityClass)
-    local template = entityClass.chainTemplate
+Attackable.affectedChains =
+    { 
+        { "defense", { armor(entityClass.baseModifiers.protection) } },
+        { "beHit", { takeHit, die } }
+    }
 
-    if not template:isSetChain("defense") then
-        template:addChain("defense")
-        template:addHandler("defense", armor(entityClass.baseModifiers.protection))
-    end
+Attackable.activate =
+    utils.checkApplyCycle("defense", "beHit")
+
     
-    template:addChain("beHit")
-    template:addHandler("beHit", takeHit)
-    template:addHandler("beHit", die)
-
-    entityClass.beAttacked = utils.checkApplyCycle("defense", "beHit")
-
-    table.insert(entityClass.decorators, Attackable)
-end
-
 return Attackable

@@ -42,4 +42,16 @@ function GameObject:executeAction()
     self.didAction = true 
 end
 
+function GameObject:applyDecorators()
+    -- initialize chains
+    self.chains = self.chainTemplate:init()
+    -- initialize decorators
+    self.decorators = {}
+    for i = 1, #self.decoratorsList do
+        local decorator = self.decoratorsList[i]
+        self.decorators[class.name(decorator)] = 
+            decorator()
+    end
+end
+
 return GameObject

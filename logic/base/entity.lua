@@ -2,36 +2,48 @@
 -- entity.lua
 --
 -- This is the base class for any entity in the game
-
+local Decorators = require 'decorators.decorators'
 
 -- Decorator stuff
 function Entity:isDecorated(decorator)
-    return table.some(self.decorators, decorator)
+    return self.decorators[class.name(decorator)] ~= nil
 end
 
-function Entity:executeMove(action)
-    return nil
+function activateDecorator(decorator)
+    local name = class.name(decorator)
+    return 
+        function(self, action)
+            local decorator = 
+                self.decorators[name]
+            
+            if (decorator ~= nil)
+                return decorator:activate(action)
+
+            return nil
+        end
 end
 
-function Entity:executeAttack(action)
-    return nil
-end
+-- shortcut functions
+Entity.executeMove = 
+    activateDecorator(Decorators.Moving)
 
-function Entity:beAttacked(action)
-    return nil
-end
+Entity.executeAttack =
+    activateDecorator(Decorators.Attacking)
 
-function Entity:bePushed(action)
-    return nil
-end
+Entity:beAttacked =
+    activateDecorator(Decorators.Attackable)
 
-function Entity:beStatused(action)
-    return nil
-end
+Entity:bePushed =
+    activateDecorator(Decorators.Pushable)
 
-function Entity:takeDamage()
-    return nil
-end
+Entity:beStatused =
+    activateDecorator(Decorators.Statused)
+
+Entity:takeDamage =
+    activateDecorator(Decorators.WithHP)
+
+Entity.executeAction = 
+    activateDecorator(Decorators.Acting)
  
 
 -- TODO: make these a bit more efficient

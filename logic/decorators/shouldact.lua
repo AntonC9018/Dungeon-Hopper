@@ -5,19 +5,15 @@
 -- next actions by an algorithm, and then tries to apply those possible actions
 -- by some other algorithm (generally, it would be the general algorithm)
 --
--- ShouldAct chains are mployed by the general algorithm 
+-- ShouldAct chains are employed by the general algorithm 
+local Decorator = require 'decorator'
+local ShouldAct = class('ShouldAct', Decorator)
 
-local ShouldAct = function(entityClass)
-
-    local template = entityClass.chainTemplate
-
-    template:addChain("shouldAttack")
-    template:addChain("shouldMove")
-    template:addChain("shouldDig")
-    template:addChain("shouldSpecial")
-
-    table.insert(entityClass.decorators, ShouldAct)
-
-end
+ShouldAct.affectedChains = {
+    { "shouldAttack", {} },
+    { "shouldMove", {} },
+    { "shouldDig", {} },
+    { "shouldSpecial", {} }
+}
 
 return ShouldAct

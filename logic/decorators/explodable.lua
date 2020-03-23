@@ -17,11 +17,11 @@ end
 
 
 Explodable.affectedChains = {
-    { "defense", { armor(entityClass.baseModifiers.armor) }},
+    { "defense", { armor }},
     { "beingExploded", { beExploded, die } }
 }
 
 Explodable.activate = 
     utils.checkApplyCycle("defence", "beingExploded")
-    
+
 return Explodable

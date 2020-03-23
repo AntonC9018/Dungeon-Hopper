@@ -14,6 +14,24 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     end
 end
 
+
+
+utils.armor = function(event)
+    local actor = event.actor
+    local protectionModifier = actor.baseModifiers.protection
+
+    event.attack.damage = 
+        clamp(
+            event.attack.damage - protectionModifier.armor, 
+            1, 
+            protectionModifier.maxDamage or math.huge
+        )
+        
+    if event.attack.pierce > protectionModifier.pierce then
+        event.attack.damage = 0  
+    end
+end
+
 utils.nothing = function(event)    
 end
 

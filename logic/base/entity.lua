@@ -29,6 +29,10 @@ function Entity:beStatused(action)
     return nil
 end
 
+function Entity:takeDamage()
+    return nil
+end
+ 
 
 -- TODO: make these a bit more efficient
 function Entity:isAttackableOnlyWhenNextToAttacker()
@@ -55,14 +59,16 @@ Entity.baseModifiers = {
     push = {
         distance = 1,
         power = 1
-    }
+    },
 
     resistance = {
         armor = 0,
         maxDamage = math.huge,
         push = 1,
         pierce = 1
-    }
+    },
+
+    hp = 0
 }
 
 

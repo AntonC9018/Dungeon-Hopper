@@ -49,3 +49,6 @@ local getMovs = function(actor, action)
     return dirs
 
 end
+
+
+return getMovs

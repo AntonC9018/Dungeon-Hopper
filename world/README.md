@@ -72,15 +72,15 @@ This event has a special structure, and consequently will be called `EnclosingEv
 1. `EnclosingEvent.checkSuccess` - (boolean) same as 3, except not inherited.
 2. `EnclosingEvent.success` - (boolean) comes paired with the next field.
 3. `EnclosingEvent.algoEvent` - The one event that actually occured, with the action and the direction, i.e.:
-    1. `EnclosingEvent.algoEvent.success`
+    1. `algoEvent.success`
     2. A nested `resultEvent` with a wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
-        1. `algoEvent.resultEvent.attack` - the attack object applied
-        2. `algoEvent.resultEvent.push` - the push object applied
-        3. `algoEvent.resultEvent.status` - the status object applied
-        4. `algoEvent.resultEvent.targets` - a list of the `Target` objects, containing the reals actually hit. This list is formed by the weapon's spec or by taking the cell the actor is facing and getting the real out of it.
-        5. `algoEvent.resultEvent.attackEvents` - list of events generated as a result of reals being attacked
-        6. `algoEvent.resultEvent.pushEvents` - similarly, pushed
-        7. `algoEvent.resultEvent.statusEvents` - similarly, statused
+        1. `resultEvent.attack` - the attack object applied
+        2. `resultEvent.push` - the push object applied
+        3. `resultEvent.status` - the status object applied
+        4. `resultEvent.targets` - a list of the `Target` objects, containing the reals actually hit. This list is formed by the weapon's spec or by taking the cell the actor is facing and getting the real out of it.
+        5. `resultEvent.attackEvents` - list of events generated as a result of reals being attacked
+        6. `resultEvent.pushEvents` - similarly, pushed
+        7. `resultEvent.statusEvents` - similarly, statused
 
 You can find the one direction that suceeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
 

@@ -31,3 +31,7 @@ Modifiers do not need their own classes. Here is what field each type of modifie
 ## Status
 
 Here should be all the different types of status effects, which will be added later
+
+## HP
+
+For now, an int

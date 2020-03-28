@@ -53,4 +53,6 @@ local step3 = {
 local steps = { step1, step2, step3 }
 
 -- after that, decorate your entityClass like this:
-Decorators.Sequential(entityClass, steps)
+-- Decorators.Sequential(entityClass, steps)
+entityClass.sequenceSteps = steps
+Decorators.Sequential.decorate(entityClass)

@@ -5,8 +5,7 @@ local PlayerAlgo = require "logic.action.algorithms.player"
 
 local Player = class("Player", Entity)
 
-Decorators.Start     .decorate(Player)
-
+Decorators.Start(Player)
 Decorators.Acting    .decorate(Player)
 Player.chainTemplate:addHandler("action", PlayerAlgo)
 Decorators.Attackable.decorate(Player)

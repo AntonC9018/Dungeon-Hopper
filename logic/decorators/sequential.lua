@@ -9,4 +9,8 @@ local function Sequential:activate(actor)
     actor.nextAction = actor.sequence:nextAction()
 end
 
+local function Sequential:__construct(instance)
+    instance.sequence = Sequence(steps)
+end
+
 return Sequential

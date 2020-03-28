@@ -1,6 +1,5 @@
 local Chain = require "lib.chains.chain"
 
-
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->
 -- HitAll? (leave all) -> 

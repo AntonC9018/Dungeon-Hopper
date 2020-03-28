@@ -12,13 +12,10 @@ Decorator.affectedChains = {}
 
 -- Decorator initialization function
 local function Decorator.decorate(decoratorClass, instanceClass)
-    -- there is gonna be a table of whether a decorator has been applied
-    -- that table is doing to have tables of decorators' storage if needed
-    -- the name is the name of the subclass of decorator itself
 
     -- put this decorator for firther intialization in the list of decorators
     local decoratorsList = instanceClass.decoratorsList
-    decoratorsList[class.name(decoratorClass)] = {}
+    table.insert(decoratorsList, decoratorClass)
 
     -- update the template on instance class
     local template = instanceClass.chainTemplate

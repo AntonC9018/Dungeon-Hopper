@@ -12,12 +12,12 @@ end
 function activateDecorator(decorator)
     local name = class.name(decorator)
     return 
-        function(self, action)
+        function(self, ...)
             local decorator = 
                 self.decorators[name]
             
             if (decorator ~= nil)
-                return decorator:activate(action)
+                return decorator:activate(...)
 
             return nil
         end
@@ -42,11 +42,18 @@ Entity:beStatused =
 Entity:takeDamage =
     activateDecorator(Decorators.WithHP)
 
-Entity.executeAction = 
+local actingActivation = 
     activateDecorator(Decorators.Acting)
+
+function Entity:executeAction(event) 
+    self.doingAction = true
+    actingActivation(self, event)
+    self.doingAction = false
+    self.didAction = true
+end
+    
  
 
--- TODO: make these a bit more efficient
 function Entity:isAttackableOnlyWhenNextToAttacker()
     return self:isDecorated(Decorators.AttackableOnlyWhenNextToAttacker)  
 end

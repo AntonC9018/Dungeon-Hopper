@@ -48,9 +48,10 @@ function GameObject:applyDecorators()
     -- initialize decorators
     self.decorators = {}
     for i = 1, #self.decoratorsList do
-        local decorator = self.decoratorsList[i]
-        self.decorators[class.name(decorator)] = 
-            decorator()
+        local decoratorClass = self.decoratorsList[i]
+        -- instantiate the decorator
+        self.decorators[class.name(decoratorClass)] = 
+            decoratorClass(self)
     end
 end
 

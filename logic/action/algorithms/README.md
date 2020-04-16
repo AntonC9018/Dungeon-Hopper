@@ -11,7 +11,7 @@ Here are the steps involved in that:
 
 2. Each real generates a list of possible `dirs`, which are just directions they would like to do stuff into.
 
-3. An `action` with that dir's `direction` set, walks this action's `chain`, which has the corresponding handlers.
+3. An `action` with that dir's `direction` set on it, walks this action's `chain`, which has the corresponding handlers.
 For example, an `ATTACK_MOVE_ACTION` is going to try attacking (after checking if it should via the `shouldAttack` chain) and then going to try moving (same, after checking).
 
 4. If another real is blocking their way of moving / attacking, they will pass them the turn. They will call `executeAction()` on that real. If it has already executed their action, though, the current `dir` will fail.

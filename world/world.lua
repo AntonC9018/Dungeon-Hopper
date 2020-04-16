@@ -3,8 +3,8 @@ local Grid = require("world.grid")
 local World = class("World")
 
 
-function World:__construct()
-    self.grid = Grid(25, 25)
+function World:__construct(w, h)
+    self.grid = Grid(w, h)
     self.orderedReals = {}
     self.emitter = Emitter()
 end
@@ -13,15 +13,36 @@ end
 function World:init()
 end
 
+
+-- player and entity creation
+local Player = require 'logic.base.player'
+
+function World:createPlayerAt(pos)
+    local player = Player()
+    player:init(pos, self)
+    self.grid:setPlayerAt(player, pos)
+    return player
+end
+
+
+local TestEnemy = require 'modules.test.enemytest'
+
+function World:createTestEnemyAt(pos)
+    local testEnemy = TestEnemy()
+    testEnemy:init(pos, self)
+    self.grid:setRealAt(testEnemy, pos)
+    return testEnemy
+end
+
 --- Convert user input to an action and set it
 -- as the action of one of the players. 
 -- returns true if the substitution was successful
 -- and false otherwise
-function World:setPlayerActions(action, playerIndex)
+function World:setPlayerActions(direction, playerIndex)
     local player = self.grid.players[playerIndex]
 
     if not player.isActionSet then
-        player:setAction(action)
+        player:generateAction(direction)
         return true
     end
 
@@ -115,6 +136,12 @@ function World:sortByPriority()
 end
 
 
+-- TODO: implement
+function World:advancePhase()
+
+end
+
+
 -- NOTE: this should select an action (Attack, Move etc)
 -- and set it as the nextAction at that object
 -- it should not care much about direction
@@ -179,12 +206,14 @@ end
 
 
 -- Decorator + game logic stuff
-local Move = require "logic.action.move"
+local Move = require "logic.action.actions.move"
 
 
 function World:displace(target, move)
-    local coord = Move.posFromMove(self.grid, target, move)
+    printf("Displacing %s", class.name(target)) -- debug
 
+    local coord = Move.posFromMove(self.grid, target, move)
+    
     if coord == nil then
         return nil
     end
@@ -198,11 +227,13 @@ end
 
 
 
-local Target = require "weapons.target"
-local Piece = require "weapons.piece"
+local Target = require "items.weapons.target"
+local Piece = require "items.weapons.piece"
 
 
 function World:getTargets(actor, action)
+    printf("Getting targets %s", class.name(actor)) -- debug
+
     local weapon = actor.weapon
 
     if weapon ~= nil then
@@ -223,6 +254,8 @@ end
 
 
 function World:doAttack(targets, action)
+    printf("Doing attack %s", class.name(targets[1])) -- debug
+
     local events = {}
     for i = 1, #targets do
         local target = targets[i].target
@@ -234,6 +267,8 @@ end
 
 
 function World:doPush(targets, action)
+    printf("Doing push %s", class.name(targets[1])) -- debug
+
     local events = {}
     for i = 1, #targets do
         events[i] = targets[i]:executePush(action)
@@ -243,6 +278,8 @@ end
 
 
 function World:doStatus(targets, action)
+    printf("Doing status %s", class.name(targets[1])) -- debug
+
     local events = {}
     for i = 1, #targets do
         events[i] = targets[i]:executeStatus(action)

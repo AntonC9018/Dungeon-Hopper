@@ -1,4 +1,4 @@
-local Step = require "step"
+local Step = require "logic.action.sequence.step"
 
 local Sequence = class('Sequence')
 

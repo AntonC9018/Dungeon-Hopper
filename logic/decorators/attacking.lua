@@ -1,6 +1,6 @@
-local utils = require "utils" 
+local utils = require "logic.decorators.utils" 
 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Attacking = class('Attacking', Decorator)
 
 local function getBase(event)

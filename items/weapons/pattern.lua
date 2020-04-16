@@ -1,4 +1,4 @@
-local Piece = require "piece"
+local Piece = require "items.weapons.piece"
 
 local Pattern = class("Pattern")
 

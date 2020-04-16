@@ -1,4 +1,4 @@
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Acting = class('Acting', Decorator)
 
 Acting.affectedChains =
@@ -8,6 +8,7 @@ Acting.affectedChains =
         { "failAction", {} },
         { "succeedAction", {} }    
     }
+
 
 -- execute action function
 function Acting:activate(instance)

@@ -28,6 +28,6 @@ Handlers.AttackHandler = AttackHandler
 Handlers.MoveHandler = MoveHandler
 Handlers.DigHandler = DigHandler
 
-Hnadlers.applyHandler = applyHandler
+Handlers.applyHandler = applyHandler
 
 return Handlers

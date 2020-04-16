@@ -3,15 +3,15 @@ local Event = require "lib.chains.event"
 local Step = class("Step")
 
 
-local function checkSuccessDefault()
-    local chain = Chain()
-    chain:addHandler(
-        function(event)
-            .triggerEvent.propagate
-        end
-    )
-    return chain
-end
+-- local function checkSuccessDefault()
+--     local chain = Chain()
+--     chain:addHandler(
+--         function(event)
+--             event.triggerEvent.propagate
+--         end
+--     )
+--     return chain
+-- end
 
 
 function Step:__construct(config)

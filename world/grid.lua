@@ -30,9 +30,9 @@ end
 
 local Grid = class("Grid")
 
-function Grid:__construct()
+function Grid:__construct(w, h)
     -- The grid is a 2d array of such cells.
-    self.grid = {}
+    self.grid = create(w, h)
     -- Lists of game objects at all layers
     self.layers = {{},{},{},{},{},{},{},{}}
     -- Lists for various types of game objects at play

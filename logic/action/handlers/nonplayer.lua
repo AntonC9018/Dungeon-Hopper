@@ -31,6 +31,6 @@ Handlers.AttackHandler = AttackHandler
 Handlers.MoveHandler = MoveHandler
 Handlers.DigHandler = DigHandler
 
-Hnadlers.checkApplyHandler = checkApplyHandler
+Handlers.checkApplyHandler = checkApplyHandler
 
 return Handlers

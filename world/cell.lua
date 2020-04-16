@@ -1,4 +1,4 @@
-local Gold = require("environ.gold")
+-- local Gold = require("environ.gold")
 
 local Cell = class("Cell")
 

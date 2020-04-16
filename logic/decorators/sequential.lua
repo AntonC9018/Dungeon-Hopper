@@ -1,16 +1,16 @@
 
-local utils = require "utils" 
+local utils = require "logic.decorators.utils" 
 local Sequence = require "logic.action.sequence.sequence"
 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Sequential = class('Sequential', Decorator)
 
-local function Sequential:activate(actor)
+function Sequential:activate(actor)
     actor.nextAction = actor.sequence:nextAction()
 end
 
-local function Sequential:__construct(instance)
-    instance.sequence = Sequence(steps)
+function Sequential:__construct(instance)
+    instance.sequence = Sequence(instance.sequenceSteps)
 end
 
 return Sequential

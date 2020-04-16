@@ -2,26 +2,18 @@
 -- entity.lua
 --
 -- This is the base class for any entity in the game
-local Decorators = require 'decorators.decorators'
+local Decorators = require 'logic.decorators.decorators'
+local PlayerAlgo = require "logic.action.algorithms.player"
+local GameObject = require 'logic.base.gameobject'
+
+local Entity = class("Entity", GameObject)
 
 -- Decorator stuff
 function Entity:isDecorated(decorator)
     return self.decorators[class.name(decorator)] ~= nil
 end
 
-function activateDecorator(decorator)
-    local name = class.name(decorator)
-    return 
-        function(self, ...)
-            local decorator = 
-                self.decorators[name]
-            
-            if (decorator ~= nil)
-                return decorator:activate(...)
-
-            return nil
-        end
-end
+local activateDecorator = require("logic.base.utils").activateDecorator
 
 -- shortcut functions
 Entity.executeMove = 
@@ -30,16 +22,16 @@ Entity.executeMove =
 Entity.executeAttack =
     activateDecorator(Decorators.Attacking)
 
-Entity:beAttacked =
+Entity.beAttacked =
     activateDecorator(Decorators.Attackable)
 
-Entity:bePushed =
+Entity.bePushed =
     activateDecorator(Decorators.Pushable)
 
-Entity:beStatused =
+Entity.beStatused =
     activateDecorator(Decorators.Statused)
 
-Entity:takeDamage =
+Entity.takeDamage =
     activateDecorator(Decorators.WithHP)
 
 local actingActivation = 
@@ -47,7 +39,7 @@ local actingActivation =
 
 function Entity:executeAction(event) 
     self.doingAction = true
-    actingActivation(self, event)
+    actingActivation(self, self, event)
     self.doingAction = false
     self.didAction = true
 end

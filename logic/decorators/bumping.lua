@@ -1,5 +1,5 @@
 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Bumping = class('Bumping', Decorator)
 
 local function bump(event)

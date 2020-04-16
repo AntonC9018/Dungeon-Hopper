@@ -1,13 +1,13 @@
 
-local Target = require "target"
-local General = require "general"
+local Target = require "items.weapons.target"
+local General = require "items.weapons.general"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon")
 
 -- A weapon must have a pattern
 -- for the sake of argument, a fallback pattern is presented here
-local Pattern = require("pattern")
+local Pattern = require("items.weapons.pattern")
 Weapon.pattern = Pattern()
 -- attack directly in front, 
 -- apply push in the same direction,

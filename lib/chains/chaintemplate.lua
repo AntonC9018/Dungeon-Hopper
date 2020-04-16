@@ -1,7 +1,7 @@
-local Chain = require("chain")
-local StatelessHandler = require("handler").StatelessHandler
+local Chain = require("lib.chains.chain")
+-- local StatelessHandler = require("lib.chains.handler").StatelessHandler
 
-local ChainsTemplate = class("ChainTemplate")
+local ChainsTemplate = class("ChainsTemplate")
 
 function ChainsTemplate:__construct()
     self.chains = {}

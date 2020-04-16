@@ -1,6 +1,6 @@
-local utils = require "utils" 
+local utils = require "logic.decorators.utils" 
 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Attackable = class('Attackable', Decorator)
 
 
@@ -20,12 +20,12 @@ end
 
 Attackable.affectedChains =
     { 
-        { "defense", { utils.armor } },
+        { "defence", { utils.armor } },
         { "beHit", { takeHit, die } }
     }
 
 Attackable.activate =
-    utils.checkApplyCycle("defense", "beHit")
+    utils.checkApplyCycle("defence", "beHit")
 
     
 return Attackable

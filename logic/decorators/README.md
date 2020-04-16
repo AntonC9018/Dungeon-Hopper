@@ -10,8 +10,8 @@
 Assume you have an entity class you'd like to decorate. For that, just do the following:
 ```lua
 local Decorators = require "logic.decorators"
-Decorators.Start(MyEntity)        -- create the chain template on that object
-Decorators.MyDecorator(MyEntity)  -- add stuff to that template, add stuff to your entity
+Decorator.decorate(Start(MyEntity)        -- create the chain template on that object
+Decorator.decorate(MyDecorator(MyEntity)  -- add stuff to that template, add stuff to your entity
 ```
 > NOTE: You cannot decorate instances! You can apply the decorators only to classes!
 > So, in order to, e.g., stop your entities from taking damage while they are in some phase of their lifecycle, use some other logic, e.g. adding handlers to chains. 
@@ -19,12 +19,12 @@ Decorators.MyDecorator(MyEntity)  -- add stuff to that template, add stuff to yo
 
 ### Here is a list of all available decorators:
 
-## `Decorators.Start`
+## `Decorator.decorate(Start`
 
 Adds *the chain template, the __emitter*  to your Entity class and the *handlers* list to the instances of your class (on their instantiation). 
 > You must call this first if you want your next decorators to work at all.
 
-## `Decorators.Attackable`
+## `Decorator.decorate(Attackable`
 
 This decorator enables the entity to take normal hits
 
@@ -41,7 +41,7 @@ This decorator enables the entity to take normal hits
 | ------------ | ----------- |
 | `beAttacked` | Get attacked by an entity |
 
-## `Decorators.Attacking`
+## `Decorator.decorate(Attacking`
 
 This decorator enables the entity to do normal hits
 
@@ -55,7 +55,7 @@ This decorator enables the entity to do normal hits
 | `executeAttack` | Attack an enemy, according to the action object |
 
 
-## `Decorators.Pushable`
+## `Decorator.decorate(Pushable`
 
 Enables the entity to be pushed
 
@@ -68,11 +68,11 @@ Enables the entity to be pushed
 | ------------ | ----------- |
 | `executePush`| |
 
-## `Decorators.Explodable`
+## `Decorator.decorate(Explodable`
 Enables the entity to be exploded
-## `Decorators.InvincibleAfterHit`
+## `Decorator.decorate(InvincibleAfterHit`
 Makes the entity invincible for 2 loop after it's taken a hit
-## `Decorators.Statused`
+## `Decorator.decorate(Statused`
 Makes the entity vulnerable to status effects. Status effects are being frozen, stunned, on fire, poisoned and so on. 
-## `Decorators.Moving`
+## `Decorator.decorate(Moving`
 Enables entity to displace via the `executeMove` method

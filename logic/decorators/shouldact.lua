@@ -6,7 +6,7 @@
 -- by some other algorithm (generally, it would be the general algorithm)
 --
 -- ShouldAct chains are employed by the general algorithm 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local ShouldAct = class('ShouldAct', Decorator)
 
 ShouldAct.affectedChains = {

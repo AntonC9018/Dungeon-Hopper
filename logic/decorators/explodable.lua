@@ -1,6 +1,6 @@
-local utils = require "utils" 
+local utils = require "logic.decorators.utils" 
 
-local Decorator = require 'decorator'
+local Decorator = require 'logic.decorators.decorator'
 local Explodable = class('Explodable', Decorator)
 
 -- TODO: fully implement
@@ -17,7 +17,7 @@ end
 
 
 Explodable.affectedChains = {
-    { "defense", { armor }},
+    { "defence", { utils.armor }},
     { "beingExploded", { beExploded, die } }
 }
 

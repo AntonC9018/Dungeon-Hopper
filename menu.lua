@@ -12,11 +12,11 @@ function scene:create(event)
     local start = display.newText(sceneGroup, 'Start', display.contentCenterX, display.contentCenterY, native.systemFont, 80)
     start:setFillColor(0)
 
-    start:addEventListener('tap',
-        function(event)
-            composer.gotoScene('game.game')
-        end
-    )
+    composer.gotoScene('game.game')
+    -- start:addEventListener('tap',
+    --     function(event)
+    --     end
+    -- )
 
 
 

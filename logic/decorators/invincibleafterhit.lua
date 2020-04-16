@@ -1,16 +1,16 @@
 
-local Decorator = require 'decorator'
-local InvincibleHandler = class('InvincibleHandler', Decorator)
+local Decorator = require 'logic.decorators.decorator'
+local InvincibleAfterHit = class('InvincibleHandler', Decorator)
 
-function InvincibleHandler:__construct(instance)
+function InvincibleAfterHit:__construct(instance)
     self.invincible = 0
-    instance.handlers.invincible = self
-    
+
+    -- print(ins(instance.chains, { depth = 1))
+
     instance.chains.beHit:addHandler(
         function(e) 
             self.invincible = 
                 self.invincible > 0 and self.invincible or 2 
-            end
             
         end)
 

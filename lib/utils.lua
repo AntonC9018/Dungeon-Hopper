@@ -205,3 +205,5 @@ function table.each2(arr, arr2, func)
         func(arr[i], arr2[i])
     end
 end
+
+require 'lib.deepclone'

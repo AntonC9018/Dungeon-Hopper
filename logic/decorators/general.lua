@@ -4,17 +4,18 @@
 --      3. make it use the GeneralAlgo
 --      4. make it Sequential
 
-local Acting = require "acting"
-local ShouldAct = require "shouldact"
+local Acting = require "logic.decorators.acting"
+local ShouldAct = require "logic.decorators.shouldact"
 local GeneralAlgo = require "logic.action.algorithms.general"
-local Sequential = require "sequential"
+local Sequential = require "logic.decorators.sequential"
+local decorate = require("logic.decorators.decorator").decorate
 
 local function General(entityClass)
 
-    Acting.decorate(entityClass)
-    ShouldAct.decorate(entityClass)
+    decorate(entityClass, Acting)
+    decorate(entityClass, ShouldAct)
     entityClass.chainTemplate:addHandler('action', GeneralAlgo)
-    Sequential.decorate(entityClass)
+    decorate(entityClass, Sequential)
 
 end
 

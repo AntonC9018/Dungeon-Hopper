@@ -19,6 +19,7 @@ end
 local function Iterate(algoEvent)
 
     local actor = algoEvent.actor
+    local action = algoEvent.action
 
     -- Iterate over added checks and thereupon execute actions.
     -- These checks are predefined algorithms on action types.
@@ -64,7 +65,7 @@ local function GeneralAlgo(enclosingEvent)
 
         local succeed = Iterate(algoEvent)
 
-        -- stop iteration after one of the ations completed successfully
+        -- stop iteration after one of the actions completed successfully
         if succeed then
             enclosingEvent.success = true
             enclosingEvent.algoEvent = algoEvent

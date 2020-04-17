@@ -19,12 +19,18 @@ Action.Types =
 }
 
 
+
+
 function Action:getPlayerChain()
     return self.chains.player
 end
 
 function Action:getNonPlayerChain()
     return self.chains.nonPlayer
+end
+
+function Action:setDirection(dir)
+    self.direction = dir
 end
 
 

@@ -3,8 +3,9 @@
 --
 -- This is the base class for any entity in the game
 local Decorators = require 'logic.decorators.decorators'
-local PlayerAlgo = require "logic.action.algorithms.player"
+local PlayerAlgo = require 'logic.action.algorithms.player'
 local GameObject = require 'logic.base.gameobject'
+local Actions = require 'logic.action.actions.actions'
 
 local Entity = class("Entity", GameObject)
 
@@ -34,12 +35,24 @@ Entity.beStatused =
 Entity.takeDamage =
     activateDecorator(Decorators.WithHP)
 
+
+
+-- Setting the action type
+local sequenceActivation = 
+    activateDecorator(Decorators.Sequential)
+
+function Entity:calculateAction()
+    self.nextAction = Actions.None()
+    sequenceActivation(self)
+end
+
+-- Executing the action
 local actingActivation = 
     activateDecorator(Decorators.Acting)
 
-function Entity:executeAction(event) 
+function Entity:executeAction() 
     self.doingAction = true
-    actingActivation(self, self, event)
+    actingActivation(self)
     self.doingAction = false
     self.didAction = true
 end
@@ -53,6 +66,7 @@ end
 function Entity:isAttackable()
     return self:isDecorated(Decorators.Attackable)
 end
+
 
 
 -- fallback base modifiers
@@ -79,7 +93,7 @@ Entity.baseModifiers = {
         pierce = 1
     },
 
-    hp = 0
+    hp = 1
 }
 
 

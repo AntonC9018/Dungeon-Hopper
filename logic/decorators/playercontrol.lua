@@ -10,13 +10,8 @@ local PlayerControl = class('PlayerControl', Decorator)
 function PlayerControl:activate(player, direction)
     local base = player.baseModifiers
     -- for now, create the current action as a AttackMove action
-    local action = AttackMoveAction(
-        {
-            direction = direction, 
-            attack = base.attack,
-            move = base.move
-        }
-    )
+    local action = AttackMoveAction()
+    action:setDirection(direction)
 
     player.nextAction = action
     player.isActionSet = true

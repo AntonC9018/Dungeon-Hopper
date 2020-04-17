@@ -4,7 +4,7 @@
 -- This is the base class of all game objects in the game.
 -- A game object is any object that exists in the world, at some specific position
 
-local Action = require("logic.action")
+local Actions = require 'logic.action.actions.actions'
 local Cell = require("world.cell")
 local Emitter = require("lib.emitter")
 
@@ -51,6 +51,7 @@ end
 function GameObject:applyDecorators()
     -- initialize chains
     self.chains = self.chainTemplate:init()
+
     -- initialize decorators
     self.decorators = {}
     for i = 1, #self.decoratorsList do
@@ -67,6 +68,13 @@ end
 
 function GameObject:isPlayer()
     return self.layer == Cell.Layers.player
+end
+
+function GameObject:tick()
+    -- TODO:
+end
+
+function GameObject:die()
 end
 
 return GameObject

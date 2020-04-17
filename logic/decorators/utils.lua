@@ -1,13 +1,16 @@
 local utils = {}
 
 utils.checkApplyCycle = function(nameCheck, nameApply)
-    return function(self, action)
-        local event = Event(self, action)
+    return function(decorator, actor, action)
+        local event = Event(actor, action)
 
-        self.chains[nameCheck]:pass(event, Chain.checkPropagate)
+        printf("Passing the %s chain", nameCheck)
+        actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
+
 
         if event.propagate then
-            self.chains[nameApply]:pass(event, Chain.checkPropagate)
+            printf("Passing the %s chain", nameApply)
+            actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 
         return event
@@ -18,17 +21,18 @@ end
 
 utils.armor = function(event)
     local actor = event.actor
-    local protectionModifier = actor.baseModifiers.protection
+    local resitances = actor.baseModifiers.resistance
+    local action = event.action
 
-    event.attack.damage = 
+    action.attack.damage = 
         clamp(
-            event.attack.damage - protectionModifier.armor, 
+            action.attack.damage - resitances.armor, 
             1, 
-            protectionModifier.maxDamage or math.huge
+            resitances.maxDamage or math.huge
         )
         
-    if event.attack.pierce > protectionModifier.pierce then
-        event.attack.damage = 0  
+    if action.attack.pierce > resitances.pierce then
+        action.attack.damage = 0  
     end
 end
 

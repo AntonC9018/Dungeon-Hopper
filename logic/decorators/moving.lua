@@ -1,6 +1,8 @@
 local utils = require "logic.decorators.utils" 
 
 local Decorator = require 'logic.decorators.decorator'
+local Move = require 'logic.action.effects.move'
+
 local Moving = class('Moving', Decorator)
 
 local function getBaseMove(action)

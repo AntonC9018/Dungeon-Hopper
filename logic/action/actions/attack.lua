@@ -17,9 +17,4 @@ Attack.chains = {
     })
 }
 
-function Attack:__construct(obj)
-    self.direction = obj.direction
-    self.attack = obj.attack 
-end
-
 return Attack

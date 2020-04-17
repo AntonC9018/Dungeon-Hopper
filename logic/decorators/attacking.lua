@@ -1,12 +1,17 @@
 local utils = require "logic.decorators.utils" 
 
 local Decorator = require 'logic.decorators.decorator'
+local Stats = require 'logic.stats.stats' 
+local Attack = require 'logic.action.effects.attack'
+local Push = require 'logic.action.effects.push'
+
 local Attacking = class('Attacking', Decorator)
 
-local function getBase(event)
-    event.attack = Attack(event.actor.baseModifiers.attack)
-    event.status = Stats.fromTable(event.actor.baseModifiers.status)
-    event.push = Push(event.actor.baseModifiers.push)    
+local function setBase(event)
+    print("Getting base stats...")
+    event.action.attack = Attack(event.actor.baseModifiers.attack)
+    event.action.status = Stats.fromTable(event.actor.baseModifiers.status)
+    event.action.push = Push(event.actor.baseModifiers.push)  
 end
 
 local function getTargets(event)
@@ -23,23 +28,23 @@ local function getTargets(event)
 end
 
 local function applyAttack(event)
-    local events = event.actor.world:doAttack(event.actor, event.attack)
+    local events = event.actor.world:doAttack(event.targets, event.action)
     event.attackEvents = events
 end
 
 local function applyPush(event)
-    local events = event.actor.world:doPush(event.targets, event.push)
+    local events = event.actor.world:doPush(event.targets, event.action)
     event.pushEvents = events    
 end
 
 local function applyStatus(event)
-    local events = event.actor.world:doStatus(event.targets, event.status)
+    local events = event.actor.world:doStatus(event.targets, event.action)
     event.statusEvents = events    
 end
 
 Attacking.affectedChains = {
-    { "getAttack", { setBase } },
-    { "attack", { getTargets, applyAttack, applyPush, applyStatus } }
+    { "getAttack", { setBase, getTargets } },
+    { "attack", { applyAttack, applyPush, applyStatus } }
 }
 
 

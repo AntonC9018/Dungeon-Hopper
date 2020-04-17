@@ -25,12 +25,8 @@ decorate(Player, Decorators.PlayerControl)
 -- decorate(Player, Decorators.Ticking)
 
 
-local playerControlActivation = 
+Player.generateAction = 
     activateDecorator(Decorators.PlayerControl)
-
-function Player:generateAction(dir)
-    playerControlActivation(self, self, dir)
-end
     
 
 -- TODO: Call the character Candace

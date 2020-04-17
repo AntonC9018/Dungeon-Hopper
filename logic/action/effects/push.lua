@@ -1,4 +1,4 @@
-local Move = require "logic.actions.effects.move"
+local Move = require "logic.action.effects.move"
 local Push = class("Push")
 
 

@@ -6,7 +6,7 @@ local Decorator = require 'logic.decorators.decorator'
 local Sequential = class('Sequential', Decorator)
 
 function Sequential:activate(actor)
-    actor.nextAction = actor.sequence:nextAction()
+    actor.nextAction = actor.sequence:getCurrentAction()
 end
 
 function Sequential:__construct(instance)

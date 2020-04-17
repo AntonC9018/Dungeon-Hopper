@@ -6,6 +6,17 @@ function Stats:__construct()
 end
 
 
+Stats.fromTable = function(t)
+    local stats = Stats()
+    if t == nil then
+        return stats
+    end
+    for key, value in pairs(t) do
+        stats:set(key, value)
+    end
+    return stats
+end
+
 function Stats:set(name, value)
     self.stats[name] = value
     return self.stats[name]

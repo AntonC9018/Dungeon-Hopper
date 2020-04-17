@@ -198,21 +198,38 @@ end
 function Grid:getByTypeAt(type, pos)
     local cell = self:getCellAt(pos)
     assert(cell.layers[Cell.Layers.type] ~= nil)
-    return cell.layers[Cell.Layers.type][0]
+    return cell.layers[Cell.Layers.type][1]
 end
 
 function Grid:getByLayer(layer, pos)
     local cell = self:getCellAt(pos)
     assert(cell.layers[layer] ~= nil)
-    return cell.layers[layer][0]
+    return cell.layers[layer][1]
 end
 
+function Grid:getClosestPlayer(pos) 
+    if #self.players == 0 then
+        return nil
+    end
+
+    local minDistance = (pos - self.players[1].pos):magSq()
+    local minPlayer = self.players[1]
+
+    for i = 2, #self.players do
+        local curDist = (pos - self.players[i].pos):magSq()
+        if curDist < minDistance then
+            minDistance = curDist
+            minPlayer = self.player[i]
+        end
+    end
+    return minPlayer
+end
 
 -- RESET methods
 
 -- the one generic method
 function Grid:reset(entity)
-    local cell = self:getCellAt(player.pos)
+    local cell = self:getCellAt(entity.pos)
     cell:set(entity)
 end
 
@@ -266,6 +283,8 @@ function Grid:setRealAt(real, pos)
     assert(cell ~= nil)
     assert(cell:getReal() == nil)
     cell:setReal(real)    
+    -- assert(cell:getReal() == real)
+
     -- update the reals list
     table.insert(self.reals, real)
     if real:isPlayer() then
@@ -405,7 +424,7 @@ function Grid:calculateActionsProjectiles()
 end
 
 
-function Grid:tick()
+local function tick(t)
     for i = 1, #t do
         t[i]:tick()
     end

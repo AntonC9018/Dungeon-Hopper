@@ -1,4 +1,4 @@
-local AttackEffect = class("AttckEffect")
+local AttackEffect = class("AttackEffect")
 
 
 function AttackEffect:__construct(AttackModifier)

@@ -77,29 +77,34 @@ function World:gameLoop()
     self:calculateActions()
     
     -- execute projectile actions
-    self:activateProjectiles()
-    self.grid:tickProjectiles()
-    self:advancePhase()
+    -- self:activateProjectiles()
+    -- self.grid:tickProjectiles()
+    -- self:advancePhase()
+
     -- execute reals' actions
     self:activateReals()
     self.grid:tickReals()
     self:advancePhase()
+
     -- explode explosions
-    self:activateExplosions()
-    self:advancePhase()
+    -- self:activateExplosions()
+    -- self:advancePhase()
+
     -- activate floor hazards
-    self:activateFloors()
-    self.grid:tickFloors()
-    self:advancePhase()
+    -- self:activateFloors()
+    -- self.grid:tickFloors()
+    -- self:advancePhase()
+
     -- activate traps
-    self:activateTraps()
-    self.grid:tickTraps()
-    self:advancePhase()
+    -- self:activateTraps()
+    -- self.grid:tickTraps()
+    -- self:advancePhase()
+
     -- filter out dead things
     self:filterDead()
 
     -- set objects for rendering
-    self:render()
+    -- self:render()
     
     -- reset stored actions in objects
     -- reset the phase to 0
@@ -149,11 +154,11 @@ end
 -- that is, e.g. the sequence step. The thing that tick stuff 
 -- is the tick() method
 function World:calculateActions()
-    self.grid:calculateActionReals()    
-    self.grid:calculateActionFloors()
-    self.grid:calculateActionWalls()
-    self.grid:calculateActionTraps()
-    self.grid:calculateActionProjectiles()
+    self.grid:calculateActionsReals()    
+    self.grid:calculateActionsFloors()
+    self.grid:calculateActionsWalls()
+    self.grid:calculateActionsTraps()
+    self.grid:calculateActionsProjectiles()
 end
 
 
@@ -164,6 +169,7 @@ end
 
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
+        print("do action")
         self.grid.players[i]:executeAction()
     end
 end
@@ -206,20 +212,20 @@ end
 
 
 -- Decorator + game logic stuff
-local Move = require "logic.action.actions.move"
+local Move = require "logic.action.effects.move"
 
 
 function World:displace(target, move)
     printf("Displacing %s", class.name(target)) -- debug
 
-    local coord = Move.posFromMove(self.grid, target, move)
+    local newPos = Move.posFromMove(self.grid, target, move)
     
-    if coord == nil then
+    if newPos == nil then
         return nil
     end
 
     self.grid:remove(target)
-    target.coord = coord
+    target.pos = newPos
     self.grid:reset(target)
 
     return true
@@ -254,7 +260,7 @@ end
 
 
 function World:doAttack(targets, action)
-    printf("Doing attack %s", class.name(targets[1])) -- debug
+    -- printf("Doing attack %s", class.name(targets[1])) -- debug
 
     local events = {}
     for i = 1, #targets do
@@ -270,8 +276,9 @@ function World:doPush(targets, action)
     printf("Doing push %s", class.name(targets[1])) -- debug
 
     local events = {}
+
     for i = 1, #targets do
-        events[i] = targets[i]:executePush(action)
+        events[i] = targets[i].target:bePushed(action)
     end
     return events
 end
@@ -282,7 +289,7 @@ function World:doStatus(targets, action)
 
     local events = {}
     for i = 1, #targets do
-        events[i] = targets[i]:executeStatus(action)
+        events[i] = targets[i].target:beStatused(action)
     end
     return events
 end

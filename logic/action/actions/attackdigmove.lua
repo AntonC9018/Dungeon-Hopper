@@ -22,11 +22,4 @@ AttackDigMove.chains = {
     })
 }
 
-function AttackDigMove:__construct(obj)
-    self.direction = obj.direction 
-    self.attack = obj.attack
-    self.dig = obj.dig
-    self.move = obj.move
-end
-
 return AttackDigMove

@@ -37,4 +37,30 @@ decorate(TestEnemy, Decorators.Statused)
 -- decorate(TestEnemy, Decorators.Ticking)
 decorate(TestEnemy, Decorators.WithHP)
 
+TestEnemy.baseModifiers = {
+
+    attack = {
+        damage = 1,
+        pierce = 1
+    },
+
+    move = {
+        distance = 1
+    },
+
+    push = {
+        distance = 1,
+        power = 1
+    },
+
+    resistance = {
+        armor = 0,
+        maxDamage = math.huge,
+        push = 0,
+        pierce = 1
+    },
+
+    hp = 2
+}
+
 return TestEnemy

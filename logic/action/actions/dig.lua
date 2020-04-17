@@ -18,10 +18,4 @@ Dig.chains = {
     })
 }
 
-function Dig:__construct(obj)
-    self.direction = obj.direction
-    self.dig = obj.dig    
-    self.type = Action.Types.DIG
-end
-
 return Dig

@@ -8,8 +8,11 @@ local Chain = require "lib.chains.chain"
 -- the none action means doing nothing
 local None = class("NoneAction", Action)
 
-function None:__construct()
-    self.type = Action.Types.NONE
-end
+None.type = Action.Types.NONE
+
+None.chains = {
+    player = Chain(),
+    nonPlayer = Chain()
+}
 
 return None

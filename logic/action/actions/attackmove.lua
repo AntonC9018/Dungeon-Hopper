@@ -20,11 +20,5 @@ AttackMove.chains = {
     })
 }
 
-function AttackMove:__construct(obj)
-    self.direction = obj.direction 
-    self.attack = obj.attack
-    self.move = obj.move
-end
-
 return AttackMove
 

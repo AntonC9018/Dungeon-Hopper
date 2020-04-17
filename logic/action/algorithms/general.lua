@@ -30,7 +30,7 @@ local function Iterate(algoEvent)
     -- PROBLEM: the problem is that the player is assumed to use the same action objects
     -- but they can't! they should use a separate action type that would include all
     -- actions in order and without checks
-    action.getNonPlayerChain():pass(algoEvent, Chain.checkPropagate)
+    action:getNonPlayerChain():pass(algoEvent, Chain.checkPropagate)
     
 
     if not algoEvent.success then

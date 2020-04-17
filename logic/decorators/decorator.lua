@@ -13,7 +13,7 @@ Decorator.affectedChains = {}
 -- Decorator initialization function
 Decorator.decorate = function(instanceClass, decoratorClass)
 
-    printf("%s, %s", class.name(instanceClass), class.name(decoratorClass))
+    -- printf("%s, %s", class.name(instanceClass), class.name(decoratorClass))
 
     -- put this decorator for firther intialization in the list of decorators
     local decoratorsList = instanceClass.decoratorsList

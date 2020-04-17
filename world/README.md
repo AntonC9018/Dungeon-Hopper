@@ -69,9 +69,9 @@ Each `Acting NonPlayerReal` (`Acting` is a decorator) has a set of fields that r
 Now we'll examine **the final event** structure once it comes out of `Acting.executeAction()` (assume `GeneralAlgo`). It does not 'come out' as such, the function always returns nothing. The final event is saved as `Acting.enclosingEvent`. The standart fields of any event, which are `event.actor`, `event.action` and `event.propagate`, exist on each of the event structures examined, so they will be consequently omitted.
 
 This event has a special structure, and consequently will be called `EnclosingEvent`:
-1. `EnclosingEvent.checkSuccess` - (boolean) same as 3, except not inherited.
+1. `EnclosingEvent.checkSuccess` - (boolean) same as `event.propagate`, except not inherited.
 2. `EnclosingEvent.success` - (boolean) comes paired with the next field.
-3. `EnclosingEvent.algoEvent` - The one event that actually occured, with the action and the direction, i.e.:
+3. `EnclosingEvent.algoEvent` - The one event that actually occured, with the action and the direction:
     1. `algoEvent.success`
     2. A nested `resultEvent` with a wild diversity of more fields depending on the action type. E.g. for an `AttackAction`, these would be:
         1. `resultEvent.attack` - the attack object applied
@@ -82,7 +82,7 @@ This event has a special structure, and consequently will be called `EnclosingEv
         6. `resultEvent.pushEvents` - similarly, pushed
         7. `resultEvent.statusEvents` - similarly, statused
 
-You can find the one direction that suceeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
+You can find the one direction that succeeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
 
 ## The algorithms
 

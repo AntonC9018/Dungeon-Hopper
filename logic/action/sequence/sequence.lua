@@ -1,10 +1,10 @@
 local Step = require "logic.action.sequence.step"
 
 local Sequence = class('Sequence')
-
+local initializeSteps = require("logic.action.sequence.stepfuncs").initializeSteps 
 
 function Sequence:__construct(steps)
-    self.steps = steps
+    self.steps = initializeSteps(steps)
     self.currentStepIndex = 1
 end
 

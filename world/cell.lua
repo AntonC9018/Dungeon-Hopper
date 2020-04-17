@@ -30,27 +30,31 @@ end
 
 
 function Cell:getFloor()
-    return self.layers[Cell.Layers.floor][0]
+    return self.layers[Cell.Layers.floor][1]
 end
 
 function Cell:getTrap()
-    return self.layers[Cell.Layers.trap][0]
+    return self.layers[Cell.Layers.trap][1]
 end
 
 function Cell:getWall()
-    return self.layers[Cell.Layers.wall][0]
+    return self.layers[Cell.Layers.wall][1]
 end
 
 function Cell:getReal()
-    return self.layers[Cell.Layers.real][0]
+    return self.layers[Cell.Layers.real][1]
 end
 
 function Cell:getDropped()
-    return self.layers[Cell.Layers.dropped][0]
+    return self.layers[Cell.Layers.dropped][1]
+end
+
+function Cell:getProjectile()
+    return self.layers[Cell.Layers.projectile][1]
 end
 
 function Cell:setFloor(floor)
-    local prev = self.layers[Cell.Layers.floor][0]
+    local prev = self.layers[Cell.Layers.floor]
     self.floors = { floor }
     return prev
 end

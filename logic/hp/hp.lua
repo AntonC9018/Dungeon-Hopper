@@ -23,7 +23,7 @@ function HP:__construct(health)
 end
 
 
-function HP:takeDamage(amount)
+function HP:takeDamage(damage)
     local i = #self.containers
     
     while damage > 0 do
@@ -31,19 +31,20 @@ function HP:takeDamage(amount)
             
             local previousAmount 
             
-            if damage > self.container[i].amount then
-                previousAmount = self.container[i].amount
-                self.container[i].amount = 0
+            if damage > self.containers[i].amount then
+                previousAmount = self.containers[i].amount
+                self.containers[i].amount = 0
             else
                 previousAmount = damage
-                self.container[i].amount =
-                    self.container[i].amount - damage
+                self.containers[i].amount =
+                    self.containers[i].amount - damage
             end
 
             damage = damage - previousAmount
-            i = i - 1
-            if i <= 0 then return damage end
         end
+
+        i = i - 1
+        if i <= 0 then return damage end
     end
 
     return 0

@@ -8,7 +8,7 @@ utils.activateDecorator = function(decorator)
                 self.decorators[name]
             
             if (decorator ~= nil) then
-                return decorator:activate(...)
+                return decorator:activate(self, ...)
             end
 
             return nil

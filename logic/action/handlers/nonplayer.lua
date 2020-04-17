@@ -27,9 +27,9 @@ local DigHandler = checkApplyHandler("shouldDig", "executeDig")
 
 local Handlers = {}
 
-Handlers.AttackHandler = AttackHandler
-Handlers.MoveHandler = MoveHandler
-Handlers.DigHandler = DigHandler
+Handlers.Attack = AttackHandler
+Handlers.Move = MoveHandler
+Handlers.Dig = DigHandler
 
 Handlers.checkApplyHandler = checkApplyHandler
 

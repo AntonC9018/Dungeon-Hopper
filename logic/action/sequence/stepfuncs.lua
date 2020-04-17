@@ -1,4 +1,5 @@
-stepFuncs = {}
+local Step = require "logic.action.sequence.step"
+local stepFuncs = {}
 
 stepFuncs.initializeSteps = function(configs)
     local steps = {}

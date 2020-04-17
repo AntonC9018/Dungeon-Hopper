@@ -5,6 +5,8 @@ local applyHandler = function(nameApplyMethod)
         local actor = algoEvent.actor
         local action = algoEvent.action
 
+        printf("In algoevent calling method %s", nameApplyMethod)
+
         local resultEvent = actor[nameApplyMethod](actor, action)  
 
         if resultEvent.propagate then
@@ -24,9 +26,9 @@ local DigHandler = applyHandler("executeDig")
 
 local Handlers = {}
 
-Handlers.AttackHandler = AttackHandler
-Handlers.MoveHandler = MoveHandler
-Handlers.DigHandler = DigHandler
+Handlers.Attack = AttackHandler
+Handlers.Move = MoveHandler
+Handlers.Dig = DigHandler
 
 Handlers.applyHandler = applyHandler
 

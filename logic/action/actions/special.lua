@@ -9,11 +9,9 @@ local Special = class("SpecialAction", Action)
 Special.type = Action.Types.SPECIAL
 
 -- Special is the Action you provide your custom chains to
-
 function Special:__construct(obj)
     self.direction = obj.direction
     self.special = obj.special -- TODO: figure what this should be
-    self.type = Action.Types.SPECIAL
 end
 
 -- override get chains methods

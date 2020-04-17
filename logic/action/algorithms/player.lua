@@ -1,17 +1,12 @@
 
 local function PlayerAlgo(enclosingEvent)
 
-    print("Player algo called")
-
     local actor = enclosingEvent.actor
     -- action already has the action.direction here
     local action = enclosingEvent.action
 
 
     local algoEvent = Event(actor, action)
-
-    print(class.name(action))
-    print(action:getPlayerChain())
 
     action:getPlayerChain():pass(algoEvent, Chain.checkPropagate)
 

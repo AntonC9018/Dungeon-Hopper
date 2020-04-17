@@ -41,7 +41,7 @@ end
 function World:setPlayerActions(direction, playerIndex)
     local player = self.grid.players[playerIndex]
 
-    if not player.isActionSet then
+    if player.nextAction == nil then
         player:generateAction(direction)
         return true
     end
@@ -54,7 +54,7 @@ end
 function World:gameLoopIfSet()
     local players = self.grid.players
     for i = 1, #players do
-        if not players[i].isActionSet then
+        if player[i].nextAction == nil then
             return false
         end
     end
@@ -100,11 +100,11 @@ function World:gameLoop()
     -- self.grid:tickTraps()
     -- self:advancePhase()
 
+    -- set objects for rendering
+    self:render()
+
     -- filter out dead things
     self:filterDead()
-
-    -- set objects for rendering
-    -- self:render()
     
     -- reset stored actions in objects
     -- reset the phase to 0
@@ -169,7 +169,6 @@ end
 
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
-        print("do action")
         self.grid.players[i]:executeAction()
     end
 end
@@ -183,7 +182,9 @@ end
 function World:activateReals()
     for i = 1, #self.grid.reals do
         if not self.grid.reals[i].didAction then
+            -- printf("%s starts doing action", class.name(self.grid.reals[i])) -- debug
             self.grid.reals[i]:executeAction()
+            -- printf("%s ended action", class.name(self.grid.reals[i])) -- debug
         end
     end
 end
@@ -216,7 +217,7 @@ local Move = require "logic.action.effects.move"
 
 
 function World:displace(target, move)
-    printf("Displacing %s", class.name(target)) -- debug
+    -- printf("Displacing %s", class.name(target)) -- debug
 
     local newPos = Move.posFromMove(self.grid, target, move)
     
@@ -238,7 +239,7 @@ local Piece = require "items.weapons.piece"
 
 
 function World:getTargets(actor, action)
-    printf("Getting targets %s", class.name(actor)) -- debug
+    -- printf("Getting targets %s", class.name(actor)) -- debug
 
     local weapon = actor.weapon
 
@@ -273,7 +274,7 @@ end
 
 
 function World:doPush(targets, action)
-    printf("Doing push %s", class.name(targets[1])) -- debug
+    -- printf("Doing push %s", class.name(targets[1])) -- debug
 
     local events = {}
 
@@ -285,7 +286,7 @@ end
 
 
 function World:doStatus(targets, action)
-    printf("Doing status %s", class.name(targets[1])) -- debug
+    -- printf("Doing status %s", class.name(targets[1])) -- debug
 
     local events = {}
     for i = 1, #targets do
@@ -307,6 +308,38 @@ function World:getOneFromTopAt(pos)
     return result
 end
 
+
+function World:removeDead(entity)
+    self.grid:remove(entity)
+end
+
+
+-- provisional rendering through console
+function World:render()
+    local grid = self.grid.grid
+    for i = 1, #grid do
+        local str = ""
+        for j = 1, #grid[1] do
+            local real
+            for k = 1, #self.grid.reals do
+                if 
+                    self.grid.reals[k].pos.x == i 
+                    and self.grid.reals[k].pos.y == j 
+                then
+                    real = self.grid.reals[k]
+                end
+            end
+            if real == nil then
+                str = str.."- "
+            elseif real.dead then                
+                str = str.."x "
+            else
+                str = str.."o "
+            end
+        end
+        print(str)
+    end
+end
 
 
 return World

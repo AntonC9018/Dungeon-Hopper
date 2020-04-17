@@ -35,7 +35,11 @@ Entity.beStatused =
 Entity.takeDamage =
     activateDecorator(Decorators.WithHP)
 
+Entity.tick =
+    activateDecorator(Decorators.Ticking)
 
+Entity.die =
+    activateDecorator(Decorators.Killable)
 
 -- Setting the action type
 local sequenceActivation = 

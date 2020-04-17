@@ -27,6 +27,8 @@ TestEnemy.layer = Cell.Layers.real
 -- Set up all decorators
 Decorators.Start(TestEnemy)
 Decorators.General(TestEnemy)
+decorate(TestEnemy, Decorators.Killable)
+decorate(TestEnemy, Decorators.Ticking)
 decorate(TestEnemy, Decorators.Attackable)
 decorate(TestEnemy, Decorators.Attacking)
 decorate(TestEnemy, Decorators.Bumping)
@@ -34,8 +36,21 @@ decorate(TestEnemy, Decorators.Explodable)
 decorate(TestEnemy, Decorators.Moving)
 decorate(TestEnemy, Decorators.Pushable)
 decorate(TestEnemy, Decorators.Statused)
--- decorate(TestEnemy, Decorators.Ticking)
 decorate(TestEnemy, Decorators.WithHP)
+
+TestEnemy.chainTemplate:addHandler('shouldAttack',
+    function(event)
+
+        local actor = event.actor
+        local pos = actor.pos
+        local playerCoord = pos + event.action.direction
+        local real = actor.world.grid:getRealAt(playerCoord)
+
+        if real == nil or not real:isPlayer() then
+            event.propagate = false
+        end
+    end
+)
 
 TestEnemy.baseModifiers = {
 

@@ -4,12 +4,12 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     return function(decorator, actor, action)
         local event = Event(actor, action)
 
-        printf("Passing the %s chain", nameCheck)
+        -- printf("Passing the %s chain", nameCheck) -- debug
         actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
 
         if event.propagate then
-            printf("Passing the %s chain", nameApply)
+            -- printf("Passing the %s chain", nameApply) -- debug
             actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 

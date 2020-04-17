@@ -62,12 +62,16 @@ end
 
 
 function Step:nextStep(event)
+    if self.successChain == nil then
+        return nil
+    end
+    
     local stepSuccessful = self:checkSuccess(event) 
 
     if stepSuccessful then
-        return successStepIndex
+        return self.successStepIndex
     else
-        return failStepIndex
+        return self.failStepIndex
     end
 end
 

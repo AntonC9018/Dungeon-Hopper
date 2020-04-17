@@ -229,6 +229,9 @@ end
 
 -- the one generic method
 function Grid:reset(entity)
+    if entity.dead then
+        return
+    end
     local cell = self:getCellAt(entity.pos)
     cell:set(entity)
 end
@@ -452,8 +455,9 @@ end
 
 
 local function filterDead(t)
-    for i = 1, #t do
-        if t.dead then
+    for i = #t, -1, 1 do
+        print(class.name(t[i]))
+        if t[i].dead then
             table.remove(t, i)
         end
     end

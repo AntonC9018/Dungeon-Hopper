@@ -5,8 +5,8 @@ local Move = require 'logic.action.effects.move'
 
 local Moving = class('Moving', Decorator)
 
-local function getBaseMove(action)
-    local move = Move(action.actor.baseModifiers.move, action.direction)
+local function getBaseMove(event)
+    local move = Move(event.actor.baseModifiers.move, event.action.direction)
     event.move = move    
 end
 

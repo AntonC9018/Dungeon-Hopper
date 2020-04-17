@@ -7,9 +7,11 @@ local checkApplyHandler = function(nameCheck, nameApplyMethod)
 
         local internalEvent = Event(actor, action)
 
+        -- printf("In algoevent calling method %s", nameCheck) -- debug
         actor.chains[nameCheck]:pass(internalEvent, Chain.checkPropagate)
 
         if internalEvent.propagate then    
+            -- printf("In algoevent calling method %s", nameApplyMethod) -- debug
             local resultEvent = actor[nameApplyMethod](actor, action)
 
             algoEvent.propagate = false

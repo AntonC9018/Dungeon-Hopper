@@ -10,7 +10,6 @@ end
 
 local function die(event)
     if event.actor.hp:get() <= 0 then
-        event.actor.dead = true
         event.actor:die()
     end    
 end

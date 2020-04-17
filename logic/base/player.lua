@@ -11,6 +11,8 @@ local Player = class("Player", Entity)
 Player.layer = Cell.Layers.player
 
 Decorators.Start(Player)
+decorate(Player, Decorators.Ticking)
+decorate(Player, Decorators.Killable)
 decorate(Player, Decorators.Acting)    
 Player.chainTemplate:addHandler("action", PlayerAlgo)
 decorate(Player, Decorators.Attackable)
@@ -22,7 +24,8 @@ decorate(Player, Decorators.Pushable)
 decorate(Player, Decorators.Statused) 
 decorate(Player, Decorators.InvincibleAfterHit)
 decorate(Player, Decorators.PlayerControl)
--- decorate(Player, Decorators.Ticking)
+decorate(Player, Decorators.WithHP)
+
 
 
 Player.generateAction = 

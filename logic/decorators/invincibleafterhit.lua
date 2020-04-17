@@ -22,7 +22,7 @@ function InvincibleAfterHit:__construct(instance)
              
         end)
     
-    instance.emitter:on("reset", 
+    instance.chains.tick:addHandler( 
         function() 
             if self.invincible > 0 then
                 self.invincible = self.invincible - 1

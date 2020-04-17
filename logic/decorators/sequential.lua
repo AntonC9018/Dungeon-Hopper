@@ -10,7 +10,14 @@ function Sequential:activate(actor)
 end
 
 function Sequential:__construct(instance)
-    instance.sequence = Sequence(instance.sequenceSteps)
+    local sequence = Sequence(instance.sequenceSteps)
+    instance.sequence = sequence
+    
+    instance.chains.tick:addHandler(
+        function(event)
+            sequence:tick(event)
+        end
+    )
 end
 
 return Sequential

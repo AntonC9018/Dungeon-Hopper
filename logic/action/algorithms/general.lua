@@ -50,7 +50,7 @@ end
 
 -- This is a very general algo that allows one action at a time to be done
 local function GeneralAlgo(enclosingEvent)
-    
+
     local instance = enclosingEvent.actor
     local action  = enclosingEvent.action
 

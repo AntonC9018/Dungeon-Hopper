@@ -5,12 +5,18 @@ local initializeSteps = require("logic.action.sequence.stepfuncs").initializeSte
 
 function Sequence:__construct(steps)
     self.steps = initializeSteps(steps)
+    -- printf("Length of steps = %i", #self.steps) -- debug
     self.currentStepIndex = 1
 end
 
 
 function Sequence:setStep(index)
-    local nextStepIndex = index % #self.steps + 1
+    local rest = index % (#self.steps + 1)
+    if rest == 0 then
+        self.currentStepIndex = 1
+    else
+        self.currentStepIndex = rest
+    end
     self.repet = 0
     return self.steps[self.currentStepIndex]
 end
@@ -19,7 +25,7 @@ end
 function Sequence:tick(event)
 
     -- get the current step
-    local step = steps[self.currentStepIndex]
+    local step = self.steps[self.currentStepIndex]
 
     -- as the steps are stateless, we have to do
     -- this check outside the others
@@ -39,8 +45,6 @@ function Sequence:tick(event)
         step:exit(event)
         nextStep:enter(event)
     end
-
-    self.currentStepIndex = nextStepIndex
 end
 
 

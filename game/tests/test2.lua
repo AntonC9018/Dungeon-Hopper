@@ -5,22 +5,35 @@ local function stats(enemy)
     printf("Orientation: %i, %i", enemy.orientation.x, enemy.orientation.y)
 end
 
+local function printWorld(world)
+    
+end
+
 return function()
     local World = require('world.world')
     local world = World(4, 4)
-    local player = world:createPlayerAt( Vec(1, 1) )
-    local enemy = world:createTestEnemyAt( Vec(1, 2) )
+    local player = world:createPlayerAt( Vec(2, 2) )
+    local enemy = world:createTestEnemyAt( Vec(2, 3) )
     local success = world:setPlayerActions( Vec(0, 1), 1 )
     assert(success)
     local playerAction = player.nextAction
-    print(#world.grid.reals)
-    print("Enemy stats before loop")
-    stats(enemy)
-    -- printf("")
-    -- printf("")
+    -- print(ins(enemy, { depth = 1 }))
+
+    
+    world:render()
+    print('\n')
     world:gameLoop()
-    stats(enemy)
+    print('\n')
 
-    print(#world.grid.reals)
+    world:setPlayerActions( Vec(0, 0), 1 )
+    world:gameLoop()
+    print('\n')
 
+    world:setPlayerActions( Vec(0, 0), 1 )
+    world:gameLoop()
+    print('\n')
+
+    world:setPlayerActions( Vec(0, 0), 1 )
+    world:gameLoop()
+    print('\n')
 end

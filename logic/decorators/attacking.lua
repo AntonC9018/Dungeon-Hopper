@@ -8,7 +8,6 @@ local Push = require 'logic.action.effects.push'
 local Attacking = class('Attacking', Decorator)
 
 local function setBase(event)
-    print("Getting base stats...")
     event.action.attack = Attack(event.actor.baseModifiers.attack)
     event.action.status = Stats.fromTable(event.actor.baseModifiers.status)
     event.action.push = Push(event.actor.baseModifiers.push)  

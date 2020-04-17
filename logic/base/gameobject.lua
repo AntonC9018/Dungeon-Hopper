@@ -70,11 +70,5 @@ function GameObject:isPlayer()
     return self.layer == Cell.Layers.player
 end
 
-function GameObject:tick()
-    -- TODO:
-end
-
-function GameObject:die()
-end
 
 return GameObject

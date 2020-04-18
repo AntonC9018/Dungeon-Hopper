@@ -1,7 +1,11 @@
 
-local calculateRelativeness = function(actor)
-    local player = 
-        actor.world.grid:getClosestPlayer(actor.pos)
+local utils = {}
+
+utils.getClosestPlayer = function(actor)    
+    return actor.world.grid:getClosestPlayer(actor.pos)
+end
+
+utils.calculateRelativeness = function(actor, player)
     local gx, gy = 
         player.pos.x > actor.pos.x, player.pos.y > actor.pos.y
     local lx, ly = 
@@ -11,6 +15,4 @@ local calculateRelativeness = function(actor)
 end
 
 
-return {
-    calculateRelativeness = calculateRelativeness
-}
+return utils

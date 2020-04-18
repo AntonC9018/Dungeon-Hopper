@@ -55,7 +55,7 @@ end
 
 function Cell:setFloor(floor)
     local prev = self.layers[Cell.Layers.floor]
-    self.floors = { floor }
+    self.layers[Cell.Layers.floor] = { floor }
     return prev
 end
 
@@ -65,7 +65,7 @@ function Cell:setReal(real)
     return prev
 end
 
-function Cell:setFloor(trap)
+function Cell:setTrap(trap)
     local prev = self.layers[Cell.Layers.trap]
     self.layers[Cell.Layers.traps] = { trap }
     return prev

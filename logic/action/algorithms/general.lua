@@ -30,7 +30,11 @@ local function Iterate(algoEvent)
     -- PROBLEM: the problem is that the player is assumed to use the same action objects
     -- but they can't! they should use a separate action type that would include all
     -- actions in order and without checks
-    action:getNonPlayerChain():pass(algoEvent, Chain.checkPropagate)
+    --
+    -- The problem has been remedied. 
+    -- now there are separate actions for players and enemies
+    -- the ones for players use a test chain inside each handler in the action's chain
+    action:getChain():pass(algoEvent, Chain.checkPropagate)
     
 
     if not algoEvent.success then
@@ -50,11 +54,10 @@ end
 
 -- This is a very general algo that allows one action at a time to be done
 local function GeneralAlgo(enclosingEvent)
-
+    
     local instance = enclosingEvent.actor
     local action  = enclosingEvent.action
-
-    -- TODO: put this method onto instances. right now it's in the algorithms folder
+    
     local dirs = instance:getMovs()
     enclosingEvent.directions = dirs
 

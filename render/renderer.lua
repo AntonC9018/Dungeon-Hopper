@@ -17,6 +17,7 @@ end
 
 
 function Renderer:addRenderEntity(gameObject)
+    printf("Adding game object of type %s", class.name(gameObject)) -- debug
     local spriteType = self.assets:getObjectType(gameObject)
     local spriteId = self.graphics:createSpriteOfType(spriteType)
 
@@ -144,7 +145,7 @@ function Renderer:sortRenderObjects()
             local yDifference = currentA.pos.y - currentB.pos.y
             
             if yDifference == 0 then
-                return currentA.layer < currentB.layer
+                return objA.layer < objB.layer
             end
 
             return yDifference > 0                 

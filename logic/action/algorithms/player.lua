@@ -8,7 +8,9 @@ local function PlayerAlgo(enclosingEvent)
 
     local algoEvent = Event(actor, action)
 
-    action:getPlayerChain():pass(algoEvent, Chain.checkPropagate)
+    -- print(class.name(action)) -- debug
+
+    action:getChain():pass(algoEvent, Chain.checkPropagate)
 
     -- resultEvent is already set here, see handlers/player.lua
 

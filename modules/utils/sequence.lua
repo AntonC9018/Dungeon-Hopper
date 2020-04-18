@@ -1,18 +1,7 @@
 local Chain = require "lib.chains.chain"
-local Special = require "logic.action.actions.special"
+local Action = require "logic.action.action"
 
 local Seq = {}
-
-
-Seq.specialActionFromHandler = function(name, handler)
-    local chain = Chain()
-    chain:addHandler(handler)
-    local specialClass = class(name, Special)
-    specialClass.chain = chain
-    return specialClass
-end
-
-
 
 local handlers = {}
 
@@ -53,6 +42,30 @@ handlers.checkNotMove = function(event)
     event.propagate = not event.actor:didMove()
 end
 
+
+handlers.checkTargetIsPlayer = function(event)
+
+    local actor = event.actor
+    local pos = actor.pos
+    local playerCoord = pos + event.action.direction
+    local real = actor.world.grid:getRealAt(playerCoord)
+
+    if real == nil or not real:isPlayer() then
+        event.propagate = false
+    end
+end
+
+handlers.checkIsFree = function(event)
+
+    local coord = 
+        event.actor.pos + event.action.direction
+    local top =
+        event.actor.world:getOneFromTopAt(coord)
+    
+    if top ~= nil then
+        event.propagate = false  
+    end
+end
 
 Seq.handlers = handlers
 

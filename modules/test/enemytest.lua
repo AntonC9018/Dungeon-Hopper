@@ -1,56 +1,51 @@
 local Entity = require "logic.base.entity"
-local Decorators = require "logic.decorators.decorators"
-local decorate = require ('logic.decorators.decorator').decorate
 local Cell = require "world.cell"
 
 local TestEnemy = class("TestEnemy", Entity)
 
 -- Set up sequence
-local AttackMoveAction = require "logic.action.actions.attackmove"
 local None = require "logic.action.actions.none"
+local HandlerUtils = require "logic.action.handlers.utils"
+local Action = require "logic.action.action"
+local Handlers = require("modules.utils.sequence").handlers
+
+TestEnemy.layer = Cell.Layers.real
 
 local step1 = {
     action = None
 }
 
 local step2 = {
-    action = AttackMoveAction
+    action = Action.fromHandlers(
+        "TATM",
+        {   
+            -- try to attack
+            HandlerUtils.checkApplyHandler(
+                -- the check chain
+                Chain({ Handlers.checkTargetIsPlayer }),
+                -- the apply method on actor
+                "executeAttack"
+            ),
+            -- try to move
+            HandlerUtils.checkApplyHandler(
+                -- the check chain
+                Chain({ Handlers.checkIsFree }),
+                -- the apply method on actor
+                "executeMove"
+            )
+        }
+    )
 }
+
 
 TestEnemy.sequenceSteps = { step1, step2 }
 
 -- Set up movs
 TestEnemy.getMovs = require "logic.action.dirs.basic"
 
-TestEnemy.layer = Cell.Layers.real
-
 -- Set up all decorators
-Decorators.Start(TestEnemy)
-Decorators.General(TestEnemy)
-decorate(TestEnemy, Decorators.Killable)
-decorate(TestEnemy, Decorators.Ticking)
-decorate(TestEnemy, Decorators.Attackable)
-decorate(TestEnemy, Decorators.Attacking)
-decorate(TestEnemy, Decorators.Bumping)
-decorate(TestEnemy, Decorators.Explodable)
-decorate(TestEnemy, Decorators.Moving)
-decorate(TestEnemy, Decorators.Pushable)
-decorate(TestEnemy, Decorators.Statused)
-decorate(TestEnemy, Decorators.WithHP)
-
-TestEnemy.chainTemplate:addHandler('shouldAttack',
-    function(event)
-
-        local actor = event.actor
-        local pos = actor.pos
-        local playerCoord = pos + event.action.direction
-        local real = actor.world.grid:getRealAt(playerCoord)
-
-        if real == nil or not real:isPlayer() then
-            event.propagate = false
-        end
-    end
-)
+local Combos = require "logic.decorators.combos"
+Combos.BasicEnemy(TestEnemy)
 
 TestEnemy.baseModifiers = {
 

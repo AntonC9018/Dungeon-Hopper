@@ -13,10 +13,10 @@ return function()
 
     local World = require('world.world')
 
-    local assets = require('world.assets')()
-    local renderer = require('world.renderer')(assets)
+    local assets = require('render.assets')()
+    local renderer = require('render.renderer')(assets)
     
-    local world = World(renderer, 4, 4)
+    local world = World(renderer, 10, 10)
     world:registerTypes(assets)
 
     -- load all assets
@@ -29,10 +29,12 @@ return function()
         end
     )
 
+    world:createFloors()
     local player = world:createPlayerAt( Vec(2, 2) )
     local enemy = world:createTestEnemyAt( Vec(2, 3) )
+
     
-    world:setPlayerActions( Vec(0, 1), 1 )
+    world:setPlayerActions( Vec(0, 0), 1 )
     world:gameLoopIfSet()
 
     timer.performWithDelay( 
@@ -41,7 +43,7 @@ return function()
             world:setPlayerActions( Vec(0, 0), 1 )
             world:gameLoop()
         end,
-        3
+        7
     )
     -- print('\n')
 

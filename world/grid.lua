@@ -168,6 +168,15 @@ function Grid:getRealAt(pos)
     return real    
 end
 
+function Grid:getWallAt(pos)
+    local cell = self:getCellAt(pos)
+    if cell == nil then
+        return nil
+    end
+    local wall = cell:getWall()
+    return wall    
+end
+
 function Grid:getFloorAt(pos)
     local cell = self:getCellAt(pos)
     if cell == nil then
@@ -455,12 +464,16 @@ end
 
 
 local function filterDead(t)
-    for i = #t, -1, 1 do
-        print(class.name(t[i]))
+    for i = #t, 1, -1 do
+        print(t[i]) -- debug
         if t[i].dead then
             table.remove(t, i)
         end
     end
+end
+
+function Grid:filterDeadPlayers()
+    filterDead(self.players)
 end
 
 function Grid:filterDeadReals()

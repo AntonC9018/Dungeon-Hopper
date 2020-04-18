@@ -1,8 +1,14 @@
-local calculateRelativeness = require("logic.action.dirs.utils").calculateRelativeness
+local utils = require("logic.action.dirs.utils")
 
 local getMovs = function(actor, action)
 
-    local gx, gy, lx, ly = calculateRelativeness(actor)
+    local player = utils.getClosestPlayer(actor)
+
+    if player == nil then 
+        return {} 
+    end
+
+    local gx, gy, lx, ly = utils.calculateRelativeness(actor, player)
  
     -- So this is basically if-you-look-to-the-left,
     -- you-would-prefer-to-go-to-the-left action

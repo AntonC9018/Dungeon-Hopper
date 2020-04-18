@@ -46,7 +46,6 @@ function Graphics:updateObject(id, state)
     local newCoords = (self.offset + state.pos) * UNIT
     obj.x = newCoords.x + display.contentCenterX
     obj.y = newCoords.y + display.contentCenterY
-    -- print("hello")
 end
 
 

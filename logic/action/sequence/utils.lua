@@ -1,5 +1,5 @@
 
-local traverseChainFunction(chain, stepNumber)
+local function traverseChainFunction(chain, stepNumber)
     return function(sequenceStep, event)
         local outerEvent = 
         
@@ -11,3 +11,5 @@ local traverseChainFunction(chain, stepNumber)
         return sequenceStep.count
     end
 end
+
+return traverseChainFunction

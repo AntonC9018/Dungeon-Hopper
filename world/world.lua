@@ -1,11 +1,10 @@
 local Grid = require "world.grid"
-local Renderer = require "world.renderer"
 
 local World = class("World")
 
 local Player = require 'logic.base.player'
 local TestEnemy = require 'modules.test.enemytest'
-
+local Tile = require 'modules.test.tile'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -25,6 +24,9 @@ function World:registerTypes(assets)
 
     local enemyType = assets:getObjectType(TestEnemy)
     assets:registerGameObjectType(enemyType)
+
+    local tileType = assets:getObjectType(Tile)
+    assets:registerGameObjectType(tileType)
 end
 
 
@@ -39,7 +41,21 @@ function World:createPlayerAt(pos)
     return player
 end
 
+function World:createFloors()
+    for i = 1, #self.grid.grid do
+        for j = 1, #self.grid.grid[1] do
+            self:createFloorAt( Vec(i, j) )
+        end
+    end
+end
 
+function World:createFloorAt(pos)
+    local tile = Tile()
+    tile:init(pos, self)
+    self.grid:setFloorAt(tile, pos)
+    self.renderer:addRenderEntity(tile)
+    return tile
+end
 
 function World:createTestEnemyAt(pos)
     local testEnemy = TestEnemy()
@@ -56,7 +72,10 @@ end
 function World:setPlayerActions(direction, playerIndex)
     local player = self.grid.players[playerIndex]
 
-    if player.nextAction == nil then
+    if 
+        player ~= nil 
+        and player.nextAction == nil 
+    then
         player:generateAction(direction)
         return true
     end
@@ -106,9 +125,9 @@ function World:gameLoop()
     -- self:advancePhase()
 
     -- activate floor hazards
-    -- self:activateFloors()
-    -- self.grid:tickFloors()
-    -- self:advancePhase()
+    self:activateFloors()
+    self.grid:tickFloors()
+    self:advancePhase()
 
     -- activate traps
     -- self:activateTraps()
@@ -213,7 +232,7 @@ function World:activateExplosions()
 end
 
 
-function World:activateFloorHazards()
+function World:activateFloors()
 end
 
 
@@ -222,6 +241,7 @@ end
 
 
 function World:filterDead()
+    self.grid:filterDeadPlayers()
     self.grid:filterDeadReals()
     self.grid:filterDeadFloors()
     self.grid:filterDeadWalls()
@@ -236,10 +256,10 @@ local Move = require "logic.action.effects.move"
 
 
 function World:displace(target, move)
-    -- printf("Displacing %s", class.name(target)) -- debug
+    printf("Displacing %s", class.name(target)) -- debug
 
     local newPos = Move.posFromMove(self.grid, target, move)
-    
+
     if newPos == nil then
         return nil
     end
@@ -280,7 +300,7 @@ end
 
 
 function World:doAttack(targets, action)
-    -- printf("Doing attack %s", class.name(targets[1])) -- debug
+    -- printf("Doing attack %s", class.name(targets[1].target)) -- debug
 
     local events = {}
     for i = 1, #targets do
@@ -293,7 +313,7 @@ end
 
 
 function World:doPush(targets, action)
-    -- printf("Doing push %s", class.name(targets[1])) -- debug
+    -- printf("Doing push %s", class.name(targets[1].target)) -- debug
 
     local events = {}
 
@@ -305,7 +325,7 @@ end
 
 
 function World:doStatus(targets, action)
-    -- printf("Doing status %s", class.name(targets[1])) -- debug
+    -- printf("Doing status %s", class.name(targets[1].target)) -- debug
 
     local events = {}
     for i = 1, #targets do
@@ -335,7 +355,7 @@ end
 
 function World:updateRenderStates()
 
-    print(ins(self.changes, {depth = 2}))
+    -- print(ins(self.changes, {depth = 2})) -- debug
     
     if self.renderer ~= nil then
         self.renderer:pushChanges(self.changes)

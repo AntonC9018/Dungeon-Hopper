@@ -4,6 +4,8 @@ local Chain = require 'lib.chains.chain'
 -- the none action means doing nothing
 local None = class("NoneAction", Action)
 
-None.chain = Chain()
+None.chain = {
+    player = Chain()
+}
 
 return None

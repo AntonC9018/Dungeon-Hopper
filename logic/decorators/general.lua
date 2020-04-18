@@ -5,7 +5,6 @@
 --      4. make it Sequential
 
 local Acting = require "logic.decorators.acting"
-local ShouldAct = require "logic.decorators.shouldact"
 local GeneralAlgo = require "logic.action.algorithms.general"
 local Sequential = require "logic.decorators.sequential"
 local decorate = require("logic.decorators.decorator").decorate
@@ -13,7 +12,6 @@ local decorate = require("logic.decorators.decorator").decorate
 local function General(entityClass)
 
     decorate(entityClass, Acting)
-    decorate(entityClass, ShouldAct)
     entityClass.chainTemplate:addHandler('action', GeneralAlgo)
     decorate(entityClass, Sequential)
 

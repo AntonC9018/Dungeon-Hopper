@@ -4,7 +4,7 @@
 -- This is the base class of all game objects in the game.
 -- A game object is any object that exists in the world, at some specific position
 
-local Actions = require 'logic.action.actions.actions'
+local None = require 'logic.action.actions.none'
 local Cell = require("world.cell")
 local Emitter = require("lib.emitter")
 
@@ -43,14 +43,16 @@ function GameObject:init(pos, world)
     -- create an emitter
     self.emitter = Emitter()
 
-    self:applyDecorators()
+    if self.chainTemplate ~= nil then
+        self:applyDecorators()
+    end
 end
 
 
 -- get the next action based on the game state
 -- the default is doing nothing
 function GameObject:calculateAction()
-    self.nextAction = Action.None()
+    self.nextAction = None()
 end
 
 function GameObject:executeAction()

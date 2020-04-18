@@ -5,9 +5,11 @@
 local Decorators = require 'logic.decorators.decorators'
 local PlayerAlgo = require 'logic.action.algorithms.player'
 local GameObject = require 'logic.base.gameobject'
-local Actions = require 'logic.action.actions.actions'
+local None = require 'logic.action.actions.none'
 
 local Entity = class("Entity", GameObject)
+
+Entity.decorators = {}
 
 -- Decorator stuff
 function Entity:isDecorated(decorator)
@@ -46,7 +48,7 @@ local sequenceActivation =
     activateDecorator(Decorators.Sequential)
 
 function Entity:calculateAction()
-    self.nextAction = Actions.None()
+    self.nextAction = None()
     sequenceActivation(self)
 end
 

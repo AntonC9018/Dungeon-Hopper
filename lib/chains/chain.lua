@@ -33,19 +33,19 @@
 local Chain = {}
 
 setmetatable(Chain, {
-    __call = function (_) return Chain:new() end
+    __call = function (...) return Chain.new(...) end
 })
 
-function Chain:new()
+function Chain:new(handlers)
     local obj = {}
     self.__index = self
     setmetatable(obj, self)
-    obj:construct()
+    obj:construct(handlers)
     return obj
-end
+end 
 
-function Chain:construct()
-    self.handlers = {}
+function Chain:construct(handlers)
+    self.handlers = handlers or {}
     self.toAdd = {}
     self.toRemove = {}
 end

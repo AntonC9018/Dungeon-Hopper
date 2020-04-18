@@ -14,8 +14,17 @@ local GameObject = class("GameObject")
 GameObject.layer = Cell.Layers.misc
 GameObject.priority = 0
 
+
+local id = 0
+
+local function generateId()
+    id = id + 1
+    return tostring(id)
+end
+
 -- every game object must have a position coordinate pair
 function GameObject:init(pos, world)
+    self.id = generateId()
     self.pos = pos
     self.world = world
     self.orientation = Vec(1, 0)

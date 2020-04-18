@@ -10,30 +10,46 @@ local function printWorld(world)
 end
 
 return function()
+
     local World = require('world.world')
-    local world = World(4, 4)
+
+    local assets = require('world.assets')()
+    local renderer = require('world.renderer')(assets)
+    
+    local world = World(renderer, 4, 4)
+    world:registerTypes(assets)
+
+    -- load all assets
+    assets:loadAll()
+
+    Runtime:addEventListener( 
+        "enterFrame",         
+        function(event)
+            renderer:update(event.time)
+        end
+    )
+
     local player = world:createPlayerAt( Vec(2, 2) )
     local enemy = world:createTestEnemyAt( Vec(2, 3) )
-    local success = world:setPlayerActions( Vec(0, 1), 1 )
-    assert(success)
-    local playerAction = player.nextAction
-    -- print(ins(enemy, { depth = 1 }))
-
     
-    world:render()
-    print('\n')
-    world:gameLoop()
-    print('\n')
+    world:setPlayerActions( Vec(0, 1), 1 )
+    world:gameLoopIfSet()
 
-    world:setPlayerActions( Vec(0, 0), 1 )
-    world:gameLoop()
-    print('\n')
+    timer.performWithDelay( 
+        1000, 
+        function()
+            world:setPlayerActions( Vec(0, 0), 1 )
+            world:gameLoop()
+        end,
+        3
+    )
+    -- print('\n')
 
-    world:setPlayerActions( Vec(0, 0), 1 )
-    world:gameLoop()
-    print('\n')
+    -- world:setPlayerActions( Vec(0, 0), 1 )
+    -- world:gameLoop()
+    -- print('\n')
 
-    world:setPlayerActions( Vec(0, 0), 1 )
-    world:gameLoop()
-    print('\n')
+    -- world:setPlayerActions( Vec(0, 0), 1 )
+    -- world:gameLoop()
+    -- print('\n')
 end

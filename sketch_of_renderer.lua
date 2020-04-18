@@ -292,6 +292,3 @@ local function createAnimationProperties(oldProperties, history)
     end
 end
 
-
-display.setDefault('magTextureFilter', 'nearest')
-display.setDefault('minTextureFilter', 'nearest')

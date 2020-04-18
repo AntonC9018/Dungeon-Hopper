@@ -1,36 +1,51 @@
-local Grid = require("world.grid")
+local Grid = require "world.grid"
+local Renderer = require "world.renderer"
 
 local World = class("World")
 
+local Player = require 'logic.base.player'
+local TestEnemy = require 'modules.test.enemytest'
 
-function World:__construct(w, h)
+
+function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
     self.orderedReals = {}
     self.emitter = Emitter()
+    self.renderer = renderer
 end
 
 
 function World:init()
 end
 
+function World:registerTypes(assets)
+    -- register all assets
+    local playerType = assets:getObjectType(Player)
+    assets:registerGameObjectType(playerType)
+
+    local enemyType = assets:getObjectType(TestEnemy)
+    assets:registerGameObjectType(enemyType)
+end
+
 
 -- player and entity creation
-local Player = require 'logic.base.player'
 
 function World:createPlayerAt(pos)
     local player = Player()
     player:init(pos, self)
     self.grid:setPlayerAt(player, pos)
+    self.renderer:addRenderEntity(player)
+    self.renderer:setAsPlayer(player.id)
     return player
 end
 
 
-local TestEnemy = require 'modules.test.enemytest'
 
 function World:createTestEnemyAt(pos)
     local testEnemy = TestEnemy()
     testEnemy:init(pos, self)
     self.grid:setRealAt(testEnemy, pos)
+    self.renderer:addRenderEntity(testEnemy)
     return testEnemy
 end
 
@@ -54,7 +69,7 @@ end
 function World:gameLoopIfSet()
     local players = self.grid.players
     for i = 1, #players do
-        if player[i].nextAction == nil then
+        if players[i].nextAction == nil then
             return false
         end
     end
@@ -100,8 +115,12 @@ function World:gameLoop()
     -- self.grid:tickTraps()
     -- self:advancePhase()
 
-    -- set objects for rendering
-    self:render()
+    -- TODO: refine
+    -- for now, save the final state of all objects as the changes
+    self:resetChangesToCurrentStates()
+
+    -- update render states for all objects 
+    self:updateRenderStates()
 
     -- filter out dead things
     self:filterDead()
@@ -314,8 +333,16 @@ function World:removeDead(entity)
 end
 
 
--- provisional rendering through console
-function World:render()
+function World:updateRenderStates()
+
+    print(ins(self.changes, {depth = 2}))
+    
+    if self.renderer ~= nil then
+        self.renderer:pushChanges(self.changes)
+        return
+    end
+    
+    -- provisional rendering through console
     local grid = self.grid.grid
     for i = 1, #grid do
         local str = ""
@@ -341,5 +368,23 @@ function World:render()
     end
 end
 
+
+-- TODO: do this for all things, not just reals
+function World:resetChangesToCurrentStates()
+
+    self.changes = {}
+
+    for i, real in ipairs(self.grid.reals) do
+        table.insert(self.changes, 
+            {
+                id = real.id,
+                pos = real.pos,
+                orientation = real.orientation,
+                state = real.state
+            }
+        )
+    end
+
+end
 
 return World

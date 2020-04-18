@@ -1,0 +1,159 @@
+-- This is a simple graphics object manager for now
+--
+-- The graphics is done in a completely separate file, see graphics.manager
+local Graphics = require "engine.graphics"
+
+local Renderer = class("Renderer")
+
+
+function Renderer:__construct(assetManager)
+    self.graphics = Graphics(assetManager)
+    self.assets = assetManager
+    self.renderObjects = {}
+    self.currentStates = {}
+    self.players = {}
+    self.states = {{}}
+end
+
+
+function Renderer:addRenderEntity(gameObject)
+    local spriteType = self.assets:getObjectType(gameObject)
+    local spriteId = self.graphics:createSpriteOfType(spriteType)
+
+    local renderObject = 
+        {
+            id = gameObject.id,
+            layer = gameObject.layer,
+            spriteId = spriteId
+        }
+
+    table.insert(self.renderObjects, renderObject)
+
+    -- add the object to the current states
+    -- that is, the immediate position, orientation, state number, 
+    self.currentStates[gameObject.id] = 
+        {
+            pos = gameObject.pos,
+            orientaion = gameObject.orientation,
+            state = gameObject.state
+        }
+end
+
+
+-- for now, just draw the final versions
+function Renderer:pushChanges(changes)
+    -- changes are
+    -- {
+    --      id: id of the renderEntity/gameObject,
+    --      pos: vec,
+    --      orientation: vec,
+    --      state: number,
+    --      event: the name of the event? questionable
+    -- }
+
+    -- TODO:
+    -- A list of final states and animation identificators for each frame
+    -- For every beat, the list of renderObjects should be sorted according to
+    -- the y position on the grid. This position must be saved in this
+    -- final state object.
+
+    self.states = {{}}
+
+    -- just draw the last state for now
+    for i = 1, #changes do
+        self.states[1][changes[i].id] = changes[i]
+    end
+
+
+end
+
+
+function Renderer:setAsPlayer(id)
+    self.players[#self.players + 1] = id
+end
+
+function Renderer:unsetPlayer(id)
+    for i = 1, #self.players do
+        if self.players[i] == id then
+            table.remove(self.players, i)
+            return
+        end
+    end
+end
+
+function Renderer:getCenterPointBetweenPlayers()
+    local centerPoint = Vec(0, 0);
+    if #self.players == 0 then
+        return centerPoint
+    end
+    for i = 1, #self.players do
+        centerPoint = 
+            centerPoint + self.currentStates[self.players[i]].pos
+    end
+    return centerPoint * 1 / #self.players 
+end
+
+
+-- called each frame
+function Renderer:update(time)
+
+    -- TODO: do some interpolation between states (left to be figured out)
+    -- for now, just use the latest states
+    for i = 1, #self.renderObjects do
+        local obj = self.renderObjects[i]
+        local newState = self.states[#self.states][obj.id]
+        if newState ~= nil then
+            self.currentStates[obj.id] = newState
+        end 
+    end
+    
+    -- sort the render objects based on current y position and layer
+    -- TODO: sort them just once the moment a new phase starts 
+    self:sortRenderObjects()
+
+    -- TODO: move them to the front only once the phase starts
+    for i, obj in ipairs(self.renderObjects) do
+        self.graphics:resetZ()
+        self.graphics:toFront(obj.spriteId)
+    end
+
+    -- figure out the center point between the players
+    local centerPoint = 
+        self:getCenterPointBetweenPlayers()
+
+    self.graphics:setCenter(centerPoint)
+
+    -- Change position and stuff of all objects
+    for i, obj in ipairs(self.renderObjects) do
+        self.graphics:updateObject(
+            obj.spriteId,
+            self.currentStates[obj.id]
+        )
+    end
+end
+
+
+function Renderer:sortRenderObjects()
+
+    table.sort( 
+        self.renderObjects, 
+
+        function(objA, objB) 
+            local currentA = self.currentStates[objA.id]
+            local currentB = self.currentStates[objB.id]
+            local yDifference = currentA.pos.y - currentB.pos.y
+            
+            if yDifference == 0 then
+                return currentA.layer < currentB.layer
+            end
+
+            return yDifference > 0                 
+        end
+    )
+
+end
+
+
+
+
+return Renderer

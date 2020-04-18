@@ -15,10 +15,8 @@ require('lib.utils')
 Event = require('lib.chains.event')
 Chain = require('lib.chains.chain')
 
-
-
 function scene:create( event )
-
+    
     require("game.tests.test2")()
 
 

@@ -1,11 +1,10 @@
-local Event = class("Event")
-
-function Event:__construct(actor, action)
-    self.actor = actor
-    self.action = action
-
-    self.propagate = true
+function Event(actor, action)
+    return 
+        {
+            actor = actor,
+            action = action,
+            propagate = true
+        }
 end
-
 
 return Event 

@@ -19,12 +19,12 @@ List of things already implemented:
 6. Weapon target selection logic
 
 List of important things not implemented:
-1. Basic graphics -
+1. Basic graphics +
 2. Pushing +
 3. Moving +
-4. Sequential decorator -
-5. Ticking -
-6. HP -
+4. Sequential decorator +
+5. Ticking +
+6. HP +
 6. Basic Controls -
 
 List of less significant things not implemented:

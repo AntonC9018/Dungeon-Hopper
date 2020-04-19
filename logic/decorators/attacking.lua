@@ -14,16 +14,8 @@ local function setBase(event)
 end
 
 local function getTargets(event)
-    local targets = event.actor.world:getTargets(event.actor, event.action)
-    
-    if 
-        targets == nil
-        or targets[1] == nil
-    then
-        event.propagate = false    
-    else
-        event.targets = targets
-    end    
+    local targets = event.actor.world:getTargets(event.actor, event.action)    
+    event.targets = targets
 end
 
 local function applyAttack(event)

@@ -15,6 +15,22 @@ Combos.Player(Player)
 Player.generateAction = 
     activateDecorator(Decorators.PlayerControl)
     
+-- Add the handlers to chain
+Player.chainTemplate:addHandler(
+    "getAttack", 
+    -- nil targets check
+    -- TODO: refactor
+    function(event)
+        if 
+            event.targets == nil
+            or event.targets[1] == nil
+        then
+            event.propagate = false    
+        end
+    end
+)
+
+-- TODO: add moving check
 
 -- TODO: Call the character Candace
 return Player

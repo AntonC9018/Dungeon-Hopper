@@ -2,7 +2,7 @@
 local stepFuncs = require "stepfuncs"
 local AttackDigMoveAction = require "logic.action.actions.nonplayer.attackdigmove"
 local None = require "logic.action.actions.none"
-local SequenceUtils = require "modules.utils.sequence"
+local SequenceUtils = require "modules.utils.handlers"
 local Handlers = SequenceUtils.handlers
 
 

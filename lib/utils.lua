@@ -151,7 +151,7 @@ function array_join_all(...)
     return r
 end
 
-function table.containsKey(t, k)
+table.containsKey = function (t, k)
     for key, _ in pairs(t) do
         if key == k then return true end
     end
@@ -176,7 +176,7 @@ function average(arr)
 end
 
 
-function table.map(arr, func)
+table.map = function (arr, func)
     local result = {}
     for i = 1, #arr do
         result[i] = func(arr[i])
@@ -184,7 +184,7 @@ function table.map(arr, func)
     return result
 end
 
-function table.map2(arr, arr2, func)
+table.map2 = function (arr, arr2, func)
     local result = {}
     for i = 1, #arr do
         result[i] = func(arr[i], arr2[i])
@@ -193,17 +193,26 @@ function table.map2(arr, arr2, func)
 end
 
 
-function table.each(arr, func)
+table.each = function (arr, func)
     for i = 1, #arr do
         func(arr[i])
     end
 end
 
 
-function table.each2(arr, arr2, func)
+table.each2 = function (arr, arr2, func)
     for i = 1, #arr do
         func(arr[i], arr2[i])
     end
+end
+
+table.someF = function (arr, func)
+    for i, v in ipairs(arr) do
+        if func(arr[i]) then
+            return true
+        end
+    end
+    return false
 end
 
 require 'lib.deepclone'

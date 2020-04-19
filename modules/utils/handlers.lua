@@ -1,8 +1,6 @@
 local Chain = require "lib.chains.chain"
 local Action = require "logic.action.action"
 
-local Seq = {}
-
 local handlers = {}
 
 
@@ -43,19 +41,25 @@ handlers.checkNotMove = function(event)
 end
 
 
-handlers.checkTargetIsPlayer = function(event)
+handlers.checkTargetsHavePlayer = function(event)
 
-    local actor = event.actor
-    local pos = actor.pos
-    local playerCoord = pos + event.action.direction
-    local real = actor.world.grid:getRealAt(playerCoord)
+    local targets = event.targets
 
-    if real == nil or not real:isPlayer() then
+    if targets == nil then
         event.propagate = false
+        return
     end
+
+    event.propagate = 
+        table.someF(
+            targets, 
+            function(target)
+                return target.target:isPlayer()
+            end
+        )
 end
 
-handlers.checkIsFree = function(event)
+handlers.checkFreeMove = function(event)
 
     local coord = 
         event.actor.pos + event.action.direction
@@ -67,7 +71,5 @@ handlers.checkIsFree = function(event)
     end
 end
 
-Seq.handlers = handlers
 
-
-return Seq
+return handlers

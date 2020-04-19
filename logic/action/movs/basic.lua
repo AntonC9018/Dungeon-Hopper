@@ -1,4 +1,4 @@
-local utils = require("logic.action.dirs.utils")
+local utils = require("logic.action.movs.utils")
 
 local getMovs = function(actor, action)
 

@@ -49,10 +49,11 @@ Let's break it down into components to clarify how it works.
 
 ## Prerequisites for becoming an `Acting`
 
-`Acting` is a decorator for entities. Entities decorated with `Acting` have the function `executeAction()` actually doing something interesting, instead of just setting `Acting.didAction` to `true`. 
+`Acting` is a decorator for entities. Entities decorated with `Acting` have the function `executeAction()` (which is just a shorthand for `entity.decorators.Acting:activation()`) actually doing something interesting. If the instance class has not been decorated with `Acting`, `executeAction` would just set `Acting.didAction` to `true`. 
+
 `Acting.something` in this and subsequent cases will refer to the `something` field on an entity class decorated with `Acting`.
 
-The `Acting` decorator can be applied to both player and non-player entities. Once done, though, you'll still have to provide the algorithm for action, that is, put an `Algo` handler into the new `action` chain received from the `Acting` decorator. 
+The `Acting` decorator can be applied to both player and non-player entities. Once done, though, you'll still have to provide the algorithm for action, that is, put an `Algo` handler into the new `action` chain received from the `Acting` decorator. Technically, you may add more than one algorithm.
 
 ## Structure
 
@@ -82,17 +83,23 @@ This event has a special structure, and consequently will be called `EnclosingEv
         6. `resultEvent.pushEvents` - similarly, pushed
         7. `resultEvent.statusEvents` - similarly, statused
 
-You can find the one direction that succeeded (`GeneralAlgo`) in `EnclosingEvent.action.direction`.
+You can find the one direction that succeeded (assuming `GeneralAlgo`) in `EnclosingEvent.action.direction`.
 
 ## The algorithms
 
 Most common algorithms, which act by doing something in a direction, are the `GeneralAlgo` for non-player entities and `PlayerAlgo` for the player. 
 
-The difference between these two is that the `GeneralAlgo` tests out a couple of desirable actions, which it would get from `???.getMovs()` function (the ??? is probably a decorator, not yet implemented), gets the most desirable one out of them, and executes that single one, while the `PlayerAlgo` just does the selected action in the only direction provided (which came from user input). 
+The difference between these two is that the `GeneralAlgo` tests out a couple of desirable actions, which it would get from `action.getMovs()` function (this function is set for each action class individually, see Sequence), gets the most desirable one out of them, and executes that single one, while the `PlayerAlgo` just does the selected action in the only direction provided (which came from user input). 
 
 As a result, **these algorithms support just one action of one type at a time**. That is, with the `GeneralAlgo` it is impossible to program an enemy that e.g. would attack to the left, while spitting out a projectile to the right (it is possible, but hacky), which is also true for the `PlayerAlgo`.
 
-Another difference is that the `GeneralAlgo` would traverse the chains of the selected action dedicated for non-player entities, while the `PlayerAlgo` would traverse those for the player, the difference between them being that in the non-player case, there is a verification stage, that is, e.g. for attacking, the handler first traverses the `ShouldAttack` chain to figure out whether the entity needs to be attacking in the first place, doing the next possible action if it should not, while in the player case all actions, e.g. attacking then digging then moving, will be tried one after the other, the one terminating being the one actually done.
+Another difference is that the `GeneralAlgo` would use different action structure than the `PlayerAlgo`. The `GeneralAlgo` expects there to be a `getMovs()` function on the action, while the `PlayerAlgo` does not. Also, action chains of enemies typically have a verification stage before deciding on which action to start. These are set on the `get` or `check` chain from the corresponding decorator. These chain are incorporated in the `chainsTemplate` directly on the entity class. For example, for an attack, the decorator would be `Attacking` and the chain would be names `getAttack`. So you would do:
+
+```lua
+MyEntity.chainTemplate:addHandler('getAttack', myHandler)
+```
+
+These will be plenty of predefined handlers, but these are just normal chain handlers that work with events. You can write ones yourself easily.
 
 The result of this is that the actions resulting in no avail for the player, e.g. attacking empty space, won't be executed, while for non-player entities this must be foreseen.
 
@@ -108,6 +115,7 @@ This, however, must not be confused with whether the effects of the action were 
 
 In the case of an action component succeeding, the action as a whole would return, then the `resultEvent` would be saved on `algoEvent` and `algoEvent.succeed` would be set to `true`. Otherwise, `algoEvent.succeed` would be `false`, while `resultEvent` would be `nil`. 
 
+*For more discussion on actions, turn to the action page.*
 
 # Useful World Methods
 

@@ -10,7 +10,6 @@ local function getBaseMove(event)
     event.move = move    
 end
 
-
 local function displace(event)    
     local move = event.move
     event.actor.world:displace(event.actor, event.move)     

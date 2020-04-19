@@ -1,5 +1,7 @@
 local utils = {}
 
+
+-- Not actually used!
 utils.checkApplyHandler = function(checkChain, nameApplyMethod)
     return function(algoEvent)
         local actor = algoEvent.actor
@@ -32,7 +34,7 @@ utils.applyHandler = function(nameApplyMethod)
 
         local resultEvent = actor[nameApplyMethod](actor, action)  
 
-        if resultEvent.propagate then
+        if resultEvent.success then
             -- previous action successful
             algoEvent.propagate = false
             algoEvent.success = true

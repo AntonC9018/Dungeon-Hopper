@@ -1,13 +1,13 @@
 
-local PlayerHandlers = require "logic.action.handlers.player"
+local BasicHandlers = require "logic.action.handlers.basic"
 local Action = require "logic.action.action"
 
 local AttackDigMove = class("AttackDigMove", Action)
 
 AttackDigMove.chain = Chain({
-    PlayerHandlers.Attack,
-    PlayerHandlers.Dig,
-    PlayerHandlers.Move
+    BasicHandlers.Attack,
+    BasicHandlers.Dig,
+    BasicHandlers.Move
 })
 
 return AttackDigMove

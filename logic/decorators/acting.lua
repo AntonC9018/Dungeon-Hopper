@@ -11,13 +11,21 @@ Acting.affectedChains =
 
 
 -- execute action function
-function Acting:activate(instance)
-        
-    instance.doingAction = true
+function Acting:activate(instance)        
 
     local enclosingEvent = Event(instance, instance.nextAction)
     enclosingEvent.success = false
     instance.enclosingEvent = enclosingEvent
+
+    -- nil event check
+    if instance.nextAction:getChain() == nil then
+        instance.didAction = true
+        enclosingEvent.success = true
+        instance.chains.succeedAction:pass(enclosingEvent)
+        return
+    end
+
+    instance.doingAction = true
 
     -- check if action should even be done
     -- checks to this are added mainly by statused

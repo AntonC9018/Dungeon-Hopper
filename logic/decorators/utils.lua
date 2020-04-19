@@ -9,6 +9,8 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
 
 
         if event.propagate then
+            -- mark that the event verification succeeded
+            event.success = true
             -- printf("Passing the %s chain", nameApply) -- debug
             actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        

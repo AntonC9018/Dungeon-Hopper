@@ -4,7 +4,7 @@
 
 local Decorator = require 'logic.decorators.decorator'
 local None = require 'logic.action.actions.none'
-local AttackMove = require 'logic.action.actions.player.attackmove'
+local AttackMove = require 'logic.action.actions.attackmove'
 
 local PlayerControl = class('PlayerControl', Decorator)
 

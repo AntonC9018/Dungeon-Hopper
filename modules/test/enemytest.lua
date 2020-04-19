@@ -3,49 +3,52 @@ local Cell = require "world.cell"
 
 local TestEnemy = class("TestEnemy", Entity)
 
--- Set up sequence
-local None = require "logic.action.actions.none"
-local HandlerUtils = require "logic.action.handlers.utils"
-local Action = require "logic.action.action"
-local Handlers = require("modules.utils.sequence").handlers
-
 TestEnemy.layer = Cell.Layers.real
-
-local step1 = {
-    action = None
-}
-
-local step2 = {
-    action = Action.fromHandlers(
-        "TATM",
-        {   
-            -- try to attack
-            HandlerUtils.checkApplyHandler(
-                -- the check chain
-                Chain({ Handlers.checkTargetIsPlayer }),
-                -- the apply method on actor
-                "executeAttack"
-            ),
-            -- try to move
-            HandlerUtils.checkApplyHandler(
-                -- the check chain
-                Chain({ Handlers.checkIsFree }),
-                -- the apply method on actor
-                "executeMove"
-            )
-        }
-    )
-}
-
-
-TestEnemy.sequenceSteps = { step1, step2 }
-
--- Set up movs
-TestEnemy.getMovs = require "logic.action.dirs.basic"
 
 -- Set up all decorators
 local Combos = require "logic.decorators.combos"
 Combos.BasicEnemy(TestEnemy)
+
+-- Set up sequence
+local None = require "logic.action.actions.none"
+local HandlerUtils = require "logic.action.handlers.utils"
+local Action = require "logic.action.action"
+local Handlers = require "modules.utils.handlers"
+local ActionHandlers = require "logic.action.handlers.basic"
+
+local steps = {    
+    { -- first step: skip the beat
+        action = None
+    },    
+    { -- second step: try to attack, then try to move 
+        action = 
+            Action.fromHandlers( 
+                -- name for the action
+                "TATM",
+                {   
+                    -- try to attack
+                    ActionHandlers.Attack,
+                    -- try to move
+                    ActionHandlers.Move
+                },
+                -- the movs function
+                require "logic.action.movs.basic"
+            )
+    }
+}
+
+
+TestEnemy.sequenceSteps = steps
+
+
+-- set up action checks
+-- TODO: this probably should be refactored into a simpler method
+TestEnemy.chainTemplate:addHandler(
+    'getAttack', Handlers.checkTargetsHavePlayer
+) 
+TestEnemy.chainTemplate:addHandler(
+    'getMove', Handlers.checkFreeMove
+) 
 
 TestEnemy.baseModifiers = {
 

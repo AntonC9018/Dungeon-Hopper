@@ -58,7 +58,7 @@ local function GeneralAlgo(enclosingEvent)
     local instance = enclosingEvent.actor
     local action  = enclosingEvent.action
     
-    local dirs = instance:getMovs()
+    local dirs = action.getMovs(instance)
     enclosingEvent.directions = dirs
 
     for i = 1, #dirs do

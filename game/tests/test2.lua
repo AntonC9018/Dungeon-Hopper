@@ -34,13 +34,13 @@ return function()
     local enemy = world:createTestEnemyAt( Vec(2, 3) )
 
     
-    world:setPlayerActions( Vec(0, 0), 1 )
+    world:setPlayerActions( Vec(1, 0), 1 )
     world:gameLoopIfSet()
 
     timer.performWithDelay( 
         1000, 
         function()
-            world:setPlayerActions( Vec(0, 0), 1 )
+            world:setPlayerActions( Vec(1, 0), 1 )
             world:gameLoop()
         end,
         7

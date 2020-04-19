@@ -49,17 +49,26 @@ function Renderer:pushChanges(beatChanges)
     --      pos: vec,
     --      orientation: vec,
     --      state: number,
-    --      event: the name of the event? questionable
+    --      event: the name of the event. see render\changes.lua
     -- }
     -- the beatChanges array containts a table for each of the phases
     -- that table has all changes to object states as they happened in order
-    print(ins(beatChanges, { depth = 4 }))
+    -- so beatChanges is like { { ... changes }, { ... }, { ... }, ... }
+    
+    -- print(ins(beatChanges, { depth = 4 })) -- debug
 
     -- TODO:
     -- A list of final states and animation identificators for each frame
-    -- For every beat, the list of renderObjects should be sorted according to
-    -- the y position on the grid. This position must be saved in this
-    -- final state object.
+    -- For every phase of the beat, the list of renderObjects should be sorted according to
+    -- the y position on the grid. This position must be saved on this
+    -- final state object. Also, the necessary exact animations (you are getting just a list 
+    -- of all changes, so, for example, a hit doesn't necessarily mean the hit animation should 
+    -- be started, as it might as well mean there was a hit + a move, which means 
+    -- a dash or something should be started) and state transitions
+    -- (that is, the object states, like with head and without, which uses 
+    -- different sprites) should be computed and put together. What matters is that
+    -- in the end, Graphics should get the image number and the exact position.
+    -- No other information (also rotation maybe).
 
     self.states = {{}}
 
@@ -70,9 +79,7 @@ function Renderer:pushChanges(beatChanges)
         end
     end
 
-
 end
-
 
 function Renderer:setAsPlayer(id)
     self.players[#self.players + 1] = id

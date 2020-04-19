@@ -82,6 +82,7 @@ This event has a special structure, and consequently will be called `EnclosingEv
         5. `resultEvent.attackEvents` - list of events generated as a result of reals being attacked
         6. `resultEvent.pushEvents` - similarly, pushed
         7. `resultEvent.statusEvents` - similarly, statused
+        8. `resultEvent.success` - whether the `check` or `get` (`getAttack` in this case) chain has been passed entirely through 
 
 You can find the one direction that succeeded (assuming `GeneralAlgo`) in `EnclosingEvent.action.direction`.
 
@@ -93,25 +94,23 @@ The difference between these two is that the `GeneralAlgo` tests out a couple of
 
 As a result, **these algorithms support just one action of one type at a time**. That is, with the `GeneralAlgo` it is impossible to program an enemy that e.g. would attack to the left, while spitting out a projectile to the right (it is possible, but hacky), which is also true for the `PlayerAlgo`.
 
-Another difference is that the `GeneralAlgo` would use different action structure than the `PlayerAlgo`. The `GeneralAlgo` expects there to be a `getMovs()` function on the action, while the `PlayerAlgo` does not. Also, action chains of enemies typically have a verification stage before deciding on which action to start. These are set on the `get` or `check` chain from the corresponding decorator. These chain are incorporated in the `chainsTemplate` directly on the entity class. For example, for an attack, the decorator would be `Attacking` and the chain would be names `getAttack`. So you would do:
+Another difference is that the `GeneralAlgo` would use different action structure than the `PlayerAlgo`. The `GeneralAlgo` expects there to be a `getMovs()` function on the action, while the `PlayerAlgo` does not. Also, action chains of enemies typically have a verification stage before deciding on which action to start. These are set on the `get` or `check` chain from the corresponding decorator. These chain are incorporated in the `chainsTemplate` directly on the entity class. For example, for an attack, the decorator would be `Attacking` and the chain would be named `getAttack`. So you would do:
 
 ```lua
 MyEntity.chainTemplate:addHandler('getAttack', myHandler)
 ```
 
-These will be plenty of predefined handlers, but these are just normal chain handlers that work with events. You can write ones yourself easily.
+There will be plenty of predefined handlers, but these are in fact just normal chain handlers that work with events. You can write ones yourself easily.
 
 The result of this is that the actions resulting in no avail for the player, e.g. attacking empty space, won't be executed, while for non-player entities this must be foreseen.
 
-Both of these algorithms also save the action that succeeded and set success to true. See Structure.
+Both of these algorithms also save the action that was relevant and set success to true. See Structure.
 
 ## An action 'succeeding'
 
 Actions may be multi-step. That is, they may have multiple components to them. For example, there is the `AttackMoveAction` which indicates first attacking, then moving. So, attacking and moving are both **action components** in this case.
 
-An action component is considered to have **succeeded**, if its `resultEvent` went through every single handler in the action component handler chains (that is, following our `Attack` example,  both getting stats for an attack and actually doing the attack were successful), while the `resultEvent.propagate` field remained `true`.
-
-This, however, must not be confused with whether the effects of the action were relevant. For example, even if an enemy with a shield blocked the attack, the action component may still succeed. In fact, the individual subevents of the `resultEvent` are saved on it. See Structure.
+An action component is considered to have **succeeded**, if its `resultEvent` went through every single handler in the action component check (or get) chain. For `Attack`, this would mean it went through every single handler of the `getAttack` chain. This is why for checking purposes one should add handlers that would stop the event to the check (or get) chains. 
 
 In the case of an action component succeeding, the action as a whole would return, then the `resultEvent` would be saved on `algoEvent` and `algoEvent.succeed` would be set to `true`. Otherwise, `algoEvent.succeed` would be `false`, while `resultEvent` would be `nil`. 
 

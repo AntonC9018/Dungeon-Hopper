@@ -18,10 +18,10 @@ Step objects describe the action and the next step to do very precicely.
 | movs                        | Function | The movs algorithm                     | 
 | success                     | Number   | The step number if the action succeeds |
 | fail                        | Number   | The step if the action fails           |
-| checkSuccess                | Chain    | The chain passed to check if it succeeds. By default, the chain checks if any action succeedes |
+| checkSuccess                | Chain    | The chain passed to check if the action is considered to have succeeded. By default, the chain checks if any action succeedes |
 | enter                       | Function | Executed when the step is selected as the next one |
 | exit                        | Function | Executed when this step stops being the current step |
-| repet                       | Number   | Now many times to repeat this step until start checking success |
+| repet                       | Number   | Now many times to repeat this step until starting to check success |
 
 ## Example
 For example, take a simple skeleton.
@@ -67,7 +67,7 @@ step1 = {
             "TurnToPlayer", 
             { 
                 -- use a handler, predefined or coded on your own
-                turnToPlayerChain
+                turnToPlayer
             }
         ) 
     checkSuccess = 

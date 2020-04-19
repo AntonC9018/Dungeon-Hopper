@@ -52,4 +52,8 @@ function Sequence:getCurrentAction()
     return self.steps[self.currentStepIndex].ActionClass()
 end
 
+function Sequence:getMovs(...)
+    return self.steps[self.currentStepIndex].getMovs(...)
+end
+
 return Sequence

@@ -1,20 +1,25 @@
 
 local stepFuncs = require "stepfuncs"
-local AttackDigMoveAction = require "logic.action.actions.nonplayer.attackdigmove"
+local AttackDigMove = require "logic.action.actions.attackdigmove"
 local None = require "logic.action.actions.none"
-local SequenceUtils = require "modules.utils.handlers"
-local Handlers = SequenceUtils.handlers
+local Handlers = require "modules.utils.handlers"
+local Action = require "logic.action"
 
 
 local turnToPlayerActionClass = 
-    SequenceUtils.specialActionFromHandler("TurnToPlayer", Handlers.turnToPlayer)
+    Action.fromHandlers(
+        "TurnToPlayer",
+        {
+            Handlers.turnToPlayer
+        }
+    )
 
 
 local step1 = {
     action = turnToPlayerActionClass,
     success = {
         index = 2,
-        chain = Chain.fromHandler(Handlers.checkOrthogonal)
+        chain = Chain({ Handlers.checkOrthogonal })
     },
     fail = 1
 }
@@ -34,10 +39,10 @@ end
 
 
 local step2 = {
-    action = AttackDigMoveAction,
+    action = AttackDigMove,
     success = {
         index = 3,
-        chain = Chain.fromHandler(Handlers.checkNotMove)
+        chain = Chain({ Handlers.checkNotMove })
     },
     fail = 2,
     enter = addInfiniteArmor,

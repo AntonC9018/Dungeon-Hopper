@@ -2,6 +2,15 @@ local Event = require "lib.chains.event"
 
 local Step = class("Step")
 
+local standartSuccessChain = Chain(
+    {
+        function(event)
+            print(ins(event.triggerEvent.actor, {depth = 3}))
+            local enclosingEvent = event.triggerEvent.actor.enclosingEvent
+            event.success = enclosingEvent.success
+        end
+    }
+)
 
 -- local function checkSuccessDefault()
 --     local chain = Chain()
@@ -35,17 +44,17 @@ function Step:__construct(config)
     self.ActionClass = ActionClass
 
     if config.success ~= nil then
-        if type(config.success) == 'number' then
-            self.successStepIndex = config.success
-        
-        else
-            self.successStepIndex = config.success.index
-            self.successChain = config.success.chain
-        end
+        self.successStepIndex = config.success        
     end
 
     if config.fail ~= nil then
         self.failStepIndex = config.fail
+    end    
+
+    if config.checkSuccess == nil then
+        self.successChain = standartSuccessChain
+    else
+        self.successChain = config.checkSuccess
     end
 
     if config.enter ~= nil then
@@ -56,16 +65,17 @@ function Step:__construct(config)
         self.exit = config.exit
     end
 
+    if config.movs ~= nil then
+        self.getMovs = config.movs
+    end
+
     self.repet = config.repet
 
 end
 
 
 function Step:nextStep(event)
-    if self.successChain == nil then
-        return nil
-    end
-    
+
     local stepSuccessful = self:checkSuccess(event) 
 
     if stepSuccessful then
@@ -77,14 +87,15 @@ end
 
 
 function Step:checkSuccess(event) 
-    local outerEvent = Event(self, nil)
-    outerEvent.triggerEvent = event
-    self.successChain:pass(outerEvent)
-    return outerEvent.propagate
+    local internalEvent = Event(self, nil)
+    internalEvent.triggerEvent = event
+    self.successChain:pass(internalEvent)
+    return internalEvent.propagate
 end
 
 function Step:enter() end
 function Step:exit() end
+function Step:getMovs() return {} end
 
 
 return Step

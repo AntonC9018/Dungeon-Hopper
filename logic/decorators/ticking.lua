@@ -5,10 +5,6 @@ local Ticking = class('Ticking', Decorator)
 local function resetBasic(event) 
     local actor = event.actor
 
-    actor.didAction = false
-    actor.doingAction = false
-    actor.nextAction = nil
-    actor.enclosingEvent = nil
 
     -- refresh history
 end

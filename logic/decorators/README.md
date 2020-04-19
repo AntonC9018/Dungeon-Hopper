@@ -96,10 +96,10 @@ This decorator enables the entity to take normal hits.
 | `beHit`     | `takeHit`, `die`             | Handlers of this chain are traversed after a hit has been assured to come through by the `defence` chain.  |
 
 `takeHit` does damage to you (without applying status effects and pushing, see `Pushable` and `Statused` for that). 
-> `Entity.takeHit()` is the sorthand for `Entity.decorators.WithHP.activate()` 
+> `Entity.takeHit()` is the shorthand for `Entity.decorators.WithHP.activate()` 
 
 `die` checks if the health is 0 and calls the `Entity.die()` if it is.
-> `Entity.die()` is the sharthand for `Entity.decorators.Killable.activate()`
+> `Entity.die()` is the shorthand for `Entity.decorators.Killable.activate()`
 
 **Shorthand activation**: `Entity.beAttacked()`
 

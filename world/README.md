@@ -90,7 +90,7 @@ You can find the one direction that succeeded (assuming `GeneralAlgo`) in `Enclo
 
 Most common algorithms, which act by doing something in a direction, are the `GeneralAlgo` for non-player entities and `PlayerAlgo` for the player. 
 
-The difference between these two is that the `GeneralAlgo` tests out a couple of desirable actions, which it would get from `action.getMovs()` function (this function is set for each action class individually, see Sequence), gets the most desirable one out of them, and executes that single one, while the `PlayerAlgo` just does the selected action in the only direction provided (which came from user input). 
+The difference between these two is that the `GeneralAlgo` tests out a couple of desirable actions, which it would get from `entity.sequence.getMovs()` function (this function is set for each step of the sequence individually, see Sequence), gets the most desirable one out of them, and executes that single one, while the `PlayerAlgo` just does the selected action in the only direction provided (which came from user input). 
 
 As a result, **these algorithms support just one action of one type at a time**. That is, with the `GeneralAlgo` it is impossible to program an enemy that e.g. would attack to the left, while spitting out a projectile to the right (it is possible, but hacky), which is also true for the `PlayerAlgo`.
 

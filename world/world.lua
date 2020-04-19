@@ -165,7 +165,13 @@ end
 
 
 function World:resetObjects()
-
+    -- for now, just reset the reals
+    for i, real in ipairs(self.grid.reals) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
 end
 
 

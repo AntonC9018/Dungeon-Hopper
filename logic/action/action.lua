@@ -14,12 +14,11 @@ function Action:setDirection(dir)
     self.direction = dir
 end
 
-Action.fromHandlers = function(name, handlers, getMovs)
+Action.fromHandlers = function(name, handlers)
     local chain = Chain()
     chain.handlers = handlers
     local actionClass = class(name, Action)
     actionClass.chain = chain
-    actionClass.getMovs = getMovs
     return actionClass
 end
 

@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require "render.changes"
 
 local Decorator = require 'logic.decorators.decorator'
 local Killable = class('Killable', Decorator)
@@ -11,7 +12,7 @@ end
 
 Killable.affectedChains = {
     { "checkDie", {} },
-    { "die", { die } }
+    { "die", { die, utils.regChangeFunc(Changes.Dead) } }
 }
 
 Killable.activate =

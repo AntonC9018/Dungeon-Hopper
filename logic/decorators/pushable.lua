@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require "render.changes"
 
 local Decorator = require 'logic.decorators.decorator'
 local Pushable = class('Pushable', Decorator)
@@ -20,7 +21,7 @@ end
 
 Pushable.affectedChains = {
     { "checkPush", { checkPush } },
-    { "executePush", { executePush } }
+    { "executePush", { executePush, utils.regChangeFunc(Changes.Pushed) } }
 }
 
 Pushable.activate = 

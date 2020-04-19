@@ -1,15 +1,13 @@
 
 local Decorator = require 'logic.decorators.decorator'
+local utils = require 'logic.decorators.utils'
+local Changes = require "render.changes"
+local Move = require("logic.action.handlers.basic").Move
+
 local Bumping = class('Bumping', Decorator)
 
-local function bump(event)
-
-
-
-end
-
 Bumping.affectedChains = {
-    { "failAction", { bump } }
+    { "failAction", {  } }
 }
 
 return Bumping

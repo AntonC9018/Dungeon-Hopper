@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require "render.changes"
 
 local Decorator = require 'logic.decorators.decorator'
 local Stats = require 'logic.stats.stats' 
@@ -35,7 +36,7 @@ end
 
 Attacking.affectedChains = {
     { "getAttack", { setBase, getTargets } },
-    { "attack", { applyAttack, applyPush, applyStatus } }
+    { "attack", { applyAttack, applyPush, applyStatus, utils.regChangeFunc(Changes.Hits) } }
 }
 
 

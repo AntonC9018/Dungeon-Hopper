@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require 'render.changes'
 
 local Decorator = require 'logic.decorators.decorator'
 local Attackable = class('Attackable', Decorator)

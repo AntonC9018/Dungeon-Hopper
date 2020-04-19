@@ -17,7 +17,7 @@ end
 
 
 function Renderer:addRenderEntity(gameObject)
-    printf("Adding game object of type %s", class.name(gameObject)) -- debug
+    -- printf("Adding game object of type %s", class.name(gameObject)) -- debug
     local spriteType = self.assets:getObjectType(gameObject)
     local spriteId = self.graphics:createSpriteOfType(spriteType)
 
@@ -42,8 +42,8 @@ end
 
 
 -- for now, just draw the final versions
-function Renderer:pushChanges(changes)
-    -- changes are
+function Renderer:pushChanges(beatChanges)
+    -- each change is a 
     -- {
     --      id: id of the renderEntity/gameObject,
     --      pos: vec,
@@ -51,6 +51,9 @@ function Renderer:pushChanges(changes)
     --      state: number,
     --      event: the name of the event? questionable
     -- }
+    -- the beatChanges array containts a table for each of the phases
+    -- that table has all changes to object states as they happened in order
+    print(ins(beatChanges, { depth = 4 }))
 
     -- TODO:
     -- A list of final states and animation identificators for each frame
@@ -61,8 +64,10 @@ function Renderer:pushChanges(changes)
     self.states = {{}}
 
     -- just draw the last state for now
-    for i = 1, #changes do
-        self.states[1][changes[i].id] = changes[i]
+    for i, changes in ipairs(beatChanges) do
+        for j, change in ipairs(changes) do
+            self.states[1][change.id] = change
+        end
     end
 
 

@@ -5,7 +5,6 @@ local Step = class("Step")
 local standartSuccessChain = Chain(
     {
         function(event)
-            print(ins(event.triggerEvent.actor, {depth = 3}))
             local enclosingEvent = event.triggerEvent.actor.enclosingEvent
             event.success = enclosingEvent.success
         end

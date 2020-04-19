@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require "render.changes"
 
 local Decorator = require 'logic.decorators.decorator'
 local Move = require 'logic.action.effects.move'
@@ -17,7 +18,7 @@ end
 
 Moving.affectedChains = {
     { "getMove", { getBaseMove }},
-    { "move", { displace } }
+    { "move", { displace, utils.regChangeFunc(Changes.Move) } }
 }
 
 Moving.activate = 

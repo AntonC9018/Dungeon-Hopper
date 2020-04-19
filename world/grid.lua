@@ -465,7 +465,7 @@ end
 
 local function filterDead(t)
     for i = #t, 1, -1 do
-        print(t[i]) -- debug
+        -- print(t[i]) -- debug
         if t[i].dead then
             table.remove(t, i)
         end

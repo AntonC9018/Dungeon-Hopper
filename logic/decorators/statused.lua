@@ -1,4 +1,5 @@
 local utils = require "logic.decorators.utils" 
+local Changes = require "render.changes"
 
 -- TODO: implement these methods
 local checkStatus = utils.nothing
@@ -10,7 +11,7 @@ local Statused = class('Statused', Decorator)
 
 Statused.affectedChains = {
     { "checkStatus", { checkStatus }},
-    { "applyStatus", { applyStatus } }
+    { "applyStatus", { applyStatus, utils.regChangeFunc(Changes.Status) } }
 }
 
 Statused.activate = 

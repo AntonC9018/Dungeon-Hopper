@@ -5,12 +5,15 @@ local World = class("World")
 local Player = require 'logic.base.player'
 local TestEnemy = require 'modules.test.enemytest'
 local Tile = require 'modules.test.tile'
+local Changes = require 'render.changes'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
     self.orderedReals = {}
     self.emitter = Emitter()
     self.renderer = renderer
+    self.changes = {{}}
+    self.phase = 1
 end
 
 
@@ -134,10 +137,6 @@ function World:gameLoop()
     -- self.grid:tickTraps()
     -- self:advancePhase()
 
-    -- TODO: refine
-    -- for now, save the final state of all objects as the changes
-    self:resetChangesToCurrentStates()
-
     -- update render states for all objects 
     self:updateRenderStates()
 
@@ -160,7 +159,7 @@ end
 
 
 function World:resetPhase()
-    self.phase = 0
+    self.phase = 1
 end
 
 
@@ -187,7 +186,8 @@ end
 
 -- TODO: implement
 function World:advancePhase()
-
+    self.phase = self.phase + 1
+    self.changes[self.phase] = {}
 end
 
 
@@ -270,9 +270,17 @@ function World:displace(target, move)
         return nil
     end
 
-    self.grid:remove(target)
-    target.pos = newPos
-    self.grid:reset(target)
+    if 
+        newPos.x == target.pos.x
+        and newPos.y == target.pos.y
+    then
+        self:registerChange(target.target, Changes.Bump)
+
+    else
+        self.grid:remove(target)
+        target.pos = newPos
+        self.grid:reset(target)
+    end
 
     return true
 end
@@ -365,6 +373,7 @@ function World:updateRenderStates()
     
     if self.renderer ~= nil then
         self.renderer:pushChanges(self.changes)
+        self.changes = {{}}
         return
     end
     
@@ -395,22 +404,15 @@ function World:updateRenderStates()
 end
 
 
--- TODO: do this for all things, not just reals
-function World:resetChangesToCurrentStates()
-
-    self.changes = {}
-
-    for i, real in ipairs(self.grid.reals) do
-        table.insert(self.changes, 
-            {
-                id = real.id,
-                pos = real.pos,
-                orientation = real.orientation,
-                state = real.state
-            }
-        )
-    end
-
+function World:registerChange(obj, code)
+    local change = {
+        id = obj.id,
+        state = obj.state,
+        pos = obj.pos,
+        orientation = obj.orientation,
+        event = code
+    }
+    table.insert(self.changes[self.phase], change)
 end
 
 return World

@@ -41,4 +41,10 @@ end
 utils.nothing = function(event)    
 end
 
+utils.regChangeFunc = function(code)
+    return function(event)
+        event.actor.world:registerChange(event.actor, code)
+    end
+end
+
 return utils

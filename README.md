@@ -8,6 +8,8 @@ I'm writing just the logic now, but the graphics should too be accounted for, th
 
 Nothing is being tested! I'm planning on writing the core things like the grid, moving, attacking, pushing, sequences and enemies that employ them, then add simple interim graphics and debug, then do the rest little by little. 
 
+See docs https://antonc9018.github.io/Dungeon-Hopper-Docs/
+
 # Progress
 
 List of things already implemented:

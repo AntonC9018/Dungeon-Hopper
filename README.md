@@ -4,11 +4,7 @@ It's a game based on mechanics of NecroDancer. Right now I'm developing the logi
 
 I pondered how I could refine what I had and decided to rewrite everything from scatch taking a more strict and manageable approach. Nonetheless, the initial attempt was fine for the first attempt, and good for realizing the right direction.
 
-I'm writing just the logic now, but the graphics should too be accounted for, though in an insolated manner.
-
-Nothing is being tested! I'm planning on writing the core things like the grid, moving, attacking, pushing, sequences and enemies that employ them, then add simple interim graphics and debug, then do the rest little by little. 
-
-See docs https://antonc9018.github.io/Dungeon-Hopper-Docs/
+See docs! https://antonc9018.github.io/Dungeon-Hopper-Docs/
 
 # Progress
 

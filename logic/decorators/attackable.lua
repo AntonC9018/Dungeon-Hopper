@@ -5,6 +5,12 @@ local Decorator = require 'logic.decorators.decorator'
 local Attackable = class('Attackable', Decorator)
 
 
+local function setBase(event)
+    event.protection = {
+        
+    }
+end
+
 -- TODO: fully implement
 local function takeHit(event)
     event.actor:takeDamage(event.action.attack.damage)    
@@ -20,7 +26,7 @@ end
 
 Attackable.affectedChains =
     { 
-        { "defence", { utils.armor } },
+        { "defence", { setBase, utils.armor } },
         { "beHit", { takeHit, die } },
         { "canBeAttacked", {} }
     }

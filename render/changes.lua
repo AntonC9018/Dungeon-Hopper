@@ -1,6 +1,8 @@
 return 
 {
     Dead = 'dead',
+    Dug = 'dug',   -- being dug
+    Digs = 'digs', -- doing dig
     Move = 'move', -- moving itself
     Hits = 'hits', -- hitting something
     Hurt = 'hurt', -- being hit

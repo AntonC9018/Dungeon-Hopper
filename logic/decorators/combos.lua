@@ -40,6 +40,7 @@ Combos.Player = function(Player)
     decorate(Player, Decorators.PlayerControl)
     decorate(Player, Decorators.WithHP)
     decorate(Player, Decorators.Displaceable)
+    decorate(Player, Decorators.Digging)
     Player.chainTemplate:addHandler('action', PlayerAlgo)
 end
 

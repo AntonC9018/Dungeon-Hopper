@@ -47,6 +47,12 @@ Entity.die =
 Entity.displace = 
     activateDecorator(Decorators.Displaceable)
 
+Entity.executeDig =
+    activateDecorator(Decorators.Digging)
+
+Entity.beDug =
+    activateDecorator(Decorators.Diggable)
+
 
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
@@ -100,11 +106,17 @@ Entity.baseModifiers = {
         power = 1
     },
 
+    dig = {
+        power = 1,
+        damage = 1
+    },
+
     resistance = {
         armor = 0,
         maxDamage = math.huge,
         push = 1,
-        pierce = 1
+        pierce = 1,
+        dig = 1
     },
 
     hp = 1
@@ -114,6 +126,20 @@ Entity.baseModifiers = {
 -- TODO: implement
 function Entity:getWeapon()
     return nil
+end
+
+local function getTargetsDefault(self, action)
+    local coord = self.pos + action.direction
+    local entity = self.world:getOneFromTopAt(coord)
+
+    if entity == nil then
+        return nil
+    end
+
+    local piece = Piece(coord, action.direction, false)
+    local attackableness = entity:getAttackableness(self)
+    local target = Target(entity, piece, 1, attackableness)
+    return target
 end
 
 -- now, methods that access grid on world
@@ -126,18 +152,42 @@ function Entity:getTargets(action)
         return weapon:hitsFromAction(actor, action)
     end
 
-    local coord = self.pos + action.direction
-    local real = self.world.grid:getRealAt(coord)
+    local target = 
+        getTargetsDefault(self, action)
 
-    if real == nil then
-        return nil
+    if 
+        target ~= nil
+        and target.entity.attackableness ~= Attackableness.NO 
+    then
+        return { entity }
     end
 
-    local piece = Piece(coord, action.direction, false)
-    local attackableness = real:getAttackableness(self)
-    local target = Target(real, piece, 1, attackableness)
-    return { target }
+    return nil    
 end
 
+
+function Entity:getDigTargets(action)
+
+    -- TODO: add custom shovel functionality
+    -- probably should implement shovels as weapons. 
+    -- The logic would stay exactly the same, only the call to getAttackableness()
+    -- will have to be changed to getDiggableness()
+    -- another thing to consider...
+    -- for now, just use the standart procedure for attacks
+
+    local target = 
+        getTargetsDefault(self, action)
+
+    if 
+        target ~= nil
+        -- for now, just do this. in the future, change to diggableness
+        and target.entity:isDecorated(Decorators.Diggable)
+    then
+        return { target }
+    end
+
+    return nil
+
+end
 
 return Entity

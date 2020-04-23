@@ -29,6 +29,19 @@ Player.chainTemplate:addHandler(
         end
     end
 )
+Player.chainTemplate:addHandler(
+    "getDig", 
+    -- nil targets check
+    -- TODO: refactor
+    function(event)
+        if 
+            event.targets == nil
+            or event.targets[1] == nil
+        then
+            event.propagate = false    
+        end
+    end
+)
 
 -- TODO: add moving check
 

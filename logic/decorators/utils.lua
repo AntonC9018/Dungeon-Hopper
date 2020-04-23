@@ -42,9 +42,12 @@ utils.checkApplyCustomized = function(nameCheck, nameApply, property)
 end
 
 
-
 utils.armor = function(event)
     local actor = event.actor
+    -- TODO: this should probably be expandable
+    -- that is, resistances should be an object (specific to e.g. attack)
+    -- saved on the event. Possibly a Resistances decorator?
+    -- yet another thing to consider... やれやれ...
     local resitances = actor.baseModifiers.resistance
     local action = event.action
 

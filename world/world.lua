@@ -194,7 +194,7 @@ end
 -- and set it as the nextAction at that object
 -- it should not care much about direction
 -- These functions should not be used to tick internal state,
--- that is, e.g. the sequence step. The thing that tick stuff 
+-- that is, e.g. the sequence step. The thing that ticks stuff 
 -- is the tick() method
 function World:calculateActions()
     self.grid:calculateActionsReals()    
@@ -249,42 +249,27 @@ end
 -- Decorator + game logic stuff
 local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
-local Weapon = require "items.weapons.weapon"
 
-
-function World:doAttack(targets, action)
-    -- printf("Doing attack %s", class.name(targets[1].entity)) -- debug
-
-    local events = {}
-    for i = 1, #targets do
-        local entity = targets[i].entity
-        action.direction = targets[i].piece.dir
-        events[i] = entity:beAttacked(action)
+local function doX(funcName)
+    return function(targets, action)
+        if targets == nil then
+            return {}
+        end
+        local events = {}
+        for i = 1, #targets do
+            local entity = targets[i].entity
+            action.direction = targets[i].piece.dir
+            events[i] = entity[funcName](entity, action)
+        end
+        return events
     end
-    return events
 end
 
-
-function World:doPush(targets, action)
-    -- printf("Doing push %s", class.name(targets[1].entity)) -- debug
-
-    local events = {}
-    for i = 1, #targets do
-        events[i] = targets[i].entity:bePushed(action)
-    end
-    return events
-end
-
-
-function World:doStatus(targets, action)
-    -- printf("Doing status %s", class.name(targets[1].entity)) -- debug
-
-    local events = {}
-    for i = 1, #targets do
-        events[i] = targets[i].entity:beStatused(action)
-    end
-    return events
-end
+-- define all do<something> functions
+World.doAttack = doX('beAttacked')
+World.doDig    = doX('beDug')
+World.doPush   = doX('bePushed')
+World.doStatus = doX('beStatused')
 
 
 function World:getOneFromTopAt(pos)
@@ -312,32 +297,6 @@ function World:updateRenderStates()
     if self.renderer ~= nil then
         self.renderer:pushChanges(self.changes)
         self.changes = {{}}
-        return
-    end
-    
-    -- provisional rendering through console
-    local grid = self.grid.grid
-    for i = 1, #grid do
-        local str = ""
-        for j = 1, #grid[1] do
-            local real
-            for k = 1, #self.grid.reals do
-                if 
-                    self.grid.reals[k].pos.x == i 
-                    and self.grid.reals[k].pos.y == j 
-                then
-                    real = self.grid.reals[k]
-                end
-            end
-            if real == nil then
-                str = str.."- "
-            elseif real.dead then                
-                str = str.."x "
-            else
-                str = str.."o "
-            end
-        end
-        print(str)
     end
 end
 

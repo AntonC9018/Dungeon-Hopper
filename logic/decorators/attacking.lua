@@ -14,6 +14,21 @@ local function setBase(event)
     event.action.push = Push(event.actor.baseModifiers.push)  
 end
 
+-- TODO: this should have medium priority so that
+-- it is possible to first apply all piercing and stuff
+-- and then check if able to attack.
+-- For example take the ghost that CAN BE ATTACKED only if your level of 
+-- piercing is significantly high. In contast, an enemy with piercing 
+-- protection, e.g. shielded enemies are ABLE TO BE ATTACKED, that is, 
+-- if you try to attack them, they'll let you, but there'll be no damage.
+-- Ghosts, however, won't allow you to attack them if you wouldn't pierce 
+-- the high protection level. This way, ghosts will work by adding
+-- a handler onto their `Attackable.attackableness` chain, which is traversed
+-- when this function (getTargets) is called. That function would compare
+-- the piercing levels and tell the system the ghost can't be attacked
+-- if your piercing is not high enough. If there were no way to add 
+-- functions before this one, the ghost could never know the real 
+-- piercing levels.
 local function getTargets(event)
     local targets = event.actor.world:getTargets(event.actor, event.action)    
     event.targets = targets

@@ -6,6 +6,7 @@ local Decorators = require 'logic.decorators.decorators'
 local PlayerAlgo = require 'logic.action.algorithms.player'
 local GameObject = require 'logic.base.gameobject'
 local None = require 'logic.action.actions.none'
+local Attackableness = require 'logic.enums.attackableness'
 
 local Entity = class("Entity", GameObject)
 
@@ -46,6 +47,20 @@ Entity.die =
 Entity.displace = 
     activateDecorator(Decorators.Displaceable)
 
+    
+function Entity:getAttackableness(attacker)
+    local attackable = self.decorators.Attackable
+
+    -- if has attackable decorator
+    if attackable then
+        -- call their method
+        return attackable:getAttackableness(self, attacker)
+    end
+    -- can't be attacked
+    return Attackableness.NO
+end
+
+
 -- Setting the action type
 local sequenceActivation = 
     activateDecorator(Decorators.Sequential)
@@ -54,6 +69,7 @@ function Entity:calculateAction()
     self.nextAction = None()
     sequenceActivation(self)
 end
+
 
 -- Executing the action
 local actingActivation = 
@@ -65,17 +81,6 @@ function Entity:executeAction()
     self.doingAction = false
     self.didAction = true
 end
-    
- 
-
-function Entity:isAttackableOnlyWhenNextToAttacker()
-    return self:isDecorated(Decorators.AttackableOnlyWhenNextToAttacker)  
-end
-
-function Entity:isAttackable()
-    return self:isDecorated(Decorators.Attackable)
-end
-
 
 
 -- fallback base modifiers

@@ -1,6 +1,7 @@
 
 local Target = require "items.weapons.target"
 local General = require "items.weapons.general"
+local Attackableness = require "logic.enums.attackableness"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon")
@@ -36,7 +37,9 @@ function Weapon:posFromAction(actor, action)
         local piece = self.pattern:get(i):transform(ihat, jhat)
         local coord = actor.pos + piece.pos
         local thing = world:getOneFromTopAt(coord)
-        table.insert(map, Target(thing, piece, i))
+        -- see logic.enums.attackableness
+        local attackableness = thing:getAttackableness(actor)
+        table.insert(map, Target(thing, piece, i, attackableness))
     end
     
     -- after that, analyze it

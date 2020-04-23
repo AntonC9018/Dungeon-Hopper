@@ -250,7 +250,7 @@ end
 -- Decorator + game logic stuff
 local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
-
+local Weapon = require "items.weapons.weapon"
 
 function World:getTargets(actor, action)
     -- printf("Getting targets %s", class.name(actor)) -- debug

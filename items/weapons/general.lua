@@ -1,23 +1,25 @@
 local Chain = require "lib.chains.chain"
-
+local Attackableness = require "logic.enums.attackableness"
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->
--- HitAll? (leave all) -> 
--- Eliminate AttackableOnlyWhenNextToAttacker that aren't close ->
--- Check unreachableness (eliminate unreachable ones) ->
--- Take the first available
+-- -> HitAll? (leave all) -> 
+-- -> Check unreachableness (eliminate unreachable ones) ->
+-- -> Eliminate targets with Attackableness.IS_CLOSE that aren't close and those with Attackableness.NO ->
+-- -> Take the first available
 
-local function next(event)
+local function nextToAny(event)
 
     -- if the first one is anything but nil, leave the list unchanged
-    if event.targets[1] ~= nil
+    -- NOTE: at this point the list of targets still corresponds
+    -- to the pattern attack order
+    if event.targets[1] ~= nil then
         return
     end
 
-    -- otherwise, check if not everything is Attackable...blah-blah 
+    -- otherwise, check if not everything is attackable only when we're close
     local all = true
     for i = 1, #event.targets do
-        if not event.targets[i]:isAttackableOnlyWhenNextToAttacker() then
+        if event.targets[i].attackableness ~= Attackableness.IF_NEXT_TO then
             all = false
             break
         end
@@ -28,14 +30,27 @@ local function next(event)
         event.propagate = false
         event.targets = nil
     end
-
     
+end
+
+
+local function filterUnattackable(targets)
+    local newTargets = {}
+    for i, target in ipairs(targets) do
+        if target.attackableness ~= Attackableness.NO then
+            table.insert(newTargets, target)
+        end
+    end
+    return newTargets
 end
 
 
 local function hitAll(event)
     if event.hitAll then
         event.propagate = false
+        -- we also need to filter out NO-es
+        event.targets = 
+            filterUnattackable(event.targets)
     end
     
 end
@@ -72,14 +87,17 @@ end
 
 
 local function eliminate(event)
+    event.targets = 
+        filterUnattackable(event.targets)
+
     local newTargets = {}
-    for i = 1, event.targets[i] do
+
+    for i, target in ipairs(event.targets) do
         if 
-            event.targets[i]:isAttacckable()
-            and (not event.targets[i]:isAttackableOnlyWhenNextToAttacker() 
-            or event.targets[i].index == 1)
+            target.attackableness ~= Attackableness.IF_NEXT_TO
+            or target.index == 1
         then
-            table.insert(newTargets, event.targets[i])
+            table.insert(newTargets, target)
         end
     end
     event.targets = newTargets
@@ -88,15 +106,14 @@ end
 
 
 local function takeFirst(event)
-    event.targets = { event.targets[1] }
-    
+    event.targets = { event.targets[1] }    
 end
 
 
 local function stopIfEmpty(event)
     if 
         event.targets == nil
-        or #event.targets == 1
+        or #event.targets == 0
     then
         event.targets = nil
         return true  
@@ -109,15 +126,15 @@ local function checkStop(event)
 end
 
 -- define a general chain
-local chain = Chain()
-
-chain:addHandler(next)
-chain:addHandler(hitAll)
-chain:addHandler(isLowestIndex)
-chain:addHandler(unreachable)
-chain:addHandler(eliminate)
-chain:addHandler(takeFirst)
-
+local chain = Chain(
+    {
+        nextToAny,
+        hitAll,
+        unreachable,
+        eliminate,
+        takeFirst
+    }
+)
 
 return {
     chain = chain,

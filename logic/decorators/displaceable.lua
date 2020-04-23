@@ -7,7 +7,7 @@ local Move = require "logic.action.effects.move"
 local Displaceable = class('Displaceable', Decorator)
 
 local function convertFromMove(event)
-    printf("Displacing %s", class.name(event.actor)) -- debug
+    -- printf("Displacing %s", class.name(event.actor)) -- debug
 
     event.newPos = 
         Move.posFromMove(

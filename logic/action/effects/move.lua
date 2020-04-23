@@ -6,21 +6,26 @@ function Move:__construct(moveModifier, direction)
     self.distance = moveModifier.distance or 1
 end
 
-Move.posFromMove = function(grid, target, move)
-    if move.isThrough then
-        return grid:closest(move.target)
+function Move:toPos(grid, target)
+    if self.isThrough then
+        return grid:closest(self.target)
     end
-    local maxDistance = move.distance
+
+    local maxDistance = self.distance
     for i = 1, maxDistance do
-        if grid:getRealAt(target.pos + i * move.direction) ~= nil then
+        local testPos = target.pos + i * self.direction
+        if 
+            grid:hasBlockAt(testPos)
+        then
             if i == 1 then
                 return target.pos
             else
-                return target.pos + (i - 1) * move.direction
+                return target.pos + (i - 1) * self.direction
             end
         end
     end
-    return target.pos + maxDistance * move.direction
+
+    return target.pos + maxDistance * self.direction
 end
 
 

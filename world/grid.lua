@@ -496,4 +496,12 @@ function Grid:filterDeadProjectiles()
     filterDead(self.projectiles)
 end
 
+
+function Grid:hasBlockAt(pos)
+    local cell = self:getCellAt(pos)
+    return 
+        cell:getReal() ~= nil
+        or cell:getWall() ~= nil
+end
+
 return Grid

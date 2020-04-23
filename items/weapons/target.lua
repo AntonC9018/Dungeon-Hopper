@@ -1,5 +1,5 @@
 
-local Target = class("Hit")
+local Target = class("Target")
 
 function Target:__construct(entity, piece, index, attackableness)
     self.entity = entity

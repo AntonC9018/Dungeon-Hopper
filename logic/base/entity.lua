@@ -123,10 +123,14 @@ Entity.baseModifiers = {
 }
 
 
+local Target = require "items.weapons.target"
+local Piece = require "items.weapons.piece"
+
 -- TODO: implement
 function Entity:getWeapon()
     return nil
 end
+
 
 local function getTargetsDefault(self, action)
     local coord = self.pos + action.direction

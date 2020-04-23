@@ -4,10 +4,12 @@ local Changes = require "render.changes"
 local Decorator = require 'logic.decorators.decorator'
 local Dig = require 'logic.action.effects.dig'
 
-local Attacking = class('Attacking', Decorator)
+
+local Digging = class('Digging', Decorator)
+
 
 local function setBase(event)
-    event.action.dig = Dig(event.actor.baseModifiers.dig) 
+    event.action.dig = Dig(event.actor.baseModifiers.dig)
 end
 
 local function getTargets(event)
@@ -20,13 +22,14 @@ local function applyDig(event)
     event.digEvents = events 
 end
 
-Attacking.affectedChains = {
+
+Digging.affectedChains = {
     { "getDig", { setBase, getTargets } },
     { "dig", { applyDig, utils.regChangeFunc(Changes.Digs) } }
 }
 
 
-Attacking.activate = 
+Digging.activate = 
     utils.checkApplyCycle("getDig", "dig")
 
-return Attacking
+return Digging

@@ -4,7 +4,7 @@
 
 local Decorator = require 'logic.decorators.decorator'
 local None = require 'logic.action.actions.none'
-local AttackMove = require 'logic.action.actions.attackmove'
+local AttackDigMove = require 'logic.action.actions.attackdigmove'
 
 local PlayerControl = class('PlayerControl', Decorator)
 
@@ -15,7 +15,7 @@ function PlayerControl:activate(player, direction)
     if direction.x == 0 and direction.y == 0 then
         action = None()
     else
-        action = AttackMove()
+        action = AttackDigMove()
         action:setDirection(direction)
     end
 

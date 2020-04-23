@@ -6,6 +6,7 @@ local Player = require 'logic.base.player'
 local TestEnemy = require 'modules.test.enemytest'
 local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
+local Dirt = require 'modules.test.dirt'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -30,6 +31,9 @@ function World:registerTypes(assets)
 
     local tileType = assets:getObjectType(Tile)
     assets:registerGameObjectType(tileType)
+
+    local dirtType = assets:getObjectType(Dirt)
+    assets:registerGameObjectType(dirtType)
 end
 
 
@@ -66,6 +70,14 @@ function World:createTestEnemyAt(pos)
     self.grid:setRealAt(testEnemy, pos)
     self.renderer:addRenderEntity(testEnemy)
     return testEnemy
+end
+
+function World:createDirtAt(pos)
+    local dirt = Dirt()
+    dirt:init(pos, self)
+    self.grid:setWallAt(dirt, pos)
+    self.renderer:addRenderEntity(dirt)
+    return dirt
 end
 
 --- Convert user input to an action and set it
@@ -251,7 +263,7 @@ local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
 
 local function doX(funcName)
-    return function(targets, action)
+    return function(self, targets, action)
         if targets == nil then
             return {}
         end

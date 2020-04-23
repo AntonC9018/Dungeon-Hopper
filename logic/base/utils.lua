@@ -8,6 +8,7 @@ utils.activateDecorator = function(decorator)
                 self.decorators[name]
             
             if (decorator ~= nil) then
+                -- printf("Activating decorator %s", name) -- debug
                 return decorator:activate(self, ...)
             end
 

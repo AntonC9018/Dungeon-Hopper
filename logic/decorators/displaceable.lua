@@ -10,10 +10,9 @@ local function convertFromMove(event)
     -- printf("Displacing %s", class.name(event.actor)) -- debug
 
     event.newPos = 
-        Move.posFromMove(
+        event.move:toPos(
             event.actor.world.grid, 
-            event.actor, 
-            event.move
+            event.actor           
         )
 end
 

@@ -30,7 +30,7 @@ end
 -- functions before this one, the ghost could never know the real 
 -- piercing levels.
 local function getTargets(event)
-    local targets = event.actor.world:getTargets(event.actor, event.action)    
+    local targets = event.actor:getTargets(event.action)    
     event.targets = targets
 end
 

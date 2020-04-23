@@ -184,7 +184,6 @@ function World:sortByPriority()
 end
 
 
--- TODO: implement
 function World:advancePhase()
     self.phase = self.phase + 1
     self.changes[self.phase] = {}
@@ -252,59 +251,37 @@ local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
 local Weapon = require "items.weapons.weapon"
 
-function World:getTargets(actor, action)
-    -- printf("Getting targets %s", class.name(actor)) -- debug
-
-    local weapon = actor.weapon
-
-    if weapon ~= nil then
-        return weapon:hitsFromAction(actor, action)
-    end
-
-    local coord = actor.pos + action.direction
-    local real = self.grid:getRealAt(coord)
-
-    if real == nil then
-        return nil
-    end
-
-    local piece = Piece(coord, action.direction, false)
-    local target = Target(real, piece, 1)
-    return { target }
-end
-
 
 function World:doAttack(targets, action)
-    -- printf("Doing attack %s", class.name(targets[1].target)) -- debug
+    -- printf("Doing attack %s", class.name(targets[1].entity)) -- debug
 
     local events = {}
     for i = 1, #targets do
-        local target = targets[i].target
+        local entity = targets[i].entity
         action.direction = targets[i].piece.dir
-        events[i] = target:beAttacked(action)
+        events[i] = entity:beAttacked(action)
     end
     return events
 end
 
 
 function World:doPush(targets, action)
-    -- printf("Doing push %s", class.name(targets[1].target)) -- debug
+    -- printf("Doing push %s", class.name(targets[1].entity)) -- debug
 
     local events = {}
-
     for i = 1, #targets do
-        events[i] = targets[i].target:bePushed(action)
+        events[i] = targets[i].entity:bePushed(action)
     end
     return events
 end
 
 
 function World:doStatus(targets, action)
-    -- printf("Doing status %s", class.name(targets[1].target)) -- debug
+    -- printf("Doing status %s", class.name(targets[1].entity)) -- debug
 
     local events = {}
     for i = 1, #targets do
-        events[i] = targets[i].target:beStatused(action)
+        events[i] = targets[i].entity:beStatused(action)
     end
     return events
 end

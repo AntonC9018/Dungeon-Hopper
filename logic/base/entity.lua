@@ -47,7 +47,7 @@ Entity.die =
 Entity.displace = 
     activateDecorator(Decorators.Displaceable)
 
-    
+
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
 
@@ -109,6 +109,35 @@ Entity.baseModifiers = {
 
     hp = 1
 }
+
+
+-- TODO: implement
+function Entity:getWeapon()
+    return nil
+end
+
+-- now, methods that access grid on world
+-- these methods are overridable
+function Entity:getTargets(action)
+
+    local weapon = self:getWeapon()
+
+    if weapon ~= nil then
+        return weapon:hitsFromAction(actor, action)
+    end
+
+    local coord = self.pos + action.direction
+    local real = self.world.grid:getRealAt(coord)
+
+    if real == nil then
+        return nil
+    end
+
+    local piece = Piece(coord, action.direction, false)
+    local attackableness = real:getAttackableness(self)
+    local target = Target(real, piece, 1, attackableness)
+    return { target }
+end
 
 
 return Entity

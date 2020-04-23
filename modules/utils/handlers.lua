@@ -54,7 +54,7 @@ handlers.checkTargetsHavePlayer = function(event)
         table.someF(
             targets, 
             function(target)
-                return target.target:isPlayer()
+                return target.entity:isPlayer()
             end
         )
 end

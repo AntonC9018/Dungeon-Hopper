@@ -12,7 +12,7 @@ local function nextToAny(event)
     -- if the first one is anything but nil, leave the list unchanged
     -- NOTE: at this point the list of targets still corresponds
     -- to the pattern attack order
-    if event.targets[1] ~= nil then
+    if event.targets[1].entity ~= nil then
         return
     end
 
@@ -58,7 +58,7 @@ end
 
 local function isLowestIndex(index, arr)
     for i = 1, #arr do
-        if arr[i].index < index then
+        if arr[i] ~= nil and arr[i].index < index then
             return false  
         end
     end

@@ -10,6 +10,7 @@ local Weapon = class("Weapon")
 -- for the sake of argument, a fallback pattern is presented here
 local Pattern = require("items.weapons.pattern")
 Weapon.pattern = Pattern()
+
 -- attack directly in front, 
 -- apply push in the same direction,
 -- do not care about the previous attacks 
@@ -36,10 +37,13 @@ function Weapon:posFromAction(actor, action)
     for i = 1, #self.pattern do
         local piece = self.pattern:get(i):transform(ihat, jhat)
         local coord = actor.pos + piece.pos
-        local thing = world:getOneFromTopAt(coord)
+        local entity = world:getOneFromTopAt(coord)
         -- see logic.enums.attackableness
-        local attackableness = thing:getAttackableness(actor)
-        table.insert(map, Target(thing, piece, i, attackableness))
+        local attackableness = 
+            entity ~= nil
+                and entity:getAttackableness(actor)
+                or Attackableness.NO
+        table.insert(map, Target(entity, piece, i, attackableness))
     end
     
     -- after that, analyze it

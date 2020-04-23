@@ -206,20 +206,10 @@ function World:calculateActions()
 end
 
 
-function World:restoreGrid()
-    self.grid = self.storedGrid
-end
-
-
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
         self.grid.players[i]:executeAction()
     end
-end
-
-
-function World:actionSelectedByReal(real)
-    table.insert(self.orderedReals, real)
 end
 
 
@@ -258,35 +248,6 @@ end
 
 
 -- Decorator + game logic stuff
-local Move = require "logic.action.effects.move"
-
-
-function World:displace(target, move)
-    printf("Displacing %s", class.name(target)) -- debug
-
-    local newPos = Move.posFromMove(self.grid, target, move)
-
-    if newPos == nil then
-        return nil
-    end
-
-    if 
-        newPos.x == target.pos.x
-        and newPos.y == target.pos.y
-    then
-        self:registerChange(target.target, Changes.Bump)
-
-    else
-        self.grid:remove(target)
-        target.pos = newPos
-        self.grid:reset(target)
-    end
-
-    return true
-end
-
-
-
 local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
 

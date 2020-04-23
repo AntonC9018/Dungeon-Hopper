@@ -13,7 +13,7 @@ end
 
 local function displace(event)    
     local move = event.move
-    event.actor.world:displace(event.actor, event.move)     
+    event.actor:displace(move)  
 end
 
 Moving.affectedChains = {

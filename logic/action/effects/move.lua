@@ -14,7 +14,7 @@ Move.posFromMove = function(grid, target, move)
     for i = 1, maxDistance do
         if grid:getRealAt(target.pos + i * move.direction) ~= nil then
             if i == 1 then
-                return nil
+                return target.pos
             else
                 return target.pos + (i - 1) * move.direction
             end

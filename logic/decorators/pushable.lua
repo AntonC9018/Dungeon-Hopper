@@ -15,7 +15,7 @@ end
 local executePush = function(event)
     local move = event.action.push:toMove(event.action.direction)
     -- actor is the thing being pushed
-    event.actor.world:displace(event.actor, move)    
+    event.actor:displace(move)  
 end
 
 

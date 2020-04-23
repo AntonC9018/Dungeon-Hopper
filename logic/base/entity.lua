@@ -43,6 +43,9 @@ Entity.tick =
 Entity.die =
     activateDecorator(Decorators.Killable)
 
+Entity.displace = 
+    activateDecorator(Decorators.Displaceable)
+
 -- Setting the action type
 local sequenceActivation = 
     activateDecorator(Decorators.Sequential)

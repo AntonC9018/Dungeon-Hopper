@@ -20,6 +20,7 @@ Combos.BasicEnemy = function(Enemy)
     decorate(Enemy, Decorators.Pushable)
     decorate(Enemy, Decorators.Statused)
     decorate(Enemy, Decorators.WithHP)
+    decorate(Enemy, Decorators.Displaceable)
     Enemy.chainTemplate:addHandler('action', GeneralAlgo)
 end
 
@@ -38,6 +39,7 @@ Combos.Player = function(Player)
     decorate(Player, Decorators.InvincibleAfterHit)
     decorate(Player, Decorators.PlayerControl)
     decorate(Player, Decorators.WithHP)
+    decorate(Player, Decorators.Displaceable)
     Player.chainTemplate:addHandler('action', PlayerAlgo)
 end
 

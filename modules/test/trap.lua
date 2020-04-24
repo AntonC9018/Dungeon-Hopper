@@ -2,9 +2,8 @@ local Entity = require 'logic.base.entity'
 local Cell = require 'world.cell'
 local decorate = require ('logic.decorators.decorator').decorate
 local Decorators = require 'logic.decorators.decorators'
-local Decorator = require 'logic.decorators.decorators'
+local Bouncing = require 'modules.test.decorators.bouncing'
 local Changes = require 'render.changes'
-local utils = require 'logic.decorators.utils'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 
 
@@ -18,80 +17,7 @@ local State = {
     UNPRESSED = 1
 }
 
-Trap.state = UNPRESSED
-
-
--- Define our custom decorator
-local Bouncing = class("Bouncing", Decorator)
-
--- define the handlers for the chains
-local function setBase(event)
-    event.action.bounce = 
-        event.actor.baseModifiers.bounce
-end
-
-local function getTarget(event)
-    local actor = event.actor
-    local entity = actor.world.grid:getRealAt(actor.pos)
-    if entity == nil then
-        event.propagate = false
-    else
-        event.target = entity
-    end
-end
-
-local function bounceTarget(event)
-    local bounce = event.action.bounce
-    if 
-        bounce.power > 
-        event.target.baseModifiers.resistance.bounce or 0 
-    then
-        local move = bounce:toMove()
-        local entity = event.target
-
-        -- save the displace event
-        event.displaceEvent = entity:displace(move) 
-        event.actor.justBounced = entity  
-    else
-        event.propagate = false
-    end
-end
-
-local function changeState(event)
-    event.actor.state = State.PRESSED
-end
-
-local function activateNextBounce(event)
-    if event.displaceEvent ~= nil then
-        local oldPos = event.actor.pos
-        local newPos = event.target.pos
-        if 
-            oldPos.x ~= newPos.x 
-            or oldPos.y ~= newPos.y
-        then
-            local nextTrap = 
-                event.actor.world.grid:getTrapAt(newPos)
-
-            -- if hasn't just pushed the same thing
-            -- this way we prevent infinite loops
-            if nextTrap.justBounced ~= event.target then
-                nextTrap:executeAction()
-            end
-        end
-    end
-end
-
-Bouncing.affectedChains = {
-    { 'getBounce', { setBase, getTarget } },
-    { 'bounce', 
-        { 
-            bounceTarget, 
-            changeState,
-            utils.regChangeFunc(Changes.Bounce), 
-            activateNextBounce 
-        } 
-    }
-}
+Trap.state = State.UNPRESSED
 
 -- Decorate
 Decorators.Start(Trap)
@@ -102,6 +28,7 @@ decorate(Trap, Decorators.Acting)
 -- apply our custom decorator
 decorate(Trap, Bouncing)
 
+-- add the action algorithm
 Trap.chainTemplate:addHandler(
     'action', 
     -- use the player algo, as it just does the action, which is what we need
@@ -110,7 +37,7 @@ Trap.chainTemplate:addHandler(
 
 local function tickBounce(event)
     local actor = event.actor
-    
+
     actor.justBounced = nil
 
     local nextState =
@@ -119,7 +46,7 @@ local function tickBounce(event)
         or State.UNPRESSED
     
     if actor.state ~= nextState then
-        actor.world:pushChange(actor, Changes.JustState)
+        actor.world:ragisterChange(actor, Changes.JustState)
     end
 end
 
@@ -147,6 +74,16 @@ function Trap:calculateAction()
     -- set the orientation right away since it won't change
     action.direction = self.orientation
 end
+
+
+Trap.baseModifiers = {
+    bounce = {
+        power = 1,
+        distance = 1
+    },
+    resistance = {},
+    hp = 1
+}
 
 
 return Trap

@@ -53,7 +53,10 @@ Entity.executeDig =
 Entity.beDug =
     activateDecorator(Decorators.Diggable)
 
+Entity.beBounced =
+    activateDecorator(Decorators.Bounceable)
 
+    
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
 
@@ -116,7 +119,8 @@ Entity.baseModifiers = {
         maxDamage = math.huge,
         push = 1,
         pierce = 1,
-        dig = 1
+        dig = 1,
+        bounce = 1
     },
 
     hp = 1

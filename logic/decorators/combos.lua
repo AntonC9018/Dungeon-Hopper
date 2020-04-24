@@ -21,6 +21,7 @@ Combos.BasicEnemy = function(Enemy)
     decorate(Enemy, Decorators.Statused)
     decorate(Enemy, Decorators.WithHP)
     decorate(Enemy, Decorators.Displaceable)
+    decorate(Enemy, Decorators.Bounceable)
     Enemy.chainTemplate:addHandler('action', GeneralAlgo)
 end
 
@@ -41,6 +42,7 @@ Combos.Player = function(Player)
     decorate(Player, Decorators.WithHP)
     decorate(Player, Decorators.Displaceable)
     decorate(Player, Decorators.Digging)
+    decorate(Player, Decorators.Bounceable)
     Player.chainTemplate:addHandler('action', PlayerAlgo)
 end
 

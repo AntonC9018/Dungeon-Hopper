@@ -63,8 +63,18 @@ utils.armor = function(event)
     end
 end
 
+
+utils.die = function(event)
+    if event.actor.hp:get() <= 0 then
+        event.actor.dead = true
+        event.actor:die()
+    end    
+end
+
+
 utils.nothing = function(event)    
 end
+
 
 utils.regChangeFunc = function(code)
     return function(event)

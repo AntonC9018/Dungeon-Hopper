@@ -153,7 +153,7 @@ function Entity:getTargets(action)
     local weapon = self:getWeapon()
 
     if weapon ~= nil then
-        return weapon:hitsFromAction(actor, action)
+        return weapon:getTargets(actor, action)
     end
 
     local target = 

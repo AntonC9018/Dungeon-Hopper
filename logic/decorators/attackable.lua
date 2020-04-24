@@ -16,18 +16,11 @@ local function takeHit(event)
     event.actor:takeDamage(event.action.attack.damage)    
 end
 
-local function die(event)
-    if event.actor.hp:get() <= 0 then
-        event.actor.dead = true
-        event.actor:die()
-    end    
-end
-
 
 Attackable.affectedChains =
     { 
         { "defence", { setBase, utils.armor } },
-        { "beHit", { takeHit, die } },
+        { "beHit", { takeHit, utils.die } },
         { "canBeAttacked", {} }
     }
 

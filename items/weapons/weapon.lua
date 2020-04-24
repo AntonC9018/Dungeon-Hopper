@@ -21,7 +21,7 @@ Weapon.check = General.check
 Weapon.chain = General.chain
 Weapon.hitAll = false
 
-function Weapon:posFromAction(actor, action)
+function Weapon:getTargets(actor, action)
 
     local actor = action.actor
 

@@ -16,18 +16,11 @@ local function takeDigDamage(event)
     event.actor:takeDamage(event.action.dig.damage)    
 end
 
-local function die(event)
-    if event.actor.hp:get() <= 0 then
-        event.actor.dead = true
-        event.actor:die()
-    end
-end
-
 
 Diggable.affectedChains =
     { 
         { "checkDig", { checkPower } },
-        { "beDug", { takeDigDamage, die, utils.regChangeFunc(Changes.Dug) } }
+        { "beDug", { takeDigDamage, utils.die, utils.regChangeFunc(Changes.Dug) } }
     }
 
 Diggable.activate =

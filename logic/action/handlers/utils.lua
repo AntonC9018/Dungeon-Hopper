@@ -45,4 +45,25 @@ utils.applyHandler = function(nameApplyMethod)
     end
 end
 
+
+utils.applyFunctionHandler = function(func)
+    return function(algoEvent)
+        local actor = algoEvent.actor
+        local action = algoEvent.action
+
+        -- printf("In algoevent calling method %s", nameApplyMethod) -- debug
+
+        local resultEvent = func(actor, action)  
+
+        if resultEvent.success then
+            -- previous action successful
+            algoEvent.propagate = false
+            algoEvent.success = true
+            algoEvent.resultEvent = resultEvent
+        end
+
+        return algoEvent
+    end
+end
+
 return utils

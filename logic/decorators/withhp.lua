@@ -10,7 +10,7 @@ function WithHP:activate(actor, damage)
 end
 
 function WithHP:__construct(instance)
-    instance.hp = HP(instance.baseModifiers.hp)
+    instance.hp = HP(instance.baseModifiers.hp.amount)
 end
 
 return WithHP

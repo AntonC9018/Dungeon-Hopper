@@ -17,6 +17,10 @@ Stats.fromTable = function(t)
     return stats
 end
 
+function Stats:isSet(name)
+    return self.stats[name] ~= nil
+end
+
 function Stats:set(name, value)
     self.stats[name] = value
     return self.stats[name]
@@ -60,12 +64,18 @@ end
 
 
 function Stats:decrement()
-    for key, value in self.stats do
+    for key, value in pairs(self.stats) do
         if self.stats[key] > 0 then
             self.stats[key] = value - 1
         end
     end
     return self
+end
+
+function Stats:updateTo(stats)
+    for k, v in pairs(stats.stats) do
+        self.stats[k] = v
+    end
 end
 
 

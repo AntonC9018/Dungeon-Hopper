@@ -39,4 +39,13 @@ WaterTile.chainTemplate:addHandler(
     require 'logic.action.algorithms.player'
 )
 
+WaterTile.baseModifiers = {
+    stuck = {
+        power = 2
+    },
+    hp = {
+        amount = 1
+    }
+}
+
 return WaterTile

@@ -4,14 +4,15 @@ local Changes = require "render.changes"
 local Decorator = require 'logic.decorators.decorator'
 local Stats = require 'logic.stats.stats' 
 local Attack = require 'logic.action.effects.attack'
+local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Push = require 'logic.action.effects.push'
 
 local Attacking = class('Attacking', Decorator)
 
 local function setBase(event)
-    event.action.attack = Attack(event.actor.baseModifiers.attack)
-    event.action.status = Stats.fromTable(event.actor.baseModifiers.status)
-    event.action.push = Push(event.actor.baseModifiers.push)  
+    event.action.attack = event.actor:getStat(StatTypes.Attack)
+    event.action.status = event.actor:getStat(StatTypes.Status)
+    event.action.push =   event.actor:getStat(StatTypes.Push)  
 end
 
 -- TODO: this should have medium priority so that

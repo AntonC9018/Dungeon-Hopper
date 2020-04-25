@@ -1,15 +1,10 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require 'render.changes'
-
 local Decorator = require 'logic.decorators.decorator'
+
+
 local Attackable = class('Attackable', Decorator)
 
-
-local function setBase(event)
-    event.protection = {
-        
-    }
-end
 
 -- TODO: fully implement
 local function takeHit(event)
@@ -19,7 +14,7 @@ end
 
 Attackable.affectedChains =
     { 
-        { "defence", { setBase, utils.armor } },
+        { "defence", { utils.setAttackRes, utils.armor } },
         { "beHit", { takeHit, utils.die } },
         { "canBeAttacked", {} }
     }

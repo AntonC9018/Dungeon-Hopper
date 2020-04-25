@@ -1,15 +1,15 @@
-local Effect = require 'logic.action.effects.effect'
 local Move = require "logic.action.effects.move"
+local Effect = require 'logic.action.effects.effect'
 
-local Push = class("Push", Effect)
+local Bounce = class("Bounce", Effect)
 
-Push.modifier = {
+Bounce.modifier = {
     { 'distance', 1 },
     { 'power',    0 }
 }
 
-function Push:toMove(direction)
+function Bounce:toMove(direction)
     return Move({ distance = self.distance }, direction)
 end
 
-return Push
+return Bounce

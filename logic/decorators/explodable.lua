@@ -9,7 +9,7 @@ local function beExploded(event)
 end
 
 Explodable.affectedChains = {
-    { "defence", { utils.armor }},
+    { "defence", { utils.setAttackRes, utils.armor }},
     { "beingExploded", { beExploded, utils.die } }
 }
 

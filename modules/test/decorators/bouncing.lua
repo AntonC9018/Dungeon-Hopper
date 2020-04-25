@@ -1,7 +1,9 @@
 local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
-local Bounce = require 'logic.action.effects.bounce'
+local Bounce = require 'modules.test.effects.bounce'
 local Changes = require 'render.changes'
+local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+
 
 -- Define our custom decorator
 local Bouncing = class("Bouncing", Decorator)
@@ -30,11 +32,15 @@ local function checkAlreadyBounced(event)
 end
 
 local function bounceTarget(event)
-    local bounceEvent = event.target:beBounced(event.action)
+    local resistance = event.target:getStat(StatTypes.BounceRes)
+    local bounce = event.action.bounce
     if 
-        bounceEvent ~= nil
+        bounce > resistance
     then
-        event.bounceEvent = bounceEvent
+        event.displaceEvent = event.target:displace( 
+            bounce:toMove(event.action.direction) 
+        )
+        event.target.world:registerChange(event.target, Changes.Push)
         event.actor.justBounced = event.target  
     else
         event.propagate = false

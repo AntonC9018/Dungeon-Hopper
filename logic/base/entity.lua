@@ -56,6 +56,9 @@ Entity.beDug =
 Entity.beBounced =
     activateDecorator(Decorators.Bounceable)
 
+Entity.getStat =
+    activateDecorator(Decorators.DynamicStats)
+
     
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
@@ -123,7 +126,9 @@ Entity.baseModifiers = {
         bounce = 1
     },
 
-    hp = 1
+    hp = {
+        amount = 1
+    }
 }
 
 

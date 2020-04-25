@@ -1,8 +1,9 @@
-local AttackEffect = class("AttackEffect")
+local Effect = require 'logic.action.effects.effect'
+local AttackEffect = class("AttackEffect", Effect)
 
-function AttackEffect:__construct(AttackModifier)
-    self.damage = AttackModifier.damage or 0
-    self.pierce = AttackModifier.pierce or 0
-end
+AttackEffect.modifier = {
+    { 'damage', 0 },
+    { 'pierce', 0 }
+}
 
 return AttackEffect

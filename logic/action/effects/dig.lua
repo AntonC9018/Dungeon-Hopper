@@ -1,8 +1,10 @@
-local DigEffect = class("DigEffect")
+local Effect = require 'logic.action.effects.effect'
 
-function DigEffect:__construct(modifier)
-    self.damage = modifier.damage or 0
-    self.power = modifier.power or 0
-end
+local DigEffect = class("DigEffect", Effect)
+
+DigEffect.modifier = {
+    { 'damage', 0 },
+    { 'power', 0 }
+}
 
 return DigEffect

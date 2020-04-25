@@ -1,10 +1,11 @@
-local Move = class("Move")
+local Effect = require 'logic.action.effects.effect'
 
-function Move:__construct(moveModifier, direction)
-    self.isThrough = false
-    self.direction = direction
-    self.distance = moveModifier.distance or 1
-end
+local Move = class("Move", Effect)
+
+Move.modifier = {
+    { 'isThrough', false },
+    { 'distance', 1 }
+}
 
 function Move:toPos(grid, target)
     if self.isThrough then

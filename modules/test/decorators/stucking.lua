@@ -2,6 +2,20 @@ local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
 local Changes = require 'render.changes'
 local mcUtils = require 'modules.utils.modchain'
+local HowToReturn = require 'logic.decorators.stats.howtoreturn'
+local DynamicStats = require 'logic.decorators.dynamicstats'
+local StatTypes = DynamicStats.StatTypes
+
+DynamicStats.registerStat(
+    'StuckRes',
+    { -- stuck res
+        'resistance',
+        {
+            { 'stuck', 1 }
+        }
+    },
+    HowToReturn.NUMBER
+)
 
 -- Define our custom decorator
 local Stucking = class("Stucking", Decorator)
@@ -61,11 +75,10 @@ end
 
 local function submergeTarget(event)
     if 
-        -- TODO: compare stuck to protection
-        true
+        event.target:getStat(StatTypes.StuckRes) 
+        < event.actor.baseModifiers.stuck.power
     then
         event.actor.submergedEntity = event.target  
-        print("Stucking the entity")
         setStuck(event.target) -- TODO: priority on chains
     else
         event.propagate = false
@@ -101,10 +114,5 @@ Stucking.affectedChains = {
 Stucking.activate = 
     utils.checkApplyCycle('getStuck', 'stuck')
 
-
-Stucking.baseModifiers = {
-    resistance = {},
-    hp = 1
-}
 
 return Stucking

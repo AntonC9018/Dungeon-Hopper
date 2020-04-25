@@ -1,3 +1,6 @@
+local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+
+
 local utils = {}
 
 utils.checkApplyCycle = function(nameCheck, nameApply)
@@ -50,17 +53,17 @@ utils.armor = function(event)
     -- yet another thing to consider... やれやれ...
     -- TODO: this should obviously be exapndable, since items could
     -- modify the armor and piercing parameters
-    local resitances = actor.baseModifiers.resistance
+    -- DONE!!!!
     local action = event.action
 
     action.attack.damage = 
         clamp(
-            action.attack.damage - resitances.armor, 
+            action.attack.damage - event.resistance.armor, 
             1, 
-            resitances.maxDamage or math.huge
+            event.resistance.maxDamage or math.huge
         )
         
-    if action.attack.pierce > resitances.pierce then
+    if action.attack.pierce > event.resistance.pierce then
         action.attack.damage = 0  
     end
 end
@@ -83,5 +86,11 @@ utils.regChangeFunc = function(code)
         event.actor.world:registerChange(event.actor, code)
     end
 end
+
+
+utils.setAttackRes = function(event)
+    event.resistance = event.actor:getStat(StatTypes.AttackRes)
+end
+
 
 return utils

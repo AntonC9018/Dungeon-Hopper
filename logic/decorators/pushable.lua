@@ -1,13 +1,17 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require "render.changes"
-
+local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Decorator = require 'logic.decorators.decorator'
 local Pushable = class('Pushable', Decorator)
 
 
+local setBase = function(event)
+    event.resistance = event.actor:getStat(StatTypes.PushRes)
+end
+
 -- TODO: implement these methods
 local checkPush = function(event)
-    if event.action.push.power < event.actor.baseModifiers.resistance.push then
+    if event.action.push.power < event.resistance then
         event.propagate = false
     end
 end
@@ -20,7 +24,7 @@ end
 
 
 Pushable.affectedChains = {
-    { "checkPush", { checkPush } },
+    { "checkPush", { setBase, checkPush } },
     { "executePush", { executePush, utils.regChangeFunc(Changes.Pushed) } }
 }
 

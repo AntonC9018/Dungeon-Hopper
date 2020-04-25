@@ -8,6 +8,7 @@ local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
 local Dirt = require 'modules.test.dirt'
 local Trap = require 'modules.test.trap' 
+local WaterTile = require 'modules.test.water'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -38,6 +39,9 @@ function World:registerTypes(assets)
 
     local trapType = assets:getObjectType(Trap)
     assets:registerGameObjectType(trapType)
+
+    local waterType = assets:getObjectType(WaterTile)
+    assets:registerGameObjectType(waterType)
 end
 
 
@@ -66,6 +70,14 @@ function World:createFloorAt(pos)
     self.grid:setFloorAt(tile, pos)
     self.renderer:addRenderEntity(tile)
     return tile
+end
+
+function World:createWaterAt(pos)
+    local water = WaterTile()
+    water:init(pos, self)
+    self.grid:setFloorAt(water, pos)
+    self.renderer:addRenderEntity(water)
+    return water
 end
 
 function World:createTestEnemyAt(pos)
@@ -201,6 +213,12 @@ function World:resetObjects()
         real.nextAction = nil
         real.enclosingEvent = nil
     end
+    for i, real in ipairs(self.grid.floors) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
 end
 
 
@@ -258,6 +276,13 @@ end
 
 
 function World:activateFloors()
+    for i = 1, #self.grid.floors do
+        if not self.grid.floors[i].didAction then
+            -- printf("%s starts doing action", class.name(self.grid.reals[i])) -- debug
+            self.grid.floors[i]:executeAction()
+            -- printf("%s ended action", class.name(self.grid.reals[i])) -- debug
+        end
+    end
 end
 
 

@@ -17,7 +17,7 @@ Chain = require('lib.chains.chain')
 
 function scene:create( event )
     
-    require("game.tests.traptestcycle")()
+    require("game.tests.watertest")()
 
 
 end

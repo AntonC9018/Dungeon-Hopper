@@ -54,7 +54,7 @@ end
 -- The logic
 
 function Chain:addHandler(handler)
-    assert(type(handler) == 'function')
+    assert(type(handler) == 'function', "Expected handler to be a function, got "..type(handler))
     table.insert(self.toAdd, handler) 
 end
 
@@ -72,7 +72,7 @@ function Chain:cleanUp(handler)
     for i = 1, #self.toRemove do
         for j = 1, #self.handlers do
             if self.handlers[j] == self.toRemove[i] then
-                table.remove( self.handlers, i ) 
+                table.remove( self.handlers, j ) 
                 break
             end
         end

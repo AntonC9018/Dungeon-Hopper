@@ -9,7 +9,9 @@ Bounce.modifier = {
 }
 
 function Bounce:toMove(direction)
-    return Move({ distance = self.distance }, direction)
+    local move = Move({ distance = self.distance })
+    move.direction = direction
+    return move
 end
 
 return Bounce

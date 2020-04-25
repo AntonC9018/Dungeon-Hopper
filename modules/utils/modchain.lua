@@ -25,7 +25,7 @@ utils.addHandlerOnChains = function(chainNames, func)
         for i, name in ipairs(chainNames) do
             local chain = target.chains[name]
             if chain ~= nil then
-                printf("Adding handler onto %s chain", name) -- debug
+                -- printf("Adding handler onto %s chain", name) -- debug
                 chain:addHandler(func)
             end
         end
@@ -38,22 +38,22 @@ utils.removeHandlerOnChains = function(chainNames, func)
         for i, name in ipairs(chainNames) do
             local chain = target.chains[name]
             if chain ~= nil then
-                printf("Removing handler from %s chain", name) -- debug
+                -- printf("Removing handler from %s chain", name) -- debug
                 chain:removeHandler(func)
             end
         end
     end
 end
 
-utils.addRemoveHandlerOnChain = function(chainName, func)
+utils.addRemoveHandlerOnChain = function(chainName, func, priority)
     return 
-        utils.addHandlerOnChain(chainName, func),
+        utils.addHandlerOnChain(chainName, priority ~= nil and { func, priority } or func),
         utils.removeHandlerOnChain(chainName, func)
 end
 
-utils.addRemoveHandlerOnChains = function(chainNames, func)
+utils.addRemoveHandlerOnChains = function(chainNames, func, priority)
     return 
-        utils.addHandlerOnChains(chainNames, func),
+        utils.addHandlerOnChains(chainNames, priority ~= nil and { func, priority } or func),
         utils.removeHandlerOnChains(chainNames, func)
 end
 

@@ -61,7 +61,9 @@ TestEnemy.baseModifiers = {
         pierce = 1
     },
 
-    hp = 2
+    hp = {
+        amount = 2
+    }
 }
 
 return TestEnemy

@@ -1,4 +1,3 @@
-local Chain = require "lib.chains.chain"
 local Action = require "logic.action.action"
 
 local handlers = {}

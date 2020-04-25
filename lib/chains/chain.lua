@@ -99,7 +99,7 @@ function Chain:pass(propagatingEvent, checkStopCondition)
 end
 
 function Chain:__tostring()
-    return string.format("Chain(%i)", #self.handlers)
+    return string.format("Chain(%i)", #self.handlers + #self.toAdd)
 end
 
 -- the typical checkStopCondition function is also provided

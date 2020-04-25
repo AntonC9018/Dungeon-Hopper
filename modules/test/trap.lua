@@ -87,11 +87,13 @@ end
 
 Trap.baseModifiers = {
     bounce = {
-        power = 1,
+        power = 2,
         distance = 1
     },
     resistance = {},
-    hp = 1
+    hp = {
+        amount = 1
+    }
 }
 
 

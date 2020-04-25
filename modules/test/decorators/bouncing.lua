@@ -3,7 +3,19 @@ local utils = require 'logic.decorators.utils'
 local Bounce = require 'modules.test.effects.bounce'
 local Changes = require 'render.changes'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local DynamicStats = require 'logic.decorators.dynamicstats'
+local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 
+DynamicStats.registerStat(
+    'BounceRes',
+    { -- stuck res
+        'resistance',
+        {
+            { 'bounce', 1 }
+        }
+    },
+    HowToReturn.NUMBER
+)
 
 -- Define our custom decorator
 local Bouncing = class("Bouncing", Decorator)
@@ -35,7 +47,7 @@ local function bounceTarget(event)
     local resistance = event.target:getStat(StatTypes.BounceRes)
     local bounce = event.action.bounce
     if 
-        bounce > resistance
+        bounce.power > resistance
     then
         event.displaceEvent = event.target:displace( 
             bounce:toMove(event.action.direction) 
@@ -49,9 +61,8 @@ end
 
 
 local function activateNextBounce(event)
-    local displaceEvent = event.bounceEvent.displaceEvent
 
-    if displaceEvent ~= nil then
+    if event.displaceEvent ~= nil then
         local oldPos = event.actor.pos
         local newPos = event.target.pos
         if 

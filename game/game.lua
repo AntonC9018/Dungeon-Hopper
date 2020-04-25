@@ -13,11 +13,11 @@ class = Luaoop.class
 Vec = require('lib.vec')
 require('lib.utils')
 Event = require('lib.chains.event')
-Chain = require('lib.chains.chain')
+Chain = require('lib.chains.schain')
 
 function scene:create( event )
     
-    require("game.tests.watertest")()
+    require("game.tests.attacktest")()
 
 
 end

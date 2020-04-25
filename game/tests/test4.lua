@@ -8,7 +8,7 @@ return function()
     -- chain:addHandler(hello)
     -- chain:pass({})
 
-    local ChainTemplate = require "lib.chains.chaintemplate"
+    local ChainTemplate = require "lib.chains.schaintemplate"
 
     local template = ChainTemplate() 
 

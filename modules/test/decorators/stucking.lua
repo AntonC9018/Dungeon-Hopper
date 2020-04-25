@@ -5,6 +5,7 @@ local mcUtils = require 'modules.utils.modchain'
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 local DynamicStats = require 'logic.decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
+local Ranks = require 'lib.chains.ranks'
 
 DynamicStats.registerStat(
     'StuckRes',
@@ -35,14 +36,13 @@ local removeStuck
 -- This method is put on the Attack and Move chains of the stuck entity
 -- TODO: it should have higher priority while not being in the check chain
 local function stuck(event)
-    print("Entity is stuck!")
     removeStuck(event.actor)
     event.propagate = false
 end
 
 setStuck, removeStuck = 
     mcUtils.addRemoveHandlerOnChains(
-        { 'attack', 'getMove' }, stuck
+        { 'attack', 'move', 'dig' }, stuck, Ranks.HIGH
     )
 
 -- define the handlers for the chains

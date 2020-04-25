@@ -5,7 +5,9 @@ local Dirt = class("Dirt", Entity)
 Dirt.layer = Cell.Layers.wall
 
 Dirt.baseModifiers = {
-    hp = 1,
+    hp = {
+        amount = 1
+    },
     resistance = {
         dig = 0
     }
@@ -19,5 +21,6 @@ decorate(Dirt, Decorators.Diggable)
 decorate(Dirt, Decorators.WithHP)
 decorate(Dirt, Decorators.Explodable)
 decorate(Dirt, Decorators.Killable)
+decorate(Dirt, Decorators.DynamicStats)
 
 return Dirt

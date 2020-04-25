@@ -1,4 +1,3 @@
-local Chain = require "lib.chains.chain"
 local Attackableness = require "logic.enums.attackableness"
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->

@@ -16,7 +16,7 @@ Attackable.affectedChains =
     { 
         { "defence", { utils.setAttackRes, utils.armor } },
         { "beHit", { takeHit, utils.die } },
-        { "canBeAttacked", {} }
+        { "attackableness", {} }
     }
 
 Attackable.activate =
@@ -31,7 +31,7 @@ function Attackable:getAttackableness(actor, attacker)
     local event = Event(actor, nil)
     event.attacker = attacker
 
-    actor.chains.attackableness:pass(event, Event.checkPropagate)
+    actor.chains.attackableness:pass(event, Chain.checkPropagate)
 
     -- no functions check
     if event.result == nil then

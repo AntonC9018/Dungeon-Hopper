@@ -7,14 +7,14 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     return function(decorator, actor, action)
         local event = Event(actor, action)
 
-        printf("Passing the %s chain", nameCheck) -- debug
+        -- printf("Passing the %s chain", nameCheck) -- debug
         actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
 
         if event.propagate then
             -- mark that the event verification succeeded
             event.success = true
-            printf("Passing the %s chain", nameApply) -- debug
+            -- printf("Passing the %s chain", nameApply) -- debug
             actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 
@@ -58,12 +58,12 @@ utils.armor = function(event)
 
     action.attack.damage = 
         clamp(
-            action.attack.damage - event.resistance.armor, 
+            action.attack.damage - event.resistance:get('armor'), 
             1, 
-            event.resistance.maxDamage or math.huge
+            event.resistance:get('maxDamage') or math.huge
         )
         
-    if action.attack.pierce > event.resistance.pierce then
+    if action.attack.pierce > event.resistance:get('pierce') then
         action.attack.damage = 0  
     end
 end

@@ -1,14 +1,3 @@
-
-local function stats(enemy)
-    printf("Health %i", enemy.hp:get())
-    printf("Position:    %i, %i", enemy.pos.x, enemy.pos.y)
-    printf("Orientation: %i, %i", enemy.orientation.x, enemy.orientation.y)
-end
-
-local function printWorld(world)
-    
-end
-
 return function()
 
     local World = require('world.world')
@@ -35,9 +24,6 @@ return function()
 
     assert(world.grid:getWallAt(Vec(2, 3)) == dirt)
     assert(world.grid:hasBlockAt(Vec(2, 3)))
-    
-    world:setPlayerActions( Vec(0, 1), 1 )
-    world:gameLoopIfSet()
 
     timer.performWithDelay( 
         1000, 

@@ -16,7 +16,7 @@ end
 
 Action.fromHandlers = function(name, handlers)
     local chain = Chain()
-    chain.handlers = handlers
+    chain:addHandlers(handlers)
     local actionClass = class(name, Action)
     actionClass.chain = chain
     return actionClass

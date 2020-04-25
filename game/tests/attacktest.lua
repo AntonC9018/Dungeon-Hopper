@@ -1,3 +1,4 @@
+local Cell = require 'world.cell'
 
 return function()
 
@@ -21,18 +22,25 @@ return function()
 
     world:createFloors()
     local player = world:createPlayerAt( Vec(2, 2) )
-    local enemy = world:createTestEnemyAt( Vec(2, 3) )
+    local testEnemy = world:createTestEnemyAt( Vec(2, 3) )
 
-    
-    world:setPlayerActions( Vec(1, 0), 1 )
-    world:gameLoopIfSet()
+    local actions = {
+        Vec(0, 1),
+        Vec(1, 0),
+        Vec(1, 0),
+        Vec(1, 0),
+        Vec(1, 0)
+    }
+
+    local count = 1
 
     timer.performWithDelay( 
         1000, 
         function()
-            world:setPlayerActions( Vec(1, 0), 1 )
+            world:setPlayerActions( actions[count], 1 )
             world:gameLoop()
+            count = count + 1
         end,
-        7
+        #actions
     )
 end

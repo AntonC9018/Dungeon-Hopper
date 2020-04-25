@@ -23,7 +23,7 @@ local DynamicStats = class('DynamicStats', Decorator)
 
 -- Map strings to indices
 DynamicStats.StatTypes = Data.StatTypes
-statTypesLength = #Data.StatTypes
+statTypesLength = #Data.StatConfigs
 local StatConfigs = Data.StatConfigs
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 local StatsHowToReturn = Data.StatsHowToReturn
@@ -48,7 +48,7 @@ function DynamicStats:__construct(entity)
 
     for k, v in pairs(entity.baseModifiers) do
         statsList[k] = Stats.fromTable(v)
-        print('Added key '..k..' to stats')
+        -- print('Added key '..k..' to stats') -- debug
     end
 
     for i, config in ipairs(StatConfigs) do
@@ -85,10 +85,6 @@ end
 
 -- get a specific stat
 function DynamicStats:activate(actor, statIndex)
-
-    print(actor)
-    print(statIndex)
-    printf("Calling the %s index", statIndex)
 
     local entry = StatConfigs[statIndex]
     local stat = entry[1]

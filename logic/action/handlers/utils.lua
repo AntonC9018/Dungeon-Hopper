@@ -30,7 +30,7 @@ utils.applyHandler = function(nameApplyMethod)
         local actor = algoEvent.actor
         local action = algoEvent.action
 
-        printf("In algoevent calling method %s", nameApplyMethod) -- debug
+        -- printf("In algoevent calling method %s", nameApplyMethod) -- debug
 
         local resultEvent = actor[nameApplyMethod](actor, action)  
 

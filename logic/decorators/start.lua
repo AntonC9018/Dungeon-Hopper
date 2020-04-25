@@ -1,5 +1,5 @@
 
-local Template = require("lib.chains.chaintemplate")
+local Template = require("lib.chains.schaintemplate")
 
 local Start = function(entityClass)
     entityClass.chainTemplate = Template()

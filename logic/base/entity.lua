@@ -172,7 +172,7 @@ function Entity:getTargets(action)
         target ~= nil
         and target.entity.attackableness ~= Attackableness.NO 
     then
-        return { entity }
+        return { target }
     end
 
     return nil    

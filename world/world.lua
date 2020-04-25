@@ -7,6 +7,7 @@ local TestEnemy = require 'modules.test.enemytest'
 local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
 local Dirt = require 'modules.test.dirt'
+local Trap = require 'modules.test.trap' 
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -34,6 +35,9 @@ function World:registerTypes(assets)
 
     local dirtType = assets:getObjectType(Dirt)
     assets:registerGameObjectType(dirtType)
+
+    local trapType = assets:getObjectType(Trap)
+    assets:registerGameObjectType(trapType)
 end
 
 
@@ -78,6 +82,14 @@ function World:createDirtAt(pos)
     self.grid:setWallAt(dirt, pos)
     self.renderer:addRenderEntity(dirt)
     return dirt
+end
+
+function World:createTrapAt(pos)
+    local trap = Trap()
+    trap:init(pos, self)
+    self.grid:setTrapAt(trap, pos)
+    self.renderer:addRenderEntity(trap)
+    return trap
 end
 
 --- Convert user input to an action and set it
@@ -145,9 +157,9 @@ function World:gameLoop()
     self:advancePhase()
 
     -- activate traps
-    -- self:activateTraps()
-    -- self.grid:tickTraps()
-    -- self:advancePhase()
+    self:activateTraps()
+    self.grid:tickTraps()
+    self:advancePhase()
 
     -- update render states for all objects 
     self:updateRenderStates()
@@ -176,8 +188,14 @@ end
 
 
 function World:resetObjects()
-    -- for now, just reset the reals
+    -- for now, just reset the reals and traps
     for i, real in ipairs(self.grid.reals) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
+    for i, real in ipairs(self.grid.traps) do        
         real.didAction = false
         real.doingAction = false
         real.nextAction = nil
@@ -244,6 +262,13 @@ end
 
 
 function World:activateTraps()
+    for i = 1, #self.grid.traps do
+        if not self.grid.traps[i].didAction then
+            -- printf("%s starts doing action", class.name(self.grid.reals[i])) -- debug
+            self.grid.traps[i]:executeAction()
+            -- printf("%s ended action", class.name(self.grid.reals[i])) -- debug
+        end
+    end
 end
 
 

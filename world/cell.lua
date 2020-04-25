@@ -67,7 +67,7 @@ end
 
 function Cell:setTrap(trap)
     local prev = self.layers[Cell.Layers.trap]
-    self.layers[Cell.Layers.traps] = { trap }
+    self.layers[Cell.Layers.trap] = { trap }
     return prev
 end
 
@@ -85,12 +85,19 @@ end
 
 -- The one generic method
 function Cell:set(object)
-    local prev = self.layers[object.layer]
-    self.layers[object.layer] = { object }
+    local layer = object.layer
+    if layer == Cell.Layers.player then
+        layer = Cell.Layers.real
+    end
+    local prev = self.layers[layer]
+    self.layers[layer] = { object }
     return prev
 end
 
 function Cell:clear(layer)
+    if layer == Cell.Layers.player then
+        layer = Cell.Layers.real
+    end
     local prev = self.layers[layer]
     self.layers[layer] = { }
     return prev

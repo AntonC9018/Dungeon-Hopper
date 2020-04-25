@@ -1,6 +1,7 @@
-local Decorator = require 'logic.decorators.decorators'
+local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
 local Bounce = require 'logic.action.effects.bounce'
+local Changes = require 'render.changes'
 
 -- Define our custom decorator
 local Bouncing = class("Bouncing", Decorator)
@@ -25,7 +26,7 @@ end
 local function checkAlreadyBounced(event)
     -- if hasn't just pushed the same thing
     -- this way we prevent infinite loops
-    event.propagate = nextTrap.justBounced ~= event.target
+    event.propagate = event.actor.justBounced ~= event.target
 end
 
 local function bounceTarget(event)
@@ -34,15 +35,12 @@ local function bounceTarget(event)
         bounceEvent ~= nil
     then
         event.bounceEvent = bounceEvent
-        event.actor.justBounced = entity  
+        event.actor.justBounced = event.target  
     else
         event.propagate = false
     end
 end
 
-local function changeState(event)
-    event.actor.state = State.PRESSED
-end
 
 local function activateNextBounce(event)
     local displaceEvent = event.bounceEvent.displaceEvent
@@ -57,9 +55,15 @@ local function activateNextBounce(event)
             local nextTrap = 
                 event.actor.world.grid:getTrapAt(newPos)
 
-            nextTrap:executeAction()
+            if nextTrap ~= nil then
+                nextTrap:executeAction()
+            end
         end
     end
+end
+
+local function resetJustBounced(event)
+    event.actor.justBounced = nil
 end
 
 Bouncing.affectedChains = {
@@ -72,12 +76,15 @@ Bouncing.affectedChains = {
     },
     { 'bounce', 
         { 
-            changeState,
             bounceTarget, 
             utils.regChangeFunc(Changes.Bounce), 
             activateNextBounce 
         } 
-    }
+    },
+    { 'tick', { resetJustBounced } }
 }
+
+Bouncing.activate = 
+    utils.checkApplyCycle('getBounce', 'bounce')
 
 return Bouncing

@@ -43,6 +43,7 @@ function Decorator:__construct()
 end
 
 function Decorator:activate()
+    assert(false, "Attempt to call unoverrided decorator activation for "..class.name(self).." decorator.")
 end
 
 return Decorator

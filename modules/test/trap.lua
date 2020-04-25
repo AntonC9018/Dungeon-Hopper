@@ -28,6 +28,16 @@ decorate(Trap, Decorators.Acting)
 -- apply our custom decorator
 decorate(Trap, Bouncing)
 
+local function changeState(event)
+    event.actor.state = State.PRESSED
+end
+
+-- be physically pushed after the player steps on this
+Trap.chainTemplate:addHandler(
+    'bounce',
+    changeState
+)
+
 -- add the action algorithm
 Trap.chainTemplate:addHandler(
     'action', 
@@ -38,15 +48,13 @@ Trap.chainTemplate:addHandler(
 local function tickBounce(event)
     local actor = event.actor
 
-    actor.justBounced = nil
-
     local nextState =
         actor.world.grid:getRealAt(actor.pos) ~= nil
         and State.PRESSED
         or State.UNPRESSED
     
     if actor.state ~= nextState then
-        actor.world:ragisterChange(actor, Changes.JustState)
+        actor.world:registerChange(actor, Changes.JustState)
     end
 end
 
@@ -65,7 +73,7 @@ local BounceAction = Action.fromHandlers(
 
 -- define a new method that calls the new decorator
 function Trap:executeBounce(action)
-    self.decorators.Bouncing:activate(self, action)
+    return self.decorators.Bouncing:activate(self, action)
 end
 
 -- override calculateAction. Return our custom action
@@ -73,6 +81,7 @@ function Trap:calculateAction()
     local action = BounceAction()
     -- set the orientation right away since it won't change
     action.direction = self.orientation
+    self.nextAction = action
 end
 
 

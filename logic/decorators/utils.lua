@@ -4,14 +4,14 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     return function(decorator, actor, action)
         local event = Event(actor, action)
 
-        -- printf("Passing the %s chain", nameCheck) -- debug
+        printf("Passing the %s chain", nameCheck) -- debug
         actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
 
         if event.propagate then
             -- mark that the event verification succeeded
             event.success = true
-            -- printf("Passing the %s chain", nameApply) -- debug
+            printf("Passing the %s chain", nameApply) -- debug
             actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 
@@ -48,6 +48,8 @@ utils.armor = function(event)
     -- that is, resistances should be an object (specific to e.g. attack)
     -- saved on the event. Possibly a Resistances decorator?
     -- yet another thing to consider... やれやれ...
+    -- TODO: this should obviously be exapndable, since items could
+    -- modify the armor and piercing parameters
     local resitances = actor.baseModifiers.resistance
     local action = event.action
 

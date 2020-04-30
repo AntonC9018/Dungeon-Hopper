@@ -18,5 +18,5 @@ local chain = Chain(
 
 return {
     chain = chain,
-    check = Chain.stopPropagate
+    check = Chain.checkPropagate
 }

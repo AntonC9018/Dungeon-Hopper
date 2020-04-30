@@ -1,3 +1,5 @@
+local Attackableness = require 'logic.enums.attackableness'
+
 local utils = {}
 
 utils.nextToAny = function(event)
@@ -31,6 +33,9 @@ end
 utils.filterUnattackable = function(targets)
     local newTargets = {}
     for i, target in ipairs(targets) do
+
+        -- printf("Attackabless is %s for %s", target.attackableness, target.entity and class.name(target) or 'NULL') -- debug
+
         if target.attackableness ~= Attackableness.NO then
             table.insert(newTargets, target)
         end
@@ -86,7 +91,7 @@ end
 
 
 utils.checkStop = function(event)
-    return Chain.stopPropagate(event) or stopIfEmpty(event)
+    return Chain.checkPropagate(event) or utils.stopIfEmpty(event)
 end
 
 
@@ -100,14 +105,17 @@ utils.stopIfEmpty = function(event)
 end
 
 
+utils.filter = function(event)
+    event.targets = utils.filterUnattackable(event.targets)    
+end
+
+
 utils.unreachable = function(event)
 
     local newTargets = {}
     for i = 1, #event.targets do
-        local reach = event.targets[i].piece.reach 
-        local index = event.targets[i].index
         if
-            utils.canReach(index, event.targets)
+            utils.canReach(event.targets[i], event.targets)
         then
             table.insert(newTargets, event.targets[i])
         end                   
@@ -117,9 +125,6 @@ end
 
 
 utils.eliminate = function(event)
-
-    event.targets = 
-        filterUnattackable(event.targets)
 
     local newTargets = {}
 

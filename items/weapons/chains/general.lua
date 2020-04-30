@@ -10,6 +10,7 @@ local utils = require "items.weapons.chains.utils"
 local chain = Chain(
     {
         utils.nextToAny,
+        utils.filter,
         utils.unreachable,
         utils.eliminate,
         utils.takeFirst

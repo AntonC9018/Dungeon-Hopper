@@ -1,5 +1,5 @@
 return {
-    YES = true,
-    NO = false,
+    YES = 'YES',
+    NO = 'NO',
     IF_NEXT_TO = 'if_close'
 }

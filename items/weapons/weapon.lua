@@ -3,7 +3,7 @@ local Target = require "items.weapons.target"
 local Attackableness = require "logic.enums.attackableness"
 
 -- Another available option: hitAll
-local General = require "items.weapons.general"
+local General = require "items.weapons.chains.general"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon")
@@ -25,17 +25,15 @@ Weapon.chain = General.chain
 
 function Weapon:getTargets(actor, action)
 
-    local actor = action.actor
-
     local map = {}
 
-    local ihat = actor.orientation
+    local ihat = action.direction
     local jhat = ihat:rotate(-math.pi / 2)
 
     local world = actor.world
     
     -- for first, add things to the map.
-    for i = 1, #self.pattern do
+    for i = 1, #self.pattern.pieces do
         local piece = self.pattern:get(i):transform(ihat, jhat)
         local coord = actor.pos + piece.pos
         local entity = world:getOneFromTopAt(coord)
@@ -44,12 +42,17 @@ function Weapon:getTargets(actor, action)
             entity ~= nil
                 and entity:getAttackableness(actor)
                 or Attackableness.NO
-        table.insert(map, Target(entity, piece, i, attackableness))
+
+        map[i] = Target(entity, piece, i, attackableness)
     end
     
     -- after that, analyze it
     local event = Event(actor, action)
     event.targets = map
+
+    if self.check(event) then
+        return event.targets
+    end
 
     self.chain:pass(event, self.check)
 

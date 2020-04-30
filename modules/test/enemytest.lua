@@ -17,12 +17,13 @@ local Handlers = require "modules.utils.handlers"
 local steps = {    
     { -- first step: skip the beat
         action = None
-    },    
-    { -- second step: try to attack, then try to move 
-        action = AttackMoveAction,
-        -- the movs function
-        movs = require "logic.action.movs.basic"
     }
+    -- ,    
+    -- { -- second step: try to attack, then try to move 
+    --     action = AttackMoveAction,
+    --     -- the movs function
+    --     movs = require "logic.action.movs.basic"
+    -- }
 }
 
 
@@ -62,7 +63,7 @@ TestEnemy.baseModifiers = {
     },
 
     hp = {
-        amount = 2
+        amount = 5
     }
 }
 

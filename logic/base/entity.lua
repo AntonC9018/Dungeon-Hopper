@@ -137,7 +137,7 @@ local Piece = require "items.weapons.piece"
 
 -- TODO: implement
 function Entity:getWeapon()
-    return nil
+    return self.weapon
 end
 
 
@@ -162,7 +162,7 @@ function Entity:getTargets(action)
     local weapon = self:getWeapon()
 
     if weapon ~= nil then
-        return weapon:getTargets(actor, action)
+        return weapon:getTargets(self, action)
     end
 
     local target = 
@@ -175,7 +175,7 @@ function Entity:getTargets(action)
         return { target }
     end
 
-    return nil    
+    return {}    
 end
 
 
@@ -199,7 +199,7 @@ function Entity:getDigTargets(action)
         return { target }
     end
 
-    return nil
+    return {}
 
 end
 

@@ -1,4 +1,6 @@
 local utils = require "items.weapons.chains.utils"
+local filters = require "items.weapons.chains.filters"
+local checks = require "items.weapons.chains.checks"
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->
 -- -> Check unreachableness (eliminate unreachable ones) ->
@@ -6,12 +8,17 @@ local utils = require "items.weapons.chains.utils"
 -- -> Take the first available
 
 
+local function checkStop(event)
+    return Chain.checkPropagate(event) or checks.stopIfEmpty(event)
+end
+
 -- define a general chain
 local chain = Chain(
     {
+        utils.filter(filters.Nil),
         utils.nextToAny,
-        utils.filter,
         utils.unreachable,
+        utils.filter(filters.Unattackable),
         utils.eliminate,
         utils.takeFirst
     }
@@ -19,5 +26,5 @@ local chain = Chain(
 
 return {
     chain = chain,
-    check = utils.checkStop
+    check = checkStop
 }

@@ -308,9 +308,6 @@ end
 
 
 
--- Decorator + game logic stuff
-local Target = require "items.weapons.target"
-local Piece = require "items.weapons.piece"
 
 local function doX(funcName)
     return function(self, targets, action)

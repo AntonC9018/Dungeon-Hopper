@@ -5,9 +5,7 @@ local utils = {}
 utils.nextToAny = function(event)
 
     -- if the first one is anything but nil, leave the list unchanged
-    -- NOTE: at this point the list of targets still corresponds
-    -- to the pattern attack order
-    if event.targets[1].entity ~= nil then
+    if event.targets[1].index == 1 then
         return
     end
 
@@ -29,35 +27,6 @@ utils.nextToAny = function(event)
 end
 
 
--- TODO: Add a skip option
-utils.filterUnattackable = function(targets)
-    local newTargets = {}
-    for i, target in ipairs(targets) do
-
-        -- printf("Attackabless is %s for %s", target.attackableness, target.entity and class.name(target) or 'NULL') -- debug
-
-        if target.attackableness ~= Attackableness.NO then
-            table.insert(newTargets, target)
-        end
-    end
-    return newTargets
-end
-
-
-utils.leaveAttackable = function(targets)
-    local newTargets = {}
-    for i, target in ipairs(targets) do
-        if 
-            target.attackableness == Attackableness.YES 
-            or target.attackableness == Attackableness.IF_CLOSE 
-        then
-            table.insert(newTargets, target)
-        end
-    end
-    return newTargets
-end
-
-
 utils.canReach = function(target, targets)
 
     -- no reach option
@@ -75,7 +44,10 @@ utils.canReach = function(target, targets)
         if t ~= nil then
             for _, indexToCheck in ipairs(target.reach) do
                 -- that index has been blocked
-                if t.index == indexToCheck then
+                if 
+                    t.index == indexToCheck 
+                    and t.attackableness ~= Attackableness.SKIP  
+                then
                     return false
                 end
             end
@@ -89,8 +61,8 @@ end
 utils.isLowestIndex = function(index, arr)
     for i = 1, #arr do
         if 
-            arr[i] ~= nil 
-            and arr[i].index < index 
+            arr[i].index < index
+            and arr[i].attackableness ~= Attackableness.SKIP
         then
             return false
         end
@@ -100,22 +72,20 @@ end
 
 
 utils.takeFirst = function(event)
-    event.targets = { event.targets[1] }    
+    for i, t in ipairs(event.targets) do
+        if t.attackableness ~= Attackableness.SKIP then
+            event.targets = { t }
+            return
+        end
+    end
+    event.targets = {}
 end
 
 
-utils.checkStop = function(event)
-    return Chain.checkPropagate(event) or utils.stopIfEmpty(event)
-end
-
-
-utils.stopIfEmpty = function(event)
-    return #event.targets == 0
-end
-
-
-utils.filter = function(event)
-    event.targets = utils.filterUnattackable(event.targets)    
+utils.filter = function(filterFunc)
+    return function(event)
+        event.targets = filterFunc(event.targets)
+    end
 end
 
 

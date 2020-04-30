@@ -44,6 +44,20 @@ utils.filterUnattackable = function(targets)
 end
 
 
+utils.leaveAttackable = function(targets)
+    local newTargets = {}
+    for i, target in ipairs(targets) do
+        if 
+            target.attackableness == Attackableness.YES 
+            or target.attackableness == Attackableness.IF_CLOSE 
+        then
+            table.insert(newTargets, target)
+        end
+    end
+    return newTargets
+end
+
+
 utils.canReach = function(target, targets)
 
     -- no reach option
@@ -96,12 +110,7 @@ end
 
 
 utils.stopIfEmpty = function(event)
-    if 
-        #event.targets == 0
-    then
-        event.targets = {}
-        return true  
-    end
+    return #event.targets == 0
 end
 
 

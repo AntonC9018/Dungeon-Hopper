@@ -5,7 +5,7 @@ local utils = require "items.weapons.chains.utils"
 
 local function hitAll(event)
     -- we need to filter out NO-es
-    event.targets = filterUnattackable(event.targets)
+    event.targets = utils.leaveAttackable(event.targets)
 end
 
 -- define the hit all chain

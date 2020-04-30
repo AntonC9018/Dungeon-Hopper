@@ -127,7 +127,7 @@ Entity.baseModifiers = {
     },
 
     hp = {
-        amount = 1
+        amount = 100
     }
 }
 

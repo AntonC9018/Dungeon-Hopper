@@ -7,7 +7,7 @@ return function()
     local assets = require('render.assets')()
     local renderer = require('render.renderer')(assets)
     
-    local world = World(renderer, 10, 10)
+    local world = World(renderer, 20, 20)
     world:registerTypes(assets)
 
     -- load all assets
@@ -21,20 +21,22 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(2, 2) )
-    local testEnemy = world:createTestEnemyAt( Vec(2, 3) )
-    
-    local knife = Weapon()
-    local spear = Spear()
+    local player = world:createPlayerAt( Vec(5, 5) )
 
-    player.weapon = spear
+    for i = 4, 5 do
+        for j = 3, 5 do
+            if i ~= 5 or j ~= 5 then
+                world:createTestEnemyAt( Vec(i, j) )
+            end
+        end
+    end
 
     local actions = {
-        Vec(0, 1),
-        Vec(0, 1),
-        Vec(0, 1),
-        Vec(0, 1),
-        Vec(0, 1)
+        Vec(0, -1),
+        Vec(0, -1),
+        Vec(0, -1),
+        Vec(0, -1),
+        Vec(0, -1)
     }
 
     local count = 1
@@ -46,7 +48,6 @@ return function()
             world:setPlayerActions( actions[count], 1 )
             world:gameLoop()
             count = count + 1
-            -- print("Attackabless of Mob: "..testEnemy:getAttackableness())
             printf("Time passed: %i", system.getTimer() - time)
             print("-------------- Cycle ended. ---------------")
         end,

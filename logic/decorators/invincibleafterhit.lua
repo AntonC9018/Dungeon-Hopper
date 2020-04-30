@@ -15,7 +15,7 @@ function InvincibleAfterHit:__construct(instance)
         end)
 
     instance.chains.defence:addHandler(
-        function(e) 
+        function(event) 
             if self.invincible > 0 then
                 event.propagate = false
             end

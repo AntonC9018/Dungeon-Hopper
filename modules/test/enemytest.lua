@@ -18,12 +18,12 @@ local steps = {
     { -- first step: skip the beat
         action = None
     }
-    -- ,    
-    -- { -- second step: try to attack, then try to move 
-    --     action = AttackMoveAction,
-    --     -- the movs function
-    --     movs = require "logic.action.movs.basic"
-    -- }
+    ,    
+    { -- second step: try to attack, then try to move 
+        action = AttackMoveAction,
+        -- the movs function
+        movs = require "logic.action.movs.basic"
+    }
 }
 
 

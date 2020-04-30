@@ -47,20 +47,20 @@ end
 
 utils.armor = function(event)
     local actor = event.actor
-    -- TODO: this should probably be expandable
+    -- A: this should probably be expandable
     -- that is, resistances should be an object (specific to e.g. attack)
     -- saved on the event. Possibly a Resistances decorator?
     -- yet another thing to consider... やれやれ...
-    -- TODO: this should obviously be exapndable, since items could
+    -- B: this should obviously be exapndable, since items could
     -- modify the armor and piercing parameters
-    -- DONE!!!!
+    -- DONE!!!! (DynamicStats decorator)
     local action = event.action
 
     action.attack.damage = 
         clamp(
             action.attack.damage - event.resistance:get('armor'), 
             1, 
-            event.resistance:get('maxDamage') or math.huge
+            event.resistance:get('maxDamage')
         )
         
     if action.attack.pierce > event.resistance:get('pierce') then

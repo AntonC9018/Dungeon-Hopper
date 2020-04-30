@@ -3,6 +3,7 @@ local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
 local Changes = require "render.changes"
 local Move = require "logic.action.effects.move"
+local Ranks = require 'lib.chains.ranks'
 
 local Displaceable = class('Displaceable', Decorator)
 
@@ -20,18 +21,25 @@ local function displace(event)
     local actor = event.actor
     local grid = actor.world.grid
 
-    -- TODO:
     -- problem: bumping is always activated, if displace comes first
-    -- resolution: priority for chains
-    -- for now, just decorate with bumping first
+    -- resolution: set the right priority for chains
     grid:remove(actor)
     actor.pos = event.newPos
     grid:reset(actor)
 end
 
 Displaceable.affectedChains = {
-    { "getDisplacement", { convertFromMove } },
-    { "displace", { displace } }
+    { "getDisplacement", 
+        { 
+            { convertFromMove, Ranks.HIGH } 
+        } 
+    },
+
+    { "displace", 
+        {
+            { displace, Ranks.MEDIUM } 
+        } 
+    }
 }
 
 Displaceable.activate = 

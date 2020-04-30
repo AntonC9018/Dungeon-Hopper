@@ -2,10 +2,11 @@
 local Decorator = require 'logic.decorators.decorator'
 local InvincibleAfterHit = class('InvincibleHandler', Decorator)
 
+-- TODO: 
+--   1. Make invincibility a dynamic field (probably via a Decorator)
+--   2. Make this into a function
 function InvincibleAfterHit:__construct(instance)
     self.invincible = 0
-
-    -- print(ins(instance.chains, { depth = 1))
 
     instance.chains.beHit:addHandler(
         function(e) 

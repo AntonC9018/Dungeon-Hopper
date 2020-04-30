@@ -10,8 +10,17 @@ local Decorator = require 'logic.decorators.decorator'
 local Statused = class('Statused', Decorator)
 
 Statused.affectedChains = {
-    { "checkStatus", { checkStatus }},
-    { "applyStatus", { applyStatus, utils.regChangeFunc(Changes.Status) } }
+    { "checkStatus", 
+        { 
+            checkStatus
+        }
+    },
+    { "applyStatus", 
+        { 
+            applyStatus,
+            utils.regChangeFunc(Changes.Status)
+        } 
+    }
 }
 
 Statused.activate = 

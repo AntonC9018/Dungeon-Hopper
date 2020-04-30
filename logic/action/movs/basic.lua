@@ -12,9 +12,9 @@ local getMovs = function(actor, action)
  
     -- So this is basically if-you-look-to-the-left,
     -- you-would-prefer-to-go-to-the-left action
-    local dirs = {}
+    local movs = {}
 
-    local addMov = function(x, y) table.insert(dirs, Vec(x, y)) end
+    local addMov = function(x, y) table.insert(movs, Vec(x, y)) end
 
     if actor.orientation.x > 0 then -- looking right
         -- prioritize going to the right
@@ -52,7 +52,7 @@ local getMovs = function(actor, action)
         if ly then addMov( 0, -1) end
     end
 
-    return dirs
+    return movs
 
 end
 

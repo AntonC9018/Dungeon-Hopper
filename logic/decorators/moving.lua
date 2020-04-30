@@ -16,8 +16,17 @@ local function displace(event)
 end
 
 Moving.affectedChains = {
-    { "getMove", { getBase }},
-    { "move", { displace, utils.regChangeFunc(Changes.Move) } }
+    { "getMove", 
+        { 
+            getBase 
+        }
+    },
+    { "move", 
+        { 
+            displace, 
+            utils.regChangeFunc(Changes.Move) 
+        } 
+    }
 }
 
 Moving.activate = 

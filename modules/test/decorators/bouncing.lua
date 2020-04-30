@@ -11,7 +11,7 @@ DynamicStats.registerStat(
     { -- stuck res
         'resistance',
         {
-            { 'bounce', 1 }
+            'bounce', 1
         }
     },
     HowToReturn.NUMBER

@@ -29,31 +29,25 @@ data.StatConfigs = {
     { -- push res
         'resistance',
         {
-            { 'push', 1 }
+            'push', 1 
         }
     },
 
     { -- dig res
         'resistance',
         {
-            { 'dig', 1 }
+            'dig', 1 
         }
     },
 
     { -- status res
         'resistance',
         {
-            { 
-                -- a huge list of statuses 
-                -- (if default stats need be provided)
-                { 'test', 0 }
-            }
+            -- a huge list of statuses 
+            -- (if default stats need be provided)
+            { 'test', 0 }
         }
     },
-
-    -- TODO: move to separate files
-
-    
 }
 
 -- Define the list of all types of stats
@@ -81,7 +75,7 @@ data.StatsHowToReturn = {
     HowToReturn.STATS,
     HowToReturn.NUMBER,
     HowToReturn.NUMBER,
-    HowToReturn.NUMBER
+    HowToReturn.STATS
 }
 
 return data

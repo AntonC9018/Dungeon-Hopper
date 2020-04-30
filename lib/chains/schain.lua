@@ -1,4 +1,5 @@
 local Ranks = require 'lib.chains.ranks'
+local Numbers = require 'lib.chains.numbers'
 
 -- The sorted version of chains
 
@@ -26,13 +27,7 @@ end
 function SChain:construct()
     self.toAdd = {}
     self.toRemove = {}
-    self.ranks = {
-        100000,
-        200000,
-        300000,
-        400000,
-        500000
-    }
+    self.ranks = Numbers.getRankMap()
     self.handlers = {}
 end
 

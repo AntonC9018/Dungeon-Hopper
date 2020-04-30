@@ -12,7 +12,12 @@ end
 
 Killable.affectedChains = {
     { "checkDie", {} },
-    { "die", { die, utils.regChangeFunc(Changes.Dead) } }
+    { "die", 
+        { 
+            die, 
+            utils.regChangeFunc(Changes.Dead) 
+        } 
+    }
 }
 
 Killable.activate =

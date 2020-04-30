@@ -24,8 +24,18 @@ end
 
 
 Pushable.affectedChains = {
-    { "checkPush", { setBase, checkPush } },
-    { "executePush", { executePush, utils.regChangeFunc(Changes.Pushed) } }
+    { "checkPush", 
+        { 
+            setBase, 
+            checkPush 
+        } 
+    },
+    { "executePush", 
+        { 
+            executePush, 
+            utils.regChangeFunc(Changes.Pushed) 
+        } 
+    }
 }
 
 Pushable.activate = 

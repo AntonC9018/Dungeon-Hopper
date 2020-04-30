@@ -3,6 +3,7 @@ local Changes = require 'render.changes'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Decorator = require 'logic.decorators.decorator'
 local Diggable = class('Diggable', Decorator)
+local Ranks = require 'lib.chains.ranks'
 
 local function setBase(event)
     event.resistance = event.actor:getStat(StatTypes.DigRes)
@@ -23,8 +24,20 @@ end
 
 Diggable.affectedChains =
     { 
-        { "checkDig", { setBase, checkPower } },
-        { "beDug", { takeDigDamage, utils.die, utils.regChangeFunc(Changes.Dug) } }
+        { "checkDig", 
+            { 
+                { setBase, Ranks.HIGH }, 
+                checkPower 
+            } 
+        },
+
+        { "beDug", 
+            { 
+                takeDigDamage,
+                utils.regChangeFunc(Changes.Dug), 
+                { utils.die, Ranks.LOW }
+            } 
+        }
     }
 
 Diggable.activate =

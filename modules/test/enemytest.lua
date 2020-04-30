@@ -22,7 +22,7 @@ local steps = {
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function
-        movs = require "logic.action.movs.basic"
+        movs = require "logic.action.movs.adjacent"
     }
 }
 
@@ -46,18 +46,8 @@ TestEnemy.baseModifiers = {
         pierce = 1
     },
 
-    move = {
-        distance = 1
-    },
-
-    push = {
-        distance = 1,
-        power = 1
-    },
-
     resistance = {
         armor = 0,
-        maxDamage = math.huge,
         push = 0,
         pierce = 1
     },

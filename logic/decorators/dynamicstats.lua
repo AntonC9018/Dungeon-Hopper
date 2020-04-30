@@ -29,13 +29,13 @@ local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 local StatsHowToReturn = Data.StatsHowToReturn
 
 
--- TODO: implement
 DynamicStats.registerStat = function(name, config, howToReturn) 
     statTypesLength = statTypesLength + 1
     DynamicStats.StatTypes[name] = statTypesLength
     StatConfigs[statTypesLength] = config
     StatsHowToReturn[statTypesLength] = howToReturn
 end
+
 
 function DynamicStats:__construct(entity)
 
@@ -52,13 +52,7 @@ function DynamicStats:__construct(entity)
     end
 
     for i, config in ipairs(StatConfigs) do
-        local stat, attrs = config[1], config[2]
-        
-        -- got an effect wrapper class
-        if StatsHowToReturn[i] == HowToReturn.EFFECT then
-            -- take the modifier table for default values
-            attrs = attrs.modifier
-        end
+        local stat, attrs = config[1], config[2]        
 
         if statsList[stat] == nil then
             statsList[stat] = Stats()
@@ -67,15 +61,30 @@ function DynamicStats:__construct(entity)
         -- create an empty chain here
         self.statsChains[i] = Chain()
 
-        
-        for _, p in ipairs(attrs) do 
-            
-            local k, defaultValue = p[1], p[2]
+
+        local function setStat(attr)
+            local k, defaultValue = attr[1], attr[2]
 
             if not statsList[stat]:isSet(k) then
                 statsList[stat]:set(k, defaultValue)
             end
+        end
 
+        if StatsHowToReturn[i] == HowToReturn.NUMBER then
+            setStat(attrs)
+
+        
+        else
+            -- got an effect wrapper class
+            if StatsHowToReturn[i] == HowToReturn.EFFECT then
+                -- take the modifier table for default values
+                attrs = attrs.modifier
+            end
+            
+
+            for _, p in ipairs(attrs) do 
+                setStat(p)    
+            end
         end
     end    
 

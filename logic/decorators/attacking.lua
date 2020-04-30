@@ -1,5 +1,6 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require "render.changes"
+local Ranks = require 'lib.chains.ranks'
 
 local Decorator = require 'logic.decorators.decorator'
 local Stats = require 'logic.stats.stats' 
@@ -15,7 +16,7 @@ local function setBase(event)
     event.action.push =   event.actor:getStat(StatTypes.Push)  
 end
 
--- TODO: this should have medium priority so that
+-- this should have medium priority so that
 -- it is possible to first apply all piercing and stuff
 -- and then check if able to attack.
 -- For example take the ghost that CAN BE ATTACKED only if your level of 
@@ -51,8 +52,21 @@ local function applyStatus(event)
 end
 
 Attacking.affectedChains = {
-    { "getAttack", { setBase, getTargets } },
-    { "attack", { applyAttack, applyPush, applyStatus, utils.regChangeFunc(Changes.Hits) } }
+    { "getAttack", 
+        { 
+            { setBase, Ranks.HIGH }, 
+            getTargets 
+        } 
+    },
+
+    { "attack", 
+        { 
+            applyAttack, 
+            applyPush, 
+            applyStatus, 
+            utils.regChangeFunc(Changes.Hits) 
+        } 
+    }
 }
 
 

@@ -8,6 +8,7 @@ local filters = require "items.weapons.chains.filters"
 -- define the hit all chain
 local chain = Chain(
     {
+        utils.filter(filters.Nil),
         utils.nextToAny,
         utils.filter(filters.LeaveAttackable)
     }

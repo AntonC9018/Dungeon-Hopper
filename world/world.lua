@@ -314,9 +314,6 @@ local Piece = require "items.weapons.piece"
 
 local function doX(funcName)
     return function(self, targets, action)
-        if targets == nil then
-            return {}
-        end
         local events = {}
         for i = 1, #targets do
             local entity = targets[i].entity

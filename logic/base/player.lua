@@ -18,26 +18,16 @@ Player.generateAction =
 -- Add the handlers to chain
 Player.chainTemplate:addHandler(
     "getAttack", 
-    -- nil targets check
-    -- TODO: refactor
     function(event)
-        if 
-            event.targets == nil
-            or event.targets[1] == nil
-        then
+        if #event.targets == 0 then
             event.propagate = false    
         end
     end
 )
 Player.chainTemplate:addHandler(
-    "getDig", 
-    -- nil targets check
-    -- TODO: refactor
+    "getDig",
     function(event)
-        if 
-            event.targets == nil
-            or event.targets[1] == nil
-        then
+        if #event.targets == 0 then
             event.propagate = false    
         end
     end

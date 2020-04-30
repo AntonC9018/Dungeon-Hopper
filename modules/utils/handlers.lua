@@ -44,7 +44,7 @@ handlers.checkTargetsHavePlayer = function(event)
 
     local targets = event.targets
 
-    if targets == nil then
+    if #targets == 0 then
         event.propagate = false
         return
     end

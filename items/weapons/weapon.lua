@@ -1,7 +1,9 @@
 
 local Target = require "items.weapons.target"
-local General = require "items.weapons.general"
 local Attackableness = require "logic.enums.attackableness"
+
+-- Another available option: hitAll
+local General = require "items.weapons.general"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon")
@@ -19,7 +21,7 @@ Weapon.pattern:add( Vec(1, 0), Vec(1, 0), false )
 
 Weapon.check = General.check
 Weapon.chain = General.chain
-Weapon.hitAll = false
+
 
 function Weapon:getTargets(actor, action)
 
@@ -31,7 +33,6 @@ function Weapon:getTargets(actor, action)
     local jhat = ihat:rotate(-math.pi / 2)
 
     local world = actor.world
-
     
     -- for first, add things to the map.
     for i = 1, #self.pattern do
@@ -49,7 +50,6 @@ function Weapon:getTargets(actor, action)
     -- after that, analyze it
     local event = Event(actor, action)
     event.targets = map
-    event.hitAll = self.hitAll
 
     self.chain:pass(event, self.check)
 

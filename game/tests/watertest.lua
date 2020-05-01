@@ -1,4 +1,6 @@
 local Cell = require 'world.cell'
+local Water = require 'modules.test.water'
+local Player = require 'logic.base.player'
 
 return function()
 
@@ -8,6 +10,7 @@ return function()
     local renderer = require('render.renderer')(assets)
     
     local world = World(renderer, 10, 10)
+    world:addGameObjectType(Water)
     world:registerTypes(assets)
 
     -- load all assets
@@ -23,7 +26,7 @@ return function()
     -- world:createFloors()
 
     local player = world:createPlayerAt( Vec(2, 2) )
-    local waterTile = world:createWaterAt( Vec(2, 3) )
+    local waterTile = world:create( Water, Vec(2, 3) )
 
     assert(world.grid:getFloorAt( Vec(2, 3) ) == waterTile)
 

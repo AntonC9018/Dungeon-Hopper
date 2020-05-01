@@ -278,6 +278,13 @@ end
 
 -- SET methods
 
+-- TODO: yep
+function Grid:set(g, pos)
+    local cell = self:getCellAt(pos)
+    cell:set(g)
+    table.insert(self.layers[g.layer], g)
+end
+
 function Grid:setPlayerAt(player, pos)
     local cell = self:getCellAt(pos)
     assert(cell ~= nil)

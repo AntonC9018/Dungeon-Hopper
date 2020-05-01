@@ -3,12 +3,7 @@ local Grid = require "world.grid"
 local World = class("World")
 
 local Player = require 'logic.base.player'
-local TestEnemy = require 'modules.test.enemytest'
-local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
-local Dirt = require 'modules.test.dirt'
-local Trap = require 'modules.test.trap' 
-local WaterTile = require 'modules.test.water'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -17,36 +12,25 @@ function World:__construct(renderer, w, h)
     self.renderer = renderer
     self.changes = {{}}
     self.phase = 1
+    self.gameObjectTypes = { Player, Tile }
 end
 
 
-function World:init()
+-- registering types
+function World:addGameObjectType(t)
+    table.insert(self.gameObjectTypes, t)
 end
 
 function World:registerTypes(assets)
     -- register all assets
-    local playerType = assets:getObjectType(Player)
-    assets:registerGameObjectType(playerType)
-
-    local enemyType = assets:getObjectType(TestEnemy)
-    assets:registerGameObjectType(enemyType)
-
-    local tileType = assets:getObjectType(Tile)
-    assets:registerGameObjectType(tileType)
-
-    local dirtType = assets:getObjectType(Dirt)
-    assets:registerGameObjectType(dirtType)
-
-    local trapType = assets:getObjectType(Trap)
-    assets:registerGameObjectType(trapType)
-
-    local waterType = assets:getObjectType(WaterTile)
-    assets:registerGameObjectType(waterType)
+    for _, t in ipairs(self.gameObjectTypes) do
+        local assetType = assets:getObjectType(t)
+        assets:registerGameObjectType(assetType)
+    end    
 end
 
 
 -- player and entity creation
-
 function World:createPlayerAt(pos)
     local player = Player()
     player:init(pos, self)
@@ -59,49 +43,17 @@ end
 function World:createFloors()
     for i = 1, #self.grid.grid do
         for j = 1, #self.grid.grid[1] do
-            self:createFloorAt( Vec(i, j) )
+            self:create( Tile, Vec(i, j) )
         end
     end
 end
 
-function World:createFloorAt(pos)
-    local tile = Tile()
-    tile:init(pos, self)
-    self.grid:setFloorAt(tile, pos)
-    self.renderer:addRenderEntity(tile)
-    return tile
-end
-
-function World:createWaterAt(pos)
-    local water = WaterTile()
-    water:init(pos, self)
-    self.grid:setFloorAt(water, pos)
-    self.renderer:addRenderEntity(water)
-    return water
-end
-
-function World:createTestEnemyAt(pos)
-    local testEnemy = TestEnemy()
-    testEnemy:init(pos, self)
-    self.grid:setRealAt(testEnemy, pos)
-    self.renderer:addRenderEntity(testEnemy)
-    return testEnemy
-end
-
-function World:createDirtAt(pos)
-    local dirt = Dirt()
-    dirt:init(pos, self)
-    self.grid:setWallAt(dirt, pos)
-    self.renderer:addRenderEntity(dirt)
-    return dirt
-end
-
-function World:createTrapAt(pos)
-    local trap = Trap()
-    trap:init(pos, self)
-    self.grid:setTrapAt(trap, pos)
-    self.renderer:addRenderEntity(trap)
-    return trap
+function World:create(Entity, pos)
+    local entity = Entity()
+    entity:init(pos, self)
+    self.grid:set(entity, pos)
+    self.renderer:addRenderEntity(entity)
+    return entity
 end
 
 --- Convert user input to an action and set it

@@ -1,5 +1,8 @@
 local Spear = require 'modules.test.spear' 
 local Weapon = require 'items.weapons.weapon'
+local TestEnemy = require 'modules.test.enemytest'
+local Player = require 'logic.base.player'
+
 return function()
 
     local World = require('world.world')
@@ -8,6 +11,7 @@ return function()
     local renderer = require('render.renderer')(assets)
     
     local world = World(renderer, 10, 10)
+    world:addGameObjectType(TestEnemy)
     world:registerTypes(assets)
 
     -- load all assets
@@ -22,7 +26,7 @@ return function()
 
     world:createFloors()
     local player = world:createPlayerAt( Vec(2, 2) )
-    local testEnemy = world:createTestEnemyAt( Vec(2, 3) )
+    local testEnemy = world:create( TestEnemy, Vec(2, 3) )
     
     local knife = Weapon()
     local spear = Spear()

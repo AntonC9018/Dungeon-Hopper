@@ -59,7 +59,7 @@ utils.armor = function(event)
     action.attack.damage = 
         clamp(
             action.attack.damage - event.resistance:get('armor'), 
-            1, 
+            event.resistance:get('minDamage'), 
             event.resistance:get('maxDamage')
         )
         

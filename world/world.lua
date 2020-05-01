@@ -3,6 +3,7 @@ local Grid = require "world.grid"
 local World = class("World")
 
 local Player = require 'logic.base.player'
+local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
 
 function World:__construct(renderer, w, h)

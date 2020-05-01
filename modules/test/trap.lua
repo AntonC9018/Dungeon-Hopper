@@ -68,7 +68,7 @@ Trap.chainTemplate:addHandler(
 -- define our custom action that calls the new decorator's activation
 local BounceAction = Action.fromHandlers(
     'BounceAction',
-    { handlerUtils.applyHandler('executeBounce') }
+    handlerUtils.applyHandler('executeBounce')
 )
 
 -- define a new method that calls the new decorator

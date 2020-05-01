@@ -27,6 +27,9 @@ Reorient.onActionSuccess(Player)
 Player.baseModifiers = {
     hp = {
         amount = 100
+    },
+    attack = {
+        damage = 3         
     }
 }
 

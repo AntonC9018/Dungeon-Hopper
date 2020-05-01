@@ -27,7 +27,6 @@ decorate(Crate, Decorators.Displaceable)
 decorate(Crate, Decorators.DynamicStats)
 decorate(Crate, Decorators.Explodable)
 decorate(Crate, Decorators.WithHP)
-decorate(Crate, Decorators.Attackable)
 
 
 local AttackablenessRetoucher = require 'logic.retouchers.attackableness'
@@ -39,10 +38,13 @@ local DAMAGE_THRESH = 3
 local PIERCE = 0
 
 local function pierceHandler(event)
-    if event.attack.damage >= DAMAGE_THRESH then
+    if event.action.attack.damage >= DAMAGE_THRESH then
         event.resistance:set('pierce', PIERCE)
     end
 end
 
+local retouch = require('logic.retouchers.utils').retouch
+local Ranks = require 'lib.chains.ranks'
+retouch(Crate, 'defence', pierceHandler)
 
 return Crate

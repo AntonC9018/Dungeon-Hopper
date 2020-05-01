@@ -15,8 +15,8 @@ Attackable.affectedChains =
     { 
         { "defence", 
             { 
-                utils.setAttackRes, 
-                utils.armor 
+                { utils.setAttackRes, Ranks.HIGH }, 
+                { utils.armor, Ranks.LOW } 
             } 
         },
 

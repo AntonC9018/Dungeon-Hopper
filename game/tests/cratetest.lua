@@ -50,10 +50,7 @@ return function()
             -- print("Attackabless of Mob: "..testEnemy:getAttackableness())
             printf("Time passed: %i", system.getTimer() - time)
             print("-------------- Cycle ended. ---------------")
-            
-            if count == 3 then
-                assert(crate.dead == true)
-            end
+            print(crate.dead)
         end,
         #actions
     )

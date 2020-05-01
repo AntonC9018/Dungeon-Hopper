@@ -10,7 +10,7 @@ local function beExploded(event)
 end
 
 Explodable.affectedChains = {
-    { "defence", 
+    { "defenceExplode", 
         { 
             utils.setAttackRes, 
             utils.armor 
@@ -25,6 +25,6 @@ Explodable.affectedChains = {
 }
 
 Explodable.activate = 
-    utils.checkApplyCycle("defence", "beingExploded")
+    utils.checkApplyCycle("defenceExplode", "beingExploded")
 
 return Explodable

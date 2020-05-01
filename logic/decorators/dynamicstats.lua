@@ -103,8 +103,8 @@ function DynamicStats:activate(actor, statIndex)
     local concreteStats
 
     if howToReturn == HowToReturn.NUMBER then
-        -- unwrapping entry: { statName, { { 'key', defaultValue } } }
-        concreteStats = stats:get(entry[2][1][1])
+        -- unwrapping entry: { statName, { 'key', defaultValue } }
+        concreteStats = stats:get(entry[2][1])
     else
         concreteStats = Stats()
         for _, p in 

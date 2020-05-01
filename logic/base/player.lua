@@ -29,7 +29,8 @@ Player.baseModifiers = {
         amount = 100
     },
     attack = {
-        damage = 3         
+        damage = 1,
+        pierce = 2        
     }
 }
 

@@ -3,7 +3,7 @@
 --
 -- This is the base class for any entity in the game
 local Decorators = require 'logic.decorators.decorators'
-local PlayerAlgo = require 'logic.action.algorithms.player'
+local PlayerAlgo = require 'logic.algos.player'
 local GameObject = require 'logic.base.gameobject'
 local None = require 'logic.action.actions.none'
 local Attackableness = require 'logic.enums.attackableness'

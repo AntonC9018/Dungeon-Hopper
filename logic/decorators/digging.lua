@@ -3,6 +3,7 @@ local Changes = require "render.changes"
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Decorator = require 'logic.decorators.decorator'
 local Dig = require 'logic.action.effects.dig'
+local Ranks = require 'lib.chains.ranks'
 
 
 local Digging = class('Digging', Decorator)
@@ -24,8 +25,18 @@ end
 
 
 Digging.affectedChains = {
-    { "getDig", { setBase, getTargets } },
-    { "dig", { applyDig, utils.regChangeFunc(Changes.Digs) } }
+    { "getDig", 
+        { 
+            { setBase, Ranks.HIGH }, 
+            getTargets 
+        } 
+    },
+    { "dig", 
+        { 
+            applyDig, 
+            utils.regChangeFunc(Changes.Digs) 
+        } 
+    }
 }
 
 

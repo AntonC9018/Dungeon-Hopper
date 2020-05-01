@@ -12,7 +12,7 @@ Combos.BasicEnemy(TestEnemy)
 -- Set up sequence
 local None = require "logic.action.actions.none"
 local AttackMoveAction = require "logic.action.actions.attackmove"
-local Handlers = require "modules.utils.handlers"
+local Handlers = require 'modules.utils.handlers'
 
 local steps = {    
     { -- first step: skip the beat
@@ -22,22 +22,21 @@ local steps = {
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function
-        movs = require "logic.action.movs.adjacent"
+        movs = require "logic.sequence.movs.adjacent",
+        -- the exit function: turn to player
+        exit = Handlers.turnToPlayer
     }
 }
-
 
 TestEnemy.sequenceSteps = steps
 
 
+local Skip = require 'logic.retouchers.skip'
+
 -- set up action checks
--- TODO: this probably should be refactored into a simpler method
-TestEnemy.chainTemplate:addHandler(
-    'getAttack', Handlers.checkTargetsHavePlayer
-) 
-TestEnemy.chainTemplate:addHandler(
-    'getMove', Handlers.checkFreeMove
-) 
+Skip.noPlayer(TestEnemy)
+Skip.blockedMove(TestEnemy)
+
 
 TestEnemy.baseModifiers = {
 

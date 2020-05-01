@@ -36,7 +36,7 @@ end
 WaterTile.chainTemplate:addHandler(
     'action', 
     -- use the player algo, as it just does the action, which is what we need
-    require 'logic.action.algorithms.player'
+    require 'logic.algos.player'
 )
 
 WaterTile.baseModifiers = {

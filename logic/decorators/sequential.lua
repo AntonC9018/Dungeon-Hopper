@@ -1,6 +1,6 @@
 
 local utils = require "logic.decorators.utils" 
-local Sequence = require "logic.action.sequence.sequence"
+local Sequence = require "logic.sequence.sequence"
 
 local Decorator = require 'logic.decorators.decorator'
 local Sequential = class('Sequential', Decorator)
@@ -16,6 +16,7 @@ function Sequential:__construct(instance)
     -- TODO: transform this into an emitter on the tick decorator
     instance.chains.tick:addHandler(
         function(event)
+            print(class.name(event.actor))
             sequence:tick(event)
         end
     )

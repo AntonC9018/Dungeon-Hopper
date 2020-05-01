@@ -5,7 +5,7 @@
 --      4. make it Sequential
 
 local Acting = require "logic.decorators.acting"
-local GeneralAlgo = require "logic.action.algorithms.general"
+local GeneralAlgo = require "logic.algos.general"
 local Sequential = require "logic.decorators.sequential"
 local decorate = require("logic.decorators.decorator").decorate
 

@@ -206,7 +206,7 @@ table.each2 = function (arr, arr2, func)
     end
 end
 
-table.someF = function (arr, func)
+table.somef = function (arr, func)
     for i, v in ipairs(arr) do
         if func(arr[i]) then
             return true

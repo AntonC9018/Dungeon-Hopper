@@ -11,8 +11,9 @@ return
     Push = 'pushed', -- was pushed
     Status = 'status', -- was applied some status effects (does not have any specific ones for now, but it will one the status is implemented)
 
-    Bounce = 'bounce', -- doing bounce
-    JustState = 'state' 
+    Bounce = 'bounce', -- doing bounce TODO: add this via mods
+    JustState = 'state',
+    Reorient = 'reorient' 
 }
 
 -- These strings may subsequently be changed to e.g. plain numbers. 

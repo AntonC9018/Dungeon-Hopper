@@ -1,4 +1,4 @@
-local utils = require("logic.action.movs.utils")
+local utils = require("logic.sequence.movs.utils")
 
 return function(actor, action)
     local player = utils.getClosestPlayer(actor)

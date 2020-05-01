@@ -74,22 +74,15 @@ end
 
 
 function Step:nextStep(event)
-
-    local stepSuccessful = self:checkSuccess(event) 
-
-    if stepSuccessful then
-        return self.successStepIndex
-    else
-        return self.failStepIndex
-    end
-end
-
-
-function Step:checkSuccess(event) 
     local internalEvent = Event(self, nil)
     internalEvent.triggerEvent = event
     self.successChain:pass(internalEvent)
-    return internalEvent.propagate
+
+    if internalEvent.success then
+        return internalEvent.index or self.successStepIndex
+    else
+        return self.failStepIndex
+    end
 end
 
 function Step:enter() end

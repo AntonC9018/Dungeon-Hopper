@@ -17,7 +17,6 @@ filters.Unattackable = function(targets)
     local newTargets = {}
     for i, target in ipairs(targets) do
 
-        -- printf("Attackabless is %s for %s", target.attackableness, target.entity and class.name(target) or 'NULL') -- debug
 
         if target.attackableness ~= Attackableness.NO then
             table.insert(newTargets, target)

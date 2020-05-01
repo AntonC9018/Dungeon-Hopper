@@ -22,7 +22,7 @@ local function skipBlocked(event)
     local coord = 
         event.actor.pos + event.action.direction
     local top =
-        event.actor.world:getOneFromTopAt(coord)
+        event.actor.world.grid:hasBlockAt(coord)
     
     if top ~= nil then
         event.propagate = false  

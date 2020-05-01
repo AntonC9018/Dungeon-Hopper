@@ -40,7 +40,8 @@ return function()
 
 
     local actions = {
-        Vec(0, 1)
+        Vec(0, 1),
+        Vec(-1, 0)
     }
 
     local count = 1

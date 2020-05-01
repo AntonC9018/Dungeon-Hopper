@@ -28,10 +28,8 @@ local step1 = {
         Action.fromHandlers(
             -- the name of the action
             "TurnToPlayer", 
-            { 
-                -- use a handler, predefined or coded on your own
-                Handlers.turnToPlayer
-            }
+            -- use a handler, predefined or coded on your own
+            Handlers.turnToPlayer
         ), 
     checkSuccess = 
         -- we've gotta chuck a checkOrthogonal function here
@@ -39,7 +37,7 @@ local step1 = {
         -- are on one line / column
         -- for this, we create a custom chain on which we hang that function
         -- create a chain that consists of one handler
-        chain: Chain({ Handlers.checkOrthogonal }),
+        chain: Handlers.checkOrthogonal,
      -- the next step index
     success = 2,
     -- in case this fails, e.g. we're frozen, remain at the 1st step
@@ -50,7 +48,7 @@ local step2 = {
     -- this one is simpler
     action = AttackDigMove,
     -- for success we again need a custom chain
-    checkSuccess = Chain({ Handlers.checkNotMove }),
+    checkSuccess = Handlers.checkNotMove,
     -- in case of moving, do the next step
     success = 3,
     -- in case frozen, keep rolling

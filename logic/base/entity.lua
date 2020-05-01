@@ -126,7 +126,7 @@ local function getTargetsDefault(self, action)
     end
 
     local piece = Piece(coord, action.direction, false)
-    local attackableness = entity:getAttackableness(self)
+    local attackableness = entity:getAttackableness(entity)
     local target = Target(entity, piece, 1, attackableness)
     return target
 end
@@ -146,8 +146,8 @@ function Entity:getTargets(action)
 
     if 
         target ~= nil
-        and target.entity.attackableness ~= Attackableness.NO 
-    then
+        and target.attackableness ~= Attackableness.NO 
+    then        
         return { target }
     end
 

@@ -1,4 +1,5 @@
 local Event = require "lib.chains.event"
+local utils = require 'logic.sequence.utils'
 
 local Step = class("Step")
 
@@ -29,7 +30,7 @@ function Step:__construct(config)
 
     local ActionClass = config.action
     -- action must be specified
-    assert(ActionClass ~= nil)
+    assert(ActionClass ~= nil, "Action must be specified")
 
     -- what is an action exactly?
     --
@@ -53,16 +54,11 @@ function Step:__construct(config)
     if config.checkSuccess == nil then
         self.successChain = standartSuccessChain
     else
-        self.successChain = config.checkSuccess
+        self.successChain = utils.optionalChain(config.checkSuccess)
     end
 
-    if config.enter ~= nil then
-        self.enter = config.enter
-    end
-
-    if config.exit ~= nil then
-        self.exit = config.exit
-    end
+    self.enterChain = utils.optionalChain(config.enter)
+    self.exitChain = utils.optionalChain(config.exit)
 
     if config.movs ~= nil then
         self.getMovs = config.movs
@@ -85,8 +81,14 @@ function Step:nextStep(event)
     end
 end
 
-function Step:enter() end
-function Step:exit() end
+function Step:enter(event)
+    self.enterChain:pass(event)
+end
+
+function Step:exit(event)
+    self.exitChain:pass(event)
+end
+
 function Step:getMovs() return {} end
 
 

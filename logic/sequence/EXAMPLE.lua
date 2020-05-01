@@ -60,7 +60,7 @@ local step2 = {
     -- and we shouldn't be while not rolling
     exit = removeInfiniteArmor,
     -- and add the movs function
-    movs = followOrientation
+    movs = require 'logic.sequence.movs.straight'
 }
 
 step3 = {

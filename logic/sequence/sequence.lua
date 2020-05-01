@@ -1,7 +1,7 @@
 local Step = require "logic.sequence.step"
 
 local Sequence = class('Sequence')
-local initializeSteps = require("logic.sequence.stepfuncs").initializeSteps 
+local initializeSteps = require "logic.sequence.init"
 
 function Sequence:__construct(steps)
     self.steps = initializeSteps(steps)
@@ -42,8 +42,8 @@ function Sequence:tick(event)
         
     if nextStepIndex ~= self.currentStepIndex then
         local nextStep = self:setStep(nextStepIndex)
-        step.exit(event)
-        nextStep.enter(event)
+        step:exit(event)
+        nextStep:enter(event)
     end
 end
 

@@ -1,12 +1,9 @@
 local Step = require "logic.sequence.step"
-local stepFuncs = {}
 
-stepFuncs.initializeSteps = function(configs)
+return function(configs)
     local steps = {}
     for i = 1, #configs do
         table.insert(steps, Step(configs[i]))
     end
     return steps
 end
-
-return stepFuncs

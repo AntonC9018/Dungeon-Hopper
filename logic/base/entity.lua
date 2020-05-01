@@ -7,6 +7,7 @@ local PlayerAlgo = require 'logic.algos.player'
 local GameObject = require 'logic.base.gameobject'
 local None = require 'logic.action.actions.none'
 local Attackableness = require 'logic.enums.attackableness'
+local Changes = require 'render.changes'
 
 local Entity = class("Entity", GameObject)
 
@@ -95,41 +96,16 @@ function Entity:executeAction()
 end
 
 
--- fallback base modifiers
-Entity.baseModifiers = {
-
-    attack = {
-        damage = 1,
-        pierce = 1
-    },
-
-    move = {
-        distance = 1
-    },
-
-    push = {
-        distance = 1,
-        power = 1
-    },
-
-    dig = {
-        power = 1,
-        damage = 1
-    },
-
-    resistance = {
-        armor = 0,
-        maxDamage = math.huge,
-        push = 1,
-        pierce = 1,
-        dig = 1,
-        bounce = 1
-    },
-
-    hp = {
-        amount = 100
-    }
-}
+-- TODO: consider this a decorator?
+function Entity:reorient(newOrientation)
+    if 
+        newOrientation.x ~= self.orientation.x
+        or newOrientation.y ~= self.orientation.y 
+    then
+        self.orientation = newOrientation
+        self.world:registerChange(self, Changes.Reorient)
+    end
+end
 
 
 local Target = require "items.weapons.target"

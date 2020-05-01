@@ -152,7 +152,7 @@ function World:gameLoop()
     -- execute projectile actions
     -- self:activateProjectiles()
     -- self.grid:tickProjectiles()
-    -- self:advancePhase()
+    self:advancePhase()
 
     -- execute reals' actions
     self:activateReals()
@@ -161,7 +161,7 @@ function World:gameLoop()
 
     -- explode explosions
     -- self:activateExplosions()
-    -- self:advancePhase()
+    self:advancePhase()
 
     -- activate floor hazards
     self:activateFloors()

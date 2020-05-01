@@ -19,7 +19,16 @@ Player.generateAction =
 local Skip = require 'logic.retouchers.skip'
 Skip.emptyAttack(Player)
 Skip.emptyDig(Player)
+local Reorient = require 'logic.retouchers.reorient'
+Reorient.onActionSuccess(Player)
 
+
+
+Player.baseModifiers = {
+    hp = {
+        amount = 100
+    }
+}
 
 -- TODO: Call the character Candace
 return Player

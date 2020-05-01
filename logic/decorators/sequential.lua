@@ -16,7 +16,6 @@ function Sequential:__construct(instance)
     -- TODO: transform this into an emitter on the tick decorator
     instance.chains.tick:addHandler(
         function(event)
-            print(class.name(event.actor))
             sequence:tick(event)
         end
     )

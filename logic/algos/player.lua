@@ -12,6 +12,8 @@ local function PlayerAlgo(enclosingEvent)
 
     action:getChain():pass(algoEvent, Chain.checkPropagate)
 
+    enclosingEvent.success = algoEvent.success
+    
     -- resultEvent is already set here, see handlers/player.lua
 
     return enclosingEvent

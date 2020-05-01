@@ -31,12 +31,14 @@ local steps = {
 TestEnemy.sequenceSteps = steps
 
 
+-- Retouch
 local Skip = require 'logic.retouchers.skip'
-
--- set up action checks
 Skip.noPlayer(TestEnemy)
 Skip.blockedMove(TestEnemy)
 
+local Bounce = require 'modules.test.retouchers.bounce'
+Bounce.redoAttackAfter(TestEnemy)
+Bounce.redirectAfter(TestEnemy)
 
 TestEnemy.baseModifiers = {
 

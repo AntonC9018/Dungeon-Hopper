@@ -6,8 +6,6 @@ local handlers = {}
 
 handlers.turnToPlayer = function(event)
 
-    print(ins(event, { depth = 2 }))
-
     local actor = event.actor
     local world = actor.world
     local coord = actor.pos
@@ -25,13 +23,7 @@ handlers.turnToPlayer = function(event)
         newOrientation = Vec(0, newY)
     end
 
-    if 
-        newOrientation.x ~= actor.orientation.x
-        or newOrientation.y ~= actor.orientation.y 
-    then
-        actor.orientation = newOrientation
-        actor.world:registerChange(actor, Changes.Reorient)
-    end
+    actor:reorient(newOrientation)
 end
 
 

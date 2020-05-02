@@ -25,10 +25,10 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(2, 2) )
-    local trap = world:create( Trap, Vec(2, 3) )
+    local player = world:createPlayerAt( Vec(2, 3) )
+    local trap = world:create( Trap, Vec(2, 5) )
     trap.orientation = Vec(0, -1)
-    local enemy = world:create( TestEnemy, Vec(2, 4) )
+    local enemy = world:create( TestEnemy, Vec(2, 6) )
 
     local actions = {
         Vec(0, 0),

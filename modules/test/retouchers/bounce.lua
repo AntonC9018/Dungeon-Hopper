@@ -19,7 +19,7 @@ end
 
 
 local function redoAttackMove(event)
-    if event.actor.world.phase == Phases.Traps then
+    if event.actor.world.phase == Phases.Trap then
         local attackAction = AttackAction()
         attackAction:setDirection(event.move.direction)
         event.actor:executeAttack(attackAction)

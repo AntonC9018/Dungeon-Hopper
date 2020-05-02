@@ -21,7 +21,7 @@ data.StatConfigs = {
         'resistance',
         {
             { 'armor',     0         },
-            { 'pierce',    1         },
+            { 'pierce',    0         },
             { 'maxDamage', math.huge },
             { 'minDamage', 1         }
         }

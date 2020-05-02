@@ -20,7 +20,7 @@ Action.fromHandlers = function(name, handlers)
     if type(handlers) == 'table' then
         chain:addHandlers(handlers)
     else
-        chain:addHandler(handlers[1])
+        chain:addHandler(handlers)
     end
     local actionClass = class(name, Action)
     actionClass.chain = chain

@@ -62,9 +62,9 @@ utils.armor = function(event)
             event.resistance:get('minDamage'), 
             event.resistance:get('maxDamage')
         )
-            
+        
     if action.attack.pierce <= event.resistance:get('pierce') then
-        action.attack.damage = 0  
+        action.attack.damage = 0
     end
 end
 

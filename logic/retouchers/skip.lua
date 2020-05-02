@@ -21,12 +21,10 @@ end
 local function skipBlocked(event)
     local coord = 
         event.actor.pos + event.action.direction
-    local top =
+    local isBlocked =
         event.actor.world.grid:hasBlockAt(coord)
-    
-    if top ~= nil then
-        event.propagate = false  
-    end
+
+    event.propagate = not isBlocked  
 end
 
 skip.blockedMove = function(entityClass)

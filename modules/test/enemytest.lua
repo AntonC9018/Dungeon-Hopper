@@ -47,6 +47,10 @@ TestEnemy.baseModifiers = {
         pierce = 1
     },
 
+    push = {
+        power = 2
+    },
+
     resistance = {
         armor = 0,
         push = 0,

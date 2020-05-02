@@ -10,7 +10,7 @@ local handlerUtils = require 'logic.action.handlers.utils'
 -- Class definition
 local Trap = class("Trap", Entity)
 
-Trap.layer = Cell.Layers.traps
+Trap.layer = Cell.Layers.trap
 
 local State = {
     PRESSED = 0,

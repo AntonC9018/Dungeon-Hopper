@@ -5,7 +5,10 @@ local utils = {}
 utils.nextToAny = function(event)
 
     -- if the first one is anything but nil, leave the list unchanged
-    if event.targets[1].index == 1 then
+    if 
+        event.targets[1].index == 1 
+        and event.targets[1].attackableness ~= Attackableness.NO 
+    then
         return
     end
 

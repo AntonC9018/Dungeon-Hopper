@@ -22,7 +22,7 @@ function Sequence:setStep(index)
 end
 
 
-function Sequence:tick(event)
+function Sequence:tick(tickEvent)
 
     -- get the current step
     local step = self.steps[self.currentStepIndex]
@@ -36,14 +36,14 @@ function Sequence:tick(event)
         end
     end
 
-    local nextStepIndex = step:nextStep(event) 
+    local nextStepIndex = step:nextStep(tickEvent) 
         or (self.currentStepIndex + 1)    
         
         
     if nextStepIndex ~= self.currentStepIndex then
         local nextStep = self:setStep(nextStepIndex)
-        step:exit(event)
-        nextStep:enter(event)
+        step:exit(tickEvent)
+        nextStep:enter(tickEvent)
     end
 end
 

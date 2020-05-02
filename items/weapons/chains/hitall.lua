@@ -9,8 +9,8 @@ local filters = require "items.weapons.chains.filters"
 local chain = Chain(
     {
         utils.filter(filters.Nil),
-        utils.nextToAny,
-        utils.filter(filters.LeaveAttackable)
+        utils.filter(filters.LeaveAttackable),
+        utils.nextToAny
     }
 )
 

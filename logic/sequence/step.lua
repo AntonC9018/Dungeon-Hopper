@@ -70,7 +70,7 @@ end
 
 
 function Step:nextStep(event)
-    local internalEvent = Event(self, nil)
+    local internalEvent = Event(event.actor, nil)
     internalEvent.triggerEvent = event
     self.successChain:pass(internalEvent)
 

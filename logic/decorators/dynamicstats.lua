@@ -137,8 +137,14 @@ end
 function DynamicStats:setStat(statIndex, name, amount)
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
-    if type(name) == 'string' then
+    -- this means we definitely return this value as a number
+    -- and we expect it to be stored corresponding to a number in the config
+    if type(name) == 'number' then
+        stats:set( StatConfigs[statIndex][1][1], name )
+
+    elseif type(name) == 'string' then
         stats:set(name, amount)
+
     else
         -- name is actually a stats object
         stats:updateTo(name)

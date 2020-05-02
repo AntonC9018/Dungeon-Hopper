@@ -34,6 +34,14 @@ function Stats:get(name)
     return self.stats[name] 
 end
 
+function Stats:add(name, amount)
+    if self.stats[name] == nil then
+        self.stats[name] = amount
+    else
+        self.stats[name] = self.stats[name] + amount
+    end
+end
+
 
 function Stats:setIfHigher(name, value)
     if 

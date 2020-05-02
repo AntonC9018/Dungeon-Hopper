@@ -40,8 +40,8 @@ function SChain:addHandler(handler)
     else
         assert(type(handler[1]) == 'function', "Expected handler to be a function, got "..type(handler[1]))
         if handler[2] < 6 then
-            self.ranks[ handler[2] ] = self.ranks[ handler[2] ] - 1
             handler[2] = self.ranks[ handler[2] ]
+            self.ranks[ handler[2] ] = self.ranks[ handler[2] ] - 5
         end
         table.insert(self.toAdd, handler) 
     end

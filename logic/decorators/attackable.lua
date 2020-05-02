@@ -7,7 +7,6 @@ local Attackable = class('Attackable', Decorator)
 
 
 local function takeHit(event)
-    printf("Damage = %i", event.action.attack.damage)
     event.actor:takeDamage(event.action.attack.damage)    
 end
 

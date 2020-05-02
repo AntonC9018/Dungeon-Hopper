@@ -34,17 +34,7 @@ local Attackableness = require 'logic.enums.attackableness'
 AttackablenessRetoucher.constant(Crate, Attackableness.IF_NEXT_TO)
 
 -- set our pierce to 0 when attacked if attack damage is greater than 3
-local DAMAGE_THRESH = 3
-local PIERCE = 0
-
-local function pierceHandler(event)
-    if event.action.attack.damage >= DAMAGE_THRESH then
-        event.resistance:set('pierce', PIERCE)
-    end
-end
-
-local retouch = require('logic.retouchers.utils').retouch
-local Ranks = require 'lib.chains.ranks'
-retouch(Crate, 'defence', pierceHandler)
+local Pierce = require 'modules.test.retouchers.pierce'
+Pierce.removeIfDamageAbove(Crate, 3)
 
 return Crate

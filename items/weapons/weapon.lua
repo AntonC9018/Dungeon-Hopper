@@ -36,7 +36,7 @@ function Weapon:getTargets(actor, action)
     for i = 1, #self.pattern.pieces do
         local piece = self.pattern:get(i):transform(ihat, jhat)
         local coord = actor.pos + piece.pos
-        local entity = world:getOneFromTopAt(coord)
+        local entity = world.grid:getOneFromTopAt(coord)
         -- see logic.enums.attackableness
         local attackableness = 
             entity ~= nil

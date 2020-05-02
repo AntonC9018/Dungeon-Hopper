@@ -34,7 +34,7 @@ function Grid:__construct(w, h)
     -- The grid is a 2d array of such cells.
     self.grid = create(w, h)
     -- Lists of game objects at all layers
-    self.layers = {{},{},{},{},{},{},{},{}}
+    self.layers = {}
     -- Lists for various types of game objects at play
     self.reals = {}
     self.players = {}
@@ -164,8 +164,7 @@ function Grid:getRealAt(pos)
     if cell == nil then
         return nil
     end
-    local real = cell:getReal()
-    return real    
+    return cell:getReal()
 end
 
 function Grid:getWallAt(pos)
@@ -173,8 +172,7 @@ function Grid:getWallAt(pos)
     if cell == nil then
         return nil
     end
-    local wall = cell:getWall()
-    return wall    
+    return cell:getWall()
 end
 
 function Grid:getFloorAt(pos)
@@ -182,8 +180,7 @@ function Grid:getFloorAt(pos)
     if cell == nil then
         return nil
     end
-    local floor = cell:getFloor()
-    return floor   
+    return cell:getFloor()
 end
 
 function Grid:getTrapAt(pos)
@@ -191,8 +188,7 @@ function Grid:getTrapAt(pos)
     if cell == nil then
         return nil
     end
-    local trap = cell:getTrap()
-    return trap
+    return cell:getTrap()
 end
 
 function Grid:getProjectileAt(pos)
@@ -200,20 +196,11 @@ function Grid:getProjectileAt(pos)
     if cell == nil then
         return nil
     end
-    local trap = cell:getProjectile()
-    return trap
-end
-
-function Grid:getByTypeAt(type, pos)
-    local cell = self:getCellAt(pos)
-    assert(cell.layers[Cell.Layers.type] ~= nil)
-    return cell.layers[Cell.Layers.type][1]
+    return cell:getProjectile()
 end
 
 function Grid:getByLayer(layer, pos)
-    local cell = self:getCellAt(pos)
-    assert(cell.layers[layer] ~= nil)
-    return cell.layers[layer][1]
+    return self:getCellAt(pos):get(layer)
 end
 
 function Grid:getClosestPlayer(pos) 
@@ -232,6 +219,33 @@ function Grid:getClosestPlayer(pos)
         end
     end
     return minPlayer
+end
+
+function Grid:getOneFromTopAt(pos)
+    local result
+    result = self:getRealAt(pos)
+    if result ~= nil then return result end
+    result = self:getProjectileAt(pos)
+    if result ~= nil then return result end
+    result = self:getWallAt(pos)
+    if result ~= nil then return result end
+    result = self:getTrapAt(pos)
+    return result
+end
+
+
+function Grid:getAllAt(pos)
+    local all = {}
+
+    local cell = self:getCellAt(pos)
+    if cell == nil then
+        return all
+    end
+
+    for i = Cell.Layers.floor, Cell.Layers.player do
+        all[i] = cell:get(i)
+    end
+    return all
 end
 
 -- RESET methods

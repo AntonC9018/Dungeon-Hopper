@@ -119,7 +119,7 @@ end
 
 local function getTargetsDefault(self, action)
     local coord = self.pos + action.direction
-    local entity = self.world:getOneFromTopAt(coord)
+    local entity = self.world.grid:getOneFromTopAt(coord)
 
     if entity == nil then
         return nil

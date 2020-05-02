@@ -11,9 +11,9 @@ return function()
     print(#realList)
     local real = world.grid:getRealAt( Vec(2, 2) )
     assert(player == real)
-    local top = world:getOneFromTopAt( Vec(2, 2) )
+    local top = world.grid:getOneFromTopAt( Vec(2, 2) )
     assert(top == player)
-    top = world:getOneFromTopAt( Vec(2, 3) )
+    top = world.grid:getOneFromTopAt( Vec(2, 3) )
     assert(top == enemy)
 
 end

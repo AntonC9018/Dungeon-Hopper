@@ -17,70 +17,63 @@ Cell.Layers = {
 function Cell:__construct(pos)
     self.pos = pos
     self.layers = {
-        {}, -- the floor layer
-        {}, -- misc layer
-        {}, -- the trap layer
-        {}, -- gold layer
-        {}, -- walls layer
-        {}, -- projectiles layer
-        {}, -- dropped items layer
-        {}  -- reals layer
+        nil, -- the floor layer
+        nil, -- misc layer
+        nil, -- the trap layer
+        nil, -- gold layer
+        nil, -- walls layer
+        nil, -- projectiles layer
+        nil, -- dropped items layer
+        nil  -- reals layer
     }
 end
 
+function Cell:get(layer)
+    return self.layers[layer]
+end
 
 function Cell:getFloor()
-    return self.layers[Cell.Layers.floor][1]
+    return self.layers[Cell.Layers.floor]
 end
 
 function Cell:getTrap()
-    return self.layers[Cell.Layers.trap][1]
+    return self.layers[Cell.Layers.trap]
 end
 
 function Cell:getWall()
-    return self.layers[Cell.Layers.wall][1]
+    return self.layers[Cell.Layers.wall]
 end
 
 function Cell:getReal()
-    return self.layers[Cell.Layers.real][1]
+    return self.layers[Cell.Layers.real]
 end
 
 function Cell:getDropped()
-    return self.layers[Cell.Layers.dropped][1]
+    return self.layers[Cell.Layers.dropped]
 end
 
 function Cell:getProjectile()
-    return self.layers[Cell.Layers.projectile][1]
+    return self.layers[Cell.Layers.projectile]
 end
 
 function Cell:setFloor(floor)
-    local prev = self.layers[Cell.Layers.floor]
-    self.layers[Cell.Layers.floor] = { floor }
-    return prev
+    self.layers[Cell.Layers.floor] = floor
 end
 
 function Cell:setReal(real)
-    local prev = self.layers[Cell.Layers.real]
-    self.layers[Cell.Layers.real] = { real }
-    return prev
+    self.layers[Cell.Layers.real] = real
 end
 
 function Cell:setTrap(trap)
-    local prev = self.layers[Cell.Layers.trap]
-    self.layers[Cell.Layers.trap] = { trap }
-    return prev
+    self.layers[Cell.Layers.trap] = trap
 end
 
 function Cell:setWall(wall)
-    local prev = self.layers[Cell.Layers.wall]
-    self.layers[Cell.Layers.wall] = { wall }
-    return prev
+    self.layers[Cell.Layers.wall] = wall
 end
 
 function Cell:setProjectile(projectile)
-    local prev = self.layers[Cell.Layers.projectile]
-    self.layers[Cell.Layers.projectile] = { projectile }
-    return prev
+    self.layers[Cell.Layers.projectile] = projectile
 end
 
 -- The one generic method
@@ -90,7 +83,7 @@ function Cell:set(object)
         layer = Cell.Layers.real
     end
     local prev = self.layers[layer]
-    self.layers[layer] = { object }
+    self.layers[layer] = object
     return prev
 end
 
@@ -99,7 +92,7 @@ function Cell:clear(layer)
         layer = Cell.Layers.real
     end
     local prev = self.layers[layer]
-    self.layers[layer] = { }
+    self.layers[layer] = nil
     return prev
 end
 
@@ -115,13 +108,11 @@ function Cell:dropGold(amount)
 end
 
 function Cell:setGold(gold)
-    local prev = self.gold
-    self.gold = { gold }
-    return prev
+    self.layers[Cell.Layers.gold] = gold
 end
 
 function Cell:getGold()
-    return self.gold[0]
+    return self.layers[Cell.Layers.gold]
 end
 
 

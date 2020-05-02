@@ -281,19 +281,6 @@ World.doPush   = doX('bePushed')
 World.doStatus = doX('beStatused')
 
 
-function World:getOneFromTopAt(pos)
-    local result
-    result = self.grid:getRealAt(pos)
-    if result ~= nil then return result end
-    result = self.grid:getProjectileAt(pos)
-    if result ~= nil then return result end
-    result = self.grid:getWallAt(pos)
-    if result ~= nil then return result end
-    result = self.grid:getTrapAt(pos)
-    return result
-end
-
-
 function World:removeDead(entity)
     self.grid:remove(entity)
 end

@@ -33,7 +33,8 @@ return function()
     local actions = {
         Vec(0, 0),
         Vec(0, 0),
-        Vec(0, 0)
+        Vec(0, 1),
+        Vec(0, 1),
     }
 
     local count = 1
@@ -46,6 +47,6 @@ return function()
             count = count + 1
             print(player.hp:get())
         end,
-        2
+        #actions
     )
 end

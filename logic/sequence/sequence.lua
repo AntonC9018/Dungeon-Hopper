@@ -7,15 +7,16 @@ function Sequence:__construct(steps)
     self.steps = initializeSteps(steps)
     -- printf("Length of steps = %i", #self.steps) -- debug
     self.currentStepIndex = 1
+    self.repet = 0
 end
 
 
 function Sequence:setStep(index)
-    local rest = index % (#self.steps + 1)
-    if rest == 0 then
+    local remainder = index % (#self.steps + 1)
+    if remainder == 0 then
         self.currentStepIndex = 1
     else
-        self.currentStepIndex = rest
+        self.currentStepIndex = remainder
     end
     self.repet = 0
     return self.steps[self.currentStepIndex]
@@ -31,7 +32,7 @@ function Sequence:tick(tickEvent)
     -- this check outside the others
     if step.repet ~= nil then
         self.repet = self.repet + 1
-        if self.repet <= step.repet then
+        if self.repet < step.repet then
             return
         end
     end

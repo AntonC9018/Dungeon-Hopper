@@ -16,7 +16,8 @@ local Handlers = require 'modules.utils.handlers'
 
 local steps = {    
     { -- first step: skip the beat
-        action = None
+        action = None,
+        repet = 1
     }
     ,    
     { -- second step: try to attack, then try to move 

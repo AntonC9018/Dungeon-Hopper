@@ -19,6 +19,7 @@ function SChain:new(handlers)
 
     if handlers ~= nil then
         obj:addHandlers(handlers)
+        obj:sortHandlers()
     end
 
     return obj
@@ -43,7 +44,7 @@ function SChain:addHandler(handler)
             handler[2], self.ranks[ handler[2] ] = 
                 self.ranks[ handler[2] ], self.ranks[ handler[2] ] - 5
         end
-        table.insert(self.toAdd, handler) 
+        table.insert(self.toAdd, handler)
     end
 end
 
@@ -57,7 +58,7 @@ function SChain:removeHandler(handler)
     table.insert(self.toRemove, handler)
 end
 
-function SChain:cleanUp(handler)
+function SChain:cleanUp()
     for i = 1, #self.toRemove do
         for j = 1, #self.handlers do
             if self.handlers[j][1] == self.toRemove[i] then
@@ -68,18 +69,25 @@ function SChain:cleanUp(handler)
     end
     self.toRemove = {}
     merge_array(self.handlers, self.toAdd)
-    self.toAdd = {}
+
+    if #self.toAdd ~= 0 then
+        self:sortHandlers()
+    end
+
+    self.toAdd = {}    
 end
 
-function SChain:pass(propagatingEvent, checkStopCondition)
-    self:cleanUp()
-
+function SChain:sortHandlers()
     table.sort(
         self.handlers,
         function(a, b)
             return a[2] > b[2]
         end
     )
+end
+
+function SChain:pass(propagatingEvent, checkStopCondition)
+    self:cleanUp()   
 
     for i = 1, #self.handlers do
         self.handlers[i][1](propagatingEvent)

@@ -1,11 +1,14 @@
 local all = {}
 
 
-all.attackableness = require 'logic.retouchers.attackableness'
-all.reorient = require 'logic.retouchers.reorient'
-all.skip = require 'logic.retouchers.skip'
-all.step = require 'logic.retouchers.step'
-all.algos = require 'logic.retouchers.algos'
+all.Algos = require 'logic.retouchers.algos'
+all.Attackableness = require 'logic.retouchers.attackableness'
+all.Bumping = require 'logic.retouchers.bumping'
+all.Invincible = require 'logic.retouchers.invincible'
+all.NoAction = require 'logic.retouchers.noAction'
+all.Reorient = require 'logic.retouchers.reorient'
+all.Skip = require 'logic.retouchers.skip'
+all.Step = require 'logic.retouchers.step'
 
 
 return all

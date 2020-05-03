@@ -2,11 +2,11 @@ local Ranks = require 'lib.chains.ranks'
 
 local utils = {}
 
-utils.tinker = function(entity, chainName, handler)
+utils.tink = function(entity, chainName, handler)
     entityClass.chains[chainName]:addHandler(handler)
 end
 
-utils.untinker = function(entity, chainName, handler)
+utils.untink = function(entity, chainName, handler)
     entityClass.chains[chainName]:removeHandler(handler)
 end
 
@@ -55,7 +55,7 @@ local StatTinker = class("StatTinker")
 
 
 function StatTinker:__construct(stats)
-    -- expected are stats of form { ...args to setStat / addStat }
+    -- expected are stats of form { { ...args to setStat / addStat }, ... }
     self.stats = stats
 end
 
@@ -77,7 +77,7 @@ function StatTinker:detach(entity)
     end
 end
 
-utils.createStatTinker = StatTinker
-utils.createTinker = Tinker
+utils.StatTinker = StatTinker
+utils.Tinker = Tinker
 
 return utils

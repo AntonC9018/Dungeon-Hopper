@@ -32,12 +32,8 @@ function WaterTile:calculateAction()
     self.nextAction = StuckAction()
 end
 
--- add the action algorithm
-WaterTile.chainTemplate:addHandler(
-    'action', 
-    -- use the player algo, as it just does the action, which is what we need
-    require 'logic.algos.player'
-)
+local Algos = require 'logic.retouchers.algos'
+Algos.player(WaterTile)
 
 WaterTile.baseModifiers = {
     stuck = {

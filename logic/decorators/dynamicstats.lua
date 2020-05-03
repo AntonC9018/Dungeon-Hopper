@@ -95,6 +95,10 @@ end
 -- get a specific stat
 function DynamicStats:activate(actor, statIndex)
 
+    if statIndex == nil then
+        return 0
+    end
+
     local entry = StatConfigs[statIndex]
     local stat = entry[1]
     local stats = self.statsList[stat]
@@ -134,20 +138,21 @@ function DynamicStats:activate(actor, statIndex)
 end
 
 
-function DynamicStats:setStat(statIndex, name, amount)
+function DynamicStats:setStat(statIndex, arg1, arg2)
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
     -- this means we definitely return this value as a number
     -- and we expect it to be stored corresponding to a number in the config
-    if type(name) == 'number' then
-        stats:set( StatConfigs[statIndex][1][1], name )
+    if type(arg1) == 'number' then
+        stats:set( StatConfigs[statIndex][1][1], arg1 )
 
-    elseif type(name) == 'string' then
-        stats:set(name, amount)
+    -- arg1 is the name, arg2 is the amount
+    elseif type(arg1) == 'string' then
+        stats:set(arg1, arg2)
 
     else
-        -- name is actually a stats object
-        stats:updateTo(name)
+        -- arg1 is actually a stats object
+        stats:updateTo(arg1)
     end
 end
 

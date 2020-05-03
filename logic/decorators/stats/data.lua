@@ -49,6 +49,13 @@ data.StatConfigs = {
             { 'test', 0 }
         }
     },
+
+    {
+        'resistance',
+        {
+            'invincible', 0   
+        }
+    }
 }
 
 -- Define the list of all types of stats
@@ -62,7 +69,8 @@ data.StatTypes = {
     AttackRes = 6,
     PushRes = 7,
     DigRes = 8,
-    StatusRes = 9
+    StatusRes = 9,
+    Invincible = 10
 }
 
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
@@ -76,7 +84,8 @@ data.StatsHowToReturn = {
     HowToReturn.STATS,
     HowToReturn.NUMBER,
     HowToReturn.NUMBER,
-    HowToReturn.STATS
+    HowToReturn.STATS,
+    HowToReturn.NUMBER
 }
 
 return data

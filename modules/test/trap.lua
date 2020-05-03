@@ -38,14 +38,11 @@ Trap.chainTemplate:addHandler(
     changeState
 )
 
--- add the action algorithm
-Trap.chainTemplate:addHandler(
-    'action', 
-    -- use the player algo, as it just does the action, which is what we need
-    require 'logic.algos.player'
-)
+local Algos = require 'logic.retouchers.algos'
+Algos.player(Trap)
 
-local function tickBounce(event)
+
+local function tickTrap(event)
     local actor = event.actor
 
     local nextState =
@@ -58,10 +55,9 @@ local function tickBounce(event)
     end
 end
 
--- TODO: this should probably be an emitter handler instead 
 Trap.chainTemplate:addHandler(
     "tick",
-    tickBounce
+    tickTrap
 )
 
 

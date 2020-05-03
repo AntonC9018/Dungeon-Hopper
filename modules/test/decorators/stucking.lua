@@ -69,7 +69,7 @@ local function submergeTarget(event)
         < event.actor.baseModifiers.stuck.power
     then
         event.actor.submergedEntity = event.target  
-        setStuck(event.target) -- TODO: priority on chains
+        setStuck(event.target)
     else
         event.propagate = false
     end

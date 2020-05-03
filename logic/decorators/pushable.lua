@@ -9,7 +9,6 @@ local setBase = function(event)
     event.resistance = event.actor:getStat(StatTypes.PushRes)
 end
 
--- TODO: implement these methods
 local checkPush = function(event)
     if event.action.push.power < event.resistance then
         event.propagate = false

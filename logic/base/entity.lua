@@ -106,7 +106,6 @@ function Entity:executeAction()
 end
 
 
--- TODO: consider this a decorator?
 function Entity:reorient(newOrientation)
     if 
         newOrientation.x ~= self.orientation.x

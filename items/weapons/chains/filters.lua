@@ -12,13 +12,13 @@ filters.Nil = function(targets)
     return newTargets
 end
 
--- TODO: Add a skip option
+
 filters.Unattackable = function(targets)
     local newTargets = {}
     for i, target in ipairs(targets) do
-
-
-        if target.attackableness ~= Attackableness.NO then
+        if 
+            target.attackableness ~= Attackableness.NO
+        then
             table.insert(newTargets, target)
         end
     end

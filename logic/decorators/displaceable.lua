@@ -21,8 +21,6 @@ local function displace(event)
     local actor = event.actor
     local grid = actor.world.grid
 
-    -- problem: bumping is always activated, if displace comes first
-    -- resolution: set the right priority for chains
     grid:remove(actor)
     actor.pos = event.newPos
     grid:reset(actor)

@@ -138,6 +138,11 @@ function DynamicStats:activate(actor, statIndex)
 end
 
 
+function DynamicStats:getStatRaw(statIndex)
+    return self.statsList[ StatConfigs[statIndex][1] ]
+end
+
+
 function DynamicStats:setStat(statIndex, arg1, arg2)
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
@@ -154,6 +159,26 @@ function DynamicStats:setStat(statIndex, arg1, arg2)
         -- arg1 is actually a stats object
         stats:updateTo(arg1)
     end
+end
+
+
+function DynamicStats:addStat(statIndex, arg1, arg2)
+    local stats = self.statsList[ StatConfigs[statIndex][1] ]
+    
+    -- this means we definitely return this value as a number
+    -- and we expect it to be stored corresponding to a number in the config
+    if type(arg1) == 'number' then
+        stats:add( StatConfigs[statIndex][1][1], arg1 )
+
+    -- arg1 is the name, arg2 is the amount
+    elseif type(arg1) == 'string' then
+        stats:add(arg1, arg2)
+
+    else
+        -- arg1 is actually a stats object
+        stats:addStats(arg1)
+    end
+
 end
 
 

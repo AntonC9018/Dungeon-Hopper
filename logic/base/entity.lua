@@ -19,7 +19,7 @@ function Entity:isDecorated(decorator)
 end
 
 local activateDecorator = require("logic.base.utils").activateDecorator
-
+local activateDecoratorCustom = require("logic.base.utils").activateDecoratorCustom
 -- shortcut functions
 Entity.executeMove = 
     activateDecorator(Decorators.Moving)
@@ -58,7 +58,7 @@ Entity.beBounced =
     activateDecorator(Decorators.Bounceable)
 
 Entity.getStat =
-    activateDecorator(Decorators.DynamicStats)
+    activateDecoratorCustom(Decorators.DynamicStats, 'getStat')
 
 Entity.setStat = 
     activateDecoratorCustom(Decorators.DynamicStats, 'setStat')

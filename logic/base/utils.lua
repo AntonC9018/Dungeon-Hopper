@@ -25,7 +25,7 @@ utils.activateDecoratorCustom = function(decorator, funcName)
             
             if (decorator ~= nil) then
                 -- printf("Activating decorator %s", name) -- debug
-                return decorator[funcName](decorator, self, ...)
+                return decorator[funcName](decorator, ...)
             end
 
             return nil

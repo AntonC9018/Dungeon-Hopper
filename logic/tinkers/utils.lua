@@ -3,11 +3,11 @@ local Ranks = require 'lib.chains.ranks'
 local utils = {}
 
 utils.tink = function(entity, chainName, handler)
-    entityClass.chains[chainName]:addHandler(handler)
+    entity.chains[chainName]:addHandler(handler)
 end
 
 utils.untink = function(entity, chainName, handler)
-    entityClass.chains[chainName]:removeHandler(handler)
+    entity.chains[chainName]:removeHandler(handler)
 end
 
 utils.SelfUntinkingTinker = function(entity, chainName, generator, priority)

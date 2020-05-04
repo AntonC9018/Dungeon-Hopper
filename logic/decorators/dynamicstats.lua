@@ -93,7 +93,7 @@ function DynamicStats:__construct(entity)
 end
 
 -- get a specific stat
-function DynamicStats:activate(actor, statIndex)
+function DynamicStats:getStat(statIndex)
 
     if statIndex == nil then
         return 0

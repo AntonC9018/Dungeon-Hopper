@@ -88,7 +88,7 @@ end
 
 function Stats:addStats(stats)
     for key, value in pairs(stats.stats) do
-        self.stats[key] = value
+        self:add(key, value)
     end
 end
 
@@ -96,7 +96,7 @@ end
 function Stats:__unm()
     local stats = Stats()
     for key, value in pairs(self.stats) do
-        newStats.stats[key] = -value
+        stats.stats[key] = -value
     end
     return stats
 end

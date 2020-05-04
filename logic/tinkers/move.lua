@@ -22,4 +22,4 @@ move.afterAttackIfNotFirstPiece = {
 }
 
 
-return utils
+return move

@@ -60,10 +60,21 @@ end
 
 function SChain:cleanUp()
     for i = 1, #self.toRemove do
+        local removed = false
         for j = 1, #self.handlers do
             if self.handlers[j][1] == self.toRemove[i] then
                 table.remove( self.handlers, j ) 
+                removed = true
                 break
+            end
+        end
+        -- the handler might be in the toAdd list
+        if not removed then
+            for j = 1, #self.toAdd do
+                if self.toAdd[j][1] == self.toRemove[i] then
+                    table.remove( self.toAdd, j ) 
+                    break
+                end
             end
         end
     end

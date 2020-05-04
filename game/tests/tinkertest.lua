@@ -86,4 +86,21 @@ return function()
 
     assert(hp - enemy.hp:get() == 2)
     assert(player.pos.x == 6)
+
+
+    local function generator(tinker)
+        return function(event)
+            print("hello")
+            tinker.untink()
+        end
+    end
+
+    tinker = utils.SelfUntinkingTinker(player, 'move', generator)
+
+    tinker.tink()   -- the function output by generator gets onto the chain
+
+    world:setPlayerActions( Vec(0, 1), 1 )
+    world:gameLoop()
+    world:setPlayerActions( Vec(0, 1), 1 )
+    world:gameLoop()
 end

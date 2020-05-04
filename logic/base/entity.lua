@@ -60,15 +60,11 @@ Entity.beBounced =
 Entity.getStat =
     activateDecorator(Decorators.DynamicStats)
 
-function Entity:setStat(...)
-    local dynamicStats = self.decorators.DynamicStats
+Entity.setStat = 
+    activateDecoratorCustom(Decorators.DynamicStats, 'setStat')
 
-    -- if has attackable decorator
-    if dynamicStats ~= nil then
-        -- call their method
-        return dynamicStats:setStat(...)
-    end
-end
+Entity.addStat =
+    activateDecoratorCustom(Decorators.DynamicStats, 'addStat')
 
     
 function Entity:getAttackableness(attacker)

@@ -75,9 +75,7 @@ return function()
         Move.afterAttack
     }
 
-    print(player.chains.attack)
     tinker:tink(player)
-    print(player.chains.attack)
     
     local enemy = world:create( TestEnemy, Vec(6, 2) )
     enemy:setStat(StatTypes.AttackRes, Stats{ armor = 0, pierce = 0 })

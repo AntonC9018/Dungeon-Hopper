@@ -4,7 +4,6 @@ local utils = require 'logic.tinkers.utils'
 local Tinker = class("Tinker")
 
 function Tinker:__construct(tinkElements)
-    print(ins(tinkElements, {depth = 3}))
     self.handlers = {}
     self.chainNames = {}
     -- preprocess handlers
@@ -18,7 +17,6 @@ function Tinker:__construct(tinkElements)
 end
 
 function Tinker:tink(entity)
-    print('tinking')
     for i = 1, #self.handlers do
         utils.tink(entity, self.chainNames[i], self.handlers[i])
     end

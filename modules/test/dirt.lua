@@ -19,8 +19,11 @@ local Decorators = require "logic.decorators.decorators"
 Decorators.Start(Dirt)
 decorate(Dirt, Decorators.Diggable)
 decorate(Dirt, Decorators.WithHP)
-decorate(Dirt, Decorators.Explodable)
+decorate(Dirt, Decorators.Attackable)
 decorate(Dirt, Decorators.Killable)
 decorate(Dirt, Decorators.DynamicStats)
+
+local Attackableness = require 'logic.retouchers.attackableness'
+Attackableness.no(Dirt)
 
 return Dirt

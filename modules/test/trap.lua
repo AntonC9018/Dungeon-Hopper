@@ -14,8 +14,8 @@ local Trap = class("Trap", Entity)
 Trap.layer = Cell.Layers.trap
 
 local State = {
-    PRESSED = 0,
-    UNPRESSED = 1
+    PRESSED = 1,
+    UNPRESSED = 2
 }
 
 Trap.state = State.UNPRESSED
@@ -24,7 +24,7 @@ Trap.state = State.UNPRESSED
 Decorators.Start(Trap)
 decorate(Trap, Decorators.WithHP)
 decorate(Trap, Decorators.Ticking)
-decorate(Trap, Decorators.Explodable)
+decorate(Trap, Decorators.Attackable)
 decorate(Trap, Decorators.Acting)
 -- apply our custom decorator
 decorate(Trap, Bouncing)
@@ -41,6 +41,9 @@ retouch(Trap, 'bounce', changeState)
 -- use the player algo
 local Algos = require 'logic.retouchers.algos'
 Algos.player(Trap)
+
+local Attackableness = require 'logic.retouchers.attackableness'
+Attackableness.no(Trap)
 
 
 local function tickTrap(event)

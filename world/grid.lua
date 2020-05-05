@@ -43,6 +43,7 @@ function Grid:__construct(w, h)
     self.traps = {}
     self.floors = {}
     self.projectiles = {}
+    self.explosion = {}
 
     self.layers[Cell.Layers.real] = self.reals
     self.layers[Cell.Layers.player] = self.players
@@ -51,6 +52,7 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.trap] = self.traps
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
+    self.layers[Cell.Layers.explosion] = self.explosion
 end
 
 function Grid:checkBound(pos)
@@ -243,7 +245,10 @@ function Grid:getAllAt(pos)
     end
 
     for i = Cell.Layers.floor, Cell.Layers.player do
-        all[i] = cell:get(i)
+        local entity = cell:get(i)
+        if entity ~= nil then
+            table.insert(all, entity)
+        end
     end
     return all
 end
@@ -456,6 +461,9 @@ function Grid:calculateActionsProjectiles()
     calculateActions(self.projectiles)
 end
 
+function Grid:calculateActionsExplosions()
+    calculateActions(self.explosion)
+end
 
 local function tick(t)
     for i = 1, #t do

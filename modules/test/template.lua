@@ -71,7 +71,6 @@ decorate(FooBar, Decorators.Killable)
 decorate(FooBar, Decorators.Pushable)
 decorate(FooBar, Decorators.Displaceable)
 decorate(FooBar, Decorators.DynamicStats)
-decorate(FooBar, Decorators.Explodable)
 decorate(FooBar, Decorators.WithHP)
 -- ...
 

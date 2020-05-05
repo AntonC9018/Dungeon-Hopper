@@ -20,4 +20,8 @@ attackableness.constant = function(entityClass, attackableness)
     utils.retouch(entityClass, 'attackableness', functions[attackableness])
 end
 
+attackableness.no = function(entityClass)
+    attackableness.constant(entityClass, Attackableness.NO)
+end
+
 return attackableness

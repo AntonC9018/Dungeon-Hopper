@@ -25,7 +25,6 @@ decorate(Crate, Decorators.Killable)
 decorate(Crate, Decorators.Pushable)
 decorate(Crate, Decorators.Displaceable)
 decorate(Crate, Decorators.DynamicStats)
-decorate(Crate, Decorators.Explodable)
 decorate(Crate, Decorators.WithHP)
 
 

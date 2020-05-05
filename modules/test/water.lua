@@ -12,7 +12,7 @@ local WaterTile = class("WaterTile", Tile)
 Decorators.Start(WaterTile)
 decorate(WaterTile, Decorators.Acting)
 decorate(WaterTile, Decorators.Ticking)
-decorate(WaterTile, Decorators.Explodable)
+decorate(WaterTile, Decorators.Attackable)
 decorate(WaterTile, Decorators.WithHP)
 decorate(WaterTile, Stucking)
 
@@ -34,6 +34,9 @@ end
 
 local Algos = require 'logic.retouchers.algos'
 Algos.player(WaterTile)
+
+local Attackableness = require 'logic.retouchers.attackableness'
+Attackableness.no(WaterTile)
 
 WaterTile.baseModifiers = {
     stuck = {

@@ -113,7 +113,7 @@ function World:gameLoop()
     self:advancePhase()
 
     -- explode explosions
-    -- self:activateExplosions()
+    self:activateExplosions()
     self:advancePhase()
 
     -- activate floor hazards
@@ -203,6 +203,7 @@ function World:calculateActions()
     self.grid:calculateActionsWalls()
     self.grid:calculateActionsTraps()
     self.grid:calculateActionsProjectiles()
+    self.grid:calculateActionsExplosions()
 end
 
 
@@ -225,6 +226,9 @@ end
 
 
 function World:activateExplosions()
+    for i = 1, #self.grid.explosion do
+        self.grid.explosion[i]:executeAction()
+    end
 end
 
 

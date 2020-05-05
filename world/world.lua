@@ -101,19 +101,30 @@ function World:gameLoop()
     self:advancePhase()
 
     self:calculateActions()
-    
+
+    -- execute misc stuff, like bombs
+    self:activateMisc()
+    self.grid:tickMisc()
+    self:advancePhase()
+
     -- execute projectile actions
     -- self:activateProjectiles()
     -- self.grid:tickProjectiles()
     self:advancePhase()
 
-    -- execute reals' actions
-    self:activateReals()
-    self.grid:tickReals()
-    self:advancePhase()
+    -- include explosions created via misc
+    -- TODO: refactor into explode method
+    -- explosions should not be entities
+    -- but they should in a way be included in the grid or something
+    self.grid:calculateActionsExplosions()
 
     -- explode explosions
     self:activateExplosions()
+    self:advancePhase()
+
+    -- execute reals' actions
+    self:activateReals()
+    self.grid:tickReals()
     self:advancePhase()
 
     -- activate floor hazards
@@ -178,6 +189,12 @@ function World:resetObjects()
         real.nextAction = nil
         real.enclosingEvent = nil
     end
+    for i, real in ipairs(self.grid.misc) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
 end
 
 
@@ -209,13 +226,21 @@ function World:calculateActions()
     self.grid:calculateActionsWalls()
     self.grid:calculateActionsTraps()
     self.grid:calculateActionsProjectiles()
-    self.grid:calculateActionsExplosions()
+    self.grid:calculateActionsMisc()
 end
 
 
 function World:executePlayerActions()
     for i = 1, #self.grid.players do
         self.grid.players[i]:executeAction()
+    end
+end
+
+function World:activateMisc()
+    for i = 1, #self.grid.misc do
+        if not self.grid.misc[i].didAction then
+            self.grid.misc[i]:executeAction()
+        end
     end
 end
 

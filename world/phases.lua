@@ -1,8 +1,9 @@
 return {
     Player = 1,
-    Projectile = 2,
-    Real = 3,
+    Misc = 2,
+    Projectile = 3,
     Explosion = 4,
-    Floor = 5,
-    Trap = 6
+    Real = 5,
+    Floor = 6,
+    Trap = 7
 }

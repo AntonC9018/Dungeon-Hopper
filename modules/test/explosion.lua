@@ -41,7 +41,7 @@ function Explosion:executeAction()
                 local res = entity:getStat(StatTypes.ExplRes)
                 if 
                     res == nil 
-                    or self.params.explosionLevel >= res  
+                    or self.params.power >= res  
                 then
                     entity:beAttacked(self.nextAction)
                     entity:bePushed(self.nextAction)

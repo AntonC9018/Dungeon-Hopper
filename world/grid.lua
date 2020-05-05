@@ -44,6 +44,7 @@ function Grid:__construct(w, h)
     self.floors = {}
     self.projectiles = {}
     self.explosions = {}
+    self.misc = {}
 
     self.layers[Cell.Layers.real] = self.reals
     self.layers[Cell.Layers.player] = self.players
@@ -53,6 +54,7 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
     self.layers[Cell.Layers.explosion] = self.explosions
+    self.layers[Cell.Layers.misc] = self.misc
 end
 
 function Grid:checkBound(pos)
@@ -244,7 +246,7 @@ function Grid:getAllAt(pos)
         return all
     end
 
-    for i = Cell.Layers.floor, Cell.Layers.player do
+    for i = Cell.Layers.floor, Cell.Layers.real do
         local entity = cell:get(i)
         if entity ~= nil then
             table.insert(all, entity)
@@ -465,6 +467,10 @@ function Grid:calculateActionsExplosions()
     calculateActions(self.explosions)
 end
 
+function Grid:calculateActionsMisc()
+    calculateActions(self.misc)
+end
+
 local function tick(t)
     for i = 1, #t do
         t[i]:tick()
@@ -491,6 +497,9 @@ function Grid:tickProjectiles()
     tick(self.projectiles)
 end
 
+function Grid:tickMisc()
+    tick(self.misc)
+end
 
 local function filterDead(t)
     for i = #t, 1, -1 do

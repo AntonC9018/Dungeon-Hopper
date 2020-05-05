@@ -8,7 +8,7 @@ local Explosion = class("Explosion", Entity)
 
 -- select layer
 Explosion.layer = Cell.Layers.explosion
-Explosion.state = 1
+Explosion.state = 0
 
 function Explosion:set(p)
     self.params = p
@@ -31,24 +31,21 @@ local LAST_PHASE = 3
 
 function Explosion:executeAction()  
 
-    if self.nextAction == nil then
-        return
-    end
+    if self.nextAction ~= nil then
+        -- apply attack to all objects of the cell that
+        -- are vulnerable to explosions
+        local entities = self.world.grid:getAllAt(self.pos)
 
-    -- apply attack to all objects of the cell that
-    -- are vulnerable to explosions
-    local entities = self.world.grid:getAllAt(self.pos)
-
-    for _, entity in ipairs(entities) do
-        if entity ~= nil and entity ~= self then
-            local res = entity:getStat(StatTypes.ExplRes)
-            print('Attacking '..class.name(entity))
-            if 
-                res == nil 
-                or self.params.explosionLevel >= res  
-            then
-                entity:beAttacked(self.nextAction)
-                entity:bePushed(self.nextAction)
+        for _, entity in ipairs(entities) do
+            if entity ~= nil and entity ~= self then
+                local res = entity:getStat(StatTypes.ExplRes)
+                if 
+                    res == nil 
+                    or self.params.explosionLevel >= res  
+                then
+                    entity:beAttacked(self.nextAction)
+                    entity:bePushed(self.nextAction)
+                end
             end
         end
     end

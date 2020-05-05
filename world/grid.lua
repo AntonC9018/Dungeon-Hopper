@@ -43,7 +43,7 @@ function Grid:__construct(w, h)
     self.traps = {}
     self.floors = {}
     self.projectiles = {}
-    self.explosion = {}
+    self.explosions = {}
 
     self.layers[Cell.Layers.real] = self.reals
     self.layers[Cell.Layers.player] = self.players
@@ -52,7 +52,7 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.trap] = self.traps
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
-    self.layers[Cell.Layers.explosion] = self.explosion
+    self.layers[Cell.Layers.explosion] = self.explosions
 end
 
 function Grid:checkBound(pos)
@@ -462,7 +462,7 @@ function Grid:calculateActionsProjectiles()
 end
 
 function Grid:calculateActionsExplosions()
-    calculateActions(self.explosion)
+    calculateActions(self.explosions)
 end
 
 local function tick(t)
@@ -525,6 +525,9 @@ function Grid:filterDeadProjectiles()
     filterDead(self.projectiles)
 end
 
+function Grid:filterDeadExplosions()
+    filterDead(self.explosions)
+end
 
 function Grid:hasBlockAt(pos)
     local cell = self:getCellAt(pos)

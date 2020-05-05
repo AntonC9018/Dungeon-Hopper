@@ -56,7 +56,9 @@ return function()
             printf("Time passed: %i", system.getTimer() - time)
             print("-------------- Cycle ended. ---------------")
             print(player.hp:get())
-            print(expl.state)
+            if not expl.dead then 
+                print(expl.state)
+            end
         end,
         #actions
     )

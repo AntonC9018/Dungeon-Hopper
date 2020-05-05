@@ -172,6 +172,12 @@ function World:resetObjects()
         real.nextAction = nil
         real.enclosingEvent = nil
     end
+    for i, real in ipairs(self.grid.explosions) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
 end
 
 
@@ -226,8 +232,8 @@ end
 
 
 function World:activateExplosions()
-    for i = 1, #self.grid.explosion do
-        self.grid.explosion[i]:executeAction()
+    for i = 1, #self.grid.explosions do
+        self.grid.explosions[i]:executeAction()
     end
 end
 
@@ -261,6 +267,7 @@ function World:filterDead()
     self.grid:filterDeadWalls()
     self.grid:filterDeadTraps()
     self.grid:filterDeadProjectiles()    
+    self.grid:filterDeadExplosions()
 end
 
 

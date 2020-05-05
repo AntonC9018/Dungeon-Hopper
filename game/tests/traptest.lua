@@ -1,4 +1,5 @@
 local Cell = require 'world.cell'
+local Trap = require 'modules.test.trap'
 
 return function()
 
@@ -8,6 +9,7 @@ return function()
     local renderer = require('render.renderer')(assets)
     
     local world = World(renderer, 10, 10)
+    world:addGameObjectType(Trap)
     world:registerTypes(assets)
 
     -- load all assets
@@ -22,14 +24,14 @@ return function()
 
     world:createFloors()
     local player = world:createPlayerAt( Vec(2, 2) )
-    local trap = world:createTrapAt( Vec(2, 3) )
-    local trap2 = world:createTrapAt( Vec(3, 3) )
+    local trap = world:create( Trap, Vec(2, 3) )
+    local trap2 = world:create( Trap, Vec(3, 3) )
 
     assert(world.grid.traps[1] == trap)
     assert(world.grid:getTrapAt( Vec(2, 3) ) == trap)
     assert(world.grid.reals[1] == player)
     assert(world.grid:getRealAt( Vec(2, 2) ) == player)
-    assert(world.grid.grid[2][2].layers[Cell.Layers.real][1] == player)
+    assert(world.grid.grid[2][2].layers[Cell.Layers.real] == player)
 
     local actions = {
         Vec(0, 1),

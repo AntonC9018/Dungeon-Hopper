@@ -6,7 +6,7 @@ local Bouncing = require 'modules.test.decorators.bouncing'
 local Changes = require 'render.changes'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 
-local retouch = require('logic.retouchers.utils')
+local retouch = require('logic.retouchers.utils').retouch
 
 -- Class definition
 local Trap = class("Trap", Entity)

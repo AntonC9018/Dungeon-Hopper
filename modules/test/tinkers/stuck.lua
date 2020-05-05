@@ -11,9 +11,10 @@ end
 local function generator(tinker)
     local stuck = { stuckGenerator(tinker), Ranks.HIGH }
     return {
-        { 'attack', stuck },
-        { 'move',   stuck },
-        { 'dig',    stuck }
+        { 'attack',   stuck },
+        { 'move',     stuck },
+        { 'displace', stuck },
+        { 'dig',      stuck }
     }
 end
 

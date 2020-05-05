@@ -6,6 +6,7 @@ local Bouncing = require 'modules.test.decorators.bouncing'
 local Changes = require 'render.changes'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 
+local retouch = require('logic.retouchers.utils')
 
 -- Class definition
 local Trap = class("Trap", Entity)
@@ -28,37 +29,35 @@ decorate(Trap, Decorators.Acting)
 -- apply our custom decorator
 decorate(Trap, Bouncing)
 
+
 local function changeState(event)
     event.actor.state = State.PRESSED
 end
 
 -- be physically pushed after the player steps on this
-Trap.chainTemplate:addHandler(
-    'bounce',
-    changeState
-)
+retouch(Trap, 'bounce', changeState)
 
+
+-- use the player algo
 local Algos = require 'logic.retouchers.algos'
 Algos.player(Trap)
 
 
 local function tickTrap(event)
     local actor = event.actor
-
+    
     local nextState =
-        actor.world.grid:getRealAt(actor.pos) ~= nil
-        and State.PRESSED
-        or State.UNPRESSED
+    actor.world.grid:getRealAt(actor.pos) ~= nil
+    and State.PRESSED
+    or State.UNPRESSED
     
     if actor.state ~= nextState then
         actor.world:registerChange(actor, Changes.JustState)
     end
 end
 
-Trap.chainTemplate:addHandler(
-    "tick",
-    tickTrap
-)
+-- get unpushed / pushed
+retouch(Trap, 'tick', tickTrap)
 
 
 -- define our custom action that calls the new decorator's activation
@@ -86,7 +85,6 @@ Trap.baseModifiers = {
         power = 2,
         distance = 1
     },
-    resistance = {},
     hp = {
         amount = 1
     }

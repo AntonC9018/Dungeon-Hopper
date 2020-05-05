@@ -34,7 +34,7 @@ tinker.untink() -- the function output by generator is taken off the chain
 
 ## Example
 ```lua
-local Move = require 'logic.tinkers.move'
+local Move = require 'logic.tinkers.components.move'
 local Tinker = require 'logic.tinkers.tinker'
 local StatsTinker = require 'logic.tinkers.stattinker'
 local DynamicStats = require 'logic.decorators.dynamicstats'

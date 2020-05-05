@@ -1,11 +1,11 @@
 local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
 local Changes = require 'render.changes'
-local mcUtils = require 'modules.utils.modchain'
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 local DynamicStats = require 'logic.decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
 local Ranks = require 'lib.chains.ranks'
+local stuckTinker = require 'modules.test.tinkers.stuck'
 
 DynamicStats.registerStat(
     'StuckRes',
@@ -31,20 +31,6 @@ local Stucking = class("Stucking", Decorator)
 --
 -- IMPLEMENTED. take a look at the DynamicStats Decorator
 
-local setStuck
-local removeStuck
-
--- This method is put on the Attack and Move chains of the stuck entity
-local function stuck(event)
-    removeStuck(event.actor)
-    event.propagate = false
-end
-
-setStuck, removeStuck = 
-    mcUtils.addRemoveHandlerOnChains(
-        { 'attack', 'move', 'dig' }, stuck, Ranks.HIGH
-    )
-
     
 local function getTarget(event)
     local actor = event.actor
@@ -69,7 +55,7 @@ local function submergeTarget(event)
         < event.actor.baseModifiers.stuck.power
     then
         event.actor.submergedEntity = event.target  
-        setStuck(event.target)
+        stuckTinker:tink(event.target)
     else
         event.propagate = false
     end
@@ -82,6 +68,13 @@ local function resetSubmergedEntity(event)
 
     if real == nil then
         actor.submergedEntity = nil
+    end
+end
+
+-- if the tile disappears, so should the handler
+local function die(event)
+    if event.actor.submergedEntity ~= nil then
+        stuckTinker:untink(event.actor.submergedEntity)
     end
 end
 
@@ -99,7 +92,16 @@ Stucking.affectedChains = {
             utils.regChangeFunc(Changes.Stuck)
         } 
     },
-    { 'tick', { resetSubmergedEntity } }
+    { 'tick', 
+        { 
+            resetSubmergedEntity 
+        } 
+    },
+    { 'die',
+        {
+            die
+        }
+    }
 }
 
 Stucking.activate = 

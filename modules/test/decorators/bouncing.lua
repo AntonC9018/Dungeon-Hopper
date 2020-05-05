@@ -46,6 +46,7 @@ end
 local function bounceTarget(event)
     local resistance = event.target:getStat(StatTypes.BounceRes)
     local bounce = event.action.bounce
+    
     if 
         bounce.power > resistance
     then

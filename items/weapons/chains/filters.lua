@@ -31,7 +31,7 @@ filters.LeaveAttackable = function(targets)
     for i, target in ipairs(targets) do
         if 
             target.attackableness == Attackableness.YES 
-            or target.attackableness == Attackableness.IF_CLOSE 
+            or target.attackableness == Attackableness.IF_NEXT_TO 
         then
             table.insert(newTargets, target)
         end

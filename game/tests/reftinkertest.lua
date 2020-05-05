@@ -29,7 +29,7 @@ return function()
 
 
     local RefTinker = require 'logic.tinkers.reftinker'
-    local Move = require 'logic.tinkers.move'
+    local Move = require 'logic.tinkers.components.move'
     local RefStatTinker = require 'logic.tinkers.refstattinker'
     local utils = require 'logic.tinkers.utils'
     local StatTypes = require('logic.decorators.dynamicstats').StatTypes

@@ -34,20 +34,20 @@ local StoreTinker = class('StoreTinker', RefTinker)
 
 
 function StoreTinker:__construct(generator)
-    self.store = {}
+    self.stores = {}
     RefTinker.__construct(self, generator)
 end
 
 function StoreTinker:setStore(entity, obj)
-    self.store[entity.id] = obj or {}
+    self.stores[entity.id] = obj or {}
 end
 
 function StoreTinker:getStore(entity)
-    return self.store[entity.id]
+    return self.stores[entity.id]
 end
 
 function StoreTinker:removeStore(entity)
-    self.store[entity.id] = nil
+    self.stores[entity.id] = nil
 end
 
 

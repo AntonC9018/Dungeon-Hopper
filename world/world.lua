@@ -112,16 +112,6 @@ function World:gameLoop()
     -- self.grid:tickProjectiles()
     self:advancePhase()
 
-    -- include explosions created via misc
-    -- TODO: refactor into explode method
-    -- explosions should not be entities
-    -- but they should in a way be included in the grid or something
-    self.grid:calculateActionsExplosions()
-
-    -- explode explosions
-    self:activateExplosions()
-    self:advancePhase()
-
     -- execute reals' actions
     self:activateReals()
     self.grid:tickReals()
@@ -178,12 +168,6 @@ function World:resetObjects()
         real.enclosingEvent = nil
     end
     for i, real in ipairs(self.grid.floors) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
-    end
-    for i, real in ipairs(self.grid.explosions) do        
         real.didAction = false
         real.doingAction = false
         real.nextAction = nil
@@ -256,13 +240,6 @@ function World:activateReals()
 end
 
 
-function World:activateExplosions()
-    for i = 1, #self.grid.explosions do
-        self.grid.explosions[i]:executeAction()
-    end
-end
-
-
 function World:activateFloors()
     for i = 1, #self.grid.floors do
         if not self.grid.floors[i].didAction then
@@ -292,7 +269,6 @@ function World:filterDead()
     self.grid:filterDeadWalls()
     self.grid:filterDeadTraps()
     self.grid:filterDeadProjectiles()    
-    self.grid:filterDeadExplosions()
 end
 
 

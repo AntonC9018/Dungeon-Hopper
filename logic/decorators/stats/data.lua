@@ -55,13 +55,6 @@ data.StatConfigs = {
         {
             'invincible', 0   
         }
-    },
-
-    {
-        'resistance',
-        {
-            'explosion', 1
-        }
     }
 }
 
@@ -77,8 +70,7 @@ data.StatTypes = {
     PushRes = 7,
     DigRes = 8,
     StatusRes = 9,
-    Invincible = 10,
-    ExplRes = 11
+    Invincible = 10
 }
 
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
@@ -93,7 +85,6 @@ data.StatsHowToReturn = {
     HowToReturn.NUMBER,
     HowToReturn.NUMBER,
     HowToReturn.STATS,
-    HowToReturn.NUMBER,
     HowToReturn.NUMBER
 }
 

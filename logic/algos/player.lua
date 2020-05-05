@@ -8,7 +8,7 @@ local function PlayerAlgo(enclosingEvent)
 
     local algoEvent = Event(actor, action)
 
-    print(class.name(action)) -- debug
+    -- print(class.name(action)) -- debug
     
     action:getChain():pass(algoEvent, Chain.checkPropagate)
 

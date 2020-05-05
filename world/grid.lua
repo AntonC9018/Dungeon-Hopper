@@ -43,7 +43,6 @@ function Grid:__construct(w, h)
     self.traps = {}
     self.floors = {}
     self.projectiles = {}
-    self.explosions = {}
     self.misc = {}
 
     self.layers[Cell.Layers.real] = self.reals
@@ -53,7 +52,6 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.trap] = self.traps
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
-    self.layers[Cell.Layers.explosion] = self.explosions
     self.layers[Cell.Layers.misc] = self.misc
 end
 
@@ -463,10 +461,6 @@ function Grid:calculateActionsProjectiles()
     calculateActions(self.projectiles)
 end
 
-function Grid:calculateActionsExplosions()
-    calculateActions(self.explosions)
-end
-
 function Grid:calculateActionsMisc()
     calculateActions(self.misc)
 end
@@ -532,10 +526,6 @@ end
 
 function Grid:filterDeadProjectiles()
     filterDead(self.projectiles)
-end
-
-function Grid:filterDeadExplosions()
-    filterDead(self.explosions)
 end
 
 function Grid:hasBlockAt(pos)

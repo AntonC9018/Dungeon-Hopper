@@ -11,8 +11,7 @@ Cell.Layers = {
     projectile = 6,
     dropped = 7,
     real = 8,
-    explosion = 9,
-    player = 10 -- this is not actually used in Cell, this is for completeness in Grid
+    player = 9 -- this is not actually used in Cell, this is for completeness in Grid
 }
 
 function Cell:__construct(pos)

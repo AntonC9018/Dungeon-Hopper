@@ -16,7 +16,7 @@
 local Decorator = require 'logic.decorators.decorator'
 local Stats = require 'logic.stats.stats'
 local Data = require 'logic.decorators.stats.data'
-
+local Chain = require 'lib.chains.chain'
 
 local DynamicStats = class('DynamicStats', Decorator)
 
@@ -38,6 +38,8 @@ end
 
 
 function DynamicStats:__construct(entity)
+
+    self.actor = entity
 
     -- convert the entities' basic stats into a dynamic stats object
     -- that is, an object for each of the entries in baseModifiers
@@ -123,7 +125,8 @@ function DynamicStats:getStat(statIndex)
         end
     end
 
-    local event = Event(actor, nil)
+
+    local event = Event(self.actor, nil)
     event.stats = concreteStats
     
     -- pass through chains

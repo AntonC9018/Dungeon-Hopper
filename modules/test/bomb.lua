@@ -56,7 +56,7 @@ decorate(Bomb, Decorators.Sequential)
 decorate(Bomb, Decorators.Killable)
 -- decorate(Bomb, Decorators.Pushable)
 -- decorate(Bomb, Decorators.Displaceable)
--- decorate(Bomb, Decorators.DynamicStats)
+decorate(Bomb, Decorators.DynamicStats)
 -- decorate(Bomb, Decorators.WithHP)
 decorate(Bomb, Decorators.Ticking)
 -- ...
@@ -64,13 +64,22 @@ decorate(Bomb, Decorators.Ticking)
 
 -- apply retouchers
 local Algos = require 'logic.retouchers.algos'
-Algos.player(Bomb)
-
 local retouch = require('logic.retouchers.utils').retouch
 local Explode = require 'modules.test.handlers.explode'
-retouch(Bomb, 'die', Explode.base)
+local DynamicStats = require 'logic.decorators.dynamicstats'
+local StatTypes = DynamicStats.StatTypes
+local Ranks = require 'lib.chains.ranks'
 
+local function setBase(event)
+    event.expl =        event.actor:getStat(StatTypes.Explosion)
+    event.expl.attack = event.actor:getStat(StatTypes.Attack)
+    event.expl.push =   event.actor:getStat(StatTypes.Push)
 
+end
+
+Algos.player(Bomb)
+retouch(Bomb, 'die', { setBase, Ranks.HIGH })
+retouch(Bomb, 'die', Explode.dynamic)
 
 
 return Bomb

@@ -23,26 +23,26 @@ end
 function StatTinker:tink(entity)
     -- add the indicated amounts
     for _, s in ipairs(self.threeVarChanges) do
-        entity:addStat(s[1], s[2], s[3])
+        entity.decorators.DynamicStats:addStat(s[1], s[2], s[3])
     end
     for _, s in ipairs(self.twoVarChanges) do
-        entity:addStat(s[1], s[2])
+        entity.decorators.DynamicStats:addStat(s[1], s[2])
     end
     for _, s in ipairs(self.handlers) do
-        entity:addHandler(s[1], s[2])
+        entity.decorators.DynamicStats:addHandler(s[1], s[2])
     end
 end
 
 function StatTinker:untink(entity)
     -- subtract the indicated amounts
     for _, s in ipairs(self.threeVarChanges) do
-        entity:addStat(s[1], s[2], -s[3])
+        entity.decorators.DynamicStats:addStat(s[1], s[2], -s[3])
     end
     for _, s in ipairs(self.twoVarChanges) do
-        entity:addStat(s[1], -s[2])
+        entity.decorators.DynamicStats:addStat(s[1], -s[2])
     end
     for _, s in ipairs(self.handlers) do
-        entity:removeHandler(s[1], s[2])
+        entity.decorators.DynamicStats:removeHandler(s[1], s[2])
     end
 end
 

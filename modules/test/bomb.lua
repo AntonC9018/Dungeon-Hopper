@@ -74,7 +74,6 @@ local function setBase(event)
     event.expl =        event.actor:getStat(StatTypes.Explosion)
     event.expl.attack = event.actor:getStat(StatTypes.Attack)
     event.expl.push =   event.actor:getStat(StatTypes.Push)
-
 end
 
 Algos.player(Bomb)

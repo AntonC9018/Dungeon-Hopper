@@ -18,8 +18,8 @@ end
 
 
 explode.dynamic = function(event)
-    -- this assumes the necessary handler on DynamicStats has already been set
-    -- that is, attack and push are assumed to have been set by it
+    -- attack and push are assumed to have been 
+    -- set manually on the expl stat
     ExplodeInteractor.radius(
         event.actor.world, 
         event.actor.pos, 

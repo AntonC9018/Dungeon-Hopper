@@ -45,61 +45,79 @@ function DynamicStats:__construct(entity)
     -- that is, an object for each of the entries in baseModifiers
     -- first, loop through all properties of baseModifiers and create
     -- Stats for each one specified.
-    local statsList = {}
+    self.statsList = {}
+
+    -- contains updateable chain for each of the stats
     self.statsChains = {}
 
-    for k, v in pairs(entity.baseModifiers) do
-        statsList[k] = Stats.fromTable(v)
-        -- print('Added key '..k..' to stats') -- debug
-    end
+end
 
-    for i, config in ipairs(StatConfigs) do
-        local stat, attrs = config[1], config[2]        
-
-        if statsList[stat] == nil then
-            statsList[stat] = Stats()
-        end
-
-        -- create an empty chain here
-        self.statsChains[i] = Chain()
+-- figure if a stat has been lazy loaded already
+function DynamicStats:isLoaded(statIndex)
+    return self.statsChains[statIndex] ~= nil
+end
 
 
-        local function setStat(attr)
-            local k, defaultValue = attr[1], attr[2]
+function DynamicStats:lazyLoad(statIndex)
 
-            if not statsList[stat]:isSet(k) then
-                statsList[stat]:set(k, defaultValue)
-            end
-        end
+    local entry = StatConfigs[statIndex]
+    local stat = entry[1]
+    local howToReturn = StatsHowToReturn[statIndex]
+    
+    -- if the stat's table doesn't exist, create one
+    if self.statsList[stat] == nil then
 
-        if StatsHowToReturn[i] == HowToReturn.NUMBER then
-            setStat(attrs)
-
+        -- if base modifiers contains the stat, use it
+        if self.actor.baseModifiers[stat] ~= nil then
+            self.statsList[stat] = Stats.fromTable(self.actor.baseModifiers[stat])
         
         else
-            -- got an effect wrapper class
-            if StatsHowToReturn[i] == HowToReturn.EFFECT then
-                -- take the modifier table for default values
-                attrs = attrs.modifier
-            end
-            
-
-            for _, p in ipairs(attrs) do 
-                setStat(p)    
-            end
+            self.statsList[stat] = Stats() 
         end
-    end    
+    end
 
-    self.statsList = statsList
+    local attributes = entry[2]
+
+    -- load default values if any value is not set
+    local function setStat(attr)
+        local key, defaultValue = attr[1], attr[2]
+
+        if not self.statsList[stat]:isSet(key) then
+            self.statsList[stat]:set(key, defaultValue)
+        end
+    end
+
+    if howToReturn == HowToReturn.NUMBER then
+        setStat( attributes )
+
+    
+    else
+        -- got an effect wrapper class
+        if howToReturn == HowToReturn.EFFECT then
+            -- take the modifier table for default values
+            attributes = attributes.modifier
+        end        
+
+        for _, a in ipairs(attributes) do 
+            setStat(a)    
+        end
+    end
+
+    -- create a chain
+    self.statsChains[statIndex] = Chain()
 
 end
 
 -- get a specific stat
 function DynamicStats:getStat(statIndex)
-
+    
     if statIndex == nil then
         return 0
     end
+
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end  
 
     local entry = StatConfigs[statIndex]
     local stat = entry[1]
@@ -142,11 +160,19 @@ end
 
 
 function DynamicStats:getStatRaw(statIndex)
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end
     return self.statsList[ StatConfigs[statIndex][1] ]
 end
 
 
 function DynamicStats:setStat(statIndex, arg1, arg2)
+    
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end
+
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
     -- this means we definitely return this value as a number
@@ -166,6 +192,11 @@ end
 
 
 function DynamicStats:addStat(statIndex, arg1, arg2)
+    
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end
+
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
     -- this means we definitely return this value as a number
@@ -186,11 +217,21 @@ end
 
 
 function DynamicStats:addHandler(statIndex, handler)
+    
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end
+
     self.statsChains[statIndex]:addHandler(handler)
 end
 
 
 function DynamicStats:removeHandler(statIndex, handler)
+
+    if not self:isLoaded(statIndex) then
+        self:lazyLoad(statIndex)
+    end
+
     self.statsChains[statIndex]:removeHandler(handler)
 end
 

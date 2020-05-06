@@ -3,13 +3,13 @@ local Effect = require 'logic.action.effects.effect'
 local Move = class("Move", Effect)
 
 Move.modifier = {
-    { 'isThrough', false },
+    { 'ignore', 0 },
     { 'distance', 1 }
 }
 
 function Move:toPos(grid, target)
-    if self.isThrough then
-        return grid:closest(self.target)
+    if self.ignore > 0 then
+        return target.pos + self.direction * self.distance
     end
 
     local maxDistance = self.distance

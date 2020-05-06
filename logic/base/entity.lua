@@ -122,15 +122,17 @@ function Entity:getWeapon()
 end
 
 
-local function getTargetsDefault(self, action)
-    local coord = self.pos + action.direction
+function Entity:getTargetsDefault(direction)
+    print(self.pos)
+    print(direction)
+    local coord = self.pos + direction
     local entity = self.world.grid:getOneFromTopAt(coord)
 
     if entity == nil then
         return nil
     end
 
-    local piece = Piece(coord, action.direction, false)
+    local piece = Piece(coord, direction, false)
     local attackableness = entity:getAttackableness(entity)
     local target = Target(entity, piece, 1, attackableness)
     return target
@@ -147,7 +149,7 @@ function Entity:getTargets(action)
     end
 
     local target = 
-        getTargetsDefault(self, action)
+        self:getTargetsDefault(action.direction)
 
     if 
         target ~= nil
@@ -170,7 +172,7 @@ function Entity:getDigTargets(action)
     -- for now, just use the standart procedure for attacks
 
     local target = 
-        getTargetsDefault(self, action)
+        self:getTargetsDefault(action.direction)
 
     if 
         target ~= nil

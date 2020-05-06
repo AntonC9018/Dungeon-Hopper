@@ -107,14 +107,14 @@ function World:gameLoop()
     self.grid:tickMisc()
     self:advancePhase()
 
-    -- execute projectile actions
-    -- self:activateProjectiles()
-    -- self.grid:tickProjectiles()
-    self:advancePhase()
-
     -- execute reals' actions
     self:activateReals()
     self.grid:tickReals()
+    self:advancePhase()    
+
+    -- execute projectile actions
+    self:activateProjectiles()
+    self.grid:tickProjectiles()
     self:advancePhase()
 
     -- activate floor hazards
@@ -174,6 +174,12 @@ function World:resetObjects()
         real.enclosingEvent = nil
     end
     for i, real in ipairs(self.grid.misc) do        
+        real.didAction = false
+        real.doingAction = false
+        real.nextAction = nil
+        real.enclosingEvent = nil
+    end
+    for i, real in ipairs(self.grid.projectiles) do        
         real.didAction = false
         real.doingAction = false
         real.nextAction = nil
@@ -256,6 +262,17 @@ function World:activateTraps()
         if not self.grid.traps[i].didAction then
             -- printf("%s starts doing action", class.name(self.grid.reals[i])) -- debug
             self.grid.traps[i]:executeAction()
+            -- printf("%s ended action", class.name(self.grid.reals[i])) -- debug
+        end
+    end
+end
+
+
+function World:activateProjectiles()
+    for i = 1, #self.grid.projectiles do
+        if not self.grid.projectiles[i].didAction then
+            -- printf("%s starts doing action", class.name(self.grid.reals[i])) -- debug
+            self.grid.projectiles[i]:executeAction()
             -- printf("%s ended action", class.name(self.grid.reals[i])) -- debug
         end
     end

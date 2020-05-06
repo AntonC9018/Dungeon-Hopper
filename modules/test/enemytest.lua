@@ -18,8 +18,7 @@ local steps = {
     { -- first step: skip the beat
         action = None,
         repet = 1
-    }
-    ,    
+    },    
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function

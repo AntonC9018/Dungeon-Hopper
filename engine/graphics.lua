@@ -48,5 +48,9 @@ function Graphics:updateObject(id, state)
     obj.y = newCoords.y + display.contentCenterY
 end
 
+function Graphics:removeObject(id)
+    self.sprites[id].alpha = 0
+end
+
 
 return Graphics

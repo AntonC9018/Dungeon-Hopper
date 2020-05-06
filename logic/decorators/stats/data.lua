@@ -13,7 +13,6 @@ data.StatConfigs = {
     {
         'status',
         {
-            { 'test', 0 }
         }
     },
 
@@ -44,9 +43,6 @@ data.StatConfigs = {
     { -- status res
         'resistance',
         {
-            -- a huge list of statuses 
-            -- (if default stats need be provided)
-            { 'test', 0 }
         }
     },
 

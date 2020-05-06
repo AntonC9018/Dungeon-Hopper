@@ -4,7 +4,7 @@
 local Graphics = require "engine.graphics"
 
 local Renderer = class("Renderer")
-
+local Changes = require 'render.changes'
 
 function Renderer:__construct(assetManager)
     self.graphics = Graphics(assetManager)
@@ -138,6 +138,14 @@ function Renderer:update(time)
 
     -- Change position and stuff of all objects
     for i, obj in ipairs(self.renderObjects) do
+        
+        -- debug
+        if self.currentStates[obj.id].event == Changes.Dead then
+            self.graphics:removeObject(
+                obj.spriteId
+            )
+        end
+
         self.graphics:updateObject(
             obj.spriteId,
             self.currentStates[obj.id]

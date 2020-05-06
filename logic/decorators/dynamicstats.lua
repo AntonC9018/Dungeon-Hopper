@@ -36,6 +36,15 @@ DynamicStats.registerStat = function(name, config, howToReturn)
     StatsHowToReturn[statTypesLength] = howToReturn
 end
 
+-- this function adds the specified attribute to the
+-- selected stat modifier 
+DynamicStats.addAttribute = function(statIndex, attribute)
+    -- this applies to STATS only
+    assert(StatsHowToReturn[statIndex] == HowToReturn.STATS)
+    -- add the attribute to the attribute list
+    table.insert(StatConfigs[statIndex][2], attribute)
+end
+
 
 function DynamicStats:__construct(entity)
 

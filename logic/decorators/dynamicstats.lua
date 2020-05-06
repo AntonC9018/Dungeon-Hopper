@@ -53,7 +53,7 @@ function DynamicStats:__construct(entity)
 end
 
 -- figure if a stat has been lazy loaded already
-function DynamicStats:isLoaded(statIndex)
+function DynamicStats:assertLoaded(statIndex)
     if self.statsChains[statIndex] == nil then
         self:lazyLoad(statIndex)
     end

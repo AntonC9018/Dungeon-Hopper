@@ -49,7 +49,7 @@ return function()
     local count = 1
 
     timer.performWithDelay( 
-        1000, 
+        500, 
         function()
             local time = system.getTimer()
             world:setPlayerActions( actions[count], 1 )

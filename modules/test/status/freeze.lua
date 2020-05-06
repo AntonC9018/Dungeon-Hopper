@@ -53,6 +53,7 @@ local freeze = Freeze()
 -- register the new stat
 Statused.registerStatus('freeze', freeze)
 
+freeze.amount = 3
 
 return freeze
 

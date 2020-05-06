@@ -20,7 +20,6 @@
 --
 --
 -- Status effects are stateless, but they may use StoreTinkers for state.
-
 local Status = class('Status')
 
 -- when you instantiate a Status object, you're passing it the tinkers array
@@ -44,5 +43,12 @@ end
 -- don't do anything
 function Status:free(entity)
 end
+
+-- default amount = 2
+Status.amount = 2
+-- default overlay method: reset
+local Overlay = require 'logic.status.overlay'
+Status.overlay = Overlay.RESET 
+
 
 return Status

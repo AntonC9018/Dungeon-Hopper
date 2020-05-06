@@ -6,6 +6,7 @@ local DynamicStats = require 'logic.decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
 local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
+local Overlay = require 'logic.status.overlay'
 
 local Statused = class('Statused', Decorator)
 
@@ -74,14 +75,15 @@ local status = function(event)
     -- we have to loop through stats manually, so that we call
     -- all necessary methods on Status objects right
     for k, v in pairs(event.action.status.stats) do
-        -- TODO: look up how much of a status to apply in
-        -- the status definition table 
-        local newAmount = 3
+        
+        local statusEffect = StatusList[ Statused.StatusTypes[k] ]
+        
+        -- The amount is currently specified by the status effect itself
+        local newAmount = statusEffect.amount
+        
         
         -- apply the stat, if resistance is low
         if resistance:get(k) <= v then
-
-            local statusEffect = StatusList[ Statused.StatusTypes[k] ]
 
             -- print("Applying the "..k.." status") -- debug
 
@@ -90,10 +92,14 @@ local status = function(event)
             else
                 statusEffect:reapply(actor, newAmount)
             end
-            
-            -- for now, reset the stat to the new amount.
-            -- TODO: possibly add different methods of this, like addition vs resetting
-            statuses:set(k, newAmount)
+
+            if statusEffect.overlay == Overlay.ADD then
+                statuses:add(k, newAmount)
+            elseif statusEffect.overlay == Overlay.RESET then
+                statuses:set(k, newAmount)
+            else
+                error("What overlay method is this status using?")
+            end
 
         end
     end

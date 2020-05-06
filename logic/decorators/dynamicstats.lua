@@ -54,7 +54,9 @@ end
 
 -- figure if a stat has been lazy loaded already
 function DynamicStats:isLoaded(statIndex)
-    return self.statsChains[statIndex] ~= nil
+    if self.statsChains[statIndex] == nil then
+        self:lazyLoad(statIndex)
+    end
 end
 
 
@@ -115,9 +117,7 @@ function DynamicStats:getStat(statIndex)
         return 0
     end
 
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end  
+    self:assertLoaded(statIndex)  
 
     local entry = StatConfigs[statIndex]
     local stat = entry[1]
@@ -160,18 +160,14 @@ end
 
 
 function DynamicStats:getStatRaw(statIndex)
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end
+    self:assertLoaded(statIndex)
     return self.statsList[ StatConfigs[statIndex][1] ]
 end
 
 
 function DynamicStats:setStat(statIndex, arg1, arg2)
     
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end
+    self:assertLoaded(statIndex)
 
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
@@ -193,9 +189,7 @@ end
 
 function DynamicStats:addStat(statIndex, arg1, arg2)
     
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end
+    self:assertLoaded(statIndex)
 
     local stats = self.statsList[ StatConfigs[statIndex][1] ]
     
@@ -218,9 +212,7 @@ end
 
 function DynamicStats:addHandler(statIndex, handler)
     
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end
+    self:assertLoaded(statIndex)
 
     self.statsChains[statIndex]:addHandler(handler)
 end
@@ -228,9 +220,7 @@ end
 
 function DynamicStats:removeHandler(statIndex, handler)
 
-    if not self:isLoaded(statIndex) then
-        self:lazyLoad(statIndex)
-    end
+    self:assertLoaded(statIndex)
 
     self.statsChains[statIndex]:removeHandler(handler)
 end

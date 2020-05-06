@@ -2,6 +2,7 @@ local TestEnemy = require 'modules.test.enemytest'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Freeze = require 'modules.test.status.freeze'
 local IceCube = require 'modules.test.icecube'
+local Stun = require 'modules.test.status.stun'
 
 return function()
 
@@ -29,7 +30,8 @@ return function()
     local player = world:createPlayerAt( Vec(4, 4) )
     local enemy =  world:create( TestEnemy, Vec(4, 5) )
 
-    player:setStat(StatTypes.Status, 'freeze', 5)
+    -- player:setStat(StatTypes.Status, 'freeze', 5)
+    player:setStat(StatTypes.Status, 'stun', 5)
     player:setStat(StatTypes.Push, 'power', 0)
     enemy:setStat(StatTypes.PushRes, 2)
 

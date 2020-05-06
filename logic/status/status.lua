@@ -25,14 +25,12 @@ local Status = class('Status')
 
 -- when you instantiate a Status object, you're passing it the tinkers array
 -- (by default), though subclasses may be created that may override this
-function Status:__construct(tinkers)
-    -- self.tinkers = tinkers
+function Status:__construct(tinker)
+    self.tinker = tinker
 end
 
 function Status:apply(entity, amount)
-    -- for _, t in ipairs(self.tinkers) do
-    --     t:tink(entity)
-    -- end
+    self.tinker:tink(entity)
 end
 
 -- don't do anything
@@ -40,9 +38,7 @@ function Status:reapply(entity, amount)
 end
 
 function Status:wearOff(entity)
-    -- for _, t in ipairs(self.tinkers) do
-    --     t:untink(entity)
-    -- end
+    self.tinker:untink(entity)
 end
 
 -- don't do anything

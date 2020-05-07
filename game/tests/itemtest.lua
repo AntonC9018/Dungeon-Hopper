@@ -30,10 +30,10 @@ return function()
     local droppedItem = world:create(DroppedTest, Vec(5, 4))
 
     local actions = {
-        Vec(1, 0),
-        Vec(1, 0),
-        Vec(-1, 0),
-        Vec(1, 0)
+        Vec(0, 0),
+        Vec(0, 0),
+        Vec(0, 0),
+        Vec(0, 0)
     }
 
     local count = 1

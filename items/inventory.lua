@@ -100,9 +100,11 @@ end
 function Inventory:unequip(item)
     local slot = item.slot 
     if self.containers[slot] then
-        self.containers[slot]:removeItem(item)
-        item:beUnequipped(self.entity)
-        printf('A %s has been removed from the %i container', class.name(item), slot)
+        local droppedItem = self.containers[slot]:removeItem(item)
+        if droppedItem ~= nil then
+            item:beUnequipped(self.entity)
+            printf('A %s has been removed from the %i container', class.name(item), slot)
+        end
     else
         printf('Inventory doesn\'t have a container of slot %s', slot)
     end

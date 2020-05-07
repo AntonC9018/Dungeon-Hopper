@@ -115,11 +115,12 @@ function Projectile:getTargetsBeneath(direction)
     return target
 end
 
--- return the real at this spot as the target
 function Projectile:getTargets(action)
     if action.state == ActionState.Beneath then
+        -- return the real at this spot as the target
         return { self:getTargetsBeneath(action.direction) }
     else
+        -- return the target as regular
         return { self:getTargetsDefault(action.direction) }
     end
 end

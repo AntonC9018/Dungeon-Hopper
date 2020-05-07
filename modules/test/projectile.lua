@@ -58,9 +58,10 @@ Retouchers.Algos.player(Projectile)
 Retouchers.Reorient.onActionSuccess(Projectile)
 Retouchers.Attackableness.no(Projectile)
 Retouchers.Skip.emptyAttack(Projectile)
+Retouchers.Skip.self(Projectile)
 -- ...
+retouch(Projectile, 'attack', { die, Ranks.HIGHEST })
 retouch(Projectile, 'attack', { unattackableAfterCheck, Ranks.HIGHEST })
-retouch(Projectile, 'attack', { die, Ranks.MEDIUM })
 
 
 local ProjectileAction = Action.fromHandlers(
@@ -79,6 +80,7 @@ end
 
 -- define a new method with the logic. it is pretty simple
 -- so decided to not use a decorator for now
+-- TODO: refactor into a decorator and also check projectile resistances
 function Projectile:executeProjectile(action)
 
     -- attack the real at our spot only if it looks 
@@ -94,7 +96,22 @@ function Projectile:executeProjectile(action)
 
     -- else move and then try to attack
     local moveEvent = self:executeMove(action)
-    return self:executeAttack(action)
+    local attackEvent = self:executeAttack(action)
+
+    -- if did hit anything watch the cell for a beat
+    if not self.dead then
+        self.world.grid:watchBeat(
+            self.pos,
+            function(entity)
+                if not self.dead then
+                    self:executeAttack(action)
+                end
+            end
+        )
+    end
+
+    -- TODO: return projectile event
+    return attackEvent
 end
 
 -- override calculateAction. Return our custom action

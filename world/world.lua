@@ -145,6 +145,7 @@ function World:reset()
     self:resetPhase()
     -- set objects' actions to the None action
     self:resetObjects()
+    self.grid:resetBeat()
 end
 
 
@@ -190,11 +191,12 @@ end
 
 function World:sortByPriority()
     -- sort everything in grid by priority
-    self.grid:sortReals()
-    self.grid:sortFloors()
-    self.grid:sortWalls()
-    self.grid:sortTraps()
-    self.grid:sortProjectiles()
+    -- self.grid:sortReals()
+    -- self.grid:sortFloors()
+    -- self.grid:sortWalls()
+    -- self.grid:sortTraps()
+    -- self.grid:sortProjectiles()
+    self.grid:sortAll()
 end
 
 
@@ -211,12 +213,13 @@ end
 -- that is, e.g. the sequence step. The thing that ticks stuff 
 -- is the tick() method
 function World:calculateActions()
-    self.grid:calculateActionsReals()    
-    self.grid:calculateActionsFloors()
-    self.grid:calculateActionsWalls()
-    self.grid:calculateActionsTraps()
-    self.grid:calculateActionsProjectiles()
-    self.grid:calculateActionsMisc()
+    -- self.grid:calculateActionsReals()    
+    -- self.grid:calculateActionsFloors()
+    -- self.grid:calculateActionsWalls()
+    -- self.grid:calculateActionsTraps()
+    -- self.grid:calculateActionsProjectiles()
+    -- self.grid:calculateActionsMisc()
+    self.grid:calculateActionsAll()
 end
 
 
@@ -280,12 +283,13 @@ end
 
 
 function World:filterDead()
-    self.grid:filterDeadPlayers()
-    self.grid:filterDeadReals()
-    self.grid:filterDeadFloors()
-    self.grid:filterDeadWalls()
-    self.grid:filterDeadTraps()
-    self.grid:filterDeadProjectiles()    
+    -- self.grid:filterDeadPlayers()
+    -- self.grid:filterDeadReals()
+    -- self.grid:filterDeadFloors()
+    -- self.grid:filterDeadWalls()
+    -- self.grid:filterDeadTraps()
+    -- self.grid:filterDeadProjectiles()   
+    self.grid:filterDeadAll() 
 end
 
 

@@ -1,6 +1,7 @@
 local TestEnemy = require 'modules.test.enemytest' 
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Projectile = require 'modules.test.projectile'
+local Trap = require 'modules.test.trap'
 
 return function()
 
@@ -11,6 +12,7 @@ return function()
     
     local world = World(renderer, 20, 20)
     world:addGameObjectType(Projectile) 
+    world:addGameObjectType(Trap) 
     world:registerTypes(assets)
 
     -- load all assets
@@ -24,16 +26,17 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(4, 4) )
-    local proj = world:create(Projectile, Vec(6, 6))
-
-    proj.orientation = Vec(-1, -1)
+    local player = world:createPlayerAt( Vec(4, 3) )
+    local trap = world:create(Trap, Vec(4, 4))
+    trap.orientation = Vec(0, 1)
+    local proj = world:create(Projectile, Vec(5, 5))
+    proj.orientation = Vec(-1, 0)
 
     proj:setStat(StatTypes.Push, 'power', 10)
     proj:setStat(StatTypes.Push, 'distance', 1)
 
     local actions = {
-        Vec(0, 0),
+        Vec(0, 1),
         Vec(0, 0),
         Vec(0, 0),
         Vec(0, 0),

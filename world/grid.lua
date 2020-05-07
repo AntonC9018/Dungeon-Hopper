@@ -53,11 +53,47 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
     self.layers[Cell.Layers.misc] = self.misc
+
+    -- create watcher emitters
+    self.cellWatcher     = Emitter()
+    self.beatCellWatcher = Emitter()
 end
 
 function Grid:checkBound(pos)
     return pos.x > 0 and pos.x <= #self.grid 
         or pos.y > 0 and pos.y <= #self.grid[1]
+end
+
+-- Watch functionality
+function Grid:getWatchCode(pos)
+    return string.format('%i-%i', pos.x, pos.y)
+end
+
+function Grid:watch(pos, func)
+    local code = self:getWatchCode(pos)
+    self.cellWatcher:on(code, func)
+end
+
+function Grid:watchBeat(pos, func)
+    local code = self:getWatchCode(pos)
+    self.beatCellWatcher:on(code, func)
+end
+
+function Grid:unwatch(pos, func)
+    local code = self:getWatchCode(pos)
+    self.cellWatcher:removeListener(code, func)
+end
+
+function Grid:resetBeat()
+    -- reinstantiate the beat watcher
+    self.beatCellWatcher = Emitter()
+end
+
+function Grid:emitWatchers(pos, entity)
+    -- emit watchers
+    local code = self:getWatchCode(pos)
+    self.beatCellWatcher:emit(code, entity)
+    self.cellWatcher    :emit(code, entity)
 end
 
 -- Some helper functions for working with the grid
@@ -262,37 +298,38 @@ function Grid:reset(entity)
     end
     local cell = self:getCellAt(entity.pos)
     cell:set(entity)
+    self:emitWatchers(entity.pos, entity)
 end
 
-function Grid:resetPlayer(player)
-    local cell = self:getCellAt(player.pos)
-    cell:setReal(player)
-end
+-- function Grid:resetPlayer(player)
+--     local cell = self:getCellAt(player.pos)
+--     cell:setReal(player)
+-- end
 
-function Grid:resetReal(real)
-    local cell = self:getCellAt(real.pos)
-    cell:setReal(real)
-end
+-- function Grid:resetReal(real)
+--     local cell = self:getCellAt(real.pos)
+--     cell:setReal(real)
+-- end
 
-function Grid:resetTrap(trap)
-    local cell = self:getCellAt(trap.pos)
-    cell:setTrap(trap)
-end
+-- function Grid:resetTrap(trap)
+--     local cell = self:getCellAt(trap.pos)
+--     cell:setTrap(trap)
+-- end
 
-function Grid:resetWall(wall)
-    local cell = self:getCellAt(wall.pos)
-    cell:setWall(wall)
-end
+-- function Grid:resetWall(wall)
+--     local cell = self:getCellAt(wall.pos)
+--     cell:setWall(wall)
+-- end
 
-function Grid:resetFloor(floor)
-    local cell = self:getCellAt(floor.pos)
-    cell:setFloor(floor)
-end
+-- function Grid:resetFloor(floor)
+--     local cell = self:getCellAt(floor.pos)
+--     cell:setFloor(floor)
+-- end
 
-function Grid:resetProjectile(projectile)
-    local cell = self:getCellAt(projectile.pos)
-    cell:setProjectile(projectile)
-end
+-- function Grid:resetProjectile(projectile)
+--     local cell = self:getCellAt(projectile.pos)
+--     cell:setProjectile(projectile)
+-- end
 
 
 -- SET methods
@@ -302,6 +339,7 @@ function Grid:set(g, pos)
     local cell = self:getCellAt(pos)
     cell:set(g)
     table.insert(self.layers[g.layer], g)
+    self:emitWatchers(pos, g)
 end
 
 function Grid:setPlayerAt(player, pos)
@@ -313,46 +351,46 @@ function Grid:setPlayerAt(player, pos)
     table.insert(self.players, player)
 end
 
--- TODO: modify to allow different sizes
-function Grid:setRealAt(real, pos)    
-    -- assert object takes up just one cell (for now)
-    assert(real.isSized() == false)
-    local cell = self:getCellAt(pos)
-    assert(cell ~= nil)
-    assert(cell:getReal() == nil)
-    cell:setReal(real)    
-    -- assert(cell:getReal() == real)
+-- -- TODO: modify to allow different sizes
+-- function Grid:setRealAt(real, pos)    
+--     -- assert object takes up just one cell (for now)
+--     assert(real.isSized() == false)
+--     local cell = self:getCellAt(pos)
+--     assert(cell ~= nil)
+--     assert(cell:getReal() == nil)
+--     cell:setReal(real)    
+--     -- assert(cell:getReal() == real)
 
-    -- update the reals list
-    table.insert(self.reals, real)
-    if real:isPlayer() then
-        table.insert(self.players, real)
-    end
-end
+--     -- update the reals list
+--     table.insert(self.reals, real)
+--     if real:isPlayer() then
+--         table.insert(self.players, real)
+--     end
+-- end
 
-function Grid:setTrapAt(trap, pos)
-    local cell = self:getCellAt(pos)
-    cell:setTrap(trap)
-    table.insert(self.traps, trap)
-end
+-- function Grid:setTrapAt(trap, pos)
+--     local cell = self:getCellAt(pos)
+--     cell:setTrap(trap)
+--     table.insert(self.traps, trap)
+-- end
 
-function Grid:setWallAt(wall, pos)
-    local cell = self:getCellAt(pos)
-    cell:setWall(wall)
-    table.insert(self.walls, wall)
-end
+-- function Grid:setWallAt(wall, pos)
+--     local cell = self:getCellAt(pos)
+--     cell:setWall(wall)
+--     table.insert(self.walls, wall)
+-- end
 
-function Grid:setFloorAt(floor, pos)
-    local cell = self:getCellAt(pos)
-    cell:setFloor(floor)
-    table.insert(self.floors, floor)
-end
+-- function Grid:setFloorAt(floor, pos)
+--     local cell = self:getCellAt(pos)
+--     cell:setFloor(floor)
+--     table.insert(self.floors, floor)
+-- end
 
-function Grid:setProjectileAt(projectile, pos)
-    local cell = self:getCellAt(pos)
-    cell:setProjectile(projectile)
-    table.insert(self.projectiles, projectile)
-end
+-- function Grid:setProjectileAt(projectile, pos)
+--     local cell = self:getCellAt(pos)
+--     cell:setProjectile(projectile)
+--     table.insert(self.projectiles, projectile)
+-- end
 
 
 
@@ -364,36 +402,36 @@ function Grid:remove(object)
     cell:clear(object.layer)
 end
 
--- TODO: modify to allow different sizes
-function Grid:removeReal(real)
-    -- assert object takes up just one cell (for now)
-    assert(real.isSized() == false)
-    local cell = self:getCellAt(real.pos)
-    assert(cell ~= nil)
-    assert(cell:getReal() == real)
-    cell:setReal(nil)
-end
+-- -- TODO: modify to allow different sizes
+-- function Grid:removeReal(real)
+--     -- assert object takes up just one cell (for now)
+--     assert(real.isSized() == false)
+--     local cell = self:getCellAt(real.pos)
+--     assert(cell ~= nil)
+--     assert(cell:getReal() == real)
+--     cell:setReal(nil)
+-- end
 
-function Grid:removeTrap(trap)
-    local cell = self:getCellAt(trap.pos)
-    assert(cell ~= nil)
-    assert(cell:getTrap() == trap)
-    cell:setTrap(nil)
-end
+-- function Grid:removeTrap(trap)
+--     local cell = self:getCellAt(trap.pos)
+--     assert(cell ~= nil)
+--     assert(cell:getTrap() == trap)
+--     cell:setTrap(nil)
+-- end
 
-function Grid:removeWall(wall)
-    local cell = self:getCellAt(wall.pos)
-    assert(cell ~= nil)
-    assert(cell:getWall() == wall)
-    cell:setWall(nil)
-end
+-- function Grid:removeWall(wall)
+--     local cell = self:getCellAt(wall.pos)
+--     assert(cell ~= nil)
+--     assert(cell:getWall() == wall)
+--     cell:setWall(nil)
+-- end
 
-function Grid:removeProjectile(projectile)
-    local cell = self:getCellAt(projectile.pos)
-    assert(cell ~= nil)
-    assert(cell:getProjectile() == projectile)
-    cell:setProjectile(nil)
-end
+-- function Grid:removeProjectile(projectile)
+--     local cell = self:getCellAt(projectile.pos)
+--     assert(cell ~= nil)
+--     assert(cell:getProjectile() == projectile)
+--     cell:setProjectile(nil)
+-- end
 
 
 -- TODO: SPAWN methods
@@ -412,26 +450,34 @@ local function sortByPriority(t)
     table.sort(t, function(a, b) return a.priority > b.priority end)  
 end
 
--- Sort by priority methods
-function Grid:sortReals()
+function Grid:sortAll()
     sortByPriority(self.reals)
-end
-
-function Grid:sortFloors()
     sortByPriority(self.floors)
-end
-
-function Grid:sortWalls()
     sortByPriority(self.walls)
-end
-
-function Grid:sortTraps()
     sortByPriority(self.traps)
-end
-
-function Grid:sortProjectiles()
     sortByPriority(self.projectiles)
 end
+
+-- Sort by priority methods
+-- function Grid:sortReals()
+--     sortByPriority(self.reals)
+-- end
+
+-- function Grid:sortFloors()
+--     sortByPriority(self.floors)
+-- end
+
+-- function Grid:sortWalls()
+--     sortByPriority(self.walls)
+-- end
+
+-- function Grid:sortTraps()
+--     sortByPriority(self.traps)
+-- end
+
+-- function Grid:sortProjectiles()
+--     sortByPriority(self.projectiles)
+-- end
 
 
 local function calculateActions(t)
@@ -440,30 +486,38 @@ local function calculateActions(t)
     end
 end
 
-
-function Grid:calculateActionsReals()
+function Grid:calculateActionsAll()
     calculateActions(self.reals)
-end
-
-function Grid:calculateActionsFloors()
     calculateActions(self.floors)
-end
-
-function Grid:calculateActionsWalls()
     calculateActions(self.walls)
-end
-
-function Grid:calculateActionsTraps()
     calculateActions(self.traps)
-end
-
-function Grid:calculateActionsProjectiles()
     calculateActions(self.projectiles)
-end
-
-function Grid:calculateActionsMisc()
     calculateActions(self.misc)
 end
+
+-- function Grid:calculateActionsReals()
+--     calculateActions(self.reals)
+-- end
+
+-- function Grid:calculateActionsFloors()
+--     calculateActions(self.floors)
+-- end
+
+-- function Grid:calculateActionsWalls()
+--     calculateActions(self.walls)
+-- end
+
+-- function Grid:calculateActionsTraps()
+--     calculateActions(self.traps)
+-- end
+
+-- function Grid:calculateActionsProjectiles()
+--     calculateActions(self.projectiles)
+-- end
+
+-- function Grid:calculateActionsMisc()
+--     calculateActions(self.misc)
+-- end
 
 local function tick(t)
     for i = 1, #t do
@@ -504,29 +558,38 @@ local function filterDead(t)
     end
 end
 
-function Grid:filterDeadPlayers()
+function Grid:filterDeadAll()
     filterDead(self.players)
-end
-
-function Grid:filterDeadReals()
     filterDead(self.reals)
-end
-
-function Grid:filterDeadFloors()
     filterDead(self.floors)
-end
-
-function Grid:filterDeadWalls()
     filterDead(self.walls)
-end
-
-function Grid:filterDeadTraps()
     filterDead(self.traps)
-end
-
-function Grid:filterDeadProjectiles()
     filterDead(self.projectiles)
 end
+
+-- function Grid:filterDeadPlayers()
+--     filterDead(self.players)
+-- end
+
+-- function Grid:filterDeadReals()
+--     filterDead(self.reals)
+-- end
+
+-- function Grid:filterDeadFloors()
+--     filterDead(self.floors)
+-- end
+
+-- function Grid:filterDeadWalls()
+--     filterDead(self.walls)
+-- end
+
+-- function Grid:filterDeadTraps()
+--     filterDead(self.traps)
+-- end
+
+-- function Grid:filterDeadProjectiles()
+--     filterDead(self.projectiles)
+-- end
 
 function Grid:hasBlockAt(pos)
     local cell = self:getCellAt(pos)

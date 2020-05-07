@@ -263,9 +263,9 @@ function Grid:getOneFromTopAt(pos)
     local result
     result = self:getRealAt(pos)
     if result ~= nil then return result end
-    result = self:getProjectileAt(pos)
-    if result ~= nil then return result end
     result = self:getWallAt(pos)
+    if result ~= nil then return result end
+    result = self:getProjectileAt(pos)
     if result ~= nil then return result end
     result = self:getTrapAt(pos)
     return result

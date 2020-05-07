@@ -1,6 +1,6 @@
 local TestEnemy = require 'modules.test.enemytest' 
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local Projectile = require 'modules.test.projectile'
+local Projectile = require 'modules.test.projectile2'
 local Trap = require 'modules.test.trap'
 
 return function()
@@ -26,19 +26,19 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(4, 3) )
+    local player = world:createPlayerAt( Vec(4, 4) )
     -- local trap = world:create(Trap, Vec(4, 4))
     -- trap.orientation = Vec(0, 1)
-    local proj = world:create(Projectile, Vec(5, 5))
-    proj.orientation = Vec(1, 0)
-    local proj = world:create(Projectile, Vec(9, 5))
+    local proj = world:create(Projectile, Vec(5, 4))
     proj.orientation = Vec(-1, 0)
+    -- local proj = world:create(Projectile, Vec(9, 5))
+    -- proj.orientation = Vec(-1, 0)
 
     proj:setStat(StatTypes.Push, 'power', 10)
     proj:setStat(StatTypes.Push, 'distance', 1)
 
     local actions = {
-        Vec(0, 0),
+        Vec(1, 0),
         Vec(0, 0),
         Vec(0, 0),
         Vec(0, 0)

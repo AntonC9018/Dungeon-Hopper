@@ -44,6 +44,7 @@ function Grid:__construct(w, h)
     self.floors = {}
     self.projectiles = {}
     self.misc = {}
+    self.dropped = {}
 
     self.layers[Cell.Layers.real] = self.reals
     self.layers[Cell.Layers.player] = self.players
@@ -53,6 +54,7 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.floor] = self.floors
     self.layers[Cell.Layers.projectile] = self.projectiles
     self.layers[Cell.Layers.misc] = self.misc
+    self.layers[Cell.Layers.dropped] = self.dropped
 
     -- create watcher emitters
     self.cellWatcher     = Emitter()
@@ -235,6 +237,14 @@ function Grid:getProjectileAt(pos)
         return nil
     end
     return cell:getProjectile()
+end
+
+function Grid:getDroppedAt(pos)
+    local cell = self:getCellAt(pos)
+    if cell == nil then
+        return nil
+    end
+    return cell:getDropped()
 end
 
 function Grid:getByLayer(layer, pos)

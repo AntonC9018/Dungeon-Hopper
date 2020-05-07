@@ -21,7 +21,8 @@ Skip.emptyAttack(Player)
 Skip.emptyDig(Player)
 local Reorient = require 'logic.retouchers.reorient'
 Reorient.onActionSuccess(Player)
-
+local Equip = require 'logic.retouchers.equip'
+Equip.onDisplace(Player)
 
 
 Player.baseModifiers = {

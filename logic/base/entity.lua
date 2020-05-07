@@ -123,8 +123,6 @@ end
 
 
 function Entity:getTargetsDefault(direction)
-    print(self.pos)
-    print(direction)
     local coord = self.pos + direction
     local entity = self.world.grid:getOneFromTopAt(coord)
 

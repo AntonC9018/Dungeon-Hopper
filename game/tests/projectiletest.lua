@@ -27,22 +27,17 @@ return function()
 
     world:createFloors()
     local player = world:createPlayerAt( Vec(4, 3) )
-    local trap = world:create(Trap, Vec(4, 4))
-    trap.orientation = Vec(0, 1)
+    -- local trap = world:create(Trap, Vec(4, 4))
+    -- trap.orientation = Vec(0, 1)
     local proj = world:create(Projectile, Vec(5, 5))
+    proj.orientation = Vec(1, 0)
+    local proj = world:create(Projectile, Vec(7, 5))
     proj.orientation = Vec(-1, 0)
 
     proj:setStat(StatTypes.Push, 'power', 10)
     proj:setStat(StatTypes.Push, 'distance', 1)
 
     local actions = {
-        Vec(0, 1),
-        Vec(0, 0),
-        Vec(0, 0),
-        Vec(0, 0),
-        Vec(0, 0),
-        Vec(0, 0),
-        Vec(0, 0),
         Vec(0, 0)
     }
 

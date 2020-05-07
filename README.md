@@ -31,8 +31,8 @@ List of less significant things not implemented:
 3. Special tiles +
 4. Explosions +
 5. Environment Objects +
-6. Status effects
-7. Projectiles
+6. Status effects +
+7. Projectiles +
 8. Items
 10. Better controls
 9. Better renderer

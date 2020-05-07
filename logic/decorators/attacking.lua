@@ -7,6 +7,7 @@ local Stats = require 'logic.stats.stats'
 local Attack = require 'logic.action.effects.attack'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Push = require 'logic.action.effects.push'
+local Do = require 'logic.interactors.do'
 
 local Attacking = class('Attacking', Decorator)
 
@@ -37,17 +38,17 @@ local function getTargets(event)
 end
 
 local function applyAttack(event)
-    local events = event.actor.world:doAttack(event.targets, event.action)
+    local events = Do.attack(event.targets, event.action)
     event.attackEvents = events
 end
 
 local function applyPush(event)
-    local events = event.actor.world:doPush(event.targets, event.action)
+    local events = Do.push(event.targets, event.action)
     event.pushEvents = events    
 end
 
 local function applyStatus(event)
-    local events = event.actor.world:doStatus(event.targets, event.action)
+    local events = Do.status(event.targets, event.action)
     event.statusEvents = events    
 end
 

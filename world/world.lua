@@ -291,25 +291,7 @@ end
 
 
 
-local function doX(funcName)
-    return function(self, targets, action)
-        local events = {}
-        local initialDirection = action.direction
-        for i = 1, #targets do
-            local entity = targets[i].entity
-            action.direction = targets[i].piece.dir
-            events[i] = entity[funcName](entity, action)
-        end
-        action:setDirection(initialDirection)
-        return events
-    end
-end
 
--- define all do<something> functions
-World.doAttack = doX('beAttacked')
-World.doDig    = doX('beDug')
-World.doPush   = doX('bePushed')
-World.doStatus = doX('beStatused')
 
 
 function World:removeDead(entity)

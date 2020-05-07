@@ -4,6 +4,7 @@ local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Decorator = require 'logic.decorators.decorator'
 local Dig = require 'logic.action.effects.dig'
 local Ranks = require 'lib.chains.ranks'
+local Do = require 'logic.interactors.do'
 
 
 local Digging = class('Digging', Decorator)
@@ -19,7 +20,7 @@ local function getTargets(event)
 end
 
 local function applyDig(event)
-    local events = event.actor.world:doDig(event.targets, event.action)
+    local events = Do.dig(event.targets, event.action)
     event.digEvents = events
 end
 

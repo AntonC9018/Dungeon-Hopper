@@ -1,6 +1,9 @@
-local DroppedTest = require 'modules.test.testitem'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Inventory = require 'items.inventory'
+local testItem = require 'modules.test.testitem'
+local ItemTable = require 'items.itemtable'
+
+ItemTable.registerItem(testItem)
 
 return function()
 
@@ -10,7 +13,6 @@ return function()
     local renderer = require('render.renderer')(assets)
     
     local world = World(renderer, 20, 20)
-    world:addGameObjectType(DroppedTest)
     world:registerTypes(assets)
 
     -- load all assets
@@ -27,12 +29,11 @@ return function()
     local player = world:createPlayerAt( Vec(4, 4) )
     local inventory = Inventory(player)
     player.inventory = inventory
-    local droppedItem = world:create(DroppedTest, Vec(5, 4))
-
+    local droppedItem = world:createDroppedItem(1, Vec(5, 4))
     local actions = {
-        Vec(0, 0),
-        Vec(0, 0),
-        Vec(0, 0),
+        Vec(1, 0),
+        Vec(1, 0),
+        Vec(-1, 0),
         Vec(0, 0)
     }
 
@@ -49,9 +50,9 @@ return function()
             print("-------------- Cycle ended. ---------------")
             print(player:getStat(StatTypes.Attack).damage)
 
-            if count == 2 then
-                inventory:unequip(droppedItem.item)
-            end
+            -- if count == 2 then
+            --     player:unequip(testItem)
+            -- end
             print(player:getStat(StatTypes.Attack).damage)
 
         end,

@@ -1,7 +1,10 @@
 local Item = class('Item')
 
-function Item:__construct(droppedItemClass, tinker)
-    self.droppedItemClass = droppedItemClass
+local id = 1
+
+function Item:__construct(tinker)
+    self.id = id
+    id = id + 1
     self.tinker = tinker
 end
 
@@ -12,7 +15,11 @@ end
 function Item:beUnequipped(entity)
     self.tinker:untink(entity)
     -- spawn the entity back
-    entity.world:create( self.droppedItemClass, entity.pos )
+    entity.world:createDroppedItem( self.id, entity.pos )
+end
+
+function Item:getItemId()
+    return self.id
 end
 
 return Item

@@ -4,8 +4,6 @@ local DroppedItem = class('DroppedItem', Entity)
 
 -- the slot in the inventory
 DroppedItem.layer = Cell.Layers.dropped
--- apply this on pick up
-DroppedItem.item = nil
 
 -- apply decorators
 local decorate = require ("logic.decorators.decorator").decorate
@@ -15,10 +13,16 @@ Decorators.Start(DroppedItem)
 decorate(DroppedItem, Decorators.Killable)
 
 -- remove oneself from world on pickup
-function DroppedItem:beEquipped(entity)
-    self:die()
-    entity.inventory:equip(self.item)
-    entity.inventory:dropExcess()
+-- function DroppedItem:beEquipped(entity)
+--     self:die()
+-- end
+
+function DroppedItem:setItemId(id)
+    self.state = id
+end
+
+function DroppedItem:getItemId()
+    return self.state
 end
 
 return DroppedItem

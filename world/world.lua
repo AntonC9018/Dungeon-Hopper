@@ -5,6 +5,7 @@ local World = class("World")
 local Player = require 'logic.base.player'
 local Tile = require 'modules.test.tile'
 local Changes = require 'render.changes'
+local DroppedItem = require 'items.droppeditem'
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -13,7 +14,7 @@ function World:__construct(renderer, w, h)
     self.renderer = renderer
     self.changes = {{}}
     self.phase = 1
-    self.gameObjectTypes = { Player, Tile }
+    self.gameObjectTypes = { Player, Tile, DroppedItem }
 end
 
 
@@ -292,11 +293,16 @@ function World:filterDead()
     self.grid:filterDeadAll() 
 end
 
+local ItemTable = require 'items.itemtable'
 
-
-
-
-
+function World:createDroppedItem(id, pos)
+    local droppedItem = DroppedItem()
+    droppedItem:setItemId(id)
+    droppedItem:init(pos, self)
+    self.grid:set(droppedItem, pos)
+    self.renderer:addRenderEntity(droppedItem)
+    return droppedItem
+end
 
 function World:removeDead(entity)
     self.grid:remove(entity)

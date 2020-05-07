@@ -104,13 +104,7 @@ function Projectile:executeProjectile(action)
             self.pos,
             function(entity)
                 if not self.dead then
-                    -- if hit a projectile, just destroy both
-                    if entity.layer == Cell.Layers.projectile then
-                        self:die()
-                        entity:die()
-                    else
-                        self:executeAttack(action)
-                    end
+                    self:executeAttack(action)
                 end
             end
         )

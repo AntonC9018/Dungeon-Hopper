@@ -48,7 +48,7 @@ skip.noPlayer = function(entityClass)
 end
 
 local function skipSelf(event)
-    event.propagate = table.somef(
+    event.propagate = not table.somef(
         event.targets, 
         function(target)
             return target.entity == event.actor
@@ -57,7 +57,7 @@ local function skipSelf(event)
 end
 
 skip.self = function(entityClass)
-    utils.retouch(entityClass, 'getAttack', skipNoPlayer)
+    utils.retouch(entityClass, 'getAttack', skipSelf)
 end
 
 return skip

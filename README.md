@@ -23,7 +23,7 @@ List of important things not implemented:
 4. Sequential decorator +
 5. Ticking +
 6. HP +
-6. Basic Controls -
+6. Basic Controls +
 
 List of less significant things not implemented:
 1. Digging, walls +
@@ -33,7 +33,7 @@ List of less significant things not implemented:
 5. Environment Objects +
 6. Status effects +
 7. Projectiles +
-8. Items
+8. Items +
 10. Better controls
 9. Better renderer
 

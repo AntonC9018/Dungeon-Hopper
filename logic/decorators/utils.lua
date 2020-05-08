@@ -7,15 +7,34 @@ utils.checkApplyCycle = function(nameCheck, nameApply)
     return function(decorator, actor, action)
         local event = Event(actor, action)
 
-        printf("Passing the %s chain", nameCheck) -- debug
+        -- printf("Passing the %s chain", nameCheck) -- debug
         actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
 
 
         if event.propagate then
             -- mark that the event verification succeeded
             event.success = true
-            printf("Passing the %s chain", nameApply) -- debug
+            -- printf("Passing the %s chain", nameApply) -- debug
             actor.chains[nameApply]:pass(event, Chain.checkPropagate)
+        end        
+
+        return event
+    end
+end
+
+-- a version of check apply cycle that expects the event as one
+-- of the parameters. this one has to be called manually in activation
+utils.checkApplyPresetEvent = function(nameCheck, nameApply)
+    return function(event)
+
+        -- printf("Passing the %s chain", nameCheck) -- debug
+        event.actor.chains[nameCheck]:pass(event, Chain.checkPropagate)
+
+        if event.propagate then
+            -- mark that the event verification succeeded
+            event.success = true
+            -- printf("Passing the %s chain", nameApply) -- debug
+            event.actor.chains[nameApply]:pass(event, Chain.checkPropagate)
         end        
 
         return event
@@ -90,6 +109,22 @@ end
 
 utils.setAttackRes = function(event)
     event.resistance = event.actor:getStat(StatTypes.AttackRes)
+end
+
+
+local Target = require "items.weapons.target"
+local Piece = require "items.weapons.piece"
+-- TODO: refactor
+utils.convertToTargets = function(entities, dir, actor)
+    return table.map(
+        entities,
+        function(entity)            
+            local piece = Piece(entity.pos, dir, false)
+            local attackableness = entity:getAttackableness(actor)
+            local target = Target(entity, piece, 1, attackableness)
+            return target
+        end
+    )
 end
 
 

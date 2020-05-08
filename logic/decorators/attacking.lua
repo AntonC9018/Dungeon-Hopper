@@ -32,8 +32,32 @@ end
 -- if your piercing is not high enough. If there were no way to add 
 -- functions before this one, the ghost could never know the real 
 -- piercing levels.
+--
 local function getTargets(event)
-    local targets = event.actor:getTargets(event.action)    
+    -- Another thing: the targets may be provided manually. 
+    -- TODO: think about this a bit more. Thing is, there's just three things
+    -- shared between these handlers and the actor: the actor object itself,
+    -- which should not be used as a buffer (feels hacky), the action object,
+    -- which probably shouldn't contain anything about targets (feels wrong),
+    -- or a handler before this one, which would set the targets beforehand
+    -- (feels wrong again, because of this useless in most cases check)
+    -- giving e.g. projectiles weapons also seems weird and they share the problem
+    -- I guess the best way is to have same getTargets functions whenever possible
+    -- but then there is the wasted extra effort on retrieving these targets while
+    -- one already has them at hand.
+    if event.targetEntities ~= nil then 
+        event.targets = utils.convertToTargets(
+            event.targetEntities, 
+            event.action.direction, 
+            event.actor
+        )
+        return
+    end
+    -- for now, i'm going to settle on providing the targets manually 
+    -- passing them as arguments to the activation
+    -- that seems the most reasonable approach at this point
+
+    local targets = event.actor:getTargets(event.action)
     event.targets = targets
 end
 
@@ -71,7 +95,18 @@ Attacking.affectedChains = {
 }
 
 
-Attacking.activate = 
-    utils.checkApplyCycle("getAttack", "attack")
+local checkApply = 
+    utils.checkApplyPresetEvent("getAttack", "attack")
+
+
+-- targets are optional
+-- TODO: pass additional parameters via an object
+function Attacking:activate(actor, action, targetEntities)
+    print('Attacking')
+    local event = Event(actor, action)
+    event.targetEntities = targetEntities
+    return checkApply(event)
+end
+
 
 return Attacking

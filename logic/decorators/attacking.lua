@@ -102,7 +102,6 @@ local checkApply =
 -- targets are optional
 -- TODO: pass additional parameters via an object
 function Attacking:activate(actor, action, targetEntities)
-    print('Attacking')
     local event = Event(actor, action)
     event.targetEntities = targetEntities
     return checkApply(event)

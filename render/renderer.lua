@@ -35,7 +35,7 @@ function Renderer:addRenderEntity(gameObject)
     self.currentStates[gameObject.id] = 
         {
             pos = gameObject.pos,
-            orientaion = gameObject.orientation,
+            orientation = gameObject.orientation,
             state = gameObject.state
         }
 end
@@ -75,7 +75,13 @@ function Renderer:pushChanges(beatChanges)
     -- just draw the last state for now
     for i, changes in ipairs(beatChanges) do
         for j, change in ipairs(changes) do
-            self.states[1][change.id] = change
+            if 
+                self.states[1][change.id] ~= nil 
+                and self.states[1][change.id].event ~= Changes.Dead 
+                or self.states[1][change.id] == nil
+            then
+                self.states[1][change.id] = change
+            end
         end
     end
 

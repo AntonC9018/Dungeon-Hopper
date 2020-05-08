@@ -9,7 +9,12 @@ Move.modifier = {
 
 function Move:toPos(grid, target)
     if self.ignore > 0 then
-        return target.pos + self.direction * self.distance
+        local t = target.pos + self.direction * self.distance
+        if grid:checkBound(t) then
+            return t
+        else
+            return target.pos
+        end
     end
 
     local maxDistance = self.distance

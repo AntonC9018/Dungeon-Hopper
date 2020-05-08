@@ -63,7 +63,7 @@ end
 
 function Grid:checkBound(pos)
     return pos.x > 0 and pos.x <= #self.grid 
-        or pos.y > 0 and pos.y <= #self.grid[1]
+        and pos.y > 0 and pos.y <= #self.grid[1]
 end
 
 -- Watch functionality
@@ -604,7 +604,8 @@ end
 function Grid:hasBlockAt(pos)
     local cell = self:getCellAt(pos)
     return 
-        cell:getReal() ~= nil
+        cell == nil
+        or cell:getReal() ~= nil
         or cell:getWall() ~= nil
 end
 

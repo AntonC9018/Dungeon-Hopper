@@ -46,8 +46,10 @@ function Graphics:updateObject(id, state)
     local newCoords = (self.offset + state.pos) * UNIT
     obj.x = newCoords.x + display.contentCenterX
     obj.y = newCoords.y + display.contentCenterY
+    obj.xScale = state.orientation.x
 end
 
+-- For now, just hide it
 function Graphics:removeObject(id)
     self.sprites[id].alpha = 0
 end

@@ -1,5 +1,15 @@
 local Entity = require "logic.base.entity"
 local Cell = require "world.cell"
+local Algos = require 'logic.retouchers.algos'
+local retouch = require('logic.retouchers.utils').retouch
+local Explode = require 'modules.test.handlers.explode'
+local DynamicStats = require 'logic.decorators.dynamicstats'
+local StatTypes = DynamicStats.StatTypes
+local Ranks = require 'lib.chains.ranks'
+local decorate = require ("logic.decorators.decorator").decorate
+local Decorators = require "logic.decorators.decorators"
+local Actions = require 'modules.test.actions.all'
+
 
 -- Bombs create explosions
 local Bomb = class("Bomb", Entity)
@@ -32,8 +42,6 @@ Bomb.baseModifiers = {
 
 
 -- make a sequence, if you are coding an enemy
-local Actions = require 'modules.test.actions.all'
-
 Bomb.sequenceSteps = {    
     { -- first step: increment state
         action = Actions.IncState,
@@ -46,9 +54,6 @@ Bomb.sequenceSteps = {
 
 
 -- apply decorators
-local decorate = require ("logic.decorators.decorator").decorate
-local Decorators = require "logic.decorators.decorators"
-
 Decorators.Start(Bomb)
 decorate(Bomb, Decorators.Acting)
 decorate(Bomb, Decorators.Sequential)
@@ -63,13 +68,6 @@ decorate(Bomb, Decorators.Ticking)
 
 
 -- apply retouchers
-local Algos = require 'logic.retouchers.algos'
-local retouch = require('logic.retouchers.utils').retouch
-local Explode = require 'modules.test.handlers.explode'
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Ranks = require 'lib.chains.ranks'
-
 local function setBase(event)
     event.expl =        event.actor:getStat(StatTypes.Explosion)
     event.expl.attack = event.actor:getStat(StatTypes.Attack)

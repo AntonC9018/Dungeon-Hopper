@@ -3,7 +3,7 @@ local Grid = require "world.grid"
 local World = class("World")
 
 local Player = require 'logic.base.player'
-local Tile = require 'modules.test.tile'
+local Tile = require 'modules.test.base.tile'
 local Changes = require 'render.changes'
 local DroppedItem = require 'items.droppeditem'
 

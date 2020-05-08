@@ -2,6 +2,11 @@ local Item = class('Item')
 
 local id = 1
 
+Item.tinker = {
+    tink = function() end,
+    untink = function() end
+}
+
 function Item:__construct(tinker)
     self.id = id
     id = id + 1

@@ -5,9 +5,7 @@ local pattern = Pattern()
 pattern:add( Vec(1, 0), Vec(1, 0), false )
 pattern:add( Vec(2, 0), Vec(1, 0), true  )
 
-local Spear = class("Spear", Weapon)
+local spear = Weapon()
+spear.pattern = pattern
 
-Spear.pattern = pattern
-
-
-return Spear
+return spear

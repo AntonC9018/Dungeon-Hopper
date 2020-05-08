@@ -19,13 +19,8 @@ decorate(WaterTile, Stucking)
 -- define our custom action that calls the new decorator's activation
 local StuckAction = Action.fromHandlers(
     'StuckAction',
-    { handlerUtils.applyHandler('executeStuck') }
+    { handlerUtils.activateDecorator('Stucking') }
 )
-
--- define a new method that calls the new decorator
-function WaterTile:executeStuck(action)
-    return self.decorators.Stucking:activate(self, action)
-end
 
 -- override calculateAction. Return our custom action
 function WaterTile:calculateAction()

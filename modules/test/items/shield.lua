@@ -84,7 +84,7 @@ function Shield:__construct(relativeDirection, damage, pierce, resReduction)
         local dir = event.actor.orientation:rotate(angle):normComps()
 
         if event.action.direction:equals(dir) then
-            event.actor.resistance = event.actor.resistance - resReduction
+            event.resistance = event.resistance - resReduction
         end
     end
 
@@ -103,4 +103,4 @@ end
 Shield.slot = 2
 
 -- return a test shield for now
-return Shield( Vec(1, 0), 2, 2 )
+return Shield( Vec(1, 0), 2, 2, 1 )

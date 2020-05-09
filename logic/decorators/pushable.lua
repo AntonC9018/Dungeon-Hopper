@@ -6,7 +6,6 @@ local Pushable = class('Pushable', Decorator)
 
 
 local setBase = function(event)
-    print(event.actor)
     event.resistance = event.actor:getStat(StatTypes.PushRes)
 end
 

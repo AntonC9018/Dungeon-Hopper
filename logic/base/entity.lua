@@ -116,11 +116,6 @@ end
 local Target = require "items.weapons.target"
 local Piece = require "items.weapons.piece"
 
--- TODO: implement
-function Entity:getWeapon()
-    return self.weapon
-end
-
 
 function Entity:getTargetsDefault(direction)
     local coord = self.pos + direction
@@ -184,10 +179,18 @@ function Entity:getDigTargets(action)
 
 end
 
+
+-- TODO: implement
+function Entity:getWeapon()
+    if self:isDecorated(Decorators.Inventory) then
+        return self.inventory:get(Decorators.Inventory.Slots.weapon):get(1)
+    end
+end
+
 --  for now, define the item interface here
 -- TODO: refine
 function Entity:equip(item)
-    if self.inventory ~= nil then
+    if self:isDecorated(Decorators.Inventory) then
         self.inventory:equip(item)
     else
         -- just tink the tinker
@@ -196,7 +199,7 @@ function Entity:equip(item)
 end
 
 function Entity:unequip(item)
-    if self.inventory ~= nil then
+    if self:isDecorated(Decorators.Inventory) then
         self.inventory:unequip(item)
     else
         -- untink + spawn
@@ -205,7 +208,7 @@ function Entity:unequip(item)
 end
 
 function Entity:removeItem(item)
-    if self.inventory ~= nil then
+    if self:isDecorated(Decorators.Inventory) then
         self.inventory:remove(item)
     else
         -- just untink the tinker

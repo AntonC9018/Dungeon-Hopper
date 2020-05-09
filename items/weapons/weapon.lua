@@ -2,16 +2,18 @@
 local Target = require "items.weapons.target"
 local Attackableness = require "logic.enums.attackableness"
 local Item = require 'items.item'
+local Inventory = require 'logic.decorators.inventory'
+local Pattern = require("items.weapons.pattern")
 
 -- Another available option: hitAll
 local General = require "items.weapons.chains.general"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon", Item)
+Weapon.slot = Inventory.Slots.weapon
 
 -- A weapon must have a pattern
 -- for the sake of argument, a fallback pattern is presented here
-local Pattern = require("items.weapons.pattern")
 Weapon.pattern = Pattern()
 
 -- attack directly in front, 

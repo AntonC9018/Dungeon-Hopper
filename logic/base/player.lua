@@ -25,15 +25,6 @@ local Equip = require 'logic.retouchers.equip'
 Equip.onDisplace(Player)
 
 
--- TODO: refactor into a decorator
-function Player:equip(item)
-    self.inventory:equip(item)
-end
-function Player:unequip(item)
-    self.inventory:unequip(item)
-end
-
-
 Player.baseModifiers = {
     hp = {
         amount = 100

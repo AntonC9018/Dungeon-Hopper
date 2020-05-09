@@ -9,7 +9,6 @@ local function pickUp(event)
     local actor = event.actor
     local droppedItem = actor.world.grid:getDroppedAt(actor.pos)
     if droppedItem ~= nil then
-        -- droppedItem:beEquipped(actor)
         local id = droppedItem:getItemId()
         local item = ItemTable[id]
         actor:equip(item)

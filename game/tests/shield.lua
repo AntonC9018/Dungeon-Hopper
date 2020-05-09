@@ -4,6 +4,9 @@ local Projectile = require 'modules.test.entities.projectile'
 local BounceTrap = require 'modules.test.entities.bouncetrap'
 local Input = require 'game.input'
 
+local ItemTable = require 'items.itemtable'
+local shield = require 'modules.test.items.shield'
+ItemTable.registerItem(shield)
 
 return function()
 
@@ -14,9 +17,9 @@ return function()
     
     local world = World(renderer, 20, 20)
     world:addGameObjectType(Projectile)
+    world:addGameObjectType(TestEnemy)
     world:addGameObjectType(BounceTrap) 
     world:registerTypes(assets)
-    Input(world)
 
 
     -- load all assets
@@ -32,12 +35,14 @@ return function()
     world:createFloors()
     local player = world:createPlayerAt( Vec(4, 3) )
     local trap = world:create(BounceTrap, Vec(4, 4))
-    trap.orientation = Vec(0, 1)
-    -- local proj = world:create(Projectile, Vec(5, 5))
-    -- proj.orientation = Vec(-1, 0)
-    local proj = world:create(Projectile, Vec(9, 5))
-    proj.orientation = Vec(-1, 0)
+    local enemy = world:create(TestEnemy, Vec(8, 8))
+    local droppedShiled = world:createDroppedItem( shield:getItemId(), Vec(5, 5) )
 
-    proj:setStat(StatTypes.Push, 'power', 10)
-    proj:setStat(StatTypes.Push, 'distance', 1)
+
+    Input(world, function()
+        print(player.hp:get())
+    end)
+
+    -- proj:setStat(StatTypes.Push, 'power', 10)
+    -- proj:setStat(StatTypes.Push, 'distance', 1)
 end

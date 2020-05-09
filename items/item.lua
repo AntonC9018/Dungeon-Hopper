@@ -23,6 +23,10 @@ function Item:beUnequipped(entity)
     entity.world:createDroppedItem( self.id, entity.pos )
 end
 
+function Item:beDestroyed(entity)
+    self.tinker:untink(entity)
+end
+
 function Item:getItemId()
     return self.id
 end

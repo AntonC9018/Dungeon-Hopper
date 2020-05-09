@@ -46,7 +46,7 @@ function Graphics:updateObject(id, state)
     local newCoords = (self.offset + state.pos) * UNIT
     obj.x = newCoords.x + display.contentCenterX
     obj.y = newCoords.y + display.contentCenterY
-    obj.xScale = state.orientation.x
+    obj.xScale = state.orientation.x ~= 0 and state.orientation.x or 1
 end
 
 -- For now, just hide it

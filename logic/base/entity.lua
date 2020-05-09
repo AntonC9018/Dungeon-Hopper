@@ -66,7 +66,7 @@ Entity.setStat =
 Entity.addStat =
     activateDecoratorCustom(Decorators.DynamicStats, 'addStat')
 
-    
+
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
 
@@ -182,6 +182,35 @@ function Entity:getDigTargets(action)
 
     return {}
 
+end
+
+--  for now, define the item interface here
+-- TODO: refine
+function Entity:equip(item)
+    if self.inventory ~= nil then
+        self.inventory:equip(item)
+    else
+        -- just tink the tinker
+        item:beEquipped(self)
+    end
+end
+
+function Entity:unequip(item)
+    if self.inventory ~= nil then
+        self.inventory:unequip(item)
+    else
+        -- untink + spawn
+        item:beUnequipped(self)
+    end
+end
+
+function Entity:removeItem(item)
+    if self.inventory ~= nil then
+        self.inventory:remove(item)
+    else
+        -- just untink the tinker
+        item:beDestroyed(self)
+    end
 end
 
 return Entity

@@ -79,8 +79,8 @@ end
 
 function Vec:normComps()
     return Vec(
-        sign(self.x),
-        sign(self.y)
+        sign(math.round(self.x)),
+        sign(math.round(self.y))
     )
 end
 
@@ -136,6 +136,10 @@ function Vec:abs()
         math.abs(self.x),
         math.abs(self.y)
     )
+end
+
+function Vec:equals(vec)
+    return self.x == vec.x and self.y == vec.y
 end
 
 

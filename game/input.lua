@@ -1,5 +1,5 @@
 
-local input = function(world)
+local input = function(world, log)
     local map = {
         up = Vec(0, -1),
         down = Vec(0, 1),
@@ -18,6 +18,7 @@ local input = function(world)
                 local time = system.getTimer()
                 world:setPlayerActions(dir, 1)
                 world:gameLoop()
+                if log then log() end
                 printf("Time passed: %i", system.getTimer() - time)
                 print("-------------- Cycle ended. ---------------")
             end

@@ -53,17 +53,20 @@ local Ranks = require 'lib.chains.ranks'
 
 local Shield = class("Shield", Item)
 
-function Shield:__construct(relativeDirection, damage, pierce)
+function Shield:__construct(relativeDirection, damage, pierce, resReduction)
+
+    relativeDirection = relativeDirection or Vec(1, 0)
+    damage = damage or math.huge
+    pierce = pierce or 0
+    resReduction = resReduction or 0
 
     -- convert relative direction to an angle
     local angle = Vec.angleBetween( Vec(1, 0), relativeDirection ) + math.pi
-
+    
 
     local function block(event)
         -- get the relative direction
         local dir = event.actor.orientation:rotate(angle):normComps()
-        print(event.actor.orientation)
-        print(dir)
 
         if event.action.direction:equals(dir) then
             event.resistance:add('pierce', pierce)
@@ -76,9 +79,19 @@ function Shield:__construct(relativeDirection, damage, pierce)
         end
     end
 
+    local function reducePushRes(event)
+        -- get the relative direction
+        local dir = event.actor.orientation:rotate(angle):normComps()
+
+        if event.action.direction:equals(dir) then
+            event.actor.resistance = event.actor.resistance - resReduction
+        end
+    end
+
     -- make the tinker
     local tinker = Tinker({
-        { 'defence', { block, Ranks.MEDIUM } }
+        { 'defence',   { block,         Ranks.MEDIUM } },
+        { 'checkPush', { reducePushRes, Ranks.MEDIUM } }
     })
 
     -- activate the base constructor

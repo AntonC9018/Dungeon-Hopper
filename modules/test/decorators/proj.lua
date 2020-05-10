@@ -1,6 +1,5 @@
 local Decorator = require 'logic.decorators.decorator'
 local utils = require 'logic.decorators.utils'
-local Bounce = require 'modules.test.effects.bounce'
 local Changes = require 'render.changes'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local DynamicStats = require 'logic.decorators.dynamicstats'

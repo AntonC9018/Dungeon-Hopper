@@ -16,6 +16,8 @@ combos.Trap = function(Trap)
     decorate(Trap, Decorators.Ticking)
     decorate(Trap, Decorators.Attackable)
     decorate(Trap, Decorators.Acting)
+    decorate(Trap, Decorators.DynamicStats)
+
     -- apply our custom decorator
 
     -- use the player algo
@@ -29,6 +31,7 @@ combos.BounceTrap = function(Trap)
     decorate(Trap, Bouncing)    
     TrapRetouchers.bePushedOnBounce(Trap)
     TrapRetouchers.tickUnpress(Trap)
+
 end
 
 

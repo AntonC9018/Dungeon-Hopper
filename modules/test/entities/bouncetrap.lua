@@ -24,9 +24,10 @@ end
 
 
 BounceTrap.baseModifiers = {
-    bounce = {
-        power = 2,
-        distance = 1
+    push = {
+        power = 1,
+        distance = 1,
+        source = 'bounce'
     },
     hp = {
         amount = 1

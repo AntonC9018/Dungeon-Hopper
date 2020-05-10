@@ -71,7 +71,7 @@ step3 = {
 EntityClass.sequenceSteps = { step1, step2, step3 }
 
 -- after that, decorate your entityClass like this:
-local decorate = require("logic.decorators.decorator").decorate
+local decorate = require('logic.decorators.decorate')
 local Sequential = require "logic.decorators.sequential"
 decorate(EntityClass, Sequential)
 

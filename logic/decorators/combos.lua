@@ -1,6 +1,6 @@
 local Decorators = require "logic.decorators.decorators"
 local Decorator = require "logic.decorators.decorator"
-local decorate = Decorator.decorate
+local decorate = require('logic.decorators.decorate')
 local PlayerAlgo = require "logic.algos.player"
 local GeneralAlgo = require "logic.algos.general"
 

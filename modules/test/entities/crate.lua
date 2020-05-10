@@ -1,10 +1,10 @@
-local EnvObject = require "modules.test.base.envobject"
-local Combos = require 'modules.test.decorators.combos'
+local EnvObject = require 'modules.test.base.envobject'
+local Entity = require 'logic.base.entity'
 local Pierce = require 'modules.test.retouchers.pierce'
 
-local Crate = class("Crate", EnvObject)
+local Crate = class('Crate', EnvObject)
 
-Combos.EnvObject(Crate)
+Entity.copyChains(EnvObject, Crate)
 -- set our pierce to 0 when attacked if attack damage is greater than 3
 Pierce.removeIfDamageAbove(Crate, 3)
 

@@ -1,8 +1,7 @@
-local Entity = require 'logic.base.entity'
+local Wall = require 'modules.test.base.wall'
 local Cell = require 'world.cell'
 
-local Dirt = class("Dirt", Entity)
-Dirt.layer = Cell.Layers.wall
+local Dirt = class("Dirt", Wall)
 
 Dirt.baseModifiers = {
     hp = {
@@ -13,7 +12,6 @@ Dirt.baseModifiers = {
     }
 }
 
-local Combos = require 'modules.test.decorators.combos'
-Combos.Wall(Dirt)
+-- no need to copy chains since we're not modifying any
 
 return Dirt

@@ -1,5 +1,5 @@
 local Tile = require 'modules.test.tile'
-local decorate = require('logic.decorators.decorator').decorate
+local decorate = require('logic.decorators.decorate')
 local Decorators = require 'logic.decorators.decorators'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 

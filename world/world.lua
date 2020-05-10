@@ -33,7 +33,7 @@ end
 
 
 -- player and entity creation
-function World:createPlayerAt(pos)
+function World:createPlayer(Player, pos)
     local player = Player()
     player:init(pos, self)
     self.grid:setPlayerAt(player, pos)

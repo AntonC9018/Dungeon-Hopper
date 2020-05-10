@@ -7,7 +7,7 @@
 local Acting = require "logic.decorators.acting"
 local GeneralAlgo = require "logic.algos.general"
 local Sequential = require "logic.decorators.sequential"
-local decorate = require("logic.decorators.decorator").decorate
+local decorate = require('logic.decorators.decorate')
 
 local function General(entityClass)
 

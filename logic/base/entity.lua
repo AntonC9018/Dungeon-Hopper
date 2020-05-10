@@ -3,7 +3,7 @@
 --
 -- This is the base class for any entity in the game
 local Decorators = require 'logic.decorators.decorators'
-local decorate = require('logic.decorators.decorator').decorate
+local decorate = require('logic.decorators.decorate')
 local PlayerAlgo = require 'logic.algos.player'
 local GameObject = require 'logic.base.gameobject'
 local None = require 'logic.action.actions.none'
@@ -19,18 +19,22 @@ Entity.decorators = {}
 -- Decorator stuff
 
 -- just reapply saved decorators 
-Entity.redecorate = function(entityClass)
-    local appliedDecorators = entityClass.decorators
-
+Entity.redecorate = function(from, entityClass)
     Decorators.Start(entityClass)
-    for _, dec in ipairs(appliedDecorators) do
+    for _, dec in ipairs(from.decoratorsList) do
         decorate(entityClass, dec)
     end
 end
 
 -- copy all chains
-Entity.copyChains = function(entityClass)
-    entityClass.chainTemplate = entityClass.chainTemplate:clone()
+Entity.copyChains = function(from, entityClass)
+    entityClass.chainTemplate = from.chainTemplate:clone()
+
+    -- copy the decorators list
+    entityClass.decoratorsList = {}
+    for i, dec in ipairs(from.decoratorsList) do
+        entityClass.decoratorsList[i] = dec
+    end
 end
 
 function Entity:isDecorated(decorator)

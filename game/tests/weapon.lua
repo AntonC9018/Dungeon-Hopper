@@ -2,6 +2,7 @@ local TestEnemy = require 'modules.test.entities.enemytest'
 local StatTypes = require('logic.decorators.dynamicstats').StatTypes
 local Projectile = require 'modules.test.entities.projectile'
 local BounceTrap = require 'modules.test.entities.bouncetrap'
+local Joe = require 'modules.test.entities.joe'
 local Input = require 'game.input'
 
 local ItemTable = require 'items.itemtable'
@@ -18,6 +19,7 @@ return function()
     local world = World(renderer, 20, 20)
     world:addGameObjectType(Projectile)
     world:addGameObjectType(TestEnemy)
+    world:addGameObjectType(Joe)
     world:addGameObjectType(BounceTrap) 
     world:registerTypes(assets)
 
@@ -33,7 +35,7 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(4, 3) )
+    local player = world:createPlayer(Joe, Vec(4, 3))
     local trap = world:create(BounceTrap, Vec(4, 4))
     local enemy = world:create(TestEnemy, Vec(8, 8))
     local droppedSpear = world:createDroppedItem( spear:getItemId(), Vec(5, 5) )

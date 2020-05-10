@@ -6,7 +6,7 @@ local Explode = require 'modules.test.handlers.explode'
 local DynamicStats = require 'logic.decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
 local Ranks = require 'lib.chains.ranks'
-local decorate = require ("logic.decorators.decorator").decorate
+local decorate = require('logic.decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 local Actions = require 'modules.test.actions.all'
 

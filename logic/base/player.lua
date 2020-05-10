@@ -24,16 +24,5 @@ Reorient.onActionSuccess(Player)
 local Equip = require 'logic.retouchers.equip'
 Equip.onDisplace(Player)
 
-
-Player.baseModifiers = {
-    hp = {
-        amount = 100
-    },
-    attack = {
-        damage = 1,
-        pierce = 2        
-    }
-}
-
 -- TODO: Call the character Candace
 return Player

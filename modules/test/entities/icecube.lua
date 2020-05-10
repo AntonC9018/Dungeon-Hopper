@@ -27,7 +27,7 @@ IceCube.baseModifiers = {
 }
 
 -- apply decorators
-local decorate = require ("logic.decorators.decorator").decorate
+local decorate = require('logic.decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(IceCube)

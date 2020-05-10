@@ -4,8 +4,9 @@ local Move = require "logic.action.effects.move"
 local Push = class("Push", Effect)
 
 Push.modifier = {
-    { 'distance', 1 },
-    { 'power',    0 }
+    { 'distance', 1       },
+    { 'power',    0       },
+    { 'source',  'normal' }
 }
 
 function Push:toMove(direction)

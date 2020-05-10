@@ -17,19 +17,23 @@ data.StatConfigs = {
     },
 
     { -- attack res
-        'resistance',
+        'attackRes',
         {
             { 'armor',     0         },
             { 'pierce',    0         },
             { 'maxDamage', math.huge },
-            { 'minDamage', 1         }
+            { 'minDamage', 1         },
+
+            -- resistance against specific attack sources
+            { 'normal', 1 }
         }
     },
 
     { -- push res
-        'resistance',
+        'pushRes',
         {
-            'push', 1 
+            -- resistance against specific sources
+            { 'normal', 1 } 
         }
     },
 
@@ -78,7 +82,7 @@ data.StatsHowToReturn = {
     HowToReturn.EFFECT,
     HowToReturn.STATS,
     HowToReturn.STATS,
-    HowToReturn.NUMBER,
+    HowToReturn.STATS,
     HowToReturn.NUMBER,
     HowToReturn.STATS,
     HowToReturn.NUMBER

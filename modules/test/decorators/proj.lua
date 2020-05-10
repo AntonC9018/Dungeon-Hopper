@@ -7,17 +7,9 @@ local DynamicStats = require 'logic.decorators.dynamicstats'
 local HowToReturn = require 'logic.decorators.stats.howtoreturn'
 local Ranks = require 'lib.chains.ranks'
 local Attackableness = require 'logic.enums.attackableness'
+local Attackable = require 'logic.decorators.attackable'
 
-DynamicStats.registerStat(
-    'ProjRes',
-    { -- stuck res
-        'resistance',
-        {
-            'proj', 1
-        }
-    },
-    HowToReturn.NUMBER
-)
+Attackable.registerAttackSource('Proj')
 
 -- Define our custom decorator
 local ProjDec = class("ProjDec", Decorator)
@@ -29,32 +21,24 @@ local function unattackableAfterCheck(event)
           or event.targets[1].attackableness == Attackableness.SKIP )
 end
 
-local function projAfterCheck(event)
-    local res = event.targets[1].entity:getStat(StatTypes.ProjRes)
-    event.propagate = res <= event.actor.baseModifiers.proj
-end
-
-
 local function watch(event)
+    local actor = event.actor
     -- if did hit anything watch the cell for a beat
-    if not event.actor.dead then
-        event.actor.world.grid:watchBeat(
-            event.actor.pos,
-            function(entity)
-                if not event.actor.dead then
-                    event.actor:executeAttack(event.action, { entity })
-                end
+    actor.world.grid:watchBeat(
+        actor.pos,
+        function(entity)
+            if not actor.dead then
+                actor:executeAttack(event.action, { entity })
             end
-        )
-    end
+        end
+    )
 end
 
 
 ProjDec.affectedChains = {
     { 'attack', 
         { 
-            { unattackableAfterCheck, Ranks.HIGH },
-            { projAfterCheck,         Ranks.HIGH }
+            { unattackableAfterCheck, Ranks.HIGH }
         } 
     },
     { 'move',

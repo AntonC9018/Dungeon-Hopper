@@ -32,4 +32,15 @@ function ChainsTemplate:init()
     return chains
 end
 
+function ChainsTemplate:clone()
+    local template = ChainsTemplate()
+    for key,hArr in pairs(self.chains) do
+        template.chains[key] = {}
+        for i, h in ipairs(hArr) do
+            template.chains[key][i] = h
+        end
+    end
+    return template
+end
+
 return ChainsTemplate

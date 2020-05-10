@@ -10,9 +10,9 @@ local setBase = function(event)
 end
 
 local checkPush = function(event)
-    if event.action.push.power < event.resistance then
-        event.propagate = false
-    end
+    local push = event.action.push
+    event.propagate = 
+        event.resistance:get(push.source) <= push.power
 end
 
 local executePush = function(event)

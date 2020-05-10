@@ -11,6 +11,8 @@ decorate(Coals, Decorators.Acting)
 decorate(Coals, Decorators.Attacking)
 decorate(Coals, Decorators.Ticking)
 
+Decorators.Attackable.registerAttackSource('Coals')
+
 -- define our custom action that calls the new decorator's activation
 local CoalsAction = Action.fromHandlers(
     'CoalsAction',
@@ -37,6 +39,11 @@ local Algos = require 'logic.retouchers.algos'
 Algos.player(Coals)
 
 Coals.baseModifiers = {
+    attack = {
+        damage = 2,
+        pierce = 5,
+        source = 'coals' -- Decorators.Attackable.AttackSourceTypes.Coals
+    }
 }
 
 return Coals

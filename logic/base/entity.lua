@@ -3,23 +3,40 @@
 --
 -- This is the base class for any entity in the game
 local Decorators = require 'logic.decorators.decorators'
+local decorate = require('logic.decorators.decorator').decorate
 local PlayerAlgo = require 'logic.algos.player'
 local GameObject = require 'logic.base.gameobject'
 local None = require 'logic.action.actions.none'
 local Attackableness = require 'logic.enums.attackableness'
 local Changes = require 'render.changes'
+local activateDecorator = require("logic.base.utils").activateDecorator
+local activateDecoratorCustom = require("logic.base.utils").activateDecoratorCustom
 
 local Entity = class("Entity", GameObject)
 
 Entity.decorators = {}
 
 -- Decorator stuff
+
+-- just reapply saved decorators 
+Entity.redecorate = function(entityClass)
+    local appliedDecorators = entityClass.decorators
+
+    Decorators.Start(entityClass)
+    for _, dec in ipairs(appliedDecorators) do
+        decorate(entityClass, dec)
+    end
+end
+
+-- copy all chains
+Entity.copyChains = function(entityClass)
+    entityClass.chainTemplate = entityClass.chainTemplate:clone()
+end
+
 function Entity:isDecorated(decorator)
     return self.decorators[class.name(decorator)] ~= nil
 end
 
-local activateDecorator = require("logic.base.utils").activateDecorator
-local activateDecoratorCustom = require("logic.base.utils").activateDecoratorCustom
 -- shortcut functions
 Entity.executeMove = 
     activateDecorator(Decorators.Moving)

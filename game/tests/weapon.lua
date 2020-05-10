@@ -39,7 +39,7 @@ return function()
     local droppedSpear = world:createDroppedItem( spear:getItemId(), Vec(5, 5) )
     
     enemy:setStat(StatTypes.Push, 'power', 1)
-    player:setStat(StatTypes.PushRes, 2)
+    player:setStat(StatTypes.PushRes, 'normal', 2)
 
     Input(world, function()
         print(player.hp:get())

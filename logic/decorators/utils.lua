@@ -64,28 +64,6 @@ utils.checkApplyCustomized = function(nameCheck, nameApply, property)
 end
 
 
-utils.armor = function(event)
-    local actor = event.actor
-    -- A: this should probably be expandable
-    -- that is, resistances should be an object (specific to e.g. attack)
-    -- saved on the event. Possibly a Resistances decorator?
-    -- yet another thing to consider... やれやれ...
-    -- B: this should obviously be exapndable, since items could
-    -- modify the armor and piercing parameters
-    -- DONE!!!! (DynamicStats decorator)
-    local action = event.action
-
-    action.attack.damage = 
-        clamp(
-            action.attack.damage - event.resistance:get('armor'), 
-            event.resistance:get('minDamage'), 
-            event.resistance:get('maxDamage')
-        )
-        
-    if action.attack.pierce <= event.resistance:get('pierce') then
-        action.attack.damage = 0
-    end
-end
 
 
 utils.die = function(event)
@@ -106,10 +84,6 @@ utils.regChangeFunc = function(code)
     end
 end
 
-
-utils.setAttackRes = function(event)
-    event.resistance = event.actor:getStat(StatTypes.AttackRes)
-end
 
 
 local Target = require "items.weapons.target"

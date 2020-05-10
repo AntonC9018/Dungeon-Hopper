@@ -1,10 +1,10 @@
 local Effect = require 'logic.action.effects.effect'
 
-local Bounce = class("Bounce", Effect)
+local Explode = class("Explode", Effect)
 
-Bounce.modifier = {
-    { 'power',  1 },
+Explode.modifier = {
+    -- { 'power',  1 }, -- power is already included in Attack
     { 'radius', 1 }
 }
 
-return Bounce
+return Explode

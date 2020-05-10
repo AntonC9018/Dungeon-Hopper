@@ -10,7 +10,6 @@ local decorate = require ("logic.decorators.decorator").decorate
 local Decorators = require "logic.decorators.decorators"
 local Actions = require 'modules.test.actions.all'
 
-
 -- Bombs create explosions
 local Bomb = class("Bomb", Entity)
 
@@ -21,7 +20,9 @@ Bomb.layer = Cell.Layers.misc
 Bomb.baseModifiers = {
     attack = {
         damage = 1,
-        pierce = 1
+        pierce = 1,
+        source = 'explosion',
+        power  = 1
     },
     push = {
         power = 2,

@@ -6,13 +6,9 @@ local Changes = require 'render.changes'
 local Explosion = require 'modules.test.effects.explosion'
 local Attack = require 'logic.action.effects.attack'
 local Push = require 'logic.action.effects.push'
+local Attackable = require 'logic.decorators.attackable'
 
--- for now, add explRes stat to dynamicStats here
-DynamicStats.registerStat(
-    'ExplRes',
-    { 'resistance', { 'explosion', 0 } },
-    HowToReturn.NUMBER
-)
+Attackable.registerAttackSource('Explosion')
 
 -- and explosion too
 DynamicStats.registerStat(
@@ -21,9 +17,19 @@ DynamicStats.registerStat(
     HowToReturn.EFFECT
 )
 
+
 local explFallback = Explosion()
-explFallback.attack = Attack({ damage = 2, pierce = 1 })
-explFallback.push   = Push({ distance = 1, power  = 1 })
+explFallback.attack = Attack({ 
+    damage = 2, 
+    pierce = 1, 
+    source = 'explosion', 
+    power  = 1 
+})
+explFallback.push = Push({ 
+    distance = 1, 
+    power  = 1, 
+    source = 'explosion' 
+})
 
 
 local explode = {}
@@ -48,14 +54,8 @@ explode.cell = function(world, pos, dir, expl)
     local entities = world.grid:getAllAt(pos)
 
     for _, entity in ipairs(entities) do
-        local res = entity:getStat(StatTypes.ExplRes)
-        if 
-            res == nil
-            or expl.power >= res  
-        then
-            entity:beAttacked(action)
-            entity:bePushed(action)
-        end
+        entity:beAttacked(action)
+        entity:bePushed(action)
     end
 
 end

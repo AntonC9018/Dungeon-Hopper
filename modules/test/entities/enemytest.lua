@@ -1,13 +1,11 @@
 local Entity = require "logic.base.entity"
 local Cell = require "world.cell"
+local BasicEnemy = require 'modules.test.base.enemy'
 
-local TestEnemy = class("TestEnemy", Entity)
-
-TestEnemy.layer = Cell.Layers.real
+local TestEnemy = class("TestEnemy", BasicEnemy)
 
 -- Set up all decorators
-local Combos = require "logic.decorators.combos"
-Combos.BasicEnemy(TestEnemy)
+Entity.copyChains(BasicEnemy, TestEnemy)
 
 -- Set up sequence
 local None = require "logic.action.actions.none"
@@ -39,6 +37,7 @@ Skip.blockedMove(TestEnemy)
 local Bounce = require 'modules.test.retouchers.bounce'
 Bounce.redoAttackAfter(TestEnemy)
 Bounce.redirectAfter(TestEnemy)
+
 
 TestEnemy.baseModifiers = {
 

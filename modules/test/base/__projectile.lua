@@ -54,7 +54,7 @@ end
 -- apply retouchers
 local Retouchers = require 'logic.retouchers.all'
 local retouch = require('logic.retouchers.utils').retouch
-Retouchers.Algos.player(Projectile)
+Retouchers.Algos.simple(Projectile)
 Retouchers.Reorient.onActionSuccess(Projectile)
 Retouchers.Attackableness.no(Projectile)
 Retouchers.Skip.emptyAttack(Projectile)

@@ -19,7 +19,7 @@ decorate(Trap, Decorators.Attackable)
 decorate(Trap, Decorators.Acting)
 decorate(Trap, Decorators.DynamicStats)
 -- use the player algo
-Retouchers.Algos.player(Trap)
+Retouchers.Algos.simple(Trap)
 Retouchers.Attackableness.no(Trap)
 
 return Trap

@@ -2,11 +2,11 @@ local utils = require 'logic.retouchers.utils'
 
 local algos = {}
 
-local playerAlgo = require 'logic.algos.player'
+local simpleAlgo = require 'logic.algos.simple'
 local generalAlgo = require 'logic.algos.general'
 
-algos.player = function(entityClass)
-    utils.retouch(entityClass, 'action', playerAlgo)
+algos.simple = function(entityClass)
+    utils.retouch(entityClass, 'action', simpleAlgo)
 end
 
 algos.general = function(entityClass)

@@ -1,7 +1,7 @@
 local Entity = require "logic.base.entity"
 local Decorators = require "logic.decorators.decorators"
 local Combos = require "logic.decorators.combos"
-local PlayerAlgo = require "logic.algos.player"
+local SimpleAlgo = require "logic.algos.simple"
 local Cell = require "world.cell"
 local activateDecorator = require("logic.base.utils").activateDecorator
 

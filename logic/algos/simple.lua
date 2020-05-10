@@ -1,5 +1,5 @@
 
-local function PlayerAlgo(enclosingEvent)
+local function SimpleAlgo(enclosingEvent)
 
     local actor = enclosingEvent.actor
     -- action already has the action.direction here
@@ -19,4 +19,4 @@ local function PlayerAlgo(enclosingEvent)
     return enclosingEvent
 end
 
-return PlayerAlgo
+return SimpleAlgo

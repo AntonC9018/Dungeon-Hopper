@@ -28,7 +28,7 @@ function WaterTile:calculateAction()
 end
 
 local Algos = require 'logic.retouchers.algos'
-Algos.player(WaterTile)
+Algos.simple(WaterTile)
 
 local Attackableness = require 'logic.retouchers.attackableness'
 Attackableness.no(WaterTile)

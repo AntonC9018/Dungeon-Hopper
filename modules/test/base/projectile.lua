@@ -29,7 +29,7 @@ decorate(Projectile, Decorators.WithHP)
 decorate(Projectile, require 'modules.test.decorators.proj')
 
 -- apply retouchers
-Retouchers.Algos.player(Projectile)
+Retouchers.Algos.simple(Projectile)
 Retouchers.Attackableness.no(Projectile)
 Retouchers.Skip.emptyAttack(Projectile)
 Retouchers.Skip.self(Projectile)

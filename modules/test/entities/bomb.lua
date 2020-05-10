@@ -75,7 +75,7 @@ local function setBase(event)
     event.expl.push =   event.actor:getStat(StatTypes.Push)
 end
 
-Algos.player(Bomb)
+Algos.simple(Bomb)
 retouch(Bomb, 'die', { setBase, Ranks.HIGH })
 retouch(Bomb, 'die', Explode.dynamic)
 

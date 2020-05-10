@@ -1,7 +1,7 @@
 local Decorators = require "logic.decorators.decorators"
 local Decorator = require "logic.decorators.decorator"
 local decorate = require('logic.decorators.decorate')
-local PlayerAlgo = require "logic.algos.player"
+local SimpleAlgo = require "logic.algos.simple"
 local GeneralAlgo = require "logic.algos.general"
 
 local Combos = {}
@@ -39,7 +39,7 @@ Combos.Player = function(Player)
     decorate(Player, Decorators.Digging)
     decorate(Player, Decorators.DynamicStats)
     decorate(Player, Decorators.Inventory)
-    Player.chainTemplate:addHandler('action', PlayerAlgo)
+    Player.chainTemplate:addHandler('action', SimpleAlgo)
 end
 
 return Combos

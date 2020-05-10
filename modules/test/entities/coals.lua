@@ -36,7 +36,7 @@ function Coals:executeBurn(action)
 end
 
 local Algos = require 'logic.retouchers.algos'
-Algos.player(Coals)
+Algos.simple(Coals)
 
 Coals.baseModifiers = {
     attack = {

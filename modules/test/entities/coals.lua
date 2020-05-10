@@ -3,6 +3,7 @@ local decorate = require('logic.decorators.decorate')
 local Decorators = require 'logic.decorators.decorators'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 
+local utils = require 'modules.test.base.utils'
 
 local Coals = class("Coals", Tile)
 
@@ -13,16 +14,7 @@ decorate(Coals, Decorators.Ticking)
 
 Decorators.Attackable.registerAttackSource('Coals')
 
--- define our custom action that calls the new decorator's activation
-local CoalsAction = Action.fromHandlers(
-    'CoalsAction',
-    { handlerUtils.applyHandler('executeBurn') }
-)
-
--- override calculateAction. Return our custom action
-function Coals:calculateAction()
-    self.nextAction = CoalsAction()
-end
+utils.redirectActionToHandler(BounceTrap, 'executeBurn')
 
 -- TODO: refactor into a decorator
 function Coals:executeBurn(action)

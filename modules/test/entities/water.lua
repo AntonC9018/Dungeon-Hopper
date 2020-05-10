@@ -4,6 +4,7 @@ local Decorators = require 'logic.decorators.decorators'
 local Stucking = require 'modules.test.decorators.stucking'
 local Action = require 'logic.action.action'
 local handlerUtils = require 'logic.action.handlers.utils' 
+local utils = require 'modules.test.base.utils'
 
 
 local WaterTile = class("WaterTile", Tile)
@@ -16,16 +17,7 @@ decorate(WaterTile, Decorators.Attackable)
 decorate(WaterTile, Decorators.WithHP)
 decorate(WaterTile, Stucking)
 
--- define our custom action that calls the new decorator's activation
-local StuckAction = Action.fromHandlers(
-    'StuckAction',
-    { handlerUtils.activateDecorator('Stucking') }
-)
-
--- override calculateAction. Return our custom action
-function WaterTile:calculateAction()
-    self.nextAction = StuckAction()
-end
+utils.redirectActionToDecorator(WaterTile, 'Stucking')
 
 local Algos = require 'logic.retouchers.algos'
 Algos.simple(WaterTile)

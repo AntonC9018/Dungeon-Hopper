@@ -66,11 +66,11 @@ retouch(IceCube, 'die',      { freeEntity, Ranks.LOWEST })
 
 
 -- TEST
-function IceCube:beStatused(...)
-    if self.trappedEntity ~= nil then
-        self.trappedEntity:beStatused(...)
-    end
-end
+-- function IceCube:beStatused(...)
+--     if self.trappedEntity ~= nil then
+--         self.trappedEntity:beStatused(...)
+--     end
+-- end
 
 
 return IceCube

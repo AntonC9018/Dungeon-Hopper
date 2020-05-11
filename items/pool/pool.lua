@@ -226,7 +226,7 @@ function Pool:exhaust(exhaustedPool)
         self:instantiateSubpools(self.records)
 
 
-    -- in the root node, we are the source
+    -- in the root node; we are the source
     elseif self:isRoot() then
         -- recreate the entire tree from the config, since
         -- the entire structure has been depleted
@@ -235,11 +235,9 @@ function Pool:exhaust(exhaustedPool)
             local sharedRecords = table.deepClone(self.initialRecords)
             self:remapRecords(sharedRecords)
             self:instantiateSubpools(sharedRecords)
-            print(ins(self.records))
-            print(ins(self.subpools[1].records))
         end
     else
-        -- we are the source, not in the parent node
+        -- we are the source; not in the root node
         -- propagate upwards after a check
         if self.totalMass <= 0 then
             self.parent:exhaust(self)

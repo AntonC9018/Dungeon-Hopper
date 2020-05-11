@@ -31,39 +31,51 @@ return function()
 
     local createPool = require 'items.pool.create'
 
+    local testRecords = { { 1, 1, 1 }, { 2, 2, 2 }, { 3, 10, 5 } }
+
     local testConfig = {
-        records = { { 1, 1, 1 }, { 2, 2, 2 }, { 3, 1, 5 } },
-        subpools = {
-            {
-                records = { 1, 2 },
-                subpools = {
-                    { 
-                        records = { 1, 2 } 
-                    },
-                    {
-                        records = { 2 }
-                    }
+        {
+            { 1, 2 }, -- record id's to include
+            {         -- subpools
+                { 
+                    { 1, 2 } -- records of subpools
+                },
+                {
+                    { 2 }    -- records of subpools
                 }
-            },
-            {
-                records = { 1 }
             }
+        },
+        {
+            { 1, 3 } -- second root's subpool
         }
     }
 
-    local pool = createPool(testConfig)
+    local pool = createPool(testRecords, testConfig)
+    local subpool = pool.subpools[1]
 
-    
-    while (pool.totalMass ~= 0) do
-        local rec = pool:getRandom()
-        printf("\nTaken item by id %i", rec.id)
-        printf("Root total mass: %i", pool.totalMass)
+    local function p()        
+        printf("\nRoot total mass: %i", pool.totalMass)
         printf("First child's total mass: %i", pool.subpools[1].totalMass)
         printf("First nested child's total mass: %i", pool.subpools[1].subpools[1].totalMass)
         printf("Second nested child's total mass: %i", pool.subpools[1].subpools[2].totalMass)
         printf("Second child's total mass: %i", pool.subpools[2].totalMass)
     end
 
+    p()
+
+    
+    while (subpool.totalMass ~= 0) do
+        local rec = subpool:getRandom()
+        p()
+    end
+    pool:getRandom()
+    p()
+    pool:getRandom()
+    p()
+    pool:getRandom()
+    p()
+    subpool:exhaust()
+    p()
 
     Input(world)
 end

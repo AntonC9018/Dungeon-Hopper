@@ -1,40 +1,81 @@
+local Record = require 'items.pool.record'
+
 local Pool = class("Pool")
 
 
-function Pool:__construct(config, randomness, parent)
+-- 
+--  initialRecords = { Record() },
+--  sharedRecords =  { Record() }, -- these are deeply copied initialRecords
+--  config = {
+--      { ...indices... },
+--      { ...subnodes(config)... }
+--  },
+--  randomness = ?,
+--  parent
 
-    self.records = config.records    
+function Pool:__construct(
+    initialRecords, 
+    config,
+    randomness,
+    sharedRecords,
+    parent
+)
 
-    -- set up mass
-    self.totalMass = 
-        table.reduce(
-            self.records, 
-            function(a, rec) 
-                return a + rec.q * rec.mass 
-            end
-        )
-
-    self.subpools = {}    
-
-    if config.subpools then
-        -- instantiate all subpools
-        for i, subpoolConfig in ipairs(config.subpools) do
-            self.subpools[i] = Pool(subpoolConfig, randomness, self)
-        end
+    -- if in the root node
+    if parent == nil then
+        self.initialRecords = initialRecords
+        sharedRecords = table.deepClone(initialRecords)
     end
 
+    self.config = config
     self.randomness = randomness
     self.parent = parent
 
-    -- store the config for further possible reinitialization
-    -- self.config = {
-    --     -- copy the records as they are constantly mutated
-    --     records = table.deepClone(config.records),
-    --     subpools = config.subpools
-    -- }
+    self:remapRecords(sharedRecords)
+    self:instantiateSubpools(initialRecords, sharedRecords)
 
 end
 
+
+function Pool:remapRecords(sharedRecords)
+
+    if self:isRoot() then
+        self.records = sharedRecords
+    else
+        self.records = table.map(
+            self.config[1],
+            function(recIndex)
+                return sharedRecords[recIndex]
+            end
+        )
+    end
+
+    -- set up mass
+    self.totalMass = table.reduce(
+        self.records, 
+        function(a, rec) 
+            return a + rec.q * rec.mass 
+        end
+    )
+end
+
+
+function Pool:instantiateSubpools(initialRecords, sharedRecords)
+    self.subpools = {}
+
+    if self.config[2] then
+        -- instantiate all subpools
+        for i, subpoolConfig in ipairs(self.config[2]) do
+            self.subpools[i] = Pool(
+                initialRecords, 
+                subpoolConfig, 
+                self.randomness, 
+                sharedRecords,
+                self
+            )
+        end
+    end
+end
 
 -- The problem with storage is I either store items by id's
 -- But have a hard time traversing the list
@@ -137,13 +178,25 @@ function Pool:updateSubpools(record, reducedAmount, ignoredCaller)
     end
 end
 
+function Pool:getRoot()
+    local current = self
+    while (current.parent ~= nil) do
+        current = current.parent
+    end
+    return current
+end
+
+function Pool:isRoot()
+    return self.parent == nil
+end
+
 -- now for the refill method
 function Pool:exhaust(exhaustedPool)
 
     if exhaustedPool ~= nil then  
         -- 1. this should first be propagated up to the parent 
         --    node that should update the records' values
-        --    depending on the exhausted pool's config records
+        --    depending on the exhausted pool's config records +
         --
         -- 2. the nodes below the exhausted node should be rein-
         --    stantiated from their configs. This can be done by
@@ -151,15 +204,39 @@ function Pool:exhaust(exhaustedPool)
         --
         -- 3. all the other nodes should be updated as per usual
 
+        --  for now though, keep it going until the parent is reached
+        if not self:isRoot() then
+            return self.parent:exhaust(exhaustedPool)
+        end
+
+        -- after that, modify the records to include these values
+        local j = 1
+        local erecs = exhaustedPool.records
+        local len = #erecs
+        for i, rec in ipairs(self.records) do
+            if rec.id == erecs[j].id then
+                self.records[i] = table.deepClone(self.initialRecords[rec.id])
+                j = j + 1
+                if j > len then
+                    break
+                end
+            end
+        end
+        self:remapRecords(self.records)
+        self:instantiateSubpools(self.initialRecords, self.records)
+
+
     -- in the root node, we are the source
-    elseif self.parent == nil then
+    elseif self:isRoot() then
         -- recreate the entire tree from the config, since
         -- the entire structure has been depleted
         if self.totalMass <= 0 then
-            self:__construct(self.config, self.randomness)
+            -- deepcopy the initialRecords to get the new shared records
+            local sharedRecords = table.deepClone(self.initialRecords)
+            self:remapRecords(sharedRecords)
+            self:instantiateSubpools(self.initialRecords, sharedRecords)
         end
     else
-
         -- we are the source, not in the parent node
         -- propagate upwards after a check
         if self.totalMass <= 0 then

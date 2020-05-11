@@ -30,20 +30,16 @@ end
 -- 
 -- TODO: each record should have a shared part (id and quantity)
 -- and a private to each node part (the mass)
-local function createPool(initialConfig)
+local function createPool(initialRecords, config)
 
-    local config = {}
-    config.records = table.map(
-        initialConfig.records,
+    initialRecords = table.map(
+        initialRecords,
         function(record)
             return Record(unpack(record))
-        end    
+        end
     )
-    if initialConfig.subpools ~= nil then
-        config.subpools = iterateSubpools(config.records, initialConfig.subpools)
-    end
 
-    return Pool(config)
+    return Pool(initialRecords, { nil, config })
 end
 
 

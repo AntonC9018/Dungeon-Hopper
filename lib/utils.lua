@@ -225,4 +225,20 @@ function table.slice(tbl, first, last, step)
   return sliced
 end
 
+table.sumBy = function(arr, field)
+    local s = 0
+    for _, el in ipairs(arr) do
+        s = s + el[field]
+    end
+    return s
+end
+
+table.reduce = function(arr, func, i)
+    local a = i or 0
+    for _, el in ipairs(arr) do
+        a = func(a, el)
+    end
+    return a
+end
+
 require 'lib.deepclone'

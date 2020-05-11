@@ -17,7 +17,7 @@ Chain = require('lib.chains.schain')
 
 function scene:create( event )
     
-    require("game.tests.pool")()
+    require("game.tests.pool_drop")()
 
 
 end

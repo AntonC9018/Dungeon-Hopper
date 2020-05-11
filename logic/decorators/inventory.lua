@@ -2,7 +2,6 @@ local utils = require 'logic.decorators.utils'
 local Decorator = require 'logic.decorators.decorator'
 local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
-local Inventory = require 'items.inventory'
 
 local InventoryContainer = class('InventoryContainer')
 

@@ -32,7 +32,7 @@ function Pool:__construct(
     self.parent = parent
 
     self:remapRecords(sharedRecords)
-    self:instantiateSubpools(initialRecords, sharedRecords)
+    self:instantiateSubpools(sharedRecords)
 
 end
 
@@ -60,14 +60,14 @@ function Pool:remapRecords(sharedRecords)
 end
 
 
-function Pool:instantiateSubpools(initialRecords, sharedRecords)
+function Pool:instantiateSubpools(sharedRecords)
     self.subpools = {}
 
     if self.config[2] then
         -- instantiate all subpools
         for i, subpoolConfig in ipairs(self.config[2]) do
             self.subpools[i] = Pool(
-                initialRecords, 
+                nil, 
                 subpoolConfig, 
                 self.randomness, 
                 sharedRecords,
@@ -223,7 +223,7 @@ function Pool:exhaust(exhaustedPool)
             end
         end
         self:remapRecords(self.records)
-        self:instantiateSubpools(self.initialRecords, self.records)
+        self:instantiateSubpools(self.records)
 
 
     -- in the root node, we are the source
@@ -234,7 +234,9 @@ function Pool:exhaust(exhaustedPool)
             -- deepcopy the initialRecords to get the new shared records
             local sharedRecords = table.deepClone(self.initialRecords)
             self:remapRecords(sharedRecords)
-            self:instantiateSubpools(self.initialRecords, sharedRecords)
+            self:instantiateSubpools(sharedRecords)
+            print(ins(self.records))
+            print(ins(self.subpools[1].records))
         end
     else
         -- we are the source, not in the parent node

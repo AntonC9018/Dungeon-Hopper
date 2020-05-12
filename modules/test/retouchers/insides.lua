@@ -42,8 +42,6 @@ local function setInsidesGenerator(config)
                     setup and setup(event.actor, option[2]) 
                     or option[2]
 
-                print(ins(event.actor.insides, {depth = 2}))
-
                 return
             end
         end

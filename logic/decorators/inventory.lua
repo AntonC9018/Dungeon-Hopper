@@ -23,7 +23,7 @@ function InventoryContainer:removeExcess()
 
     excess, self.items = 
         table.slice(self.items, self.size + 1), 
-        table.slice(self.items, 0, self.size)
+        table.slice(self.items, 1, self.size)
 
     return excess
 end

@@ -1,4 +1,4 @@
-local Tile = require 'modules.test.tile'
+local Tile = require 'modules.test.base.tile'
 local decorate = require('logic.decorators.decorate')
 local Decorators = require 'logic.decorators.decorators'
 local Action = require 'logic.action.action'
@@ -14,7 +14,7 @@ decorate(Coals, Decorators.Ticking)
 
 Decorators.Attackable.registerAttackSource('Coals')
 
-utils.redirectActionToHandler(BounceTrap, 'executeBurn')
+utils.redirectActionToHandler(Coals, 'executeBurn')
 
 -- TODO: refactor into a decorator
 function Coals:executeBurn(action)

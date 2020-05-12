@@ -1,13 +1,10 @@
 local Entity = require "logic.base.entity"
 local Decorators = require "logic.decorators.decorators"
-local Combos = require "logic.decorators.combos"
-local SimpleAlgo = require "logic.algos.simple"
 local Cell = require "world.cell"
 local activateDecorator = require("logic.base.utils").activateDecorator
 local decorate = require('logic.decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 local Retouchers = require 'logic.retouchers.all'
-local Attackableness = require 'logic.enums.attackableness'
 
 local Player = class("Player", Entity)
 

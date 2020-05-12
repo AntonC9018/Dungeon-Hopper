@@ -4,8 +4,8 @@ local decorate = require('logic.decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 local Attackableness = require 'logic.retouchers.attackableness'
 
-local Dirt = class("Dirt", Entity)
-Dirt.layer = Cell.Layers.wall
+local Wall = class("Wall", Entity)
+Wall.layer = Cell.Layers.wall
 
 Decorators.Start(Wall)
 decorate(Wall, Decorators.Diggable)
@@ -16,4 +16,4 @@ decorate(Wall, Decorators.DynamicStats)
 
 Attackableness.no(Wall)
 
-return Dirt
+return Wall

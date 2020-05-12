@@ -3,7 +3,6 @@ local Cell = require "world.cell"
 local decorate = require('logic.decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 local Retouchers = require 'logic.retouchers.all'
-local Attackableness = require 'logic.enums.attackableness'
 
 local BasicEnemy = class("BasicEnemy", Entity)
 

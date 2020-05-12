@@ -1,4 +1,4 @@
-local Tile = require 'modules.test.tile'
+local Tile = require 'modules.test.base.tile'
 local decorate = require('logic.decorators.decorate')
 local Decorators = require 'logic.decorators.decorators' 
 local Stucking = require 'modules.test.decorators.stucking'

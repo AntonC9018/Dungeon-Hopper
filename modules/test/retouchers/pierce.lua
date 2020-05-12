@@ -13,15 +13,15 @@ local function pierceHandler(DAMAGE, PIERCE)
 end
 
 pierce.removeOnGreatDamage = function(entityClass)
-    retouch(entityClass, 'defence', pierceHandler(3, 0))
+    utils.retouch(entityClass, 'defence', pierceHandler(3, 0))
 end
 
 pierce.setIfDamageAbove = function(entityClass, damageThreshold, reducedPierce)
-    retouch(entityClass, 'defence', pierceHandler(damageThreshold, reducedPierce))
+    utils.retouch(entityClass, 'defence', pierceHandler(damageThreshold, reducedPierce))
 end
 
 pierce.removeIfDamageAbove = function(entityClass, damageThreshold)
-    retouch(entityClass, 'defence', pierceHandler(damageThreshold, 0))
+    utils.retouch(entityClass, 'defence', pierceHandler(damageThreshold, 0))
 end
 
 return pierce

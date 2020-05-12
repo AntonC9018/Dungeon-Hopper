@@ -41,7 +41,7 @@ function GameObject:init(pos, world)
     self.didAction = false
 
     -- create an emitter
-    self.emitter = Emitter()
+    -- self.emitter = Emitter()
 
     if self.chainTemplate ~= nil then
         self:applyDecorators()

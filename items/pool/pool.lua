@@ -222,9 +222,10 @@ function Pool:exhaust(exhaustedPool)
                 end
             end
         end
+
         self:remapRecords(self.records)
         self:instantiateSubpools(self.records)
-
+        return true
 
     -- in the root node; we are the source
     elseif self:isRoot() then
@@ -235,14 +236,16 @@ function Pool:exhaust(exhaustedPool)
             local sharedRecords = table.deepClone(self.initialRecords)
             self:remapRecords(sharedRecords)
             self:instantiateSubpools(sharedRecords)
+            return true
         end
     else
         -- we are the source; not in the root node
         -- propagate upwards after a check
         if self.totalMass <= 0 then
-            self.parent:exhaust(self)
+            return self.parent:exhaust(self)
         end
     end
+    return false
 end
 
 return Pool

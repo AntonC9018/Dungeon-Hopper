@@ -237,4 +237,10 @@ function Entity:removeItem(item)
     end
 end
 
+function Entity:dropExcess()
+    if self:isDecorated(Decorators.Inventory) then
+        self.inventory:dropExcess()
+    end
+end
+
 return Entity

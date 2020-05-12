@@ -297,8 +297,8 @@ local ItemTable = require 'items.itemtable'
 
 function World:createDroppedItem(id, pos)
     local droppedItem = DroppedItem()
-    droppedItem:setItemId(id)
     droppedItem:init(pos, self)
+    droppedItem:setItemId(id)
     self.grid:set(droppedItem, pos)
     self.renderer:addRenderEntity(droppedItem)
     return droppedItem
@@ -329,6 +329,30 @@ function World:registerChange(obj, code)
         event = code
     }
     table.insert(self.changes[self.phase], change)
+end
+
+
+local obj = require 'items.pool.test.config'
+local createPool = require 'items.pool.create'
+local testPool = createPool(obj.items, obj.config)
+
+-- Map indices to subpools
+-- For now keep it really simple
+-- Use a sample 1 level deep pool structure for now
+function World:mapIdToSubpool(id)
+    if id == 0 then
+        return testPool
+    end
+    return testPool.subpools[id]
+end
+
+function World:getRandomItemFromPool(id)
+    local pool = self:mapIdToSubpool(id)
+    if pool:exhaust() then
+        pool = self:mapIdToSubpool(id)
+    end
+    local itemId = pool:getRandom().id
+    return itemId
 end
 
 return World

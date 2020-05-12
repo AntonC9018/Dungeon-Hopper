@@ -132,7 +132,7 @@ function Inventory:dropExcess()
         local excess = container:removeExcess()
         for _, item in ipairs(excess) do
             dropped = true
-            item:beUnequipped(self.entity)
+            item:beUnequipped(self.actor)
         end
     end
 

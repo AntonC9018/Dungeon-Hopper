@@ -61,7 +61,7 @@ FooBar.sequenceSteps = {
 
 
 -- apply decorators
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(FooBar)
@@ -76,14 +76,14 @@ decorate(FooBar, Decorators.WithHP)
 
 
 -- alternatively, use a combo
--- local Combos = require 'logic.decorators.combos'
+-- local Combos = require '@decorators.combos'
 -- Combos.BasicEnemy(FooBar)
 -- or
 -- Combos.Player(FooBar)
 
 
 -- apply retouchers
-local Retouchers = require 'logic.retouchers.all'
+local Retouchers = require '@retouchers.all'
 Retouchers.skip.emptyAttack(FooBar)
 Retouchers.reorient.onAttack(FooBar)
 -- ...

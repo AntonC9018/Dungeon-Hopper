@@ -1,12 +1,6 @@
-local Decorator = require 'logic.decorators.decorator'
-local utils = require 'logic.decorators.utils'
+local Decorator = require '@decorators.decorator'
+local utils = require '@decorators.utils'
 local Changes = require 'render.changes'
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local HowToReturn = require 'logic.decorators.stats.howtoreturn'
-local Attackable = require 'logic.decorators.attackable'
-
-Attackable.registerAttackSource('Bounce')
 
 -- Define our custom decorator
 local Bouncing = class('Bouncing', Decorator)

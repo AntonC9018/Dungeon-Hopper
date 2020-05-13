@@ -1,5 +1,5 @@
-local utils = require 'logic.retouchers.utils'
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local utils = require '@retouchers.utils'
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Ranks = require 'lib.chains.ranks'
 
 local invincibility = {}

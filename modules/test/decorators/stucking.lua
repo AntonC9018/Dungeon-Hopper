@@ -1,22 +1,7 @@
-local Decorator = require 'logic.decorators.decorator'
-local utils = require 'logic.decorators.utils'
+local Decorator = require '@decorators.decorator'
+local utils = require '@decorators.utils'
 local Changes = require 'render.changes'
-local HowToReturn = require 'logic.decorators.stats.howtoreturn'
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Ranks = require 'lib.chains.ranks'
-local stuckTinker = require 'modules.test.tinkers.stuck'
-
-DynamicStats.registerStat(
-    'StuckRes',
-    { -- stuck res
-        'resistance',
-        {
-            'stuck', 1
-        }
-    },
-    HowToReturn.NUMBER
-)
+local stuckTinker = require '.tinkers.stuck'
 
 -- Define our custom decorator
 local Stucking = class("Stucking", Decorator)

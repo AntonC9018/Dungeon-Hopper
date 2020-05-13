@@ -1,6 +1,4 @@
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local Chest = require 'modules.test.entities.chest'
-local Candace = require 'modules.test.entities.candace'
+require 'modules.modloader'
 local Input = require 'game.input'
 
 return function()
@@ -11,8 +9,8 @@ return function()
     local renderer = require('render.renderer')(assets)
     
     local world = World(renderer, 10, 8)
-    world:addGameObjectType(Chest)
-    world:addGameObjectType(Candace)
+    world:addGameObjectType(Mods.Test.Entities.Chest)
+    world:addGameObjectType(Mods.Test.Entities.Candace)
     world:registerTypes(assets)
 
     -- load all assets
@@ -26,11 +24,11 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayer(Candace, Vec(4, 3))
+    local player = world:createPlayer(Mods.Test.Entities.Candace, Vec(4, 3))
     
     local chests = {}
     for i = 1, 10 do
-        chests[i] = world:create(Chest, Vec(i, 4))
+        chests[i] = world:create(Mods.Test.Entities.Chest, Vec(i, 4))
     end
     
     Input(world)

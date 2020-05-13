@@ -28,7 +28,7 @@
 --
 -- I like the first idea though
 
-local RefTinker = require 'logic.tinkers.reftinker'
+local RefTinker = require '@tinkers.reftinker'
 
 local StoreTinker = class('StoreTinker', RefTinker)
 

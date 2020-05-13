@@ -1,5 +1,4 @@
-local Ranks = require 'lib.chains.ranks'
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 
 local shield = {}
 

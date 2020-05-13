@@ -1,8 +1,8 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require "render.changes"
 
-local Decorator = require 'logic.decorators.decorator'
-local Interactable = require 'logic.decorators.interactable'
+local Decorator = require '@decorators.decorator'
+local Interactable = require '@decorators.interactable'
 
 local Interacting = class('Interacting', Decorator)
 

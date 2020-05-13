@@ -1,4 +1,4 @@
-local Attackableness = require 'logic.enums.attackableness'
+local Attackableness = require '@enums.attackableness'
 
 local filters = {}
 

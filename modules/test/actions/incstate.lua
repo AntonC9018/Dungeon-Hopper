@@ -1,4 +1,4 @@
-local Action = require 'logic.action.action'
+local Action = require '@action.action'
 
 local function incState(event)
     event.actor.state = event.actor.state + 1

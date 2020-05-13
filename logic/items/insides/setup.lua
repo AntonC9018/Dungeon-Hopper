@@ -1,4 +1,4 @@
-local Options = require 'items.insides.options'
+local Options = require '@items.insides.options'
 local InnardsSetup = {}
 
 -- no pool so no setup needed

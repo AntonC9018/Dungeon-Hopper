@@ -1,4 +1,4 @@
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Chest = require 'modules.test.entities.chest'
 local Candace = require 'modules.test.entities.candace'
 local Input = require 'game.input'
@@ -29,7 +29,7 @@ return function()
     local player = world:createPlayer(Candace, Vec(4, 3))
     local chest = world:create(Chest, Vec(4, 4))
 
-    local createPool = require 'items.pool.create'
+    local createPool = require '@items.pool.create'
 
     local testRecords = { { 1, 1, 1 }, { 2, 2, 2 }, { 3, 10, 5 } }
 

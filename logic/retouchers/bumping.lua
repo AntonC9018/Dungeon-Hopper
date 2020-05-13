@@ -1,4 +1,4 @@
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 
 
 local function bump(event)

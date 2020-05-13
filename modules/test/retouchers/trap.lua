@@ -1,4 +1,4 @@
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 local Changes = require 'render.changes'
 local State = require 'modules.test.enums.pressed'
 

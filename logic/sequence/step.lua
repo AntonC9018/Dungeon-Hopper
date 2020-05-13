@@ -1,5 +1,5 @@
 local Event = require "lib.chains.event"
-local utils = require 'logic.sequence.utils'
+local utils = require '@sequence.utils'
 
 local Step = class("Step")
 

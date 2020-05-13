@@ -1,10 +1,9 @@
-local Projectile = require 'modules.test.base.projectile'
-local Proj = require 'modules.test.retouchers.projectile'
-local Entity = require 'logic.base.entity'
+local Projectile = require '.base.projectile'
+local Proj = require '.retouchers.projectile'
 
 local BasicProjectile = class("BasicProjectile", Projectile)
 
-Entity.copyChains(Projectile, BasicProjectile)
+copyChains(Projectile, BasicProjectile)
 Proj.dieBeforeAttack(BasicProjectile)
 
 return BasicProjectile

@@ -1,7 +1,6 @@
-local Ranks = require 'lib.chains.ranks'
-local utils = require 'logic.retouchers.utils'
-local OptionRealizers = require 'items.insides.realizers'
-local OptionSetup = require 'items.insides.setup'
+local utils = require '@retouchers.utils'
+local OptionRealizers = require '@items.insides.realizers'
+local OptionSetup = require '@items.insides.setup'
 
 local insides = {}
 

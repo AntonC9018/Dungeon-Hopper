@@ -1,20 +1,10 @@
-local Entity = require "logic.base.entity"
-local Cell = require "world.cell"
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Attackableness = require 'logic.enums.attackableness'
-local Ranks = require 'lib.chains.ranks'
-local Action = require 'logic.action.action'
-local handlerUtils = require 'logic.action.handlers.utils' 
-local decorate = require('logic.decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
-local Retouchers = require 'logic.retouchers.all'
-local retouch = require('logic.retouchers.utils').retouch
+local Action = require '@action.action'
+local handlerUtils = require '@action.handlers.utils'
 
 local Projectile = class("Projectile", Entity)
 
 -- select layer
-Projectile.layer = Cell.Layers.projectile
+Projectile.layer = Layers.projectile
 
 -- Set up decorators
 Decorators.Start(Projectile)
@@ -46,7 +36,7 @@ Projectile.baseModifiers = {
     }   
 }
 
-local Basic = require 'logic.action.handlers.basic'
+local Basic = require '@action.handlers.basic'
 
 local ProjectileAction = Action.fromHandlers(
     'ProjectileAction',

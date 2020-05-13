@@ -1,5 +1,5 @@
 -- these tinkers have reference to themselves inside their halders
-local Tinker = require 'logic.tinkers.tinker'
+local Tinker = require '@tinkers.tinker'
 
 local RefTinker = class("RefTinker", Tinker)
 

@@ -1,6 +1,4 @@
-local StatTinker = require 'logic.tinkers.stattinker'
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
+local StatTinker = require '@tinkers.stattinker'
 
 -- TODO: store already used ones
 return function(damage)

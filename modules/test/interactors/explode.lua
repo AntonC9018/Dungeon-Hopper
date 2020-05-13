@@ -1,21 +1,8 @@
-local AttackAction = require 'logic.action.actions.attack'
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local HowToReturn = require 'logic.decorators.stats.howtoreturn'
+local AttackAction = require '@action.actions.attack'
 local Changes = require 'render.changes'
-local Explosion = require 'modules.test.effects.explosion'
-local Attack = require 'logic.action.effects.attack'
-local Push = require 'logic.action.effects.push'
-local Attackable = require 'logic.decorators.attackable'
-
-Attackable.registerAttackSource('Explosion')
-
--- and explosion too
-DynamicStats.registerStat(
-    'Explosion',
-    { 'explosion', Explosion },
-    HowToReturn.EFFECT
-)
+local Explosion = require '.effects.explosion'
+local Attack = require '@action.effects.attack'
+local Push = require '@action.effects.push'
 
 
 local explFallback = Explosion()

@@ -1,8 +1,8 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require "render.changes"
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local Decorator = require 'logic.decorators.decorator'
-local Move = require 'logic.action.effects.move'
+local StatTypes = require('@decorators.dynamicstats').StatTypes
+local Decorator = require '@decorators.decorator'
+local Move = require '@action.effects.move'
 
 local Moving = class('Moving', Decorator)
 

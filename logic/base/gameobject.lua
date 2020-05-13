@@ -4,7 +4,7 @@
 -- This is the base class of all game objects in the game.
 -- A game object is any object that exists in the world, at some specific position
 
-local None = require 'logic.action.actions.none'
+local None = require '@action.actions.none'
 local Cell = require("world.cell")
 local Emitter = require("lib.emitter")
 

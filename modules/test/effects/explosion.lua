@@ -1,4 +1,4 @@
-local Effect = require 'logic.action.effects.effect'
+local Effect = require '@action.effects.effect'
 
 local Explode = class("Explode", Effect)
 

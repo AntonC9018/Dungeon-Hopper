@@ -1,7 +1,5 @@
 -- block attacks from front
-local Item = require 'items.item'
-local Tinker = require 'logic.tinkers.tinker'
-local Ranks = require 'lib.chains.ranks'
+local Tinker = require '@tinkers.tinker'
 
 -- here is a little problem I'll have to figure out
 --
@@ -100,7 +98,7 @@ function Shield:__construct(relativeDirection, damage, pierce, resReduction)
 end
 
 -- for now use the second slot
-Shield.slot = 2
+Shield.slot = InventorySlots.body
 
 -- return a test shield for now
 return Shield( Vec(1, 0), 2, 2, 1 )

@@ -1,16 +1,8 @@
-local Entity = require "logic.base.entity"
-local Cell = require "world.cell"
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Statused = require 'logic.decorators.statused'
-local StatusTypes = Statused.StatusTypes
-local Ranks = require 'lib.chains.ranks'
-
 
 local IceCube = class("IceCube", Entity)
 
 -- select layer
-IceCube.layer = Cell.Layers.real
+IceCube.layer = Layers.real
 -- TODO: give it high priority in some normal way
 IceCube.priority = 100000
 
@@ -27,7 +19,7 @@ IceCube.baseModifiers = {
 }
 
 -- apply decorators
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(IceCube)
@@ -60,7 +52,7 @@ local function freeEntity(event)
     end
 end
 
-local retouch = require('logic.retouchers.utils').retouch
+local retouch = retoucherUtils.retouch
 retouch(IceCube, 'displace', { moveEntity, Ranks.LOWEST })
 retouch(IceCube, 'die',      { freeEntity, Ranks.LOWEST })
 

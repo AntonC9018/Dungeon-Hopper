@@ -1,6 +1,6 @@
 
-local Pool = require 'items.pool.pool'
-local Record = require 'items.pool.record'
+local Pool = require '@items.pool.pool'
+local Record = require '@items.pool.record'
 
 
 local function iterateSubpools(records, subpoolsConfig)

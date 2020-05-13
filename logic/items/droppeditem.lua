@@ -1,4 +1,4 @@
-local Entity = require 'logic.base.entity'
+local Entity = require '@base.entity'
 local Cell = require 'world.cell'
 local DroppedItem = class('DroppedItem', Entity)
 
@@ -6,7 +6,7 @@ local DroppedItem = class('DroppedItem', Entity)
 DroppedItem.layer = Cell.Layers.dropped
 
 -- apply decorators
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(DroppedItem)

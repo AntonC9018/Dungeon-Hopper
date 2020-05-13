@@ -1,4 +1,4 @@
-local Action = require 'logic.action.action'
+local Action = require '@action.action'
 
 local function die(event)
     event.actor:die()

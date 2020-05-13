@@ -1,10 +1,8 @@
-local Tile = require 'modules.test.base.tile'
-local decorate = require('logic.decorators.decorate')
-local Decorators = require 'logic.decorators.decorators' 
-local Stucking = require 'modules.test.decorators.stucking'
-local Action = require 'logic.action.action'
-local handlerUtils = require 'logic.action.handlers.utils' 
-local utils = require 'modules.test.base.utils'
+local Tile = require '.base.tile'
+local Stucking = require '.decorators.stucking'
+local Action = require '@action.action'
+local handlerUtils = require '@action.handlers.utils' 
+local utils = require '.base.utils'
 
 
 local WaterTile = class("WaterTile", Tile)
@@ -19,11 +17,8 @@ decorate(WaterTile, Stucking)
 
 utils.redirectActionToDecorator(WaterTile, 'Stucking')
 
-local Algos = require 'logic.retouchers.algos'
-Algos.simple(WaterTile)
-
-local Attackableness = require 'logic.retouchers.attackableness'
-Attackableness.no(WaterTile)
+Retouchers.Algos.simple(WaterTile)
+Retouchers.Attackableness.no(WaterTile)
 
 WaterTile.baseModifiers = {
     stuck = {

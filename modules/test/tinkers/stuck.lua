@@ -1,5 +1,4 @@
-local Ranks = require 'lib.chains.ranks'
-local RefTinker = require 'logic.tinkers.reftinker' 
+local RefTinker = require '@tinkers.reftinker' 
 
 local function stuckGenerator(tinker)
     return function(event)

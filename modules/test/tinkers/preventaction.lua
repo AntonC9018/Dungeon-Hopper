@@ -1,4 +1,4 @@
-local Tinker = require 'logic.tinkers.tinker'
+local Tinker = require '@tinkers.tinker'
 
 local function forbidAction(event)
     event.propagate = false

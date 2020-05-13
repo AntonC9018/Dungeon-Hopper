@@ -1,7 +1,5 @@
 -- is just like a shield but blocks damage from all sides
-local Item = require 'items.item'
-local Tinker = require 'logic.tinkers.tinker'
-local Ranks = require 'lib.chains.ranks'
+local Tinker = require '@tinkers.tinker'
 
 local Shell = class("Shell", Item)
 
@@ -40,7 +38,7 @@ function Shell:__construct(damage, pierce, resReduction)
 end
 
 -- for now use the second slot
-Shell.slot = 2
+Shell.slot = InventorySlots.body
 
 -- return a test shell for now
 return Shell(2, 2, 0)

@@ -1,4 +1,4 @@
-require 'modules.test.main'
+require 'modules.modloader'
 
 return function()
 

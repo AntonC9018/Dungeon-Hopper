@@ -1,13 +1,9 @@
 local TestEnemy = require 'modules.test.entities.enemytest' 
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Projectile = require 'modules.test.entities.projectile'
 local BounceTrap = require 'modules.test.entities.bouncetrap'
 local Candace = require 'modules.test.entities.candace'
 local Input = require 'game.input'
-
-local ItemTable = require 'items.itemtable'
-local spear = require 'modules.test.items.spear'
-ItemTable.registerItem(spear)
 
 return function()
 

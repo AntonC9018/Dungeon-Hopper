@@ -1,5 +1,5 @@
-local utils = require "items.weapons.chains.utils"
-local filters = require "items.weapons.chains.filters"
+local utils = require "@items.weapons.chains.utils"
+local filters = require "@items.weapons.chains.filters"
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->
 -- Return all targets

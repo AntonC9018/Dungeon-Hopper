@@ -1,15 +1,14 @@
 local Item = class('Item')
 
-local id = 1
-
 Item.tinker = {
     tink = function() end,
     untink = function() end
 }
 
+-- the id is set by the modloader
+Item.id = 0
+
 function Item:__construct(tinker)
-    self.id = id
-    id = id + 1
     self.tinker = tinker
 end
 

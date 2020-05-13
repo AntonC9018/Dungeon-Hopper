@@ -1,5 +1,5 @@
-local utils = require 'logic.decorators.utils'
-local Decorator = require 'logic.decorators.decorator'
+local utils = require '@decorators.utils'
+local Decorator = require '@decorators.decorator'
 local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
 

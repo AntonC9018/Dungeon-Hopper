@@ -1,15 +1,10 @@
-local Entity = require 'logic.base.entity'
-local Cell = require 'world.cell'
-local State = require 'modules.test.enums.pressed'
-local Decorators = require 'logic.decorators.decorators'
-local decorate = require 'logic.decorators.decorate'
-local Retouchers = require 'logic.retouchers.all'
-local retouch = require('logic.retouchers.utils').retouch
+local State = require '.enums.pressed'
+local retouch = retoucherUtils.retouch
 
 -- Class definition
 local Trap = class('Trap', Entity)
 
-Trap.layer = Cell.Layers.trap
+Trap.layer = Layers.trap
 Trap.state = State.UNPRESSED
 
 Decorators.Start(Trap)

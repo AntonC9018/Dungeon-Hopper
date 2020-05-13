@@ -1,9 +1,9 @@
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 
 local algos = {}
 
-local simpleAlgo = require 'logic.algos.simple'
-local generalAlgo = require 'logic.algos.general'
+local simpleAlgo = require '@algos.simple'
+local generalAlgo = require '@algos.general'
 
 algos.simple = function(entityClass)
     utils.retouch(entityClass, 'action', simpleAlgo)

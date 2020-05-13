@@ -1,5 +1,4 @@
-local Wall = require 'modules.test.base.wall'
-local Cell = require 'world.cell'
+local Wall = require '.base.wall'
 
 local Dirt = class("Dirt", Wall)
 

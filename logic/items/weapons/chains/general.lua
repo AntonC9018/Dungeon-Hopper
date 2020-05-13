@@ -1,6 +1,6 @@
-local utils = require "items.weapons.chains.utils"
-local filters = require "items.weapons.chains.filters"
-local checks = require "items.weapons.chains.checks"
+local utils = require "@items.weapons.chains.utils"
+local filters = require "@items.weapons.chains.filters"
+local checks = require "@items.weapons.chains.checks"
 -- Check if hitting AttackableOnlyWhenNextToAttacker, 
 -- without being next to any (return nothing in this case) ->
 -- -> Check unreachableness (eliminate unreachable ones) ->

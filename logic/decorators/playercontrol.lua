@@ -2,12 +2,12 @@
 -- a provided piece of input into action objects
 --
 
-local Decorator = require 'logic.decorators.decorator'
-local None = require 'logic.action.actions.none'
+local Decorator = require '@decorators.decorator'
+local None = require '@action.actions.none'
 local BasicHandlers = require "logic.action.handlers.basic"
 local Action = require "logic.action.action"
-local AttackDigMove = require 'logic.action.actions.attackdigmove'
-local handlerUtils = require 'logic.action.handlers.utils' 
+local AttackDigMove = require '@action.actions.attackdigmove'
+local handlerUtils = require '@action.handlers.utils' 
 
 local PlayerControl = class('PlayerControl', Decorator)
 

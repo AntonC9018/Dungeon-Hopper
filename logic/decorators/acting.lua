@@ -1,4 +1,4 @@
-local Decorator = require 'logic.decorators.decorator'
+local Decorator = require '@decorators.decorator'
 local Acting = class('Acting', Decorator)
 
 Acting.affectedChains =

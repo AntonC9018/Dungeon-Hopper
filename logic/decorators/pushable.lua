@@ -1,7 +1,7 @@
 local utils = require "logic.decorators.utils" 
 local Changes = require "render.changes"
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local Decorator = require 'logic.decorators.decorator'
+local StatTypes = require('@decorators.dynamicstats').StatTypes
+local Decorator = require '@decorators.decorator'
 local Pushable = class('Pushable', Decorator)
 
 

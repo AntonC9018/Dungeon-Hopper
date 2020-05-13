@@ -1,5 +1,5 @@
 
-local Decorator = require 'logic.decorators.decorator'
+local Decorator = require '@decorators.decorator'
 local Ticking = class('Ticking', Decorator)
 
 local function resetBasic(event) 

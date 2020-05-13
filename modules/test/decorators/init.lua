@@ -10,7 +10,7 @@
 -- lazy static chains (chains that are reinstantiated only when
 -- it is required at runtime and not beforehand on entity 
 -- initialization as it is currently)
-local Decorator = require 'logic.decorators.decorator'
+local Decorator = require '@decorators.decorator'
 
 local Init = class("Init", Decorator)
 

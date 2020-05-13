@@ -1,12 +1,12 @@
 
-local Target = require "items.weapons.target"
+local Target = require "@items.weapons.target"
 local Attackableness = require "logic.enums.attackableness"
-local Item = require 'items.item'
-local Inventory = require 'logic.decorators.inventory'
-local Pattern = require("items.weapons.pattern")
+local Item = require '@items.item'
+local Inventory = require '@decorators.inventory'
+local Pattern = require("@items.weapons.pattern")
 
 -- Another available option: hitAll
-local General = require "items.weapons.chains.general"
+local General = require "@items.weapons.chains.general"
 
 -- TODO: inherit from item
 local Weapon = class("Weapon", Item)

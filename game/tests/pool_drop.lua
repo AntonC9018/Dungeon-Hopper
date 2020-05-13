@@ -1,11 +1,7 @@
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Chest = require 'modules.test.entities.chest'
 local Candace = require 'modules.test.entities.candace'
 local Input = require 'game.input'
-
-local TestItem = require 'modules.test.items.testitem'
-local ItemTable = require 'items.itemtable'
-ItemTable.registerItem(TestItem)
 
 return function()
 
@@ -35,7 +31,7 @@ return function()
     local chest = world:create(Chest, Vec(4, 4))
     local chest2 = world:create(Chest, Vec(4, 5))
 
-    local createPool = require 'items.pool.create'
+    local createPool = require '@items.pool.create'
 
     local testRecords = { { 1, 1, 1 } }
 
@@ -50,7 +46,6 @@ return function()
     local function handler(event)
         local item = pool.subpools[1]:getRandom()
         pool.subpools[1]:exhaust()
-        print(ItemTable[item.id])
         world:createDroppedItem(item.id, event.actor.pos)
     end
 

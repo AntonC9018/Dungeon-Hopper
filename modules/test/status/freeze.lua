@@ -1,7 +1,7 @@
-local Statused = require 'logic.decorators.statused'
-local Status = require 'logic.status.status'
-local IceCube = require 'modules.test.icecube'
-local PreventActionTinker = require 'modules.test.tinkers.preventaction' 
+local Statused = require '@decorators.statused'
+local Status = require '@status.status'
+local IceCube = require '.entities.icecube'
+local PreventActionTinker = require '.tinkers.preventaction' 
 
 -- I want to try out a freeze like that of COH where it gives invincibility
 -- The idea is to:
@@ -49,9 +49,6 @@ function Freeze:wearOff(entity)
 end
 
 local freeze = Freeze()
-
--- register the new stat
-Statused.registerStatus('freeze', freeze)
 
 freeze.amount = 3
 

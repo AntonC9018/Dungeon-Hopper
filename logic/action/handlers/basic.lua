@@ -1,5 +1,5 @@
 
-local utils = require 'logic.action.handlers.utils'
+local utils = require '@action.handlers.utils'
 
 local Handlers = {}
 

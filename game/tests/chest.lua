@@ -1,4 +1,4 @@
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Chest = require 'modules.test.entities.chest'
 local Candace = require 'modules.test.entities.candace'
 local Input = require 'game.input'

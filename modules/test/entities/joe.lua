@@ -1,7 +1,4 @@
-local EnvObject = require 'modules.test.base.envobject'
-local Entity = require 'logic.base.entity'
-local Player = require 'modules.test.base.player'
-local Pierce = require 'modules.test.retouchers.pierce'
+local Player = require '.base.player'
 
 local Joe = class('Joe', Player)
 

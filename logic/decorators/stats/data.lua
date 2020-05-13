@@ -5,10 +5,10 @@ data.StatConfigs = {
     -- put in here either the class of the effect
     -- or a table of properties to include with default values for each
     -- each effect has `modifier` property with same kind of modifiers as below
-    { 'attack', require ('logic.action.effects.attack') }, -- damage 0, pierce 0
-    { 'push',   require ('logic.action.effects.push')   }, -- power 0, distance 1
-    { 'dig',    require ('logic.action.effects.dig')    }, -- damage 0, power 0
-    { 'move',   require ('logic.action.effects.move')   }, -- distance 1, through false
+    { 'attack', require ('@action.effects.attack') }, -- damage 0, pierce 0
+    { 'push',   require ('@action.effects.push')   }, -- power 0, distance 1
+    { 'dig',    require ('@action.effects.dig')    }, -- damage 0, power 0
+    { 'move',   require ('@action.effects.move')   }, -- distance 1, through false
 
     {
         'status',
@@ -73,7 +73,7 @@ data.StatTypes = {
     Invincible = 10
 }
 
-local HowToReturn = require 'logic.decorators.stats.howtoreturn'
+local HowToReturn = require '@decorators.stats.howtoreturn'
 
 data.StatsHowToReturn = {
     HowToReturn.EFFECT,

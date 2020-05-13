@@ -1,6 +1,5 @@
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 local Ranks = require 'lib.chains.ranks'
-local ItemTable = require 'items.itemtable'
 
 local equip = {}
 
@@ -10,7 +9,7 @@ local function pickUp(event)
     local droppedItem = actor.world.grid:getDroppedAt(actor.pos)
     if droppedItem ~= nil then
         local id = droppedItem:getItemId()
-        local item = ItemTable[id]
+        local item = Items[id]
         actor:equip(item)
         droppedItem:die()
         actor:dropExcess()

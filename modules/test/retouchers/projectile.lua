@@ -1,7 +1,4 @@
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Ranks = require 'lib.chains.ranks'
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 
 local projectile = {}
 

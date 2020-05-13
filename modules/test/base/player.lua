@@ -1,14 +1,8 @@
-local Entity = require "logic.base.entity"
-local Decorators = require "logic.decorators.decorators"
-local Cell = require "world.cell"
 local activateDecorator = require("logic.base.utils").activateDecorator
-local decorate = require('logic.decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
-local Retouchers = require 'logic.retouchers.all'
 
 local Player = class("Player", Entity)
 
-Player.layer = Cell.Layers.player
+Player.layer = Layers.player
 
 -- set up all decorators
 Player.generateAction = 

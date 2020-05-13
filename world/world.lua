@@ -2,10 +2,9 @@ local Grid = require "world.grid"
 
 local World = class("World")
 
-local Player = require 'modules.test.base.player'
-local Tile = require 'modules.test.base.tile'
 local Changes = require 'render.changes'
-local DroppedItem = require 'items.droppeditem'
+local DroppedItem = require '@items.droppeditem'
+local Tile = Mods.Test.EntityBases.Tile
 
 function World:__construct(renderer, w, h)
     self.grid = Grid(w, h)
@@ -14,7 +13,7 @@ function World:__construct(renderer, w, h)
     self.renderer = renderer
     self.changes = {{}}
     self.phase = 1
-    self.gameObjectTypes = { Player, Tile, DroppedItem }
+    self.gameObjectTypes = { Tile, DroppedItem }
 end
 
 
@@ -293,8 +292,6 @@ function World:filterDead()
     self.grid:filterDeadAll() 
 end
 
-local ItemTable = require 'items.itemtable'
-
 function World:createDroppedItem(id, pos)
     local droppedItem = DroppedItem()
     droppedItem:init(pos, self)
@@ -332,8 +329,8 @@ function World:registerChange(obj, code)
 end
 
 
-local obj = require 'items.pool.test.config'
-local createPool = require 'items.pool.create'
+local obj = require '@items.pool.test.config'
+local createPool = require '@items.pool.create'
 local testPool = createPool(obj.items, obj.config)
 
 -- Map indices to subpools

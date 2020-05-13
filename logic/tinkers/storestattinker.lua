@@ -1,7 +1,7 @@
 -- do the same for stats
 
-local RefStatTinker = require 'logic.tinkers.refstattinker'
-local StoreTinker = require 'logic.tinkers.storetinker'
+local RefStatTinker = require '@tinkers.refstattinker'
+local StoreTinker = require '@tinkers.storetinker'
 
 local StoreStatTinker = class('StoreStatTinker', RefStatTinker, StoreTinker)
 

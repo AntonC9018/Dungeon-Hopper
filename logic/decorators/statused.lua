@@ -1,12 +1,12 @@
-local utils = require 'logic.decorators.utils'
+local utils = require '@decorators.utils'
 local Changes = require 'render.changes'
-local Decorator = require 'logic.decorators.decorator'
-local Stats = require 'logic.stats.stats'
-local DynamicStats = require 'logic.decorators.dynamicstats'
+local Decorator = require '@decorators.decorator'
+local Stats = require '@stats.stats'
+local DynamicStats = require '@decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
 local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
-local Overlay = require 'logic.status.overlay'
+local Overlay = require '@status.overlay'
 
 local Statused = class('Statused', Decorator)
 

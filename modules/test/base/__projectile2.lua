@@ -1,11 +1,11 @@
 local Entity = require "logic.base.entity"
 local Cell = require "world.cell"
-local DynamicStats = require 'logic.decorators.dynamicstats'
+local DynamicStats = require '@decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
-local Attackableness = require 'logic.enums.attackableness'
+local Attackableness = require '@enums.attackableness'
 local Ranks = require 'lib.chains.ranks'
-local Action = require 'logic.action.action'
-local handlerUtils = require 'logic.action.handlers.utils' 
+local Action = require '@action.action'
+local handlerUtils = require '@action.handlers.utils' 
 
 local Projectile = class("Projectile", Entity)
 
@@ -26,7 +26,7 @@ Projectile.baseModifiers = {
 
 
 -- apply decorators
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(Projectile)
@@ -75,8 +75,8 @@ end
 
 
 -- apply retouchers
-local Retouchers = require 'logic.retouchers.all'
-local retouch = require('logic.retouchers.utils').retouch
+local Retouchers = require '@retouchers.all'
+local retouch = require('@retouchers.utils').retouch
 Retouchers.Algos.simple(Projectile)
 Retouchers.Reorient.onActionSuccess(Projectile)
 Retouchers.Attackableness.no(Projectile)
@@ -87,7 +87,7 @@ retouch(Projectile, 'attack', { die, Ranks.HIGHEST })
 retouch(Projectile, 'attack', { unattackableAfterCheck, Ranks.HIGHEST })
 retouch(Projectile, 'move'  , { watch, Ranks.LOW })
 
-local Basic = require 'logic.action.handlers.basic'
+local Basic = require '@action.handlers.basic'
 
 local ProjectileAction = Action.fromHandlers(
     'ProjectileAction',
@@ -98,8 +98,8 @@ local ProjectileAction = Action.fromHandlers(
     }
 )
 
-local Target = require "items.weapons.target"
-local Piece = require "items.weapons.piece"
+local Target = require "@items.weapons.target"
+local Piece = require "@items.weapons.piece"
 
 function Projectile:getTargetsBeneath(direction)
     local coord = self.pos

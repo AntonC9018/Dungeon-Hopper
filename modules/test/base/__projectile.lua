@@ -1,11 +1,11 @@
 local Entity = require "logic.base.entity"
 local Cell = require "world.cell"
-local DynamicStats = require 'logic.decorators.dynamicstats'
+local DynamicStats = require '@decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
-local Attackableness = require 'logic.enums.attackableness'
+local Attackableness = require '@enums.attackableness'
 local Ranks = require 'lib.chains.ranks'
-local Action = require 'logic.action.action'
-local handlerUtils = require 'logic.action.handlers.utils' 
+local Action = require '@action.action'
+local handlerUtils = require '@action.handlers.utils' 
 
 local Projectile = class("Projectile", Entity)
 
@@ -26,7 +26,7 @@ Projectile.baseModifiers = {
 
 
 -- apply decorators
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Decorators = require "logic.decorators.decorators"
 
 Decorators.Start(Projectile)
@@ -52,8 +52,8 @@ local function die(event)
 end
 
 -- apply retouchers
-local Retouchers = require 'logic.retouchers.all'
-local retouch = require('logic.retouchers.utils').retouch
+local Retouchers = require '@retouchers.all'
+local retouch = require('@retouchers.utils').retouch
 Retouchers.Algos.simple(Projectile)
 Retouchers.Reorient.onActionSuccess(Projectile)
 Retouchers.Attackableness.no(Projectile)

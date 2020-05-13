@@ -1,4 +1,4 @@
-local Record = require 'items.pool.record'
+local Record = require '@items.pool.record'
 
 local Pool = class("Pool")
 

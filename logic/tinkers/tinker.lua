@@ -1,5 +1,5 @@
 local Ranks = require 'lib.chains.ranks'
-local utils = require 'logic.tinkers.utils'
+local utils = require '@tinkers.utils'
 
 local Tinker = class("Tinker")
 

@@ -37,49 +37,43 @@
 -- still require everything to use requires, so no hope from there.
 -- Since it is impossible to track references to variales in lua (I think)
 -- meeeh too much rambling about.
+--
+-- UPDATE:
+-- this has been changed. use local requires, like this (. = modules.test.):
+-- require '.tinkers.sample'
+-- to require from logic (@ = logic.):
+-- require '@tinkers.tinker'
 
 -- require everything there is to the mod
 
 
 local levels = {
-    {
-        -- 'Movs',
-        -- 'Algos',
-        'Effects',
-        'Actions'
-    },
-    {
-        'Handlers',
-        'Interactors'
-    },
-    {
-        'Tinkers',
-        'Retouchers'
-    },
-    {
-        'Decorators'
-    },
-    {
-        { 'EntityBases', 'base' },
-        { 'ItemBases',   'base' }
-    },
-    {
-        'Entities',
-        'Items'
-    }
+    'Movs',
+    'Algos',
+    'Effects',
+    'Actions',
+    'Handlers',
+    'Interactors',
+    'Tinkers',
+    'Retouchers',
+    'Status',
+    'Decorators',
+    { 'EntityBases', 'base' },
+    { 'ItemBases',   'base' },
+    'Entities',
+    'Items'
 }
 
 local lfs = require( "lfs" )
 
--- define a global variable that will optionally be used 
--- to define the name by which to store the required file's
--- output in the list
-USE_NAME = nil
-
-local function requireX(moduleName, folder)
+local function requireX(folder)
     local result = {}
 
-    local path = system.pathForFile("modules/"..moduleName.."/"..folder, thisFolder)
+    local path = system.pathForFile("modules/"..MODULE_NAME.."/"..folder, thisFolder)
+
+    if path == nil then
+        return result
+    end
 
     for filename in lfs.dir(path) do
 
@@ -93,8 +87,11 @@ local function requireX(moduleName, folder)
             name = string.lower(name)
             name = string.sub(name, 1, #name - 4)
 
+            -- define a global variable that will optionally be used 
+            -- to define the name by which to store the required file's
+            -- output in the list
             USE_NAME = nil
-            local r = require('modules.'..moduleName..'.'..folder..'.'..name)
+            local r = require('.'..folder..'.'..name)
 
             if USE_NAME ~= nil then
                 name = USE_NAME
@@ -111,16 +108,57 @@ local function requireX(moduleName, folder)
 end
 
 
-local moduleName = 'test'
-local all = {}
-for _, level in ipairs(levels) do
-    for _, subname in ipairs(level) do
-        if type(subname) == 'string' then
-            all[subname] = requireX(moduleName, string.lower(subname))
+local function requireContent(mod)   
+
+    for _, level in ipairs(levels) do
+        if type(level) == 'string' then
+            mod[level] = requireX(string.lower(level))
         else
-            all[subname[1]] = requireX(moduleName, string.lower(subname[2]))
-        end
+            mod[level[1]] = requireX(string.lower(level[2]))
+        end        
     end
 end
 
-print(ins(all, {depth = 3}))
+
+local function registerContent(mod)  
+    -- now, register all entities and items in the global list
+    for name, entityClass in pairs(mod.Entities) do
+        registerEntity(entityClass)
+    end
+    for name, item in pairs(mod.Items) do
+        registerItem(item)
+    end    
+
+    -- register attack sources used in the module
+    registerAttackSource('Bounce')
+    registerAttackSource('Proj')
+    registerAttackSource('Coals')
+    registerAttackSource('Explosion')
+
+    -- register stats used throught the module
+    registerStat(
+        'StuckRes',
+        { 'resistance', { 'stuck', 1 } },
+        HowToReturn.NUMBER
+    )
+    registerStat(
+        'Explosion',
+        { 'explosion', mod.Effects.Explosion },
+        HowToReturn.EFFECT
+    )
+
+    -- register the new status effects
+    registerStatus('freeze', mod.Status.freeze)
+    registerStatus('stun',   mod.Status.stun)
+end
+
+
+local function loadAll()
+    local mod = {}
+    requireContent(mod)
+    registerContent(mod)
+    return mod
+end
+
+
+return loadAll()

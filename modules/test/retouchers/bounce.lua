@@ -1,7 +1,6 @@
-local utils = require 'logic.retouchers.utils'
+local utils = require '@retouchers.utils'
 local Phases = require 'world.phases'
-local AttackAction = require 'logic.action.actions.attack'
-local Ranks = require 'lib.chains.ranks'
+local AttackAction = require '@action.actions.attack'
 
 
 local bounce = {}

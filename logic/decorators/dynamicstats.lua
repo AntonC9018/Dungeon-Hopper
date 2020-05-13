@@ -13,9 +13,9 @@
 -- removing attack damage. This chain will be traversed before 
 -- returning the stat (or effect).
 --
-local Decorator = require 'logic.decorators.decorator'
-local Stats = require 'logic.stats.stats'
-local Data = require 'logic.decorators.stats.data'
+local Decorator = require '@decorators.decorator'
+local Stats = require '@stats.stats'
+local Data = require '@decorators.stats.data'
 local Chain = require 'lib.chains.chain'
 
 local DynamicStats = class('DynamicStats', Decorator)
@@ -25,7 +25,7 @@ local DynamicStats = class('DynamicStats', Decorator)
 DynamicStats.StatTypes = Data.StatTypes
 statTypesLength = #Data.StatConfigs
 local StatConfigs = Data.StatConfigs
-local HowToReturn = require 'logic.decorators.stats.howtoreturn'
+local HowToReturn = require '@decorators.stats.howtoreturn'
 local StatsHowToReturn = Data.StatsHowToReturn
 
 

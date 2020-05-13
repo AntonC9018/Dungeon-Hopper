@@ -1,6 +1,6 @@
 
-local Decorator = require 'logic.decorators.decorator'
-local utils = require 'logic.decorators.utils'
+local Decorator = require '@decorators.decorator'
+local utils = require '@decorators.utils'
 local Changes = require "render.changes"
 local Move = require "logic.action.effects.move"
 local Ranks = require 'lib.chains.ranks'

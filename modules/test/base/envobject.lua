@@ -1,13 +1,6 @@
-local Entity = require "logic.base.entity"
-local Cell = require "world.cell"
-local decorate = require('logic.decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
-local Retouchers = require 'logic.retouchers.all'
-local Attackableness = require 'logic.enums.attackableness'
-
 local EnvObject = class("EnvObject", Entity)
 
-EnvObject.layer = Cell.Layers.real
+EnvObject.layer = Layers.real
 
 Decorators.Start(EnvObject)
 decorate(EnvObject, Decorators.Attackable)

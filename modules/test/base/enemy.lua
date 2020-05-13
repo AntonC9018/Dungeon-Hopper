@@ -1,12 +1,6 @@
-local Entity = require "logic.base.entity"
-local Cell = require "world.cell"
-local decorate = require('logic.decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
-local Retouchers = require 'logic.retouchers.all'
-
 local BasicEnemy = class("BasicEnemy", Entity)
 
-BasicEnemy.layer = Cell.Layers.real
+BasicEnemy.layer = Layers.real
 
 Decorators.Start(BasicEnemy)
 decorate(BasicEnemy, Decorators.Acting)

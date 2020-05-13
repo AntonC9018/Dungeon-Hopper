@@ -1,26 +1,20 @@
-local Entity = require 'logic.base.entity'
-local Cell = require 'world.cell'
-local Decorators = require 'logic.decorators.decorators'
-local decorate = require 'logic.decorators.decorate'
-local Retouchers = require 'logic.retouchers.all'
-local Attackableness = require 'logic.enums.attackableness'
 
 -- Class definition
 local Chest = class('Chest', Entity)
 
-Chest.layer = Cell.Layers.real
+Chest.layer = Layers.real
 
 Decorators.Start(Chest)
 decorate(Chest, Decorators.Killable)
 decorate(Chest, Decorators.Interactable)
 -- Retouchers.Attackableness.constant(Chest, Attackableness.IF_NEXT_TO)
 
-local Init = require 'modules.test.decorators.init'
+local Init = require '.decorators.init'
 decorate(Chest, Init)
 
-local Options = require 'items.insides.options'
-local Pools = require 'items.pool.test.map'
-local Insides = require 'modules.test.retouchers.insides'
+local Options = require '@items.insides.options'
+local Pools = require '@items.pool.test.map'
+local Insides = require '.retouchers.insides'
 
 -- Insides.setConstant(Chest, 
 --     { 

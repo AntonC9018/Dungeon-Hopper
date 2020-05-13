@@ -1,4 +1,4 @@
-local StatTinker = require 'logic.tinkers.stattinker'
+local StatTinker = require '@tinkers.stattinker'
 
 local RefStatTinker = class("RefTinker", StatTinker)
 

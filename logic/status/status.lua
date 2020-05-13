@@ -47,7 +47,7 @@ end
 -- default amount = 2
 Status.amount = 2
 -- default overlay method: reset
-local Overlay = require 'logic.status.overlay'
+local Overlay = require '@status.overlay'
 Status.overlay = Overlay.RESET 
 
 

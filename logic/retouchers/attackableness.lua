@@ -1,5 +1,5 @@
-local utils = require 'logic.retouchers.utils'
-local Attackableness = require 'logic.enums.attackableness'
+local utils = require '@retouchers.utils'
+local Attackableness = require '@enums.attackableness'
 
 local attackableness = {}
 

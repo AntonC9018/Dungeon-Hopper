@@ -1,4 +1,4 @@
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
+local StatTypes = require('@decorators.dynamicstats').StatTypes
 
 
 local utils = {}
@@ -86,8 +86,8 @@ end
 
 
 
-local Target = require "items.weapons.target"
-local Piece = require "items.weapons.piece"
+local Target = require "@items.weapons.target"
+local Piece = require "@items.weapons.piece"
 -- TODO: refactor
 utils.convertToTargets = function(entities, dir, actor)
     return table.map(

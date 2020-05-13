@@ -58,7 +58,7 @@ local step2 = {
     -- and we shouldn't be while not rolling
     exit = removeInfiniteArmor,
     -- and add the movs function
-    movs = require 'logic.sequence.movs.straight'
+    movs = require '@sequence.movs.straight'
 }
 
 step3 = {
@@ -71,7 +71,7 @@ step3 = {
 EntityClass.sequenceSteps = { step1, step2, step3 }
 
 -- after that, decorate your entityClass like this:
-local decorate = require('logic.decorators.decorate')
+local decorate = require('@decorators.decorate')
 local Sequential = require "logic.decorators.sequential"
 decorate(EntityClass, Sequential)
 

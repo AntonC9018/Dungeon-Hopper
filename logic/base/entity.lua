@@ -2,12 +2,12 @@
 -- entity.lua
 --
 -- This is the base class for any entity in the game
-local Decorators = require 'logic.decorators.decorators'
-local decorate = require('logic.decorators.decorate')
-local SimpleAlgo = require 'logic.algos.simple'
-local GameObject = require 'logic.base.gameobject'
-local None = require 'logic.action.actions.none'
-local Attackableness = require 'logic.enums.attackableness'
+local Decorators = require '@decorators.decorators'
+local decorate = require('@decorators.decorate')
+local SimpleAlgo = require '@algos.simple'
+local GameObject = require '@base.gameobject'
+local None = require '@action.actions.none'
+local Attackableness = require '@enums.attackableness'
 local Changes = require 'render.changes'
 local activateDecorator = require("logic.base.utils").activateDecorator
 local activateDecoratorCustom = require("logic.base.utils").activateDecoratorCustom
@@ -134,8 +134,8 @@ function Entity:reorient(newOrientation)
 end
 
 
-local Target = require "items.weapons.target"
-local Piece = require "items.weapons.piece"
+local Target = require "@items.weapons.target"
+local Piece = require "@items.weapons.piece"
 
 
 function Entity:getTargetsDefault(direction)

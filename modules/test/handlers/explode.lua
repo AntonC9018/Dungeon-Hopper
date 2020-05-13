@@ -1,9 +1,7 @@
-local Attack = require 'logic.action.effects.attack'
-local Push = require 'logic.action.effects.push'
-local Explosion = require 'modules.test.effects.explosion'
-local DynamicStats = require 'logic.decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local ExplodeInteractor = require 'modules.test.interactors.explode'
+local Attack = require '@action.effects.attack'
+local Push = require '@action.effects.push'
+local Explosion = require '.effects.explosion'
+local ExplodeInteractor = require '.interactors.explode'
 
 
 local explode = {}

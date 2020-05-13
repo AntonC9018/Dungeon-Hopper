@@ -2,7 +2,7 @@
 local utils = require "logic.decorators.utils" 
 local Sequence = require "logic.sequence.sequence"
 
-local Decorator = require 'logic.decorators.decorator'
+local Decorator = require '@decorators.decorator'
 local Sequential = class('Sequential', Decorator)
 
 function Sequential:activate(actor)

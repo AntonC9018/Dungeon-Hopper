@@ -2,12 +2,12 @@ local utils = require "logic.decorators.utils"
 local Changes = require "render.changes"
 local Ranks = require 'lib.chains.ranks'
 
-local Decorator = require 'logic.decorators.decorator'
-local Stats = require 'logic.stats.stats' 
-local Attack = require 'logic.action.effects.attack'
-local StatTypes = require('logic.decorators.dynamicstats').StatTypes
-local Push = require 'logic.action.effects.push'
-local Do = require 'logic.interactors.do'
+local Decorator = require '@decorators.decorator'
+local Stats = require '@stats.stats' 
+local Attack = require '@action.effects.attack'
+local StatTypes = require('@decorators.dynamicstats').StatTypes
+local Push = require '@action.effects.push'
+local Do = require '@interactors.do'
 
 local Attacking = class('Attacking', Decorator)
 

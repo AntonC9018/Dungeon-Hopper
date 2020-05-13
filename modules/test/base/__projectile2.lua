@@ -1,4 +1,4 @@
-local Entity = require "logic.base.entity"
+local Entity = require "@base.entity"
 local Cell = require "world.cell"
 local DynamicStats = require '@decorators.dynamicstats'
 local StatTypes = DynamicStats.StatTypes
@@ -27,7 +27,7 @@ Projectile.baseModifiers = {
 
 -- apply decorators
 local decorate = require('@decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
+local Decorators = require "@decorators.decorators"
 
 Decorators.Start(Projectile)
 decorate(Projectile, Decorators.Acting)

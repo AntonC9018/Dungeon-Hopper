@@ -1,6 +1,6 @@
 
 local Target = require "@items.weapons.target"
-local Attackableness = require "logic.enums.attackableness"
+local Attackableness = require "@enums.attackableness"
 local Item = require '@items.item'
 local Inventory = require '@decorators.inventory'
 local Pattern = require("@items.weapons.pattern")

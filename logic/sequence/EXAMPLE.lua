@@ -1,11 +1,11 @@
 
-local AttackDigMove = require "logic.action.actions.attackdigmove"
-local None = require "logic.action.actions.none"
+local AttackDigMove = require "@action.actions.attackdigmove"
+local None = require "@action.actions.none"
 local Handlers = require "modules.utils.handlers"
-local Action = require "logic.action"
+local Action = require "@action"
 
 -- create out entity class
-local Entity = require "logic.base.entity"
+local Entity = require "@base.entity"
 local EntityClass = class(Entity)
 
 -- define some custom functions
@@ -72,11 +72,11 @@ EntityClass.sequenceSteps = { step1, step2, step3 }
 
 -- after that, decorate your entityClass like this:
 local decorate = require('@decorators.decorate')
-local Sequential = require "logic.decorators.sequential"
+local Sequential = require "@decorators.sequential"
 decorate(EntityClass, Sequential)
 
 -- or, using a combo
-local Combos = require "logic.decorators.combos"
+local Combos = require "@decorators.combos"
 Combos.BasicEnemy(EntityClass)
 
 -- also, some basic check handlers have to be added to prevent attacking empty spaces

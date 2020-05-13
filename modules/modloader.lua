@@ -20,6 +20,15 @@ require = function(str)
     return req(str)
 end
 
+-- stuff for chains
+Ranks = require 'lib.chains.ranks'
+RankNumbers = require 'lib.chains.numbers'
+-- also make useful enums global
+Attackableness = require '@enums.attackableness'
+HowToReturn = require '@decorators.stats.howtoreturn'
+Layers = require('world.cell').Layers
+
+
 local DynamicStats = require('@decorators.dynamicstats')
 local Attackable = require('@decorators.attackable')
 local Statused = require('@decorators.statused')
@@ -61,14 +70,10 @@ function registerEntity(entity)
     Entities[entity.global_id] = entity
 end
 
+
 -- for now just do this
 decorate = require '@decorators.decorate'
 Decorators = require '@decorators.decorators'
-
--- also make useful enums global
-Attackableness = require '@enums.attackableness'
-HowToReturn = require '@decorators.stats.howtoreturn'
-Layers = require('world.cell').Layers
 
 -- make essential base classes global
 Entity = require '@base.entity'
@@ -93,12 +98,6 @@ retoucherUtils = require '@retouchers.utils'
 
 -- make the action class global
 -- Action = require '@action.action'
-
--- stuff for chains
-Ranks = require 'lib.chains.ranks'
-RankNumbers = require 'lib.chains.numbers'
-
-
 
 -- now set up all mods
 Mods = {}

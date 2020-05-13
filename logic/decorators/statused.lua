@@ -3,8 +3,6 @@ local Changes = require 'render.changes'
 local Decorator = require '@decorators.decorator'
 local Stats = require '@stats.stats'
 local DynamicStats = require '@decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
-local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
 local Overlay = require '@status.overlay'
 

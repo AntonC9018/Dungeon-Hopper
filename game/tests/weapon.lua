@@ -1,5 +1,5 @@
 local TestEnemy = require 'modules.test.entities.enemytest' 
-local StatTypes = require('@decorators.dynamicstats').StatTypes
+
 local Projectile = require 'modules.test.entities.projectile'
 local BounceTrap = require 'modules.test.entities.bouncetrap'
 local Candace = require 'modules.test.entities.candace'

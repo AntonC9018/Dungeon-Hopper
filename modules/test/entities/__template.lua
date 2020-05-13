@@ -1,4 +1,4 @@
-local Entity = require "logic.base.entity"
+local Entity = require "@base.entity"
 local Cell = require "world.cell"
 
 local FooBar = class("FooBar", Entity)
@@ -41,8 +41,8 @@ FooBar.baseModifiers = {
 
 
 -- make a sequence, if you are coding an enemy
-local None = require "logic.action.actions.none"
-local AttackMoveAction = require "logic.action.actions.attackmove"
+local None = require "@action.actions.none"
+local AttackMoveAction = require "@action.actions.attackmove"
 local Handlers = require 'modules.utils.handlers'
 
 FooBar.sequenceSteps = {    
@@ -53,7 +53,7 @@ FooBar.sequenceSteps = {
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function
-        movs = require "logic.sequence.movs.adjacent",
+        movs = require "@sequence.movs.adjacent",
         -- the exit function: turn to player
         exit = Handlers.turnToPlayer
     }
@@ -62,7 +62,7 @@ FooBar.sequenceSteps = {
 
 -- apply decorators
 local decorate = require('@decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
+local Decorators = require "@decorators.decorators"
 
 Decorators.Start(FooBar)
 Decorators.General(FooBar)

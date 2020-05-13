@@ -1,11 +1,10 @@
 -- this file will include means of transforming 
 -- a provided piece of input into action objects
 --
-
 local Decorator = require '@decorators.decorator'
 local None = require '@action.actions.none'
-local BasicHandlers = require "logic.action.handlers.basic"
-local Action = require "logic.action.action"
+local BasicHandlers = require "@action.handlers.basic"
+local Action = require "@action.action"
 local AttackDigMove = require '@action.actions.attackdigmove'
 local handlerUtils = require '@action.handlers.utils' 
 

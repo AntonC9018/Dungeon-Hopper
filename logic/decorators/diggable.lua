@@ -1,9 +1,8 @@
-local utils = require "logic.decorators.utils" 
+local utils = require "@decorators.utils" 
 local Changes = require 'render.changes'
-local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Decorator = require '@decorators.decorator'
+
 local Diggable = class('Diggable', Decorator)
-local Ranks = require 'lib.chains.ranks'
 
 local function setBase(event)
     event.resistance = event.actor:getStat(StatTypes.DigRes)

@@ -1,6 +1,5 @@
 local utils = require '@decorators.utils'
 local Decorator = require '@decorators.decorator'
-local Ranks = require 'lib.chains.ranks'
 local Event = require 'lib.chains.event'
 
 local InventoryContainer = class('InventoryContainer')

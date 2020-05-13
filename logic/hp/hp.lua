@@ -1,4 +1,4 @@
-local HPContainer = require "logic.hp.container"
+local HPContainer = require "@hp.container"
 
 local HP = class('HP')
 

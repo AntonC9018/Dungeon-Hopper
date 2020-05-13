@@ -1,4 +1,4 @@
-local Step = require "logic.sequence.step"
+local Step = require "@sequence.step"
 
 return function(configs)
     local steps = {}

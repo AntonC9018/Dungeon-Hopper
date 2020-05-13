@@ -1,6 +1,6 @@
 local Changes = require "render.changes"
-local HP = require "logic.hp.hp"
-local Decorator = require "logic.decorators.decorator"
+local HP = require "@hp.hp"
+local Decorator = require "@decorators.decorator"
 
 local WithHP = class("WithHP", Decorator)
 

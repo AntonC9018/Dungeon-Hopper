@@ -4,10 +4,9 @@
 --      3. make it use the GeneralAlgo
 --      4. make it Sequential
 
-local Acting = require "logic.decorators.acting"
-local GeneralAlgo = require "logic.algos.general"
-local Sequential = require "logic.decorators.sequential"
-local decorate = require('@decorators.decorate')
+local Acting = require "@decorators.acting"
+local GeneralAlgo = require "@algos.general"
+local Sequential = require "@decorators.sequential"
 
 local function General(entityClass)
 

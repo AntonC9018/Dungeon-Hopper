@@ -2,8 +2,7 @@
 local Decorator = require '@decorators.decorator'
 local utils = require '@decorators.utils'
 local Changes = require "render.changes"
-local Move = require "logic.action.effects.move"
-local Ranks = require 'lib.chains.ranks'
+local Move = require "@action.effects.move"
 
 local Displaceable = class('Displaceable', Decorator)
 

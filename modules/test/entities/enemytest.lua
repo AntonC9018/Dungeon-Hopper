@@ -1,4 +1,4 @@
-local Entity = require "logic.base.entity"
+local Entity = require "@base.entity"
 local Cell = require "world.cell"
 local BasicEnemy = require '.base.enemy'
 
@@ -8,8 +8,8 @@ local TestEnemy = class("TestEnemy", BasicEnemy)
 copyChains(BasicEnemy, TestEnemy)
 
 -- Set up sequence
-local None = require "logic.action.actions.none"
-local AttackMoveAction = require "logic.action.actions.attackmove"
+local None = require "@action.actions.none"
+local AttackMoveAction = require "@action.actions.attackmove"
 local Handlers = require 'modules.utils.handlers'
 
 local steps = {    
@@ -20,7 +20,7 @@ local steps = {
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function
-        movs = require "logic.sequence.movs.adjacent",
+        movs = require "@sequence.movs.adjacent",
         -- the exit function: turn to player
         exit = Handlers.turnToPlayer
     }

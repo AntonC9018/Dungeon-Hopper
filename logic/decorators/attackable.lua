@@ -1,9 +1,7 @@
-local utils = require "logic.decorators.utils" 
+local utils = require "@decorators.utils" 
 local Changes = require 'render.changes'
 local Decorator = require '@decorators.decorator'
-local Ranks = require 'lib.chains.ranks'
 local DynamicStats = require '@decorators.dynamicstats'
-local StatTypes = DynamicStats.StatTypes
 local AttackEffect = require '@action.effects.attack'
 
 local Attackable = class('Attackable', Decorator)
@@ -124,7 +122,7 @@ Attackable.activate =
     utils.checkApplyCycle("defence", "beHit")
 
 
-local Attackableness = require "logic.enums.attackableness"
+local Attackableness = require "@enums.attackableness"
 
 -- checking to what degree it is possible to attack    
 -- see logic.enums.attackableness 

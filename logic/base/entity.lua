@@ -9,8 +9,8 @@ local GameObject = require '@base.gameobject'
 local None = require '@action.actions.none'
 local Attackableness = require '@enums.attackableness'
 local Changes = require 'render.changes'
-local activateDecorator = require("logic.base.utils").activateDecorator
-local activateDecoratorCustom = require("logic.base.utils").activateDecoratorCustom
+local activateDecorator = require("@base.utils").activateDecorator
+local activateDecoratorCustom = require("@base.utils").activateDecoratorCustom
 
 local Entity = class("Entity", GameObject)
 

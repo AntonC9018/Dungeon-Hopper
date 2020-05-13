@@ -1,4 +1,4 @@
-local activateDecorator = require("logic.base.utils").activateDecorator
+local activateDecorator = require("@base.utils").activateDecorator
 
 local Player = class("Player", Entity)
 

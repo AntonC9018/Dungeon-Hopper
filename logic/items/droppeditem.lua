@@ -7,7 +7,7 @@ DroppedItem.layer = Cell.Layers.dropped
 
 -- apply decorators
 local decorate = require('@decorators.decorate')
-local Decorators = require "logic.decorators.decorators"
+local Decorators = require "@decorators.decorators"
 
 Decorators.Start(DroppedItem)
 decorate(DroppedItem, Decorators.Killable)

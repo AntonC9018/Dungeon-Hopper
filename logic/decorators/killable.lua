@@ -1,7 +1,7 @@
-local utils = require "logic.decorators.utils" 
+local utils = require "@decorators.utils" 
 local Changes = require "render.changes"
-
 local Decorator = require '@decorators.decorator'
+
 local Killable = class('Killable', Decorator)
 
 

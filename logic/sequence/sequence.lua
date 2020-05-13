@@ -1,7 +1,7 @@
-local Step = require "logic.sequence.step"
+local Step = require "@sequence.step"
 
 local Sequence = class('Sequence')
-local initializeSteps = require "logic.sequence.init"
+local initializeSteps = require "@sequence.init"
 
 function Sequence:__construct(steps)
     self.steps = initializeSteps(steps)

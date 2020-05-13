@@ -1,11 +1,8 @@
-local utils = require "logic.decorators.utils" 
+local utils = require "@decorators.utils" 
 local Changes = require "render.changes"
-local Ranks = require 'lib.chains.ranks'
-
 local Decorator = require '@decorators.decorator'
 local Stats = require '@stats.stats' 
 local Attack = require '@action.effects.attack'
-local StatTypes = require('@decorators.dynamicstats').StatTypes
 local Push = require '@action.effects.push'
 local Do = require '@interactors.do'
 

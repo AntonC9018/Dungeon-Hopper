@@ -1,4 +1,4 @@
-local Action = require "logic.action.action"
+local Action = require "@action.action"
 
 -- the none action means doing nothing
 local None = class("NoneAction", Action)

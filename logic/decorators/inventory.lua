@@ -34,9 +34,18 @@ function InventoryContainer:removeItem(itemToRemove)
     for index, item in ipairs(self.items) do
         if item == itemToRemove then
             self.items[index] = nil
-            -- need to shift everything to the left
-            for i = index + 1, self.clock do
-                self.items[i - 1] = self.items[i]
+
+            -- need to shift everything to the left 
+            -- if the clock is to the right
+            if index > self.clock then
+                for i = index + 1, self.clock do
+                    self.items[i - 1] = self.items[i]
+                end
+            else
+            -- otherwise, shift to the right
+                for i = index - 1, self.clock, -1 do
+                    self.items[i + 1] = self.items[i]
+                end
             end
             -- need to turn the clock back one postion
             self.clock = self.clock - 1

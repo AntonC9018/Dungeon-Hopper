@@ -547,6 +547,15 @@ local function class_meta(classdef)
   end
 end
 
+-- check if a table is a class definition
+local function is_class(t)
+    local mt = getmetatable(t)
+    if mt ~= nil then 
+        return mt.luaoop.type == nil
+    end
+    return false
+end
+
 -- MODULE class
 local class = setmetatable({
   new = class_new,
@@ -557,7 +566,8 @@ local class = setmetatable({
   meta = class_meta,
   instantiate = class_instantiate,
   build = class_build,
-  getop = class_getop
+  getop = class_getop,
+  is_class = is_class
 }, {
   __call = function(t, name, ...) -- shortcut
     return class_new(name, ...)

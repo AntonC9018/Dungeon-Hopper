@@ -71,31 +71,54 @@ local levels = {
 
 local lfs = require( "lfs" )
 
-local function requireX(folder)
+-- define a global variable that will optionally be used 
+-- to define the name by which to store the required file's
+-- output in the list
+USE_NAME = nil
+
+local function requireX(moduleName, folder)
     local result = {}
-    local path = system.pathForFile("modules/test/"..folder, thisFolder)
+
+    local path = system.pathForFile("modules/"..moduleName.."/"..folder, thisFolder)
+
     for filename in lfs.dir(path) do
+
         local name = string.match(filename, '%D+%.lua')
-        if name ~= nil and string.match(name, '__') == nil then
+
+        if 
+            name ~= nil 
+            and string.match(name, '__') == nil 
+            and name ~= 'utils.lua'
+        then
             name = string.lower(name)
             name = string.sub(name, 1, #name - 4)
-            local r = require('modules.test.'..folder..'.'..name)
-            if class.name(r) ~= nil then
+
+            USE_NAME = nil
+            local r = require('modules.'..moduleName..'.'..folder..'.'..name)
+
+            if USE_NAME ~= nil then
+                name = USE_NAME
+            elseif class.is_class(r) then
                 name = class.name(r)
             end
-            result[name] = r 
+
+            result[name] = r
         end
+
     end
+
     return result
 end
 
+
+local moduleName = 'test'
 local all = {}
 for _, level in ipairs(levels) do
     for _, subname in ipairs(level) do
         if type(subname) == 'string' then
-            all[subname] = requireX(string.lower(subname))
+            all[subname] = requireX(moduleName, string.lower(subname))
         else
-            all[subname[1]] = requireX(string.lower(subname[2]))
+            all[subname[1]] = requireX(moduleName, string.lower(subname[2]))
         end
     end
 end

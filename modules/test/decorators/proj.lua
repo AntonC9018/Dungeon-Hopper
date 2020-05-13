@@ -13,6 +13,9 @@ Attackable.registerAttackSource('Proj')
 -- Define our custom decorator
 local ProjDec = class("ProjDec", Decorator)
 
+-- store this by name 'Projectile' in the list of Decorators
+USE_NAME = 'Projectile'
+
 
 local function unattackableAfterCheck(event)
     event.propagate = not

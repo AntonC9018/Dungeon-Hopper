@@ -2,7 +2,7 @@
 
 local Cell = class("Cell")
 
-Cell.Layers = {
+local Layers = {
     floor = 1,
     misc = 2,
     trap = 3,
@@ -13,6 +13,8 @@ Cell.Layers = {
     real = 8,
     player = 9 -- this is not actually used in Cell, this is for completeness in Grid
 }
+
+Cell.Layers = Layers
 
 function Cell:__construct(pos)
     self.pos = pos
@@ -33,67 +35,65 @@ function Cell:get(layer)
 end
 
 function Cell:getFloor()
-    return self.layers[Cell.Layers.floor]
+    return self.layers[Layers.floor]
 end
 
 function Cell:getTrap()
-    return self.layers[Cell.Layers.trap]
+    return self.layers[Layers.trap]
 end
 
 function Cell:getWall()
-    return self.layers[Cell.Layers.wall]
+    return self.layers[Layers.wall]
 end
 
 function Cell:getReal()
-    return self.layers[Cell.Layers.real]
+    return self.layers[Layers.real]
 end
 
 function Cell:getDropped()
-    return self.layers[Cell.Layers.dropped]
+    return self.layers[Layers.dropped]
 end
 
 function Cell:getProjectile()
-    return self.layers[Cell.Layers.projectile]
+    return self.layers[Layers.projectile]
 end
 
 function Cell:setFloor(floor)
-    self.layers[Cell.Layers.floor] = floor
+    self.layers[Layers.floor] = floor
 end
 
 function Cell:setReal(real)
-    self.layers[Cell.Layers.real] = real
+    self.layers[Layers.real] = real
 end
 
 function Cell:setTrap(trap)
-    self.layers[Cell.Layers.trap] = trap
+    self.layers[Layers.trap] = trap
 end
 
 function Cell:setWall(wall)
-    self.layers[Cell.Layers.wall] = wall
+    self.layers[Layers.wall] = wall
 end
 
 function Cell:setProjectile(projectile)
-    self.layers[Cell.Layers.projectile] = projectile
+    self.layers[Layers.projectile] = projectile
 end
 
 -- The one generic method
 function Cell:set(object)
     local layer = object.layer
-    if layer == Cell.Layers.player then
-        layer = Cell.Layers.real
+
+    if layer == Layers.player then
+        layer = Layers.real
     end
-    local prev = self.layers[layer]
+
     self.layers[layer] = object
-    return prev
 end
 
 function Cell:clear(layer)
-    if layer == Cell.Layers.player then
-        layer = Cell.Layers.real
+    if layer == Layers.player then
+        layer = Layers.real
     end
-    local prev = self.layers[layer]
     self.layers[layer] = nil
-    return prev
 end
 
 
@@ -108,11 +108,11 @@ function Cell:dropGold(amount)
 end
 
 function Cell:setGold(gold)
-    self.layers[Cell.Layers.gold] = gold
+    self.layers[Layers.gold] = gold
 end
 
 function Cell:getGold()
-    return self.layers[Cell.Layers.gold]
+    return self.layers[Layers.gold]
 end
 
 

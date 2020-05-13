@@ -293,7 +293,15 @@ function World:filterDead()
 end
 
 function World:createDroppedItem(id, pos)
-    local droppedItem = DroppedItem()
+    -- if exists, take the item and add it an id
+    local droppedItem = self.grid:getDroppedAt(pos)
+    if droppedItem ~= nil then
+        droppedItem:addItemId(id)
+        -- TODO: signal the rederer to draw a couple of states at once
+        return droppedItem
+    end
+    -- otherwise, create one
+    droppedItem = DroppedItem()
     droppedItem:init(pos, self)
     droppedItem:setItemId(id)
     self.grid:set(droppedItem, pos)

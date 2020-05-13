@@ -6,32 +6,44 @@ local InventoryContainer = class('InventoryContainer')
 
 function InventoryContainer:__construct(size)
     self.size = size
+    self.clock = 1
     self.items = {}
+    self.excess = {}
 end
 
 function InventoryContainer:addItem(item)
-    table.insert(self.items, item)
+    local existingItem = self.items[self.clock]
+    if existingItem ~= nil then
+        table.insert(self.excess, existingItem)
+    end
+    self.items[self.clock] = item
+    self.clock = self.clock + 1
+    if self.clock > self.size then
+        self.clock = 1
+    end
 end
 
-function InventoryContainer:removeExcess() 
-    if #self.items <= self.size then
-        return {}
-    end
-    
-    local excess
-
-    excess, self.items = 
-        table.slice(self.items, self.size + 1), 
-        table.slice(self.items, 1, self.size)
-
-    return excess
+function InventoryContainer:removeExcess()
+    local result = self.excess
+    self.excess = {}
+    return result
 end
 
 
 function InventoryContainer:removeItem(itemToRemove)
     for index, item in ipairs(self.items) do
         if item == itemToRemove then
-            table.remove(self.items, index)
+            self.items[index] = nil
+            -- need to shift everything to the left
+            for i = index + 1, self.clock do
+                self.items[i - 1] = self.items[i]
+            end
+            -- need to turn the clock back one postion
+            self.clock = self.clock - 1
+            -- if clock is out, wrap it around
+            if self.clock == 0 then
+                self.clock = self.size
+            end
             return item
         end
     end

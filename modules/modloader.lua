@@ -104,6 +104,4 @@ Mods = {}
 MODULE_NAME = 'test'
 Mods.Test = require 'modules.test.main'
 
-print(ins(Mods, {depth = 3}))
-
 -- require = req

@@ -30,6 +30,25 @@ return function()
     for i = 1, 10 do
         chests[i] = world:create(Mods.Test.Entities.Chest, Vec(i, 4))
     end
+
+
+    local shield = Mods.Test.Items.shield.id
+    local shell = Mods.Test.Items.shell.id
     
-    Input(world)
+    TMAP = {}
+    TMAP[shield] = 'shield'
+    TMAP[shell] = 'shell'
+
+    world:createDroppedItem(shield, Vec(2, 2))
+    world:createDroppedItem(shell, Vec(2, 2))
+    
+    Input(world, function()
+        local item = player.inventory:get(Mods.Test.Items.shell.slot)
+        if item then
+            local dropped = world.grid:getDroppedAt(Vec(2, 2))
+            local did = dropped:getItemIds()
+            print('The dropped item is a '..(TMAP[did[1]]))
+        end
+        
+    end)
 end

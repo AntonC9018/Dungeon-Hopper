@@ -1,9 +1,8 @@
 local Entity = require '@base.entity'
-local Cell = require 'world.cell'
 local DroppedItem = class('DroppedItem', Entity)
 
 -- the slot in the inventory
-DroppedItem.layer = Cell.Layers.dropped
+DroppedItem.layer = Layers.dropped
 
 -- apply decorators
 local decorate = require('@decorators.decorate')
@@ -17,11 +16,15 @@ decorate(DroppedItem, Decorators.Killable)
 --     self:die()
 -- end
 
-function DroppedItem:setItemId(id)
-    self.state = id
+function DroppedItem:addItemId(id)
+    table.insert(self.state, id)
 end
 
-function DroppedItem:getItemId()
+function DroppedItem:setItemId(id)
+    self.state = { id }
+end
+
+function DroppedItem:getItemIds()
     return self.state
 end
 

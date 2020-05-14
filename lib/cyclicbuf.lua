@@ -10,10 +10,8 @@ end
 
 
 function CyclicBuffer:advanceClock(x)
-    self.clock = self.clock + x
-    if self.clock > self.size then
-        self.clock = self.clock - self.size
-    end
+    self.clock = self.clock + x - 1
+    self.clock = (self.clock % self.size) + 1
 end
 
 
@@ -101,7 +99,7 @@ function CyclicBuffer:removeAt(index)
         end
         return
     end
-    -- if the clock's position is to the left of the item being
+    -- if the clock's position is to the right of the item being
     -- removed, shift the items staring from the index of that item
     -- to the clock's position, shift from right to left
     for i = index, self.clock - 1 do

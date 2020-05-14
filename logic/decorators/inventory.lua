@@ -1,67 +1,7 @@
 local utils = require '@decorators.utils'
 local Decorator = require '@decorators.decorator'
 local Event = require 'lib.chains.event'
-
-local InventoryContainer = class('InventoryContainer')
-
-function InventoryContainer:__construct(size)
-    self.size = size
-    self.clock = 1
-    self.items = {}
-    self.excess = {}
-end
-
-function InventoryContainer:addItem(item)
-    local existingItem = self.items[self.clock]
-    if existingItem ~= nil then
-        table.insert(self.excess, existingItem)
-    end
-    self.items[self.clock] = item
-    self.clock = self.clock + 1
-    if self.clock > self.size then
-        self.clock = 1
-    end
-end
-
-function InventoryContainer:removeExcess()
-    local result = self.excess
-    self.excess = {}
-    return result
-end
-
-
-function InventoryContainer:removeItem(itemToRemove)
-    for index, item in ipairs(self.items) do
-        if item == itemToRemove then
-            self.items[index] = nil
-
-            -- need to shift everything to the left 
-            -- if the clock is to the right
-            if index > self.clock then
-                for i = index + 1, self.clock do
-                    self.items[i - 1] = self.items[i]
-                end
-            else
-            -- otherwise, shift to the right
-                for i = index - 1, self.clock, -1 do
-                    self.items[i + 1] = self.items[i]
-                end
-            end
-            -- need to turn the clock back one postion
-            self.clock = self.clock - 1
-            -- if clock is out, wrap it around
-            if self.clock == 0 then
-                self.clock = self.size
-            end
-            return item
-        end
-    end
-end
-
-
-function InventoryContainer:get(i)
-    return self.items[i]
-end
+local CyclicBuffer = require 'lib.cyclicbuf'
 
 
 local Inventory = class('Inventory', Decorator)
@@ -101,7 +41,7 @@ function Inventory:__construct(actor)
     actor.inventory = self
     self.containers = {}
     for i, size in ipairs(SlotsLength) do
-        self.containers[i] = InventoryContainer(size)
+        self.containers[i] = CyclicBuffer(size)
     end
 end
 

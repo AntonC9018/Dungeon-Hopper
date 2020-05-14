@@ -18,13 +18,14 @@ end
 local function watch(event)
     local actor = event.actor
     -- if did hit anything watch the cell for a beat
-    actor.world.grid:watchBeat(
+    actor.world.grid:watchOnto(
         actor.pos,
         function(entity)
             if not actor.dead then
                 actor:executeAttack(event.action, { entity })
             end
-        end
+        end,
+        1
     )
 end
 

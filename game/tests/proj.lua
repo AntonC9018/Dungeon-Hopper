@@ -1,9 +1,9 @@
-local TestEnemy = require 'modules.test.entities.enemytest' 
-
-local Projectile = require 'modules.test.entities.projectile'
-local BounceTrap = require 'modules.test.entities.bouncetrap'
+require 'modules.modloader'
 local Input = require 'game.input'
 
+local Projectile = Mods.Test.Entities.BasicProjectile
+local BounceTrap = Mods.Test.Entities.BounceTrap
+local Candace = Mods.Test.Entities.Candace
 
 return function()
 
@@ -15,9 +15,8 @@ return function()
     local world = World(renderer, 20, 20)
     world:addGameObjectType(Projectile)
     world:addGameObjectType(BounceTrap) 
+    world:addGameObjectType(Candace) 
     world:registerTypes(assets)
-    Input(world)
-
 
     -- load all assets
     assets:loadAll()
@@ -30,14 +29,19 @@ return function()
     )
 
     world:createFloors()
-    local player = world:createPlayerAt( Vec(4, 3) )
+    local player = world:createPlayer( Candace, Vec(4, 3) )
     local trap = world:create(BounceTrap, Vec(4, 4))
     trap.orientation = Vec(0, 1)
-    local proj = world:create(Projectile, Vec(5, 5))
+    local proj = world:create(Projectile, Vec(7, 5))
     proj.orientation = Vec(-1, 0)
-    -- local proj = world:create(Projectile, Vec(9, 5))
-    -- proj.orientation = Vec(-1, 0)
 
-    -- proj:setStat(StatTypes.Push, 'power', 10)
     proj:setStat(StatTypes.Push, 'distance', 1)
+
+
+    world.grid:watchOnto(Vec(4, 3), function() print('f') end, 1)
+
+
+    Input(world, function()
+    end)
+
 end

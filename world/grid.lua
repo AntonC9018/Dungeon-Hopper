@@ -57,8 +57,7 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.dropped] = self.dropped
 
     -- create watcher emitters
-    self.cellWatcher     = Emitter()
-    self.beatCellWatcher = Emitter()
+    self.watchers = { Emitter() }
 end
 
 function Grid:checkBound(pos)
@@ -71,31 +70,44 @@ function Grid:getWatchCode(pos)
     return string.format('%i-%i', pos.x, pos.y)
 end
 
-function Grid:watch(pos, func)
-    local code = self:getWatchCode(pos)
-    self.cellWatcher:on(code, func)
+function Grid:watchOnto(pos, func, count)
+    self:watch(pos, 'onto', func, count or 0)
 end
 
-function Grid:watchBeat(pos, func)
+function Grid:watchFrom(pos, func, count)
+    self:watch(pos, 'from', func, count or 0)
+end
+
+function Grid:watch(pos, event, func, count)
     local code = self:getWatchCode(pos)
-    self.beatCellWatcher:on(code, func)
+    local ev =   event..code
+    if self.watchers[count] == nil then
+        self.watchers[count] = Emitter()
+    end
+    self.watchers[count]:on(ev, func)
 end
 
 function Grid:unwatch(pos, func)
     local code = self:getWatchCode(pos)
-    self.cellWatcher:removeListener(code, func)
+    self.watchers[0]:removeListener(code, func)
 end
 
 function Grid:resetBeat()
-    -- reinstantiate the beat watcher
-    self.beatCellWatcher = Emitter()
+    -- shift the emitters to the left
+    for i = 1, #self.watchers do
+        self.watchers[i] = self.watchers[i + 1]  
+    end
 end
 
-function Grid:emitWatchers(pos, entity)
+function Grid:emitWatchers(pos, event, entity)
     -- emit watchers
     local code = self:getWatchCode(pos)
-    self.beatCellWatcher:emit(code, entity)
-    self.cellWatcher    :emit(code, entity)
+    local ev =   event..code
+    for i = 0, #self.watchers do
+        if self.watchers[i] ~= nil then
+            self.watchers[i]:emit(ev, entity)
+        end
+    end
 end
 
 -- Some helper functions for working with the grid
@@ -308,7 +320,7 @@ function Grid:reset(entity)
     end
     local cell = self:getCellAt(entity.pos)
     cell:set(entity)
-    self:emitWatchers(entity.pos, entity)
+    self:emitWatchers(entity.pos, 'onto', entity)
 end
 
 -- function Grid:resetPlayer(player)
@@ -349,7 +361,6 @@ function Grid:set(g, pos)
     local cell = self:getCellAt(pos)
     cell:set(g)
     table.insert(self.layers[g.layer], g)
-    self:emitWatchers(pos, g)
 end
 
 function Grid:setPlayerAt(player, pos)
@@ -410,6 +421,7 @@ end
 function Grid:remove(object)
     local cell = self:getCellAt(object.pos)
     cell:clear(object.layer)
+    self:emitWatchers(object.pos, 'from', entity)
 end
 
 -- -- TODO: modify to allow different sizes

@@ -85,7 +85,6 @@ function Cell:set(object)
     if layer == Layers.player then
         layer = Layers.real
     end
-
     self.layers[layer] = object
 end
 

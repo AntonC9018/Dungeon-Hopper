@@ -16,22 +16,22 @@ local Options = require '@items.insides.options'
 local Pools = require '@items.pool.test.map'
 local Insides = require '.retouchers.insides'
 
--- Insides.setConstant(Chest, 
---     { 
---         id = Options.ITEM_FROM_POOL, 
---         poolId = Pools.Weaponry 
---         -- amount = 5
---     }
--- )
-
--- add some test stuff
-Insides.set(Chest,
-    {
-        { 50, { id = Options.ITEM, itemId = 1 } },
-        { 50, { id = Options.GOLD, amount = 5 } },
-        { 50, { id = Options.ENTITY, class = Chest } }
+Insides.setConstant(Chest, 
+    { 
+        id = Options.ITEM_FROM_POOL, 
+        poolId = Pools.Weaponry 
+        -- amount = 5
     }
 )
+
+-- add some test stuff
+-- Insides.set(Chest,
+--     {
+--         { 50, { id = Options.ITEM, itemId = 1 } },
+--         { 50, { id = Options.GOLD, amount = 5 } },
+--         { 50, { id = Options.ENTITY, class = Chest } }
+--     }
+-- )
 Insides.spawnOnDeath(Chest)
 
 return Chest

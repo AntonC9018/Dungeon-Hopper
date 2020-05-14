@@ -17,7 +17,7 @@ end
 
 local function watch(event)
     local actor = event.actor
-    -- if did hit anything watch the cell for a beat
+    -- if did not hit anything, watch the cell for a beat
     actor.world.grid:watchOnto(
         actor.pos,
         function(entity)

@@ -32,6 +32,7 @@ function Pool:__construct(
     self.parent = parent
 
     self:remapRecords(sharedRecords)
+    self:recalculateMass()
     self:instantiateSubpools(sharedRecords)
 
 end
@@ -43,18 +44,29 @@ function Pool:remapRecords(sharedRecords)
         self.records = sharedRecords
     else
         self.records = table.map(
-            self.config[1],
-            function(recIndex)
-                return sharedRecords[recIndex]
+            self.config.ids,
+            function(recData)
+                if type(recData) == 'table' then
+                    return { 
+                        shared = sharedRecords[recData.id].shared, 
+                        mass = recData.mass
+                    }
+                end
+                return {
+                    shared = sharedRecords[recData].shared,
+                    mass = sharedRecords[recData].mass
+                }
             end
         )
-    end
+    end    
+end
 
-    -- set up mass
+
+function Pool:recalculateMass()
     self.totalMass = table.reduce(
         self.records, 
         function(a, rec) 
-            return a + rec.q * rec.mass 
+            return a + rec.shared.q * rec.mass 
         end
     )
 end
@@ -63,9 +75,9 @@ end
 function Pool:instantiateSubpools(sharedRecords)
     self.subpools = {}
 
-    if self.config[2] then
+    if self.config.subpools then
         -- instantiate all subpools
-        for i, subpoolConfig in ipairs(self.config[2]) do
+        for i, subpoolConfig in ipairs(self.config.subpools) do
             self.subpools[i] = Pool(
                 nil, 
                 subpoolConfig, 
@@ -74,6 +86,13 @@ function Pool:instantiateSubpools(sharedRecords)
                 self
             )
         end
+    end
+end
+
+function Pool:recalculateMassChildren()
+    for _, subpool in ipairs(self.subpools) do
+        subpool:recalculateMass()
+        subpool:recalculateMassChildren()
     end
 end
 
@@ -107,7 +126,7 @@ function Pool:getRandom()
     -- For now, loop as normal.
     local record
     for _, rec in ipairs(self.records) do
-        mass = mass - rec.q * rec.mass
+        mass = mass - rec.shared.q * rec.mass
         if mass <= 0 then
             record = rec
             break
@@ -116,13 +135,13 @@ function Pool:getRandom()
     
     assert(record ~= nil)
 
-    record.q = record.q - 1
+    record.shared.q = record.shared.q - 1
     -- update total mass
     self:reduceMass(record.mass)
 
-    self:updateOnRetrieval(record, 1)
+    self:updateOnRetrieval(record.shared.id, 1)
 
-    return record
+    return record.shared.id
 end
 
 
@@ -138,13 +157,13 @@ function Pool:getRandomMass()
 end
 
 
-function Pool:update(record, reducedAmount)
+function Pool:update(id, reducedAmount)
     -- for now just loops through all records 
     -- and see if there is the given one
     -- TODO: use binary search
-    for _, rec in ipairs(self.records) do
-        if rec == record then
-            self:reduceMass(record.mass * reducedAmount)
+    for i, rec in ipairs(self.records) do
+        if rec.shared.id == id then
+            self:reduceMass(rec.mass * reducedAmount)
             return true
         end
     end
@@ -152,27 +171,27 @@ function Pool:update(record, reducedAmount)
 end
 
 
-function Pool:updateOnRetrieval(record, reducedAmount, ignoredCaller)   
+function Pool:updateOnRetrieval(id, reducedAmount, ignoredCaller) 
     -- if this has a parent pool, signal it to update its other subpools
     if self.parent ~= nil then
-        self.parent:updateOnRetrieval(record, reducedAmount, self)
+        self.parent:updateOnRetrieval(id, reducedAmount, self)
     end
 
-    self:updateSubpools(record, reducedAmount, ignoredCaller)
+    self:updateSubpools(id, reducedAmount, ignoredCaller)
 end
 
 
-function Pool:updateSubpools(record, reducedAmount, ignoredCaller)
+function Pool:updateSubpools(id, reducedAmount, ignoredCaller)
     if 
         ignoredCaller == nil
         -- if the mass has been updated, update the children
-        or self:update(record, reducedAmount)
+        or self:update(id, reducedAmount)
     then
         -- update subpools
         for _, subpool in ipairs(self.subpools) do
             -- ignore the node that called this
             if ignoredCaller ~= subpool then
-                subpool:updateSubpools(record, reducedAmount, self)
+                subpool:updateSubpools(id, reducedAmount, self)
             end
         end
     end
@@ -210,21 +229,13 @@ function Pool:exhaust(exhaustedPool)
         end
 
         -- after that, modify the records to include these values
-        local j = 1
-        local erecs = exhaustedPool.records
-        local len = #erecs
-        for i, rec in ipairs(self.records) do
-            if rec.id == erecs[j].id then
-                self.records[i] = table.deepClone(self.initialRecords[rec.id])
-                j = j + 1
-                if j > len then
-                    break
-                end
-            end
+        for _, rec in ipairs(exhaustedPool.records) do
+            rec.shared.q = self.initialRecords[rec.shared.id].shared.q
         end
 
-        self:remapRecords(self.records)
-        self:instantiateSubpools(self.records)
+        self:recalculateMass()
+        self:recalculateMassChildren()
+
         return true
 
     -- in the root node; we are the source
@@ -232,10 +243,11 @@ function Pool:exhaust(exhaustedPool)
         -- recreate the entire tree from the config, since
         -- the entire structure has been depleted
         if self.totalMass <= 0 then
-            -- deepcopy the initialRecords to get the new shared records
-            local sharedRecords = table.deepClone(self.initialRecords)
-            self:remapRecords(sharedRecords)
-            self:instantiateSubpools(sharedRecords)
+            for id, rec in ipairs(self.records) do
+                rec.q = self.initialRecords[id].shared.q
+            end
+            self:recalculateMass()
+            self:recalculateMassChildren()
             return true
         end
     else

@@ -39,7 +39,7 @@ local function createPool(initialRecords, config)
         end
     )
 
-    return Pool(initialRecords, { nil, config })
+    return Pool(initialRecords, { subpools = config })
 end
 
 

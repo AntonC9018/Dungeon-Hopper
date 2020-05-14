@@ -10,9 +10,9 @@ for i, _ in ipairs(Items) do
 end
 
 local config = {
-    { { spear.id, shield.id, shell.id }        
+    { ids = { spear.id, shield.id, shell.id }        
     },
-    { { testitem.id }
+    { ids = { testitem.id }
     }
 }
 

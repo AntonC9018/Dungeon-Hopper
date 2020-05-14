@@ -17,8 +17,7 @@ Chain = require('lib.chains.schain')
 
 function scene:create( event )
     
-    require("game.tests.proj")()
-
+    require("game.tests.inf")()
 
 end
 

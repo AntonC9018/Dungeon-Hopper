@@ -356,7 +356,7 @@ function World:getRandomItemFromPool(id)
     if pool:exhaust() then
         pool = self:mapIdToSubpool(id)
     end
-    local itemId = pool:getRandom().id
+    local itemId = pool:getRandom()
     return itemId
 end
 

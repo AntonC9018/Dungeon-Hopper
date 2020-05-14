@@ -14,7 +14,6 @@ end
 
 
 function InfPool:remapRecords(records)
-
     if self.config.ids == nil then
         self.records = records
     else
@@ -36,7 +35,7 @@ end
 function InfPool:recalculateMass()
     self.totalMass = table.reduce(
         self.records, 
-        function(a, rec) 
+        function(a, rec)
             return a + rec.mass 
         end
     )

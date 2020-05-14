@@ -22,6 +22,8 @@ function Assets:getObjectType(gameObject)
 end
 
 function Assets:registerGameObjectType(type)
+    print(type)
+
     self.spriteConfigs[type] = 
         self.getSpriteConfigByType(type)
 

@@ -1,4 +1,4 @@
-require 'modules.modloader'
+
 local Input = require 'game.input'
 
 return function()

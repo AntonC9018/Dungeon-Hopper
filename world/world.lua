@@ -1,35 +1,19 @@
 local Grid = require "world.grid"
 
 local World = class("World")
-
 local Changes = require 'render.changes'
 local DroppedItem = require '@items.droppeditem'
-local Tile = Mods.Test.EntityBases.Tile
 
-function World:__construct(renderer, w, h)
+function World:__construct(w, h)
     self.grid = Grid(w, h)
-    self.orderedReals = {}
-    self.emitter = Emitter()
-    self.renderer = renderer
     self.changes = {{}}
     self.phase = 1
-    self.gameObjectTypes = { Tile, DroppedItem }
 end
 
 
--- registering types
-function World:addGameObjectType(t)
-    table.insert(self.gameObjectTypes, t)
+function World:setRenderer(renderer)
+    self.renderer = renderer
 end
-
-function World:registerTypes(assets)
-    -- register all assets
-    for _, t in ipairs(self.gameObjectTypes) do
-        local assetType = assets:getObjectType(t)
-        assets:registerGameObjectType(assetType)
-    end    
-end
-
 
 -- player and entity creation
 function World:createPlayer(Player, pos)
@@ -41,12 +25,29 @@ function World:createPlayer(Player, pos)
     return player
 end
 
-function World:createFloors()
+function World:createFloors(Tile)
     for i = 1, #self.grid.grid do
         for j = 1, #self.grid.grid[1] do
             self:create( Tile, Vec(i, j) )
         end
     end
+end
+
+function World:createDroppedItem(id, pos)
+    -- if exists, take the item and add it an id
+    local droppedItem = self.grid:getDroppedAt(pos)
+    if droppedItem ~= nil then
+        droppedItem:addItemId(id)
+        -- TODO: signal the rederer to draw a couple of states at once
+        return droppedItem
+    end
+    -- otherwise, create one
+    droppedItem = DroppedItem()
+    droppedItem:init(pos, self)
+    droppedItem:setItemId(id)
+    self.grid:set(droppedItem, pos)
+    self.renderer:addRenderEntity(droppedItem)
+    return droppedItem
 end
 
 function World:create(Entity, pos)
@@ -90,9 +91,6 @@ end
 
 
 function World:gameLoop()
-
-    self.emitter:emit('game-loop:start')
-
     -- sort all game objects by prority
     self:sortByPriority()
     
@@ -136,8 +134,6 @@ function World:gameLoop()
     -- reset stored actions in objects
     -- reset the phase to 0
     self:reset()
-
-    self.emitter:emit("game-loop:end")
 end
 
 
@@ -191,11 +187,6 @@ end
 
 function World:sortByPriority()
     -- sort everything in grid by priority
-    -- self.grid:sortReals()
-    -- self.grid:sortFloors()
-    -- self.grid:sortWalls()
-    -- self.grid:sortTraps()
-    -- self.grid:sortProjectiles()
     self.grid:sortAll()
 end
 
@@ -213,12 +204,6 @@ end
 -- that is, e.g. the sequence step. The thing that ticks stuff 
 -- is the tick() method
 function World:calculateActions()
-    -- self.grid:calculateActionsReals()    
-    -- self.grid:calculateActionsFloors()
-    -- self.grid:calculateActionsWalls()
-    -- self.grid:calculateActionsTraps()
-    -- self.grid:calculateActionsProjectiles()
-    -- self.grid:calculateActionsMisc()
     self.grid:calculateActionsAll()
 end
 
@@ -229,6 +214,7 @@ function World:executePlayerActions()
     end
 end
 
+-- TODO: refactor into methods on grid
 function World:activateMisc()
     for i = 1, #self.grid.misc do
         if not self.grid.misc[i].didAction then
@@ -282,32 +268,10 @@ function World:activateProjectiles()
 end
 
 
-function World:filterDead()
-    -- self.grid:filterDeadPlayers()
-    -- self.grid:filterDeadReals()
-    -- self.grid:filterDeadFloors()
-    -- self.grid:filterDeadWalls()
-    -- self.grid:filterDeadTraps()
-    -- self.grid:filterDeadProjectiles()   
+function World:filterDead() 
     self.grid:filterDeadAll() 
 end
 
-function World:createDroppedItem(id, pos)
-    -- if exists, take the item and add it an id
-    local droppedItem = self.grid:getDroppedAt(pos)
-    if droppedItem ~= nil then
-        droppedItem:addItemId(id)
-        -- TODO: signal the rederer to draw a couple of states at once
-        return droppedItem
-    end
-    -- otherwise, create one
-    droppedItem = DroppedItem()
-    droppedItem:init(pos, self)
-    droppedItem:setItemId(id)
-    self.grid:set(droppedItem, pos)
-    self.renderer:addRenderEntity(droppedItem)
-    return droppedItem
-end
 
 function World:removeDead(entity)
     self.grid:remove(entity)
@@ -337,27 +301,38 @@ function World:registerChange(obj, code)
 end
 
 
-local obj = require '@items.pool.test.config'
-local createPool = require '@items.pool.create'
-local testPool = createPool(obj.items, obj.config)
+function World:useEntityPool(pool)
+    self.entityPool = pool
+end
+
+function World:useItemPool(pool)
+    self.itemPool = pool
+end
 
 -- Map indices to subpools
 -- For now keep it really simple
 -- Use a sample 1 level deep pool structure for now
-function World:mapIdToSubpool(id)
-    if id == 0 then
-        return testPool
+function World:mapIdToSubpool(pool, id)
+    if id == 1 then
+        return pool
     end
-    return testPool.subpools[id]
+    return pool.subpools[id - 1]
 end
 
 function World:getRandomItemFromPool(id)
-    local pool = self:mapIdToSubpool(id)
+    local pool = self:mapIdToSubpool(self.itemPool, id)
     if pool:exhaust() then
-        pool = self:mapIdToSubpool(id)
+        pool = self:mapIdToSubpool(self.itemPool, id)
     end
     local itemId = pool:getRandom()
     return itemId
+end
+
+function World:getRandomEntityFromPool(id)
+    local pool = self:mapIdToSubpool(self.entityPool, id)
+    local itemId = pool:getRandom()
+    return itemId
+
 end
 
 return World

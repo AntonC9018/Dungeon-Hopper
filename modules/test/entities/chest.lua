@@ -13,13 +13,12 @@ local Init = require '.decorators.init'
 decorate(Chest, Init)
 
 local Options = require '@items.insides.options'
-local Pools = require '@items.pool.test.map'
 local Insides = require '.retouchers.insides'
 
 Insides.setConstant(Chest, 
     { 
         id = Options.ITEM_FROM_POOL, 
-        poolId = Pools.Weaponry 
+        poolId = 2 
         -- amount = 5
     }
 )

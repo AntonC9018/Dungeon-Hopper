@@ -57,7 +57,8 @@ function Grid:__construct(w, h)
     self.layers[Cell.Layers.dropped] = self.dropped
 
     -- create watcher emitters
-    self.watchers = { Emitter() }
+    self.watchers = {}
+    self.watchers[0] = Emitter()
 end
 
 function Grid:checkBound(pos)

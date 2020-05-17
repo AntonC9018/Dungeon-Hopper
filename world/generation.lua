@@ -5,7 +5,7 @@
 -- After that, update the list of free segments
 -- Repeat, until a grid has been generated
 
-local MAX_ITER = 10000
+local MAX_ITER = 200
 
 local function Dir(x, y)
     return { x = x, y = y }
@@ -119,10 +119,7 @@ function Generator:randomDirOtherThan(dirs)
 end
 
 function Generator:isOccupiedPosInGraph(x, y)
-    if x > self.width then
-        return true
-    end
-    if y > self.height then
+    if (x > #self.graphMap) or (y > #self.graphMap) or (x < 1) or (y < 1) then
         return true
     end
     return self.graphMap[x][y] ~= nil
@@ -139,47 +136,80 @@ function Generator:generateNode(parentNode)
         if self:isOccupiedPosInGraph(x, y) then
             table.insert(dirs, dir)
             if #dirs == 4 then
-                print('ALl directions occupied')
+                print('All directions occupied')
                 return nil
             end
         else
             local node = Node(x, y, w, h)
             self.graphMap[x][y] = node
             parentNode:setNeighbor(dir, node)
+            table.insert(self.nodes, node)
             return node
         end
-    until true
+    until false
 end
 
+function Generator:addNode(index, dir, w, h)
+    w = w or math.random(7, 9)
+    h = h or math.random(7, 9)
+    local parentNode = self.nodes[index]
+    local x, y
+
+    local function add()        
+        local node = Node(x, y, w, h)
+        self.graphMap[x][y] = node
+        table.insert(self.nodes, node)
+        parentNode:setNeighbor(dir, node)
+        return node
+    end
+
+    if dir ~= nil then
+        x = parentNode.x + dir.x
+        y = parentNode.y + dir.y
+        return add()
+    end
+
+    local dirs = parentNode:getOccupiedDirections()
+    repeat
+        dir = self:randomDirOtherThan(dirs)
+        x = parentNode.x + dir.x
+        y = parentNode.y + dir.y
+        for i = 1, #dirs do
+            assert(dirs[i].x ~= dir.x or dirs[i].y ~= dir.y)
+        end
+        if self:isOccupiedPosInGraph(x, y) then
+            table.insert(dirs, dir)
+            if #dirs == 4 then
+                print('All directions occupied')
+                return nil
+            end
+        else
+            return add()
+        end
+    until false
+end
+
+function Generator:start(w, h)    
+    local startRoomWidth = w or 6
+    local startRoomHeight = h or 6
+    self.rootNode = Node(5, 5, startRoomWidth, startRoomHeight)
+
+    -- use a graph map to easily search for neihboring nodes
+    self.graphMap = {}
+    for i = 1, 10 do
+        self.graphMap[i] = {}
+    end
+    self.graphMap[5][5] = self.rootNode
+
+    self.nodes = {self.rootNode}
+    self.generateCount = 0
+end
 
 function Generator:__construct(w, h)
     self.width = w
     self.height = h
-    self.grid = {}
-    for i = 1, w do
-        self.grid[i] = {}
-    end
-
     -- so the idea is to generate a graph where
     -- the root node is the starting room
-    local startRoomWidth = 6
-    local startRoomHeight = 6
-    self.rootNode = Node(3, 3, startRoomWidth, startRoomHeight)
-
-    -- use a graph map to easily search for neihboring nodes
-    self.graphMap = {}
-    for i = 1, 5 do
-        self.graphMap[i] = {}
-    end
-    self.graphMap[3][3] = self.rootNode
-    
-    local room1 = self:generateNode(self.rootNode)
-    local room2 = self:generateNode(self.rootNode)
-    local room1_1 = self:generateNode(room1)
-    local room1_2 = self:generateNode(room1)
-    local room2_1 = self:generateNode(room2)
-
-    self:generate()
 end
 
 
@@ -212,12 +242,18 @@ local function Cell(type, room)
 end
 
 function Generator:writeIn(room)
+    for x, t in ipairs(self.grid) do
+        if t == nil then
+            printf('No %i column before writing', x)
+        end
+    end
+
     -- write the outside with walls
     for i = 0, room.w - 1 do
         self.grid[room.x + i][room.y]              = Cell(Types.WALL, room)
         self.grid[room.x + i][room.y + room.h - 1] = Cell(Types.WALL, room)
     end
-    for j = 1, room.h - 1 do
+    for j = 1, room.h - 2 do
         self.grid[room.x][room.y + j]              = Cell(Types.WALL, room)
         self.grid[room.x + room.w - 1][room.y + j] = Cell(Types.WALL, room)
     end
@@ -225,6 +261,12 @@ function Generator:writeIn(room)
     for x = room.x + 1, room.x + room.w - 2 do
         for y = room.y + 1, room.y + room.h - 2 do
             self.grid[x][y] = Cell(Types.TILE, room)
+        end
+    end
+
+    for x, t in ipairs(self.grid) do
+        if t == nil then
+            printf('No %i column after writing', x)
         end
     end
 end
@@ -235,25 +277,44 @@ function Generator:iterate(parentNode, parentRoom, ignoreNode)
         local node = parentNode:getNeighbor(dir)
         if node ~= ignoreNode then
             local room = self:placeRoom(node, parentRoom, dir)
-            if room ~= nil then
-                self:iterate(node, room, parentNode)
+            if room == nil then
+                return false
+            end
+            if not self:iterate(node, room, parentNode) then
+                return false
             end
         end
     end
+    return true
 end
 
 function Generator:generate()
     
+    self.generateCount = self.generateCount + 1
+
+    if self.generateCount == MAX_ITER then
+        return false
+    end
+
+    self.grid = {}
+    for i = 1, self.width do
+        self.grid[i] = {}
+    end
+
     local startX = math.round((self.width - self.rootNode.w) / 2)
     local startY = math.round((self.height - self.rootNode.h) / 2)
     -- write the tiles in
     local startRoom = Room(startX, startY, self.rootNode.w, self.rootNode.h)
     self:writeIn(startRoom)
     
-    self:iterate(self.rootNode, startRoom)
+    if not self:iterate(self.rootNode, startRoom) then
+        return self:generate()
+    end
 
     self:pruneGrid()
-    self:print()
+    -- self:print()
+
+    return true
 end
 
 function Generator:pruneGrid()
@@ -331,9 +392,9 @@ end
 function Generator:getCell(pos)
     if (pos.x > self.width) or (pos.y > self.height) or (pos.x < 1) or (pos.y < 1) then
         return Cell(Types.RESTRICTED)
-    end 
+    end
     if self.grid[pos.x] == nil then
-        print('The weird bug took place at pos = ', pos.y)
+        print('The weird bug took place at pos = ', pos.x)
         self.grid[pos.x] = {}
     end
     return self.grid[pos.x][pos.y]
@@ -408,10 +469,10 @@ function Generator:placeRoom(node, parent, dir)
         currentHallOffsetVec = relRightVec * currentHallOffset
         currentPerpOffsetVec = relDownVec * currentPerpOffset
         currentStart = relRoomStart + currentPerpOffsetVec + currentHallOffsetVec
-        for i = -currentHallOffset, relRoomWidthVec:mag() do
+        for i = 0, relRoomWidthVec:mag() do
             for j = 0, relRoomHeightVec:mag() do
                 local pos = currentStart + i * relRightVec + j * relDownVec
-                self:getCell(pos)
+                local cell = self:getCell(pos)
                 if cell ~= nil then
                     if cell.type ~= Types.WALL then
                         valid = false
@@ -420,32 +481,33 @@ function Generator:placeRoom(node, parent, dir)
                 end
             end
             if not valid then
-                currentHallOffset = currentHallOffset + currentHallTestSign
-                if currentHallTestSign == 1 then
-                    if currentHallOffset > max_hallway_length then
-                        currentHallOffset = hallOffsetStart - 1
-                        currentHallTestSign = -1
-                    end
-                end
-                if currentHallTestSign == -1 then
-                    if currentHallOffset < min_hallway_length then
-                        currentHallOffset = hallOffsetStart
-                        currentHallTestSign = 1
-
-                        currentPerpOffset = currentPerpOffset + currentPerpTestSign
-
-                        if currentPerpOffset > max_var_bot then
-                            currentPerpOffset = perpOffsetStart - 1
-                            currentPerpTestSign = -1
-                        end
-                        if currentPerpOffset < -max_var_top then
-                            print('No place for a room')
-                            return nil
-                        end
-                    end
-                end
-                
                 break
+            end            
+        end
+        if not valid then
+            currentHallOffset = currentHallOffset + currentHallTestSign
+            if currentHallTestSign == 1 then
+                if currentHallOffset > max_hallway_length then
+                    currentHallOffset = hallOffsetStart - 1
+                    currentHallTestSign = -1
+                end
+            end
+            if currentHallTestSign == -1 then
+                if currentHallOffset < min_hallway_length then
+                    currentHallOffset = hallOffsetStart
+                    currentHallTestSign = 1
+
+                    currentPerpOffset = currentPerpOffset + currentPerpTestSign
+
+                    if currentPerpOffset > max_var_bot then
+                        currentPerpOffset = perpOffsetStart - 1
+                        currentPerpTestSign = -1
+                    end
+                    if currentPerpOffset < max_var_top then
+                        print('No place for a room')
+                        return nil
+                    end
+                end
             end
         end
     until valid
@@ -458,7 +520,7 @@ function Generator:placeRoom(node, parent, dir)
     local neededPos = roomCenter + leftTopRoomOffset * mirr
     local room = Room(neededPos.x, neededPos.y, node.w, node.h)
     self:writeIn(room)
-    self.grid[room.x][room.y] = { type = 'g' }
+    -- self.grid[room.x][room.y] = { type = 'g' }
     -- get a random hallway offset
     -- if the new room is lower than the parent room, do
     -- [[ lower left corner of the parent room minus upper left of the new room ]]

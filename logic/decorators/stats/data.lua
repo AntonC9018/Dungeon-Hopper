@@ -7,7 +7,7 @@ data.StatConfigs = {
     -- each effect has `modifier` property with same kind of modifiers as below
     { 'attack', require ('@action.effects.attack') }, -- damage 0, pierce 0
     { 'push',   require ('@action.effects.push')   }, -- power 0, distance 1
-    { 'dig',    require ('@action.effects.dig')    }, -- damage 0, power 0
+    { 'dig',    require ('@action.effects.dig')    }, -- damage 1, power 0
     { 'move',   require ('@action.effects.move')   }, -- distance 1, through false
 
     {

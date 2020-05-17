@@ -12,7 +12,7 @@ local function setBase(event)
 end
 
 local function getTargets(event)
-    local targets = event.actor:getDigTargets(event.action)    
+    local targets = event.actor:getDigTargets(event.action)
     event.targets = targets
 end
 

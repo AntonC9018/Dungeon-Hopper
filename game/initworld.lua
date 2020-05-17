@@ -16,7 +16,7 @@ return function(config)
     render.assets:loadAll()
 
     if config.generator then
-        local center = world:materializeGenerator(config.generator, config.floor)
+        local center = world:materializeGenerator(config.generator, config.floor, config.wall)
         world:createPlayer(config.player.character, center)
     else
         if config.floor then

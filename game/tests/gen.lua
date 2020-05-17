@@ -21,8 +21,13 @@ return function()
             character = Ents.Candace
         },
         floor = Mods.Test.EntityBases.Tile,
+        wall = Ents.Dirt,
         generator = generator
     })
+
+    local player = world.grid.players[1]
+    player:setStat(StatTypes.Dig, 'power', 5)
+
     Input(world, function()
     end)
 end

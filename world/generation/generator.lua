@@ -6,69 +6,11 @@
 -- Repeat, until a grid has been generated
 
 local MAX_ITER = 200
-
-local function Dir(x, y)
-    return { x = x, y = y }
-end
-
-local map = {}
-map['01'] = 1
-map['10'] = 2
-map['21'] = 3
-map['12'] = 4
-
-local inverseMap = {
-    Dir(-1, 0),
-    Dir(0, -1),
-    Dir(1, 0),
-    Dir(0, 1)
-}
-
-local function toIndex(dir)
-    local t = tostring(dir.x + 1)..tostring(dir.y + 1)
-    return map[t]
-end
-
-local function toIndexNeg(dir)
-    local t = tostring(-dir.x + 1)..tostring(-dir.y + 1)
-    return map[t]
-end
-
-local node_mt = {
-    __index = {        
-        setNeighbor = function(node, dir, neigh)
-            node .neighbors[toIndex(dir)]    = neigh
-            neigh.neighbors[toIndexNeg(dir)] = node
-        end,
-        getNeighbor = function(node, dir)
-            return node.neighbors[toIndex(dir)]
-        end,
-        clearNeighbor = function(node, dir)
-            node.neighbors [toIndex(dir)] = nil
-        end,
-        getOccupiedDirections = function(node)
-            local result = {}
-            for i, v in pairs(inverseMap) do
-                if node.neighbors[i] then
-                    table.insert(result, v)
-                end
-            end
-            return result
-        end
-    }
-}
-
-local function Node(x, y, w, h)
-    local obj = {
-        x = x,
-        y = y,
-        w = w,
-        h = h,
-        neighbors = {}
-    }
-    setmetatable(obj, node_mt)
-    return obj
-end
+local inverseMap = require 'world.generation.dirsmap'
+local Types = require 'world.generation.types'
+local Cell = require 'world.generation.cell'
+local Dir = require 'world.generation.dir'
+local Node = require 'world.generation.node'
 
 local function Room(x, y, w, h)
     return {
@@ -81,6 +23,44 @@ end
 
 
 local Generator = class("WorldGenerator")
+
+
+function Generator:__construct(w, h)
+    self.width = w
+    self.height = h
+    -- so the idea is to generate a graph where
+    -- the root node is the starting room
+end
+
+function Generator:generate()
+    
+    self.generateCount = self.generateCount + 1
+
+    if self.generateCount == MAX_ITER then
+        return false
+    end
+
+    self.grid = {}
+    for i = 1, self.width do
+        self.grid[i] = {}
+    end
+
+    local startX = math.round((self.width - self.rootNode.w) / 2)
+    local startY = math.round((self.height - self.rootNode.h) / 2)
+    -- write the tiles in
+    local startRoom = Room(startX, startY, self.rootNode.w, self.rootNode.h)
+    self:writeIn(startRoom)
+    self.rooms = { startRoom }
+    
+    if not self:iterate(self.rootNode, startRoom) then
+        return self:generate()
+    end
+
+    self:pruneGrid()
+    -- self:print()
+
+    return true
+end
 
 function Generator:randomDir()
     local i = math.random(4)
@@ -205,14 +185,6 @@ function Generator:start(w, h)
     self.generateCount = 0
 end
 
-function Generator:__construct(w, h)
-    self.width = w
-    self.height = h
-    -- so the idea is to generate a graph where
-    -- the root node is the starting room
-end
-
-
 function Generator:print()
     for j = 1, self.height do
         local str = ''
@@ -225,20 +197,6 @@ function Generator:print()
         end
         print(str)
     end
-end
-
-local Types = {
-    WALL = 'w',
-    TILE = 't',
-    HALLWAY = 'e',
-    RESTRICTED = 'r'
-}
-
-local function Cell(type, room)
-    return {
-        type = type,
-        room = room
-    }
 end
 
 function Generator:writeIn(room)
@@ -283,37 +241,9 @@ function Generator:iterate(parentNode, parentRoom, ignoreNode)
             if not self:iterate(node, room, parentNode) then
                 return false
             end
+            table.insert(self.rooms, room)
         end
     end
-    return true
-end
-
-function Generator:generate()
-    
-    self.generateCount = self.generateCount + 1
-
-    if self.generateCount == MAX_ITER then
-        return false
-    end
-
-    self.grid = {}
-    for i = 1, self.width do
-        self.grid[i] = {}
-    end
-
-    local startX = math.round((self.width - self.rootNode.w) / 2)
-    local startY = math.round((self.height - self.rootNode.h) / 2)
-    -- write the tiles in
-    local startRoom = Room(startX, startY, self.rootNode.w, self.rootNode.h)
-    self:writeIn(startRoom)
-    
-    if not self:iterate(self.rootNode, startRoom) then
-        return self:generate()
-    end
-
-    self:pruneGrid()
-    -- self:print()
-
     return true
 end
 
@@ -386,6 +316,12 @@ function Generator:pruneGrid()
         end
     end
 
+    -- shift the rooms
+    for _, room in ipairs(self.rooms) do
+        room.x = room.x - min_x + 1
+        room.y = room.y - min_y + 1  
+    end
+
     self.grid = newGrid
 end
 
@@ -440,8 +376,8 @@ function Generator:placeRoom(node, parent, dir)
     -- left (top or bottom) of the center of the room the hallway is
     local max_var_top = -math.abs(relRoomDim.y)  + 3
     local max_var_bot = math.abs(relParentDim.y) - 3
-    local min_hallway_length = 2
-    local max_hallway_length = 5
+    local min_hallway_length = 0
+    local max_hallway_length = 1
 
     -- generate a random offset based on variation and place the room
     -- if can't place the room with that variation, try another

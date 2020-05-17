@@ -33,6 +33,8 @@ local Grid = class("Grid")
 function Grid:__construct(w, h)
     -- The grid is a 2d array of such cells.
     self.grid = create(w, h)
+    self.width = w
+    self.height = h
     -- Lists of game objects at all layers
     self.layers = {}
     -- Lists for various types of game objects at play
@@ -62,8 +64,8 @@ function Grid:__construct(w, h)
 end
 
 function Grid:checkBound(pos)
-    return pos.x > 0 and pos.x <= #self.grid 
-        and pos.y > 0 and pos.y <= #self.grid[1]
+    return pos.x > 0 and pos.x <= self.width 
+        and pos.y > 0 and pos.y <= self.height
 end
 
 -- Watch functionality

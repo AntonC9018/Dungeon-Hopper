@@ -5,7 +5,7 @@ local Changes = require 'render.changes'
 local DroppedItem = require '@items.droppeditem'
 
 function World:__construct(w, h)
-    self.grid = Grid(w, h)
+    self.grid = Grid(w or 0, h or 0)
     self.changes = {{}}
     self.phase = 1
 end
@@ -332,7 +332,35 @@ function World:getRandomEntityFromPool(id)
     local pool = self:mapIdToSubpool(self.entityPool, id)
     local itemId = pool:getRandom()
     return itemId
+end
 
+local Types = require 'world.generation.types'
+local Cell = require 'world.cell'
+
+function World:materializeGenerator(generator, Tile)
+    self.grid.grid = generator.grid
+    self.grid.width = generator.width
+    self.grid.height = generator.height
+
+    for i = 1, generator.width do
+        for j = 1, generator.height do
+            local cell = generator.grid[i][j]
+            if cell ~= nil then
+                if cell.type == Types.TILE or cell.type == Types.HALLWAY then
+                    local vec = Vec(i, j)
+                    generator.grid[i][j] = Cell(vec)
+                    self:create(Tile, vec)
+                else
+                    generator.grid[i][j] = nil
+                end
+            end
+        end
+    end
+
+    local start = generator.rooms[1] 
+    local w = (start.w - 1) / 2
+    local h = (start.h - 1) / 2
+    return Vec(start.x, start.y) + Vec(math.round(w), math.round(h))
 end
 
 return World

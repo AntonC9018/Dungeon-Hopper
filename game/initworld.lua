@@ -36,8 +36,6 @@ return function(config)
             generator = config.generator
         end
 
-        print(generator)
-
         local center = world:materializeGenerator(
             generator, 
             config.pools.floor or defaultFloor, 

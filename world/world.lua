@@ -329,11 +329,8 @@ function World:getRandomItemFromPool(id)
 end
 
 function World:getRandomEntityFromPool(id)
-    print(self.entityPool)
     local pool = self:mapIdToSubpool(self.entityPool, id)
-    print(pool)
     local itemId = pool:getRandom()
-    print(ins(pool.config))
     return itemId
 end
 

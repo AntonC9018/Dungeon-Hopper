@@ -337,7 +337,7 @@ end
 local Types = require 'world.generation.types'
 local Cell = require 'world.cell'
 
-function World:materializeGenerator(generator, Tile, Wall)
+function World:materializeGenerator(generator, Tile, Wall, Enemy)
     self.grid.grid = generator.grid
     self.grid.width = generator.width
     self.grid.height = generator.height
@@ -354,6 +354,10 @@ function World:materializeGenerator(generator, Tile, Wall)
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
                     self:create(Wall, vec)
+                elseif cell.type == Types.ENEMY then
+                    generator.grid[i][j] = Cell(vec)
+                    self:create(Tile, vec)
+                    self:create(Enemy, vec)
                 else
                     generator.grid[i][j] = nil
                 end

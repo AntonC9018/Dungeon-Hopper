@@ -25,11 +25,18 @@ end
 local Generator = class("WorldGenerator")
 
 
-function Generator:__construct(w, h)
+function Generator:__construct(w, h, options)
     self.width = w
     self.height = h
+    options = options or {}
     -- so the idea is to generate a graph where
     -- the root node is the starting room
+    self.max_hallway_length = options.max_hallway_length or 5
+    self.min_hallway_length = options.min_hallway_length or 0
+    self.min_hallway_width  = options.min_hallway_width  or 1
+    self.max_hallway_width  = options.max_hallway_width  or 2
+    self.enemy_density      = options.enemy_density or 1 / 10
+    self.max_iter = options.max_iter or MAX_ITER
 end
 
 function Generator:generate()
@@ -218,7 +225,12 @@ function Generator:writeIn(room)
     -- fill in the center
     for x = room.x + 1, room.x + room.w - 2 do
         for y = room.y + 1, room.y + room.h - 2 do
-            self.grid[x][y] = Cell(Types.TILE, room)
+            local r = math.random()
+            if r < self.enemy_density then
+                self.grid[x][y] = Cell(Types.ENEMY, room)
+            else
+                self.grid[x][y] = Cell(Types.TILE, room)
+            end
         end
     end
 
@@ -376,12 +388,10 @@ function Generator:placeRoom(node, parent, dir)
     -- left (top or bottom) of the center of the room the hallway is
     local max_var_top = -math.abs(relRoomDim.y)  + 3
     local max_var_bot = math.abs(relParentDim.y) - 3
-    local min_hallway_length = 0
-    local max_hallway_length = 1
 
     -- generate a random offset based on variation and place the room
     -- if can't place the room with that variation, try another
-    local hallOffsetStart = math.random(min_hallway_length, max_hallway_length)
+    local hallOffsetStart = math.random(self.min_hallway_length, self.max_hallway_length)
     local perpOffsetStart = math.random(max_var_top, max_var_bot)
 
     local currentHallOffset = hallOffsetStart
@@ -423,13 +433,13 @@ function Generator:placeRoom(node, parent, dir)
         if not valid then
             currentHallOffset = currentHallOffset + currentHallTestSign
             if currentHallTestSign == 1 then
-                if currentHallOffset > max_hallway_length then
+                if currentHallOffset > self.max_hallway_length then
                     currentHallOffset = hallOffsetStart - 1
                     currentHallTestSign = -1
                 end
             end
             if currentHallTestSign == -1 then
-                if currentHallOffset < min_hallway_length then
+                if currentHallOffset < self.min_hallway_length then
                     currentHallOffset = hallOffsetStart
                     currentHallTestSign = 1
 

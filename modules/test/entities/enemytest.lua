@@ -20,7 +20,8 @@ local steps = {
     { -- second step: try to attack, then try to move 
         action = AttackMoveAction,
         -- the movs function
-        movs = require "@sequence.movs.adjacent",
+        movs = require "@sequence.movs.basic",
+        fail = 2,
         -- the exit function: turn to player
         exit = Handlers.turnToPlayer
     }
@@ -56,7 +57,7 @@ TestEnemy.baseModifiers = {
     },
 
     hp = {
-        amount = 5
+        amount = 2
     }
 }
 

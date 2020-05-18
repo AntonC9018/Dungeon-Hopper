@@ -1,6 +1,7 @@
 return {
     WALL = 'w',
     TILE = 't',
-    HALLWAY = 'e',
-    RESTRICTED = 'r'
+    HALLWAY = 'h',
+    RESTRICTED = 'r',
+    ENEMY = 'e'
 }

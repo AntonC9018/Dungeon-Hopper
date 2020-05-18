@@ -2,6 +2,10 @@ local World = require 'world.world'
 local Input = require 'game.input'
 local render = require 'game.render'
 
+local defaultFloor = Mods.Test.EntityBases.Tile
+local defaultWall  = Mods.Test.Entities.Wall
+local defaultEnemy = Mods.Test.Entities.TestEnemy
+
 return function(config)
     local world = World(config.x, config.y)
     world:setRenderer(render.renderer)
@@ -16,7 +20,12 @@ return function(config)
     render.assets:loadAll()
 
     if config.generator then
-        local center = world:materializeGenerator(config.generator, config.floor, config.wall)
+        local center = world:materializeGenerator(
+            config.generator, 
+            config.floor or defaultFloor, 
+            config.wall  or defaultWall, 
+            config.enemy or defaultEnemy
+        )
         world:createPlayer(config.player.character, center)
     else
         if config.floor then

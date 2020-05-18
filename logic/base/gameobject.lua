@@ -11,7 +11,7 @@ local Emitter = require("lib.emitter")
 local GameObject = class("GameObject")
 
 -- fallback options
-GameObject.layer = Cell.Layers.misc
+GameObject.layer = Layers.misc
 GameObject.priority = 0
 
 

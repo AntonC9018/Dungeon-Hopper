@@ -11,7 +11,9 @@ local function registerTypes()
     local DroppedItem = require '@items.droppeditem'
     local assetType = assets:getObjectType(DroppedItem)
     assets:registerGameObjectType(assetType)
-    
+    local Tile = require 'modules.test.base.tile'
+    assetType = assets:getObjectType(Tile)
+    assets:registerGameObjectType(assetType)
 end
 
 return {

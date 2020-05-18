@@ -100,12 +100,19 @@ ItemSubpools = {
 
 function registerItemSubpool(name, id, config)
     assert(id < itemPoolId, string.format("Trying to reference a non-existent subpool of id %i", id))
-    local conf = { ids = config }
-    conf.subpools = {}
+    local conf = { 
+        ids = config or {},
+        subpools = {}
+    }
     table.insert(itemPoolObjectMap[id].subpools, conf)
     itemPoolObjectMap[itemPoolId] = conf
     ItemSubpools[name] = itemPoolId
     itemPoolId = itemPoolId + 1
+end
+
+function addSubpoolItem(id, itemId, mass, q)
+    local entry = { id = itemId, mass = mass or 1 }
+    table.insert(itemPoolObjectMap[id].ids, entry)
 end
 
 function instantiateItemPool(randomness)
@@ -114,6 +121,7 @@ function instantiateItemPool(randomness)
     for i, _ in ipairs(Items) do
         items[i] = Record(i, 1, 1)
     end
+    -- TODO: sort configs by id in ascending order
     return Pool(items, itemPoolConfig, randomness)
 end
 
@@ -130,12 +138,19 @@ EntitySubpools = {
 
 function registerEntitySubpool(name, id, config)
     assert(id < entityPoolId, string.format("Trying to reference a non-existent subpool of id %i", id))
-    local conf = { ids = config }
-    conf.subpools = {}
+    local conf = { 
+        ids = config or {}, 
+        subpools = {} 
+    }
     table.insert(entityPoolObjectMap[id].subpools, conf)
     entityPoolObjectMap[entityPoolId] = conf
     EntitySubpools[name] = entityPoolId
     entityPoolId = entityPoolId + 1
+end
+
+function addSubpoolEntity(id, entityId, mass)
+    local entry = { id = entityId, mass = mass or 1 }
+    table.insert(entityPoolObjectMap[id].ids, entry)
 end
 
 -- TODO: make it possible to mask the global config
@@ -191,9 +206,16 @@ retoucherUtils = require '@retouchers.utils'
 -- make the action class global
 -- Action = require '@action.action'
 
+
+-- for now, define some pools here
+registerItemSubpool('Weapons',  1)
+registerItemSubpool('Trinkets', 1)
+registerItemSubpool('Armor',    1)
+registerEntitySubpool('Enemies', 1)
+registerEntitySubpool('Walls', 1)
+registerEntitySubpool('Tiles', 1)
+
 -- now set up all mods
 Mods = {}
 MODULE_NAME = 'test'
 Mods.Test = require 'modules.test.main'
-
--- require = req

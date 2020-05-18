@@ -329,15 +329,18 @@ function World:getRandomItemFromPool(id)
 end
 
 function World:getRandomEntityFromPool(id)
+    print(self.entityPool)
     local pool = self:mapIdToSubpool(self.entityPool, id)
+    print(pool)
     local itemId = pool:getRandom()
+    print(ins(pool.config))
     return itemId
 end
 
 local Types = require 'world.generation.types'
 local Cell = require 'world.cell'
 
-function World:materializeGenerator(generator, Tile, Wall, Enemy)
+function World:materializeGenerator(generator, Tile, wallSubpoolId, enemySubpoolId)
     self.grid.grid = generator.grid
     self.grid.width = generator.width
     self.grid.height = generator.height
@@ -353,11 +356,13 @@ function World:materializeGenerator(generator, Tile, Wall, Enemy)
                 elseif cell.type == Types.WALL then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    self:create(Wall, vec)
+                    local wallClass = Entities[self:getRandomEntityFromPool(wallSubpoolId)]
+                    self:create(wallClass, vec)
                 elseif cell.type == Types.ENEMY then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    self:create(Enemy, vec)
+                    local enemyClass = Entities[self:getRandomEntityFromPool(enemySubpoolId)]
+                    self:create(enemyClass, vec)
                 else
                     generator.grid[i][j] = nil
                 end

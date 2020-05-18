@@ -1,6 +1,7 @@
 local World = require 'world.world'
 local Input = require 'game.input'
 local render = require 'game.render'
+local Generator = require 'world.generation.generator'
 
 local defaultFloor = Mods.Test.EntityBases.Tile
 local defaultWall  = Mods.Test.Entities.Wall
@@ -12,19 +13,36 @@ return function(config)
     -- load all assets
     
     render.registerTypes()
-    
-    if config.floor then
-        local assetType = render.assets:getObjectType(config.floor)
-        render.assets:registerGameObjectType(assetType)        
+
+    if config.pools then
+        world:useEntityPool(config.pools.entities)
+        world:useItemPool(config.pools.items)
     end
+    
     render.assets:loadAll()
 
     if config.generator then
+        local generator
+        if config.generator == true then
+            generator = Generator(60, 60)
+            generator:start()
+            generator:addNode(1)
+            generator:addNode(1)
+            generator:addNode(2)
+            generator:addNode(2)
+            generator:addNode(3)
+            generator:generate()
+        else
+            generator = config.generator
+        end
+
+        print(generator)
+
         local center = world:materializeGenerator(
-            config.generator, 
-            config.floor or defaultFloor, 
-            config.wall  or defaultWall, 
-            config.enemy or defaultEnemy
+            generator, 
+            config.pools.floor or defaultFloor, 
+            config.pools.wall  or defaultWall, 
+            config.pools.enemy or defaultEnemy
         )
         world:createPlayer(config.player.character, center)
     else

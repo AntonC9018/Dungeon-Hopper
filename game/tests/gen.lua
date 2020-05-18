@@ -1,4 +1,3 @@
-local Generator = require 'world.generation.generator'
 local initWorld = require 'game.initworld'
 local input = require 'game.input'
 local Input = require 'game.input'

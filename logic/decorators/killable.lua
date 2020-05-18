@@ -7,6 +7,7 @@ local Killable = class('Killable', Decorator)
 
 function die(event)
     event.actor.dead = true
+    event.actor.didAction = true
     event.actor.world:removeDead(event.actor)
 end
 

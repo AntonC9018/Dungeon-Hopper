@@ -546,7 +546,9 @@ end
 
 local function tick(t)
     for i = 1, #t do
-        t[i]:tick()
+        if not t[i].dead then
+            t[i]:tick()
+        end
     end
 end
 

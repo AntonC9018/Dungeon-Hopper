@@ -39,6 +39,7 @@ function GameObject:init(pos, world)
 
     self.enclosingEvent = nil
     self.didAction = false
+    self.dead = false
 
     -- create an emitter
     -- self.emitter = Emitter()

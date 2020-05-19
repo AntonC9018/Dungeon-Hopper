@@ -60,7 +60,6 @@ end
 
 -- if the host dies, release the bounding entity
 function Binding:isActivated()
-    print(self.boundEntity)
     return self.boundEntity ~= nil
 end
 

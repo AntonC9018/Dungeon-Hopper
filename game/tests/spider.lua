@@ -25,6 +25,10 @@ return function()
             {
                 class = Ents.Spider,
                 pos = Vec(4, 4)
+            },
+            {
+                class = Ents.TestEnemy,
+                pos = Vec(6, 3)
             }
         }
     })

@@ -423,8 +423,10 @@ end
 -- the one generic method
 function Grid:remove(object)
     local cell = self:getCellAt(object.pos)
-    cell:clear(object.layer)
-    self:emitWatchers(object.pos, 'from', entity)
+    if cell:get(object.layer) == object then
+        cell:clear(object.layer)
+        self:emitWatchers(object.pos, 'from', entity)
+    end
 end
 
 -- -- TODO: modify to allow different sizes

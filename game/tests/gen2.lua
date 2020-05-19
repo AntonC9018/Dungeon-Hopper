@@ -10,6 +10,7 @@ addSubpoolItem(ItemSubpools.Weapons,     I.shield.id)
 addSubpoolItem(ItemSubpools.Weapons,     I.shell.id)
 addSubpoolItem(ItemSubpools.Trinkets,    I.testitem.id)
 addSubpoolEntity(EntitySubpools.Enemies, Ents.Spider.global_id)
+addSubpoolEntity(EntitySubpools.Enemies, Ents.TestEnemy.global_id)
 -- addSubpoolEntity(EntitySubpools.Tiles,   Ents.Tile)
 addSubpoolEntity(EntitySubpools.Walls,   Ents.Dirt.global_id)
 

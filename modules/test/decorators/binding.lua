@@ -28,7 +28,6 @@ end
 
 local function bindTarget(event)
     event.statusEvent = event.target:beStatused(event.action)
-    print(event.target.statuses:get('bind'))
 end
 
 
@@ -48,7 +47,7 @@ local function register(event)
     -- if the bind did get applied,
     if success then
         -- register that on the actor
-        event.actor.didBind = true
+        event.actor.decorators.Binding.boundEntity = event.target
         -- change state to 2
         event.actor.state = 2
         -- TODO: in some way increase health
@@ -57,6 +56,26 @@ local function register(event)
         -- for now just die
         event.actor:die()
     end
+end
+
+-- if the host dies, release the bounding entity
+function Binding:isActivated()
+    print(self.boundEntity)
+    return self.boundEntity ~= nil
+end
+
+local function freeIfHostIsDead(event)
+    local binding = event.actor.decorators.Binding
+    if 
+        binding.boundEntity ~= nil 
+        and binding.boundEntity.dead 
+    then
+        binding.boundEntity = nil
+    end
+end
+
+local function skipDisplaceIfBinding(event)
+    event.propagate = not event.actor.decorators.Binding:isActivated()
 end
 
 Binding.affectedChains = {
@@ -74,9 +93,14 @@ Binding.affectedChains = {
             utils.regChangeFunc(Changes.JustState)
         } 
     },
-    { 'checkPush',
+    { 'displace',
+        {   -- prevent being displaced
+            { skipDisplaceIfBinding, Ranks.HIGH }
+        }
+    },
+    { 'tick',
         {
-            function(event) event.propagate = false end
+            freeIfHostIsDead
         }
     }
 }

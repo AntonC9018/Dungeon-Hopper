@@ -42,12 +42,16 @@ local steps = {
         movs = require "@sequence.movs.diagonal",
         fail = 1,
         checkSuccess = function(event)
-            event.success = event.actor.didBind
+            event.success = event.actor.decorators.Binding:isActivated()
         end
     },
     {
         action = None,
-        repet = math.huge
+        checkSuccess = function(event)
+            event.success = event.actor.decorators.Binding:isActivated()
+            event.index = 2
+        end,
+        fail = 1
     }
 }
 

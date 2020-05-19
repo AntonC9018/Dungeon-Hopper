@@ -31,6 +31,9 @@ function Cell:__construct(pos)
 end
 
 function Cell:get(layer)
+    if layer == Layers.player then
+        layer = Layers.real
+    end
     return self.layers[layer]
 end
 

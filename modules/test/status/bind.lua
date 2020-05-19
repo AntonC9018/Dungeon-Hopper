@@ -4,6 +4,7 @@ local IceCube = require '.entities.icecube'
 local StoreTinker = require '@tinkers.storetinker' 
 local Target = require "@items.weapons.target"
 local utils = require "@decorators.utils" 
+local Changes = require 'render.changes'
 
 -- 
 -- + 1. Prevent moving
@@ -37,6 +38,7 @@ local utils = require "@decorators.utils"
 
 local function generator(tinker)
     local function forbidMove(event)
+        print('Move forbidden')
         event.propagate = false
     end
 
@@ -55,18 +57,26 @@ local function generator(tinker)
     end
 
     local function selfRemove(event)
-        local target = tinker:getStore(event.actor)
-        if target.dead then
+        local entity = tinker:getStore(event.actor)
+        if entity ~= nil and entity.dead or entity == nil then
             event.actor.decorators.Statused:resetStatus(StatusTypes.bind)
             tinker:setStore(event.actor, nil)
         end
     end
 
+    local function displaceMe(event)
+        local entity = tinker:getStore(event.actor)
+        if entity ~= nil then
+            entity.pos = event.actor.pos
+            event.actor.world:registerChange(entity, Changes.Move)
+        end
+    end
 
     return {
         { 'getAttack', { attackJustMe, Ranks.HIGH } },
         { 'getMove',   { forbidMove,   Ranks.HIGH } },
-        { 'tick',      { selfRemove,   Ranks.HIGH } }
+        { 'tick',      { selfRemove,   Ranks.HIGH } },
+        { 'displace',  { displaceMe,   Ranks.LOW  } }
     }
 end
 

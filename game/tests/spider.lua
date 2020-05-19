@@ -29,6 +29,8 @@ return function()
         }
     })
 
+    world.grid.players[1]:setStat(StatTypes.Push, 'power', 2)
+
     Input(world, function()
     end)
 end

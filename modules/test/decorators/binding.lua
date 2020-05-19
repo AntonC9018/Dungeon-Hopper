@@ -73,6 +73,11 @@ Binding.affectedChains = {
             register,
             utils.regChangeFunc(Changes.JustState)
         } 
+    },
+    { 'checkPush',
+        {
+            function(event) event.propagate = false end
+        }
     }
 }
 

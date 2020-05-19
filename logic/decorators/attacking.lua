@@ -42,6 +42,9 @@ local function getTargets(event)
     -- I guess the best way is to have same getTargets functions whenever possible
     -- but then there is the wasted extra effort on retrieving these targets while
     -- one already has them at hand.
+    -- UDPATE: I have actually settled on adding this check. This seems helpful for
+    -- e.g. monkeys (spiders), which set the targets of the bound entity manually
+    -- (see modules/test/status/bind.lua)
     if event.targetEntities ~= nil then 
         event.targets = utils.convertToTargets(
             event.targetEntities, 
@@ -52,10 +55,11 @@ local function getTargets(event)
     end
     -- for now, i'm going to settle on providing the targets manually 
     -- passing them as arguments to the activation
-    -- that seems the most reasonable approach at this point
-
-    local targets = event.actor:getTargets(event.action)
-    event.targets = targets
+    -- that seems the most reasonable approach at this point    
+    if event.targets == nil then
+        local targets = event.actor:getTargets(event.action)
+        event.targets = targets
+    end
 end
 
 local function applyAttack(event)
@@ -100,6 +104,7 @@ local checkApply =
 -- TODO: pass additional parameters via an object
 function Attacking:activate(actor, action, targetEntities)
     local event = Event(actor, action)
+    -- if target entities are provided
     event.targetEntities = targetEntities
     return checkApply(event)
 end

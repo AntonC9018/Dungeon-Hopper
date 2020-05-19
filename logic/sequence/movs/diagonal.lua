@@ -21,7 +21,7 @@ return function(actor, action)
         elseif ly then addMov(1, -1)
         else
             -- we're on one X with the player
-            if self.orientation.y > 0 then
+            if actor.orientation.y > 0 then
                 addMov(1,  1)
                 addMov(1, -1)
             else
@@ -36,7 +36,7 @@ return function(actor, action)
         elseif ly then addMov(-1, -1)
         else
             -- we're on one X with the player
-            if self.orientation.y > 0 then
+            if actor.orientation.y > 0 then
                 addMov(-1,  1)
                 addMov(-1, -1)
             else
@@ -48,7 +48,7 @@ return function(actor, action)
     -- on one Y with the player
     -- higher than the player
     elseif gy then
-        if self.orientation.x > 0 then
+        if actor.orientation.x > 0 then
             addMov(-1,  1)
             addMov( 1,  1)
         else
@@ -58,7 +58,7 @@ return function(actor, action)
 
     -- lower than the player
     else
-        if self.orientation.x > 0 then
+        if actor.orientation.x > 0 then
             addMov(-1, -1)
             addMov( 1, -1)
         else

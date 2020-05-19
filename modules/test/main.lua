@@ -150,6 +150,7 @@ local function registerContent(mod)
     -- register the new status effects
     registerStatus('freeze', mod.Status.freeze)
     registerStatus('stun',   mod.Status.stun)
+    registerStatus('bind',   mod.Status.bind)
 
     -- register the item pools
 end

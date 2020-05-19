@@ -16,18 +16,17 @@ addSubpoolEntity(EntitySubpools.Walls,   Ents.Dirt.global_id)
 return function()
 
     local world = initWorld({
+        x = 10, y = 10,
         player = {
             character = Ents.Candace,
             pos = Vec(4, 3)
         },
-        pools = {
-            -- tile = EntitySubpools.Tiles,
-            wall = EntitySubpools.Walls,
-            enemy = EntitySubpools.Enemies,
-            items = instantiateItemPool(),
-            entities = instantiateEntityPool()
-        },
-        generator = true
+        enemies = {
+            {
+                class = Ents.Spider,
+                pos = Vec(4, 4)
+            }
+        }
     })
 
     Input(world, function()

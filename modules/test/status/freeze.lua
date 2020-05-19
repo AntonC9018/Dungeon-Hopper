@@ -16,10 +16,6 @@ local PreventActionTinker = require '.tinkers.preventaction'
 --  +   7. have it be invincible to normal attacks, but be pushable
 
 
-local function forbidAction(event)
-    event.propagate = false
-end
-
 local Freeze = class("Freeze", Status)
 
 function Freeze:__construct()

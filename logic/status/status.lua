@@ -28,12 +28,12 @@ function Status:__construct(tinker)
     self.tinker = tinker
 end
 
-function Status:apply(entity, amount)
+function Status:apply(entity, actor, amount)
     self.tinker:tink(entity)
 end
 
 -- don't do anything
-function Status:reapply(entity, amount)
+function Status:reapply(entity, actor, amount)
 end
 
 function Status:wearOff(entity)

@@ -44,11 +44,15 @@ return function(config)
         )
         world:createPlayer(config.player.character, center)
     else
-        if config.floor then
-            world:createFloors(config.floor)
-        end
+        world:createFloors(config.floor or defaultFloor)
+        
         if config.player then
             world:createPlayer(config.player.character, config.player.pos)
+        end
+        if config.enemies then
+            for _, enemyConfig in ipairs(config.enemies) do
+                world:create(enemyConfig.class, enemyConfig.pos)
+            end
         end
     end
     if config.itemPool then

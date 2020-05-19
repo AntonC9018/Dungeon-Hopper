@@ -67,7 +67,8 @@ Spider.baseModifiers = {
     resistance = {
         armor = 0,
         push = 0,
-        pierce = 1
+        pierce = 1,
+        bind = 3
     },
 
     status = {

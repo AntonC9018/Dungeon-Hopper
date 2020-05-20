@@ -55,12 +55,6 @@ return function(config)
             end
         end
     end
-    if config.itemPool then
-        world:useItemPool(config.itemPool)
-    end
-    if config.entityPool then
-        world:useEntityPool(config.entityPool)
-    end
     
 
     Runtime:addEventListener( 

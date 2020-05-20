@@ -82,102 +82,6 @@ function registerEntity(entity)
 end
 
 
--- Stuff with pools
-local Pool = require '@items.pool.pool'
-local Record = require '@items.pool.record'
-local InfPool = require '@items.pool.infinite.pool'
-local InfRecord = require '@items.pool.infinite.record'
-
-local itemPoolConfig = {
-    subpools = {}
-}
-local itemPoolId = 2
-local itemPoolObjectMap = { itemPoolConfig }
-
-ItemSubpools = {
-    Global = 1
-}
-
-function registerItemSubpool(name, id, config)
-    assert(id < itemPoolId, string.format("Trying to reference a non-existent subpool of id %i", id))
-    local conf = { 
-        ids = config or {},
-        subpools = {}
-    }
-    table.insert(itemPoolObjectMap[id].subpools, conf)
-    itemPoolObjectMap[itemPoolId] = conf
-    ItemSubpools[name] = itemPoolId
-    itemPoolId = itemPoolId + 1
-end
-
-function addSubpoolItem(id, itemId, mass, q)
-    local entry = { id = itemId, mass = mass or 1 }
-    table.insert(itemPoolObjectMap[id].ids, entry)
-end
-
-function instantiateItemPool(randomness)
-    -- for now, put one item with mass of one in each thing
-    local items = {}
-    for i, _ in ipairs(Items) do
-        items[i] = Record(i, 1, 1)
-    end
-    -- TODO: sort configs by id in ascending order
-    return Pool(items, itemPoolConfig, randomness)
-end
-
--- The exact same logic for entity pools
-local entityPoolConfig = {
-    subpools = {}
-}
-local entityPoolId = 2
-local entityPoolObjectMap = { entityPoolConfig }
-
-EntitySubpools = {
-    Global = 1
-}
-
-function registerEntitySubpool(name, id, config)
-    assert(id < entityPoolId, string.format("Trying to reference a non-existent subpool of id %i", id))
-    local conf = { 
-        ids = config or {}, 
-        subpools = {} 
-    }
-    table.insert(entityPoolObjectMap[id].subpools, conf)
-    entityPoolObjectMap[entityPoolId] = conf
-    EntitySubpools[name] = entityPoolId
-    entityPoolId = entityPoolId + 1
-end
-
-function addSubpoolEntity(id, entityId, mass)
-    local entry = { id = entityId, mass = mass or 1 }
-    table.insert(entityPoolObjectMap[id].ids, entry)
-end
-
--- TODO: make it possible to mask the global config
--- to customize the output
--- alternatively, make people copy and reset the world's config on 
--- e.g. player selection so that this method is never called
--- but then the objects will have to be made global
-function instantiateEntityPool(randomness)
-    -- for now, put one entity with mass of one in each thing
-    local entities = {}
-    for i, _ in ipairs(Entities) do
-        entities[i] = InfRecord(i, 1)
-    end
-    -- TODO: figure out how to provide a mapping from subpool id 
-    -- to an actual subpool. For example:
-    --  1. leave a reference to the pool in the config. while simple,
-    --     it does not allow for new instances and is kinda hacky
-    --  2. mark configs with ids. I actually very like this one. Then
-    --     we'll just loop through the subpools of subpools and link
-    --     everything in a new list. Seems ok.
-    -- For now, if the id is not zero, and since we're using one level
-    -- deep pools, the necessary pool can be referenced by indexing the
-    -- subpools list with the subpool's global id.
-    return InfPool(entities, entityPoolConfig, randomness)
-end
-
-
 -- for now just do this
 decorate = require '@decorators.decorate'
 Decorators = require '@decorators.decorators'
@@ -208,12 +112,17 @@ retoucherUtils = require '@retouchers.utils'
 
 
 -- for now, define some pools here
-registerItemSubpool('Weapons',  1)
-registerItemSubpool('Trinkets', 1)
-registerItemSubpool('Armor',    1)
-registerEntitySubpool('Enemies', 1)
-registerEntitySubpool('Walls', 1)
-registerEntitySubpool('Tiles', 1)
+local Pools = require 'game.pools'
+
+-- define some subpools
+Pools.registerSubpool('e', 'z1')
+Pools.registerSubpool('e.z1', 'f1')
+Pools.registerSubpool('e.z1.*', 'enemy')
+Pools.registerSubpool('e.z1.*', 'wall')
+Pools.registerSubpool('i', 'common')
+Pools.registerSubpool('i', 'rare')
+Pools.registerSubpool('i.*', 'weapon')
+Pools.registerSubpool('i.*', 'trinket')
 
 -- now set up all mods
 require 'modules.modloader'

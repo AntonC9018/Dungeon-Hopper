@@ -18,7 +18,7 @@ local Insides = require '.retouchers.insides'
 Insides.setConstant(Chest, 
     { 
         id = Options.ITEM_FROM_POOL, 
-        poolId = ItemSubpools.Weapons
+        poolId = 'i.~.weapon'
         -- amount = 5
     }
 )

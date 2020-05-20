@@ -37,14 +37,6 @@ function clamp(v, l, u)
     return v
 end
 
-function split(s, delimiter)
-    local result = {};
-    for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-        table.insert(result, match);
-    end
-    return result;
-end
-
 function contains(table, val)
     for i = 1, #table do
         if table[i] == val then 
@@ -239,6 +231,17 @@ table.reduce = function(arr, func, i)
         a = func(a, el)
     end
     return a
+end
+
+string.split = function(inputstr, sep)
+    if sep == nil then
+        sep = "%s"
+    end
+    local t = {}
+    for str in string.gmatch(inputstr, "([^"..sep.."]+)") do
+        table.insert(t, str)
+    end
+    return t
 end
 
 require 'lib.deepclone'

@@ -309,27 +309,21 @@ function World:useItemPool(pool)
     self.itemPool = pool
 end
 
--- Map indices to subpools
--- For now keep it really simple
--- Use a sample 1 level deep pool structure for now
-function World:mapIdToSubpool(pool, id)
-    if id == 1 then
-        return pool
-    end
-    return pool.subpools[id - 1]
-end
 
-function World:getRandomItemFromPool(id)
-    local pool = self:mapIdToSubpool(self.itemPool, id)
+local Pools = require 'game.pools'
+
+
+function World:getRandomItemFromPool(str)
+    local pool = Pools.drawSubpool(str, self)
     if pool:exhaust() then
-        pool = self:mapIdToSubpool(self.itemPool, id)
+        pool = Pools.drawSubpool(str, self)
     end
     local itemId = pool:getRandom()
     return itemId
 end
 
-function World:getRandomEntityFromPool(id)
-    local pool = self:mapIdToSubpool(self.entityPool, id)
+function World:getRandomEntityFromPool(str)
+    local pool = Pools.drawSubpool(str, self)
     local itemId = pool:getRandom()
     return itemId
 end

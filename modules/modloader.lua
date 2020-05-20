@@ -13,3 +13,32 @@
 --      1. use strings instead of ids for selecting a pool (ok)
 --      2. use a function of getting a pool (ok, but a bit worse)
 --      3. store the pools themselves as strings (meh)
+--
+-- The solution I came up with is that we should store the pools differently.
+-- For entities, split the global (root) pool (basically a list of all entities)
+-- into zone pools, which would be in turn split into floors (or some more
+-- generic name. In case we go for an open world game, the `zone` still makes
+-- sense, while the `floor` not so much. Also, difficulty settings will have
+-- to be addressed at some point, which may in theory affect the pools too).
+-- For items, split the global pool by quality or rarity (e.g. common, uncommon etc.)
+--
+-- The pools will be addressed by using string with number. Something like
+-- `e.1.1` would mean first floor of first zone, while `e.~.~` would mean the current
+-- floor of the current zone. 
+-- For items:
+-- `i.~.weapon` means the weapon subpool of the current rarity level
+-- e.g. `i.$.weapon` would mean to randomize the rarity
+-- `i.rare.weapon` would mean a reare weapon
+-- This is all just an outline, but it already starts looking a lot more organized 
+
+Mods = {}
+
+
+local function registerMod(modName, content)
+
+end
+
+
+MODULE_NAME = 'test'
+local content = require 'modules.test.mainnew'
+registerMod('Test', content)

@@ -3,7 +3,7 @@ local Input = require 'game.input'
 local render = require 'game.render'
 local Generator = require 'world.generation.generator'
 
-local defaultFloor = Mods.Test.EntityBases.Tile
+local defaultFloor = Mods.Test.Entities.Tile
 local defaultWall  = Mods.Test.Entities.Wall
 local defaultEnemy = Mods.Test.Entities.TestEnemy
 

@@ -30,6 +30,8 @@ local function bindTarget(event)
     event.statusEvent = event.target:beStatused(event.action)
 end
 
+-- Added so that it doesn't crash for now. I'll Remove this soon
+local bind = require '.status.bind'
 
 local function register(event)
     -- if bound were successful, the stat on entity is not 0
@@ -37,7 +39,7 @@ local function register(event)
 
     -- set up the store of the status effect
     -- TODO: reconsider? improve? because this is not a great solution
-    Mods.Test.Status.bind.tinker:setStore(event.target, event.actor)
+    bind.tinker:setStore(event.target, event.actor)
     
     -- remove oneself from grid
     event.actor.world.grid:remove(event.actor)

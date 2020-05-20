@@ -48,13 +48,11 @@ return {
 	stats = {
 		StuckRes = { 
 			'resistance', 
-			{ 'stuck', 1 }, 
-			HowToReturn.NUMBER 
-		}
+			{ 'stuck', 1 }
+		},
 		Explosion = {
 			'explosion', 
-			require '.effects.explosion',
-        	HowToReturn.EFFECT
+			require '.effects.explosion'
 		}        
 	},
 	status = {

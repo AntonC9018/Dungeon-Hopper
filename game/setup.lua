@@ -216,6 +216,4 @@ registerEntitySubpool('Walls', 1)
 registerEntitySubpool('Tiles', 1)
 
 -- now set up all mods
-Mods = {}
-MODULE_NAME = 'test'
-Mods.Test = require 'modules.test.main'
+require 'modules.modloader'

@@ -11,7 +11,7 @@ require 'game.setup'
 
 function scene:create( event )
     
-    require("game.tests.gen2")()
+    require("game.tests.simple")()
 
 end
 

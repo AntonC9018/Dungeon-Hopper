@@ -1,5 +1,5 @@
 local Statused = require '@decorators.statused'
-local Status = require '@status.status'
+local FlavorStatus = require '@status.flavor'
 local IceCube = require '.entities.icecube'
 local StoreTinker = require '@tinkers.storetinker' 
 local Target = require "@items.weapons.target"
@@ -37,10 +37,6 @@ local Changes = require 'render.changes'
 
 
 local function generator(tinker)
-    local function forbidMove(event)
-        print('Move forbidden')
-        event.propagate = false
-    end
 
     -- 1. reset targets to just. this way the other handlers
     --    are still passed through.
@@ -48,40 +44,42 @@ local function generator(tinker)
     --    be a separate handler.
     local function attackJustMe(event)
         -- assume the target is in the store
-        local entity = tinker:getStore(event.actor)
+        local whoApplied = tinker:getStore(event.actor).whoApplied
         event.targets = utils.convertToTargets(
-            { entity }, 
+            { whoApplied }, 
             event.action.direction, 
             event.actor
         )
     end
 
     local function selfRemove(event)
-        local entity = tinker:getStore(event.actor)
-        if entity ~= nil and entity.dead or entity == nil then
+        local whoApplied = tinker:getStore(event.actor).whoApplied
+        if whoApplied ~= nil and whoApplied.dead or whoApplied == nil then
             event.actor.decorators.Statused:resetStatus(StatusTypes.bind)
             tinker:setStore(event.actor, nil)
         end
     end
 
     local function displaceMe(event)
-        local entity = tinker:getStore(event.actor)
-        if entity ~= nil then
-            entity.pos = event.actor.pos
-            event.actor.world:registerChange(entity, Changes.Move)
+        local whoApplied = tinker:getStore(event.actor).whoApplied
+        if whoApplied ~= nil then
+            whoApplied.pos = event.actor.pos
+            event.actor.world:registerChange(whoApplied, Changes.Move)
         end
     end
 
     return {
         { 'getAttack', { attackJustMe, Ranks.HIGH } },
-        { 'getMove',   { forbidMove,   Ranks.HIGH } },
         { 'tick',      { selfRemove,   Ranks.HIGH } },
         { 'displace',  { displaceMe,   Ranks.LOW  } }
     }
 end
 
 local tinker = StoreTinker(generator)
-local bind = Status(tinker)
+
+-- The required options: whoApplied = entity who applied the status effect.
+-- optional ones:        flavor = any flavor
+local bind = FlavorStatus(tinker)
 bind.amount = math.huge
 
 return bind

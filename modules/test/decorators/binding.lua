@@ -2,9 +2,11 @@ local Decorator = require '@decorators.decorator'
 local utils = require '@decorators.utils'
 local Changes = require 'render.changes'
 
+-- TODO: this one should be customizable
+local BindFlavors = require '.status.flavors.bind'
+
 -- Define our custom decorator
 local Binding = class('Binding', Decorator)
-
 
 -- define the handlers for the chains
 local function setBase(event)
@@ -27,19 +29,17 @@ local function checkAlreadyBound(event)
 end
 
 local function bindTarget(event)
-    event.statusEvent = event.target:beStatused(event.action)
+    local bindOptions = {
+        whoApplied = event.actor,
+        flavor = BindFlavors.NoMove
+    }
+    event.statusEvent = event.target:beStatused(event.action, { bind = bindOptions })
 end
 
--- Added so that it doesn't crash for now. I'll Remove this soon
-local bind = require '.status.bind'
 
 local function register(event)
     -- if bound were successful, the stat on entity is not 0
     local success = event.target.statuses:get('bind') ~= 0 
-
-    -- set up the store of the status effect
-    -- TODO: reconsider? improve? because this is not a great solution
-    bind.tinker:setStore(event.target, event.actor)
     
     -- remove oneself from grid
     event.actor.world.grid:remove(event.actor)

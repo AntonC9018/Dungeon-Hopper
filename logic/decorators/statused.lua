@@ -86,14 +86,17 @@ local status = function(event)
             -- print("Applying the "..k.." status") -- debug
 
             if statuses:get(k) == 0 then
-                statusEffect:apply(actor, newAmount)
+                statusEffect:apply(actor, newAmount, event.options[k])
             else
-                statusEffect:reapply(actor, newAmount)
+                statusEffect:reapply(actor, newAmount, event.options[k])
             end
 
             if statusEffect.overlay == Overlay.ADD then
                 statuses:add(k, newAmount)
             elseif statusEffect.overlay == Overlay.RESET then
+                statuses:set(k, newAmount)
+            elseif statusEffect.overlay == Overlay.AGAIN then
+                statusEffect:apply(actor, newAmount, event.options[k])
                 statuses:set(k, newAmount)
             else
                 error("What overlay method is this status using?")
@@ -155,8 +158,9 @@ Statused.affectedChains = {
 }
 
 -- this applies new statuses
-function Statused:activate(actor, action)
+function Statused:activate(actor, action, options)
     local event = Event(actor, action)
+    event.options = options or {}
     actor.chains.status:pass(event, Chain.checkPropagate)
     event.success = true
     return event

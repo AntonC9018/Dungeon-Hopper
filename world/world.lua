@@ -313,17 +313,17 @@ end
 local Pools = require 'game.pools'
 
 
-function World:getRandomItemFromPool(str)
-    local pool = Pools.drawSubpool(str, self)
+function World:getRandomItemFromPool(poolId)
+    local pool = Pools.drawSubpool(poolId, self)
     if pool:exhaust() then
-        pool = Pools.drawSubpool(str, self)
+        pool = Pools.drawSubpool(poolId, self)
     end
     local itemId = pool:getRandom()
     return itemId
 end
 
-function World:getRandomEntityFromPool(str)
-    local pool = Pools.drawSubpool(str, self)
+function World:getRandomEntityFromPool(poolId)
+    local pool = Pools.drawSubpool(poolId, self)
     local itemId = pool:getRandom()
     return itemId
 end

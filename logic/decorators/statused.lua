@@ -95,9 +95,6 @@ local status = function(event)
                 statuses:add(k, newAmount)
             elseif statusEffect.overlay == Overlay.RESET then
                 statuses:set(k, newAmount)
-            elseif statusEffect.overlay == Overlay.AGAIN then
-                statusEffect:apply(actor, newAmount, event.options[k])
-                statuses:set(k, newAmount)
             else
                 error("What overlay method is this status using?")
             end

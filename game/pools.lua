@@ -222,10 +222,10 @@ Pools.drawSubpool = function(str, world)
 
     if split[1] == 'i' then
         root = world.itemPool
-        assert(root ~= nil)
+        assert(root ~= nil, 'Please provide an item pool')
     elseif split[1] == 'e' then
         root = world.entityPool
-        assert(root ~= nil)
+        assert(root ~= nil, 'Please provide an entity pool')
     else
         print('The pool `'..split[1]..'` is not supported. Custom pools aren\'t supported either yet')
     end

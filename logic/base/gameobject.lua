@@ -5,7 +5,6 @@
 -- A game object is any object that exists in the world, at some specific position
 
 local None = require '@action.actions.none'
-local Cell = require("world.cell")
 local Emitter = require("lib.emitter")
 
 local GameObject = class("GameObject")
@@ -79,7 +78,7 @@ function GameObject:isSized()
 end
 
 function GameObject:isPlayer()
-    return self.layer == Cell.Layers.player
+    return self.layer == Layers.player
 end
 
 

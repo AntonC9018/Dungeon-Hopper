@@ -2,6 +2,7 @@
 local assets = require('render.assets')()
 local renderer = require('render.renderer')(assets)
 
+-- Load entity sprites
 local function registerTypes()
     -- register all assets
     for _, t in ipairs(Entities) do

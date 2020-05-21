@@ -21,19 +21,13 @@ local function Iterate(algoEvent)
     local actor = algoEvent.actor
     local action = algoEvent.action
 
-    -- Iterate over added checks and thereupon execute actions.
-    -- These checks are predefined algorithms on action types.
-    -- They traverse appropriate chains on the instance.
-    -- e.g. for an AttackAction action, it would traverse
-    -- just the shouldAttack chain of the instance (actor) and then
-    -- call executeAttack() on that instance (actor).
-    -- PROBLEM: the problem is that the player is assumed to use the same action objects
-    -- but they can't! they should use a separate action type that would include all
-    -- actions in order and without checks
-    --
-    -- The problem has been remedied. 
-    -- now there are separate actions for players and enemies
-    -- the ones for players use a test chain inside each handler in the action's chain
+    -- Iterate over action components of the action and try them in order.
+    -- e.g. an AttackAction action has just one action component, which
+    -- would call the executeAction() method on that instance (actor).
+    -- If the action were successful, then by the end of this function
+    -- call it has already been executed. Otherwise, tell the entity blocking
+    -- the way to move and try again. If it resulted to a failed action yet
+    -- again, try another direction. 
     action:getChain():pass(algoEvent, Chain.checkPropagate)
     
 

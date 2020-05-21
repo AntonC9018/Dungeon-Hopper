@@ -25,7 +25,6 @@ Retouchers.Algos.general(Spider)
 -- Set up sequence
 local Handlers = require '@action.handlers.basic'
 local utils = require '@action.handlers.utils'
-local Action = require '@action.action'
 local None = require '@action.actions.none'
 
 local BindAction = Action.fromHandlers(

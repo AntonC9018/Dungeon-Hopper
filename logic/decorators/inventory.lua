@@ -6,6 +6,7 @@ local CyclicBuffer = require 'lib.cyclicbuf'
 
 local Inventory = class('Inventory', Decorator)
 
+-- TODO: use different buffer types 
 Inventory.Slots = {
     weapon = 1,
     body = 2,

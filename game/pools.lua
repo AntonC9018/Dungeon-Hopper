@@ -142,23 +142,35 @@ local function register(subpool, config)
     end
 end
 
+
 local Pools = {}
 
+-- define some basic pool types for convenience
 Pools.poolTypes = {
     normal = { Pool, Record },
     infinite = { InfPool, InfRecord }
 }
 
+-- A root pool is the global item/entity/etc. pool
+-- In case of e.g. items, the parameters would be 
+-- name = 'i'
+-- items = Items (the global list of items)
+-- poolType = Pools.poolTypes.normal
 Pools.registerRootPool = function(name, items, poolType)
     assert(items ~= nil, 'You must provide the list of all items/etities/etc. ordered by ids for the root pool.')
     local index = #rootConfigs + 1
     rootMap[name] = index
     table.insert(rootConfigs, { items = items, subpools = {} })
     depthMaps[index] = {}
-
     usedType[index] = poolType
 end
 
+-- For example, the function call ('i', 'common')
+-- would create the 'i.common' subpool
+-- It is adviced that you register subpools on all the superpools
+-- e.g. 'i.*.weapon' instead of 'i.common.weapon'
+-- since the latter would produce unexpected results currently
+-- I'm not sure whether this should be addressed
 Pools.registerSubpool = function(str, name, config)
     local processed  = preprocessString(str)
     local parentPool = getConfig(processed)
@@ -187,10 +199,12 @@ local function addSubpoolEntry(subpool, entry)
     end
 end
 
--- Also check if it exists on all superpools but the root
+-- Add the given item to the given subpool.
+-- The subpool string cannot point to the root pool.
+-- NO: Also check if it exists on all superpools but the root
 -- if not, add there too. A look-up table should work.
 -- Actually no need for that. The users should expect others
--- drawing items from the higher subpools and account for that.
+-- drawing items from the superpools and account for that.
 Pools.addToSubpool = function(str, id, mass)
     local processed = preprocessString(str)
     local subpool = getConfig(processed)
@@ -200,6 +214,10 @@ Pools.addToSubpool = function(str, id, mass)
 end
 
 -- TODO: record mask
+-- instentiate the given subpool
+-- only the root index is taken into account, 
+-- the rest of the pool id is ignored
+-- For example, 'i.common' would instantiate 'i'
 Pools.instantiatePool = function(str)
     local processed = preprocessString(str)
     local index = processed[1]
@@ -215,12 +233,16 @@ Pools.instantiatePool = function(str)
     return PoolType(items, { subpools = rootPoolConfig.subpools }, randomness)
 end
 
-
+-- Refresh the subpool by the given id and return it
+-- Examples: 'i.common.weapon', 'i.~.weapon'
+--           'e.~.~.enemy', 'e.z1.f2.enemy'
+-- Can return root pools, e.g. 'e' or 'i'
+-- `pools` is a map poolIndex -> instantiated pool
+-- TODO: `current` is the current tilda values
 Pools.drawSubpool = function(str, pools, current)
     local split = preprocessString(str)
 
     local root = pools[ split[1] ]
-
 
     local subpool = toSubpool(root, split)
 

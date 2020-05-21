@@ -1,4 +1,7 @@
 
+-- Simply maps the keys to vectors and sets up 
+-- the player's next action based on the input
+-- This last part is done through the PlayerControl decorator
 local input = function(world, log)
     local map = {
         up = Vec(0, -1),

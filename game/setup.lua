@@ -108,7 +108,7 @@ retoucherUtils = require '@retouchers.utils'
 -- tinkerUtls = require '@tinkers.utils'
 
 -- make the action class global
--- Action = require '@action.action'
+Action = require '@action.action'
 
 
 -- for now, define some pools here

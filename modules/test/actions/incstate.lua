@@ -1,5 +1,3 @@
-local Action = require '@action.action'
-
 local function incState(event)
     event.actor.state = event.actor.state + 1
     event.success = true

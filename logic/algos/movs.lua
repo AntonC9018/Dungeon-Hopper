@@ -1,2 +1,0 @@
--- this algorithm works just the same way as general,
--- except it doesn't make other enemies move

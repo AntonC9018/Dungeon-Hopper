@@ -1,4 +1,3 @@
-local Action = require '@action.action'
 local handlerUtils = require '@action.handlers.utils'
 
 local Projectile = class("Projectile", Entity)

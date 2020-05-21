@@ -1,5 +1,3 @@
-local Action = require '@action.action'
-
 local function die(event)
     event.actor:die()
 end

@@ -1,16 +1,10 @@
-
--- The idea is to keep track of free sections
--- Whenever a room needs to be generated, take the smallest
--- section that can hold it and place the room somewhere within that segment
--- After that, update the list of free segments
--- Repeat, until a grid has been generated
-
-local MAX_ITER = 200
 local inverseMap = require 'world.generation.dirsmap'
 local Types = require 'world.generation.types'
 local Cell = require 'world.generation.cell'
 local Dir = require 'world.generation.dir'
 local Node = require 'world.generation.node'
+
+local MAX_ITER = 200
 
 local function Room(x, y, w, h)
     return {

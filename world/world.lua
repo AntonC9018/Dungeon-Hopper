@@ -7,6 +7,7 @@ local DroppedItem = require '@items.droppeditem'
 function World:__construct(w, h)
     self.grid = Grid(w or 0, h or 0)
     self.changes = {{}}
+    self.pools = {}
     self.phase = 1
 end
 
@@ -301,31 +302,15 @@ function World:registerChange(obj, code)
 end
 
 
-function World:useEntityPool(pool)
-    self.entityPool = pool
-end
-
-function World:useItemPool(pool)
-    self.itemPool = pool
-end
-
-
 local Pools = require 'game.pools'
 
-
-function World:getRandomItemFromPool(poolId)
-    local pool = Pools.drawSubpool(poolId, self)
-    if pool:exhaust() then
-        pool = Pools.drawSubpool(poolId, self)
-    end
-    local itemId = pool:getRandom()
-    return itemId
+function World:usePool(str, pool)
+    Pools.setPoolInListByName(str, pool, self.pools)
 end
 
-function World:getRandomEntityFromPool(poolId)
-    local pool = Pools.drawSubpool(poolId, self)
-    local itemId = pool:getRandom()
-    return itemId
+function World:drawFromPool(poolId)
+    local pool = Pools.drawSubpool(poolId, self.pools)
+    return pool:getRandom()
 end
 
 local Types = require 'world.generation.types'
@@ -347,12 +332,12 @@ function World:materializeGenerator(generator, Tile, wallSubpoolId, enemySubpool
                 elseif cell.type == Types.WALL then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    local wallClass = Entities[self:getRandomEntityFromPool(wallSubpoolId)]
+                    local wallClass = Entities[self:drawFromPool(wallSubpoolId)]
                     self:create(wallClass, vec)
                 elseif cell.type == Types.ENEMY then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    local enemyClass = Entities[self:getRandomEntityFromPool(enemySubpoolId)]
+                    local enemyClass = Entities[self:drawFromPool(enemySubpoolId)]
                     self:create(enemyClass, vec)
                 else
                     generator.grid[i][j] = nil

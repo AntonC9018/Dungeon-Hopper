@@ -11,7 +11,7 @@ InnardsSetup[Options.ITEM_FROM_POOL] =
     function(actor, optionConfig)
         return {
             id = Options.ITEM_FROM_POOL,
-            itemId = actor.world:getRandomItemFromPool(optionConfig.poolId)
+            itemId = actor.world:drawFromPool(optionConfig.poolId)
         }
     end
 

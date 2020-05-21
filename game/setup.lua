@@ -115,10 +115,12 @@ retoucherUtils = require '@retouchers.utils'
 local Pools = require 'game.pools'
 
 -- define some subpools
+Pools.registerRootPool('e', Entities, Pools.poolTypes.infinite)
 Pools.registerSubpool('e', 'z1')
 Pools.registerSubpool('e.z1', 'f1')
 Pools.registerSubpool('e.z1.*', 'enemy')
 Pools.registerSubpool('e.z1.*', 'wall')
+Pools.registerRootPool('i', Items, Pools.poolTypes.normal)
 Pools.registerSubpool('i', 'common')
 Pools.registerSubpool('i', 'rare')
 Pools.registerSubpool('i.*', 'weapon')

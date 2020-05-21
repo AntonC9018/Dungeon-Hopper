@@ -7,7 +7,7 @@ Pools.addToSubpool('i.common.weapon', Mods.Test.Items.shield:getItemId())
 
 return function()
 
-    local itemPool = Pools.instantiateItemPool()
+    local itemPool = Pools.instantiatePool('i')
 
     local world = initWorld({
         x = 10, y = 10,

@@ -25,8 +25,8 @@ return function()
             -- tile = EntitySubpools.Tiles,
             wall = 'e.~.~.wall',
             enemy = 'e.~.~.enemy',
-            items = Pools.instantiateItemPool(),
-            entities = Pools.instantiateEntityPool()
+            items = Pools.instantiatePool('i'),
+            entities = Pools.instantiatePool('e')
         },
         generator = true
     })

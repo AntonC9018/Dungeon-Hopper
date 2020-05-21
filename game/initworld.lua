@@ -15,8 +15,8 @@ return function(config)
     render.registerTypes()
 
     if config.pools then
-        world:useEntityPool(config.pools.entities)
-        world:useItemPool(config.pools.items)
+        world:usePool('e', config.pools.entities)
+        world:usePool('i', config.pools.items)
     end
     
     render.assets:loadAll()

@@ -9,45 +9,68 @@ local InfRecord = require '@items.pool.infinite.record'
 
 -- for now, the current stats are:
 local current = {
-    zone = 1,
-    floor = 1,
-    rarity = 1,
-    category = 1
+    {
+        1, 1
+    },
+    {
+        1, 1
+    }
 }
 
-local itemDepthMap = {
-    { 0, {} }, -- Rarity
-    { 0, {} } -- category
-}
+-- provides a mapping of string of different depth levels
+-- for example, in 'i.common', the root pool is i, which 
+-- if the first entry in the depthMap is accessed. The depth 
+-- level is also 1 and so the first entry is accessed yet again
+-- it contains the count and the mappings. 
+-- { count, { ..mappings.. } }
+-- mappings just map strings to indeces that are then used 
+-- to access the corresponding subpool or subpool config.
+local depthMaps = {}
 
-local entityDepthMap = {
-    { 0, {} }, -- Zone
-    { 0, {} }, -- Floor
-    { 0, {} }  -- layer ()
-}
+-- provides a mapping from the string name of the root pool
+-- or its config to the index to it inside the rootConfigs list
+-- and for the corresponding depthMap
+local rootMap = {}
+
+-- different pools may use either a InfPool or a normal Pool
+-- an InfPool cannot be exhausted
+local usedType = {}
+
+-- The root pool configs are a bit different from the subpool
+-- configs. Their 'ids' field indicates the items or entities 
+-- that the pool will be comprised of. The config map is provided
+-- on initialization. It would map the ids if elements of this list
+-- to records, which are { id = ?, q = ?, mass = ? }. Otherwise,
+-- the default records are used.
+local rootConfigs = {}
+
+-- local itemDepthMap = {
+--     { 0, {} }, -- Rarity
+--     { 0, {} } -- category
+-- }
+
+-- local entityDepthMap = {
+--     { 0, {} }, -- Zone
+--     { 0, {} }, -- Floor
+--     { 0, {} }  -- layer ()
+-- }
 
 
-local itemPoolConfig = {
-    subpools = {}
-}
-local entityPoolConfig = {
-    subpools = {}
-}
-
--- TODO: so, tilda is interpreted as taking the current pool state
--- TODO: (maybe) a dollar is interpreted as a random zone, floor etc.
--- for configs, though, the sting must be well-defined
+-- Basically, strings are mapped to indeces via the depthMap
+-- Indeces are left unchanged
+-- Tilda is mapped to the current zone/level/etc.
+-- A star is left unchanged. It indicates all subpools.
 local function preprocessString(str)
     local split = string.split(str, '.')
-    local mapTilda, mapString
+    split[1] = rootMap[ split[1] ]
+    
+    local mapTilda
 
-    if split[1] == 'i' then
-        mapTilda = { current.rarity, current.category }
-        mapString = itemDepthMap       
-    elseif split[1] == 'e' then
-        mapTilda = { current.zone, current.floor }
-        mapString = entityDepthMap
+    if current then
+        mapTilda = current[ split[1] ]
     end
+
+    local mapString = depthMaps[ split[1] ]
 
     for i = 2, #split do
         if split[i] == '*' then
@@ -104,17 +127,7 @@ local function toSubpool(current, split)
 end
 
 local function getConfig(split)
-
-    local root
-
-    if split[1] == 'i' then
-        root = itemPoolConfig
-    elseif split[1] == 'e' then
-        root = entityPoolConfig
-    else
-        print('The pool `'..split[1]..'` is not supported. Custom pools aren\'t supported either yet')
-    end
-
+    local root = rootConfigs[ split[1] ]
     return toSubpool(root, split)
 end
 
@@ -129,32 +142,38 @@ local function register(subpool, config)
     end
 end
 
-local function registerItemSubpool(name, config, parentPool, depth)
-    register(parentPool, config)
-    itemDepthMap[depth][1] = itemDepthMap[depth][1] + 1
-    if name ~= nil then
-        itemDepthMap[depth][2][name] = itemDepthMap[depth][1]
-    end
-end
-
-local function registerEntitySubpool(name, config, parentPool, depth)
-    register(parentPool, config)
-    entityDepthMap[depth][1] = entityDepthMap[depth][1] + 1
-    if name ~= nil then
-        entityDepthMap[depth][2][name] = entityDepthMap[depth][1]
-    end
-end
-
 local Pools = {}
+
+Pools.poolTypes = {
+    normal = { Pool, Record },
+    infinite = { InfPool, InfRecord }
+}
+
+Pools.registerRootPool = function(name, items, poolType)
+    assert(items ~= nil, 'You must provide the list of all items/etities/etc. ordered by ids for the root pool.')
+    local index = #rootConfigs + 1
+    rootMap[name] = index
+    table.insert(rootConfigs, { items = items, subpools = {} })
+    depthMaps[index] = {}
+
+    usedType[index] = poolType
+end
 
 Pools.registerSubpool = function(str, name, config)
     local processed  = preprocessString(str)
     local parentPool = getConfig(processed)
     local depth      = #processed
-    if processed[1] == 'i' then
-        registerItemSubpool(name, config, parentPool, depth)
-    else
-        registerEntitySubpool(name, config, parentPool, depth)
+
+    register(parentPool, config)
+
+    if depthMaps[ processed[1] ][depth] == nil then
+        depthMaps[ processed[1] ][depth] = { 0, {} }
+    end
+    local depthLevelMap = depthMaps[ processed[1] ][depth]
+    depthLevelMap[1] = depthLevelMap[1] + 1
+
+    if name ~= nil then
+        depthLevelMap[2][name] = depthLevelMap[1]
     end
 end
 
@@ -170,67 +189,52 @@ end
 
 -- Also check if it exists on all superpools but the root
 -- if not, add there too. A look-up table should work.
+-- Actually no need for that. The users should expect others
+-- drawing items from the higher subpools and account for that.
 Pools.addToSubpool = function(str, id, mass)
     local processed = preprocessString(str)
     local subpool = getConfig(processed)
     local depth = #processed
-
-    -- TODO: Also update all parents
+    assert(depth ~= 1, 'One cannot add records to root config')
     addSubpoolEntry(subpool, { id = id, mass = mass or 1 })
 end
 
-Pools.instantiateItemPool = function(randomness)
-    -- for now, put one item with mass of one in each thing
+-- TODO: record mask
+Pools.instantiatePool = function(str)
+    local processed = preprocessString(str)
+    local index = processed[1]
+    local rootPoolConfig = rootConfigs[index]
+
+    local PoolType = usedType[index][1]
+    local RecType = usedType[index][2]
+
     local items = {}
-    for i, _ in ipairs(Items) do
-        items[i] = Record(i, 1, 1)
+    for i, _ in ipairs(rootPoolConfig.items) do
+        items[i] = RecType(i, 1, 1)
     end
-    -- TODO: sort configs by id in ascending order
-    return Pool(items, itemPoolConfig, randomness)
+    return PoolType(items, { subpools = rootPoolConfig.subpools }, randomness)
 end
 
 
--- TODO: make it possible to mask the global config
--- to customize the output
--- alternatively, make people copy and reset the world's config on 
--- e.g. player selection so that this method is never called
--- but then the objects will have to be made global
-Pools.instantiateEntityPool = function(randomness)
-    -- for now, put one entity with mass of one in each thing
-    local entities = {}
-    for i, _ in ipairs(Entities) do
-        entities[i] = InfRecord(i, 1)
-    end
-    -- TODO: figure out how to provide a mapping from subpool id 
-    -- to an actual subpool. For example:
-    --  1. leave a reference to the pool in the config. while simple,
-    --     it does not allow for new instances and is kinda hacky
-    --  2. mark configs with ids. I actually very like this one. Then
-    --     we'll just loop through the subpools of subpools and link
-    --     everything in a new list. Seems ok.
-    -- For now, if the id is not zero, and since we're using one level
-    -- deep pools, the necessary pool can be referenced by indexing the
-    -- subpools list with the subpool's global id.
-    return InfPool(entities, entityPoolConfig, randomness)
-end
-
-
-Pools.drawSubpool = function(str, world)
+Pools.drawSubpool = function(str, pools, current)
     local split = preprocessString(str)
 
-    local root
+    local root = pools[ split[1] ]
 
-    if split[1] == 'i' then
-        root = world.itemPool
-        assert(root ~= nil, 'Please provide an item pool')
-    elseif split[1] == 'e' then
-        root = world.entityPool
-        assert(root ~= nil, 'Please provide an entity pool')
-    else
-        print('The pool `'..split[1]..'` is not supported. Custom pools aren\'t supported either yet')
+
+    local subpool = toSubpool(root, split)
+
+    if subpool.exhaust ~= nil and subpool:exhaust() then
+        subpool = toSubpool(root, split)
     end
 
-    return toSubpool(root, split)
+    return subpool
+end
+
+
+Pools.setPoolInListByName = function(name, pool, pools)
+    local split = preprocessString(name)
+    pools[ split[1] ] = pool
 end
 
 return Pools

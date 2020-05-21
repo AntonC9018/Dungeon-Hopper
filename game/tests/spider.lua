@@ -1,17 +1,18 @@
 local initWorld = require 'game.initworld'
 local input = require 'game.input'
 local Input = require 'game.input'
+local Pools = require 'game.pools'
 
 local Ents = Mods.Test.Entities
 local I = Mods.Test.Items
 
-addSubpoolItem(ItemSubpools.Weapons,     I.spear.id)
-addSubpoolItem(ItemSubpools.Weapons,     I.shield.id)
-addSubpoolItem(ItemSubpools.Weapons,     I.shell.id)
-addSubpoolItem(ItemSubpools.Trinkets,    I.testitem.id)
-addSubpoolEntity(EntitySubpools.Enemies, Ents.Spider.global_id)
--- addSubpoolEntity(EntitySubpools.Tiles,   Ents.Tile)
-addSubpoolEntity(EntitySubpools.Walls,   Ents.Dirt.global_id)
+Pools.addToSubpool('i.common.weapon',  I.spear.id)
+Pools.addToSubpool('i.common.weapon',  I.shield.id)
+Pools.addToSubpool('i.common.weapon',  I.shell.id)
+Pools.addToSubpool('i.common.trinket', I.testitem.id)
+Pools.addToSubpool('e.1.*.enemy', Ents.Spider.global_id)
+Pools.addToSubpool('e.1.*.enemy', Ents.TestEnemy.global_id)
+Pools.addToSubpool('e.1.*.wall',  Ents.Dirt.global_id)
 
 return function()
 

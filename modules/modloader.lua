@@ -89,7 +89,7 @@ end
 
 
 MODULE_NAME = 'test'
-local content = require 'modules.test.mainnew'
+local content = require 'modules.test.main'
 local Test = loadMod('Test', content)
 Mods.Test = Test
 

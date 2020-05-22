@@ -1,4 +1,4 @@
-return function(id, q, mass)
+return function(id, mass, q)
     return {
         shared = {
             id = id,

@@ -25,7 +25,6 @@ Weapon.pattern:add( Vec(1, 0), Vec(1, 0), false )
 Weapon.check = General.check
 Weapon.chain = General.chain
 
-
 function Weapon:getTargets(actor, action)
 
     local map = {}

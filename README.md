@@ -1,3 +1,5 @@
+# What is this?
+
 It's a game based on mechanics of NecroDancer. Right now I'm developing the logic for it. I've done an attempt at this previously, but the project had gone out of hand rather quickly. You may find the old code in older versions of the repo.
 
 The idea with this project isn't to replicate the original **Crypt of the Necrodancer**, but to create a scalable open-source game based on the same mechanics, so that it could be easily extended by community mods. If you do not know what this 'Necrodancer' game is, I highly recommend you check it out. It is awesome.

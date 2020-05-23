@@ -1,4 +1,4 @@
-local retouch = retoucherUtils.retouch
+local retouch = require('@retouchers.utils').retouch
 local Explode = require '.handlers.explode'
 local Die = require '.actions.die'
 local IncState = require '.actions.incstate'

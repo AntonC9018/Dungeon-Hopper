@@ -1,5 +1,4 @@
 local State = require '.enums.pressed'
-local retouch = retoucherUtils.retouch
 
 -- Class definition
 local Trap = class('Trap', Entity)

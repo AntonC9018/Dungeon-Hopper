@@ -95,7 +95,7 @@ Item = require '@items.item'
 -- make essential retouchers global
 Retouchers = require '@retouchers.all'
 -- as well as their utils
-retoucherUtils = require '@retouchers.utils'
+-- retoucherUtils = require '@retouchers.utils'
 
 -- make tinker classes global
 -- Tinker = require '@tinkers.tinker'

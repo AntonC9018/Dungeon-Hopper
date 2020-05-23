@@ -1,3 +1,4 @@
+local retouch = require('@retouchers.utils').retouch
 
 local IceCube = class("IceCube", Entity)
 
@@ -49,7 +50,6 @@ local function freeEntity(event)
     end
 end
 
-local retouch = retoucherUtils.retouch
 retouch(IceCube, 'displace', { moveEntity, Ranks.LOWEST })
 retouch(IceCube, 'die',      { freeEntity, Ranks.LOWEST })
 

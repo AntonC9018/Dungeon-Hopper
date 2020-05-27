@@ -326,19 +326,37 @@ function World:materializeGenerator(generator, Tile, wallSubpoolId, enemySubpool
             local cell = generator.grid[i][j]
             if cell ~= nil then
                 local vec = Vec(i, j)
+
                 if cell.type == Types.TILE or cell.type == Types.HALLWAY then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
+
                 elseif cell.type == Types.WALL then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    local wallClass = Entities[self:drawFromPool(wallSubpoolId)]
-                    self:create(wallClass, vec)
+                    local wallClass
+                    if type(wallSubpoolId) == 'number' then
+                        wallClass = Entities[self:drawFromPool(wallSubpoolId)]
+                    else
+                        wallClass = wallSubpoolId
+                    end
+                    if wallClass then
+                        self:create(wallClass, vec)
+                    end
+
                 elseif cell.type == Types.ENEMY then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    local enemyClass = Entities[self:drawFromPool(enemySubpoolId)]
-                    self:create(enemyClass, vec)
+                    local enemyClass
+                    if type(wallSubpoolId) == 'number' then
+                        enemyClass = Entities[self:drawFromPool(enemySubpoolId)]
+                    else
+                        enemyClass = enemySubpoolId
+                    end
+                    if enemyClass then
+                        self:create(enemyClass, vec)
+                    end
+
                 else
                     generator.grid[i][j] = nil
                 end

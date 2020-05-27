@@ -377,16 +377,26 @@ function Generator:placeRoom(node, parent, dir)
     -- self.grid[relRoomStart.x][relRoomStart.y] = { type = 's'}
     -- self.grid[relParentEnd.x][relParentEnd.y] = { type = 'r'}
     -- return nil
-    -- get a random offset. The offset is limited by the size 
-    -- of the room. The offset is like how far to the right or to the 
-    -- left (top or bottom) of the center of the room the hallway is
-    local max_var_top = -math.abs(relRoomDim.y)  + 3
-    local max_var_bot = math.abs(relParentDim.y) - 3
+    
+
+    -- generate a random hallway length.
+    local max_allowed_hallway_width = math.abs(math.min(relRoomDim.y, relParentDim.y)) - 2
+    local min_hallway_width = clamp(self.min_hallway_width, 1, max_allowed_hallway_width)
+    local max_hallway_width = clamp(self.max_hallway_width, min_hallway_width, max_allowed_hallway_width)
 
     -- generate a random offset based on variation and place the room
     -- if can't place the room with that variation, try another
     local hallOffsetStart = math.random(self.min_hallway_length, self.max_hallway_length)
+    local hallWidth = math.random(min_hallway_width, max_hallway_width)
+
+    -- get a random offset. The offset is limited by the size 
+    -- of the room. The offset is like how far to the right or to the 
+    -- left (top or bottom) of the center of the room the hallway is
+    local max_var_top = -math.abs(relRoomDim.y)  + 2 + hallWidth
+    local max_var_bot = math.abs(relParentDim.y) - 2 - hallWidth
     local perpOffsetStart = math.random(max_var_top, max_var_bot)
+
+    print(perpOffsetStart)
 
     local currentHallOffset = hallOffsetStart
     local currentPerpOffset = perpOffsetStart
@@ -486,7 +496,7 @@ function Generator:placeRoom(node, parent, dir)
         -- although it can be deduced as simply x + y, since the projected
         -- vector is pure x or y, just calculate the magnitude
         local mag = projDiff:mag()
-        local variance = mag - 1
+        local variance = mag - hallWidth
         -- generate the start vector
         local offset = math.random(1, variance)
         
@@ -506,9 +516,9 @@ function Generator:placeRoom(node, parent, dir)
 
         local variance
         if mag > relHeightMag then
-            variance = relHeightMag - 1
+            variance = relHeightMag - hallWidth
         else
-            variance = mag - 1
+            variance = mag - hallWidth
         end
 
         local offset = math.random(1, variance)
@@ -523,11 +533,18 @@ function Generator:placeRoom(node, parent, dir)
 
     -- generate hallway
     for i = 0, currentHallOffset do
+
         local currentHallPos = hallwayPos + -i * dirVec
-        self.grid[currentHallPos.x][currentHallPos.y] = Cell(Types.HALLWAY, { parent, node })
-        local wallTopPos = currentHallPos + relDownVec
+
+        for j = 0, hallWidth - 1 do
+            local hallPos = currentHallPos + relDownVec * j
+            self.grid[hallPos.x][hallPos.y] = Cell(Types.HALLWAY, { parent, node })
+        end
+
+        local wallTopPos = currentHallPos - relDownVec
         self.grid[wallTopPos.x][wallTopPos.y] = Cell(Types.WALL, { parent, node })
-        local wallBotPos = currentHallPos - relDownVec
+
+        local wallBotPos = currentHallPos + relDownVec * hallWidth
         self.grid[wallBotPos.x][wallBotPos.y] = Cell(Types.WALL, { parent, node })
     end
 

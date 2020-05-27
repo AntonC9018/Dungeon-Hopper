@@ -4,7 +4,7 @@ local render = require 'game.render'
 local Generator = require 'world.generation.generator'
 
 local defaultFloor = Mods.Test.Entities.Tile
-local defaultWall  = Mods.Test.Entities.Wall
+local defaultWall  = Mods.Test.Entities.Dirt
 local defaultEnemy = Mods.Test.Entities.TestEnemy
 
 return function(config)
@@ -38,9 +38,9 @@ return function(config)
 
         local center = world:materializeGenerator(
             generator, 
-            config.pools.floor or defaultFloor, 
-            config.pools.wall  or defaultWall, 
-            config.pools.enemy or defaultEnemy
+            config.pools ~= nil and config.pools.floor or defaultFloor, 
+            config.pools ~= nil and config.pools.wall  or defaultWall, 
+            config.pools ~= nil and config.pools.enemy or defaultEnemy
         )
         world:createPlayer(config.player.character, center)
     else

@@ -656,12 +656,12 @@ function Generator:secret(w, h)
         return count, neigh
     end
 
-    local function trySpot(x, y)
+    local function trySpot(numRooms, x, y)
         if self:isOccupiedPosInGraph(x, y) then
             return
         end
         local count, neigh = countNeighs(x, y)
-        if count >= 2 then
+        if count == numRooms then
             local secretNode = { w = w, h = h }
             local secretRoom = self:placeRoom(secretNode, neigh, Dir(x - neigh.x, y - neigh.y), secretConfig)
             if secretRoom ~= nil then
@@ -671,40 +671,45 @@ function Generator:secret(w, h)
     end
 
     -- local function 
+    local numRooms = 4
 
     while(true) do
         local y = center.y - level
         for x = center.x - level - 1, center.x + level + 1 do
-            local secretRoom = trySpot(x, y)
+            local secretRoom = trySpot(numRooms, x, y)
             if secretRoom then
                 return secretRoom
             end
         end
         y = center.y + level
         for x = center.x - level - 1, center.x + level + 1 do
-            local secretRoom = trySpot(x, y)
+            local secretRoom = trySpot(numRooms, x, y)
             if secretRoom then
                 return secretRoom
             end
         end
         local x = center.x - level
         for y = center.y - level, center.y + level do
-            local secretRoom = trySpot(x, y)
+            local secretRoom = trySpot(numRooms, x, y)
             if secretRoom then
                 return secretRoom
             end
         end
         x = center.x + level
         for y = center.y - level, center.y + level do
-            local secretRoom = trySpot(x, y)
+            local secretRoom = trySpot(numRooms, x, y)
             if secretRoom then
                 return secretRoom
             end
         end
         level = level + 1
         if level > #self.graphMap then
-            print('No secret room generated')
-            return 
+            if numRooms == 1 then
+                print("No room generated")
+                return
+            end
+            numRooms = numRooms - 1
+            level = 1
         end
     end
 

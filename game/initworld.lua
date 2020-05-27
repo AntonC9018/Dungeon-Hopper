@@ -36,11 +36,18 @@ return function(config)
             generator = config.generator
         end
 
+        local entity, floor, wall = defaultEnemy, defaultFloor, defaultWall
+        if config.pools then
+            entity = config.pools.floor or entity
+            floor = config.pools.floor or floor
+            wall = config.pools.floor or wall
+        end
+
         local center = world:materializeGenerator(
             generator, 
-            config.pools ~= nil and config.pools.floor or defaultFloor, 
-            config.pools ~= nil and config.pools.wall  or defaultWall, 
-            config.pools ~= nil and config.pools.enemy or defaultEnemy
+            floor, 
+            wall,
+            entity
         )
         world:createPlayer(config.player.character, center)
     else

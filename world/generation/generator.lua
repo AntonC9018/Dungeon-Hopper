@@ -616,20 +616,97 @@ function Generator:secret(w, h)
     for _, node in ipairs(self.nodes) do
         local dirs = node:getOccupiedDirections()
         local parent = node.room
-        local secretRoom
 
         for _, dir in ipairs(dirs) do
             local secretNode = { w = w, h = h }
-            secretRoom = self:placeRoom(secretNode, parent, dir, secretConfig)
+            local secretRoom = self:placeRoom(secretNode, parent, dir, secretConfig)
             if secretRoom ~= nil then
                 return secretRoom
             end
         end
     end
 
-    print('No secret room generated')
 
-    -- TODO: figure out places that neighbor most rooms
+    -- figure out places that neighbor most rooms
+    -- start from the root node, loop around and see
+    local center = self.nodes[1]
+    local x, y = center.x, center.y
+    local level = 1
+
+    local function countNeighs(x, y)
+        local count = 0
+        local neigh
+        if self.graphMap[x][y - 1] ~= nil then
+            count = count + 1
+            neigh = self.graphMap[x][y - 1]
+        end
+        if self.graphMap[x][y + 1] ~= nil then
+            count = count + 1
+            neigh = self.graphMap[x][y + 1]
+        end
+        if self.graphMap[x + 1] ~= nil and self.graphMap[x + 1][y] ~= nil then
+            count = count + 1
+            neigh = self.graphMap[x + 1][y]
+        end
+        if self.graphMap[x - 1] ~= nil and self.graphMap[x - 1][y] ~= nil then
+            count = count + 1
+            neigh = self.graphMap[x - 1][y]
+        end
+
+        return count, neigh
+    end
+
+    local function trySpot(x, y)
+        if self:isOccupiedPosInGraph(x, y) then
+            return
+        end
+        local count, neigh = countNeighs(x, y)
+        if count >= 2 then
+            local secretNode = { w = w, h = h }
+            local secretRoom = self:placeRoom(secretNode, neigh, Dir(x - neigh.x, y - neigh.y), secretConfig)
+            if secretRoom ~= nil then
+                return secretRoom
+            end
+        end
+    end
+
+    -- local function 
+
+    while(true) do
+        local y = center.y - level
+        for x = center.x - level - 1, center.x + level + 1 do
+            local secretRoom = trySpot(x, y)
+            if secretRoom then
+                return secretRoom
+            end
+        end
+        y = center.y + level
+        for x = center.x - level - 1, center.x + level + 1 do
+            local secretRoom = trySpot(x, y)
+            if secretRoom then
+                return secretRoom
+            end
+        end
+        local x = center.x - level
+        for y = center.y - level, center.y + level do
+            local secretRoom = trySpot(x, y)
+            if secretRoom then
+                return secretRoom
+            end
+        end
+        x = center.x + level
+        for y = center.y - level, center.y + level do
+            local secretRoom = trySpot(x, y)
+            if secretRoom then
+                return secretRoom
+            end
+        end
+        level = level + 1
+        if level > #self.graphMap then
+            print('No secret room generated')
+            return 
+        end
+    end
 
 end
 

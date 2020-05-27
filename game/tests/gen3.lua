@@ -13,6 +13,8 @@ return function()
     generator:addNode(1, Vec(0, -1), 6, 6)
     generator:addNode(1, Vec(0, 1), 6, 6)
     generator:generate()
+    generator:secret(5, 5)
+    generator:secret(4, 5)
 
     local world = initWorld({
         player = {

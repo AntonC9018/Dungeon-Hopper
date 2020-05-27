@@ -4,7 +4,7 @@ local Cell = require 'world.generation.cell'
 local Dir = require 'world.generation.dir'
 local Node = require 'world.generation.node'
 
-local MAX_ITER = 200
+local MAX_ITER = 50
 
 local function Room(x, y, w, h)
     return {
@@ -25,19 +25,25 @@ function Generator:__construct(w, h, options)
     options = options or {}
     -- so the idea is to generate a graph where
     -- the root node is the starting room
-    self.max_hallway_length = options.max_hallway_length or 5
-    self.min_hallway_length = options.min_hallway_length or 0
-    self.min_hallway_width  = options.min_hallway_width  or 1
-    self.max_hallway_width  = options.max_hallway_width  or 2
-    self.enemy_density      = options.enemy_density or 1 / 10
-    self.max_iter = options.max_iter or MAX_ITER
+    options.max_hallway_length = options.max_hallway_length or 5
+    options.min_hallway_length = options.min_hallway_length or 0
+    options.min_hallway_width  = options.min_hallway_width  or 1
+    options.max_hallway_width  = options.max_hallway_width  or 2
+    options.enemy_density      = options.enemy_density or 1 / 10
+    options.max_iter = options.max_iter or MAX_ITER
+
+    self.options = options    
+    
+    self.normalRoomOptions = table.clone(options)
+    self.normalRoomOptions.build_hallway = true
+    self.normalRoomOptions.leave_hallway_space = true
 end
 
 function Generator:generate()
     
     self.generateCount = self.generateCount + 1
 
-    if self.generateCount == MAX_ITER then
+    if self.generateCount == self.options.max_iter then
         return false
     end
 
@@ -52,8 +58,9 @@ function Generator:generate()
     local startRoom = Room(startX, startY, self.rootNode.w, self.rootNode.h)
     self:writeIn(startRoom)
     self.rooms = { startRoom }
-    
-    if not self:iterate(self.rootNode, startRoom) then
+    self.rootNode.room = startRoom
+
+    if not self:iterate(self.rootNode, startRoom, normalRoomOptions) then
         return self:generate()
     end
 
@@ -201,6 +208,7 @@ function Generator:print()
 end
 
 function Generator:writeIn(room)
+
     for x, t in ipairs(self.grid) do
         if t == nil then
             printf('No %i column before writing', x)
@@ -220,7 +228,7 @@ function Generator:writeIn(room)
     for x = room.x + 1, room.x + room.w - 2 do
         for y = room.y + 1, room.y + room.h - 2 do
             local r = math.random()
-            if r < self.enemy_density then
+            if r < self.options.enemy_density then
                 self.grid[x][y] = Cell(Types.ENEMY, room)
             else
                 self.grid[x][y] = Cell(Types.TILE, room)
@@ -240,7 +248,7 @@ function Generator:iterate(parentNode, parentRoom, ignoreNode)
         -- construct the node itself
         local node = parentNode:getNeighbor(dir)
         if node ~= ignoreNode then
-            local room = self:placeRoom(node, parentRoom, dir)
+            local room = self:placeRoom(node, parentRoom, dir, self.normalRoomOptions)
             if room == nil then
                 return false
             end
@@ -342,7 +350,60 @@ function Generator:getCell(pos)
     return self.grid[pos.x][pos.y]
 end
 
-function Generator:placeRoom(node, parent, dir)
+
+local Incrementor = class("Incrementor")
+
+function Incrementor:__construct()
+    self.vars = {}
+    self.valid = true
+end
+
+function Incrementor:addVar(start, min, max)
+    local var = {
+        start = start,
+        value = start,
+        min = min,
+        max = max,
+        currentSign = 1
+    }
+    self.vars[#self.vars + 1] = var
+    return var
+end
+
+function Incrementor:next()
+    for i, var in ipairs(self.vars) do
+
+        var.value = var.value + var.currentSign
+
+        if var.currentSign == 1 then
+            if var.value > var.max then
+                var.currentSign = -1
+                var.value = var.start - 1
+                return
+            end
+        end
+
+        if var.currentSign == -1 then
+
+            -- keep looping
+            if var.value >= var.min then
+                return
+            end
+
+            -- if went below minimum
+            if i == #self.vars then
+                self.valid = false
+                return
+            else
+                var.value = var.start
+                var.currentSign = 1
+            end
+        end
+
+    end
+end
+
+function Generator:placeRoom(node, parent, dir, options)
     
     -- get the minimum coordinate of the start of the room depending
     -- on the direction on the position of the parent room
@@ -372,37 +433,40 @@ function Generator:placeRoom(node, parent, dir)
 
     local relParentStart = leftTopOffset * mirr + parentCenter
     local relRoomStart   = relParentStart + relParentWidthVec
-
-    -- self.grid[relParentStart.x][relParentStart.y] = { type = 'p'}
-    -- self.grid[relRoomStart.x][relRoomStart.y] = { type = 's'}
-    -- self.grid[relParentEnd.x][relParentEnd.y] = { type = 'r'}
-    -- return nil
     
+    local hallWidth
 
-    -- generate a random hallway length.
-    local max_allowed_hallway_width = math.abs(math.min(relRoomDim.y, relParentDim.y)) - 2
-    local min_hallway_width = clamp(self.min_hallway_width, 1, max_allowed_hallway_width)
-    local max_hallway_width = clamp(self.max_hallway_width, min_hallway_width, max_allowed_hallway_width)
+    if options.hallway then
+        -- generate a random hallway length.
+        local max_allowed_hallway_width = math.abs(math.min(relRoomDim.y, relParentDim.y)) - 2
+        local min_hallway_width = clamp(options.min_hallway_width, 1, max_allowed_hallway_width)
+        local max_hallway_width = clamp(options.max_hallway_width, min_hallway_width, max_allowed_hallway_width)
 
-    -- generate a random offset based on variation and place the room
-    -- if can't place the room with that variation, try another
-    local hallOffsetStart = math.random(self.min_hallway_length, self.max_hallway_length)
-    local hallWidth = math.random(min_hallway_width, max_hallway_width)
+        -- generate a random offset based on variation and place the room
+        -- if can't place the room with that variation, try another
+        hallWidth = math.random(min_hallway_width, max_hallway_width)
+    else
+        hallWidth = 1
+    end
+
+    local horOffsetStart = math.random(options.min_hallway_length, options.max_hallway_length)
 
     -- get a random offset. The offset is limited by the size 
     -- of the room. The offset is like how far to the right or to the 
     -- left (top or bottom) of the center of the room the hallway is
-    local max_var_top = -math.abs(relRoomDim.y)  + 2 + hallWidth
-    local max_var_bot = math.abs(relParentDim.y) - 2 - hallWidth
-    local perpOffsetStart = math.random(max_var_top, max_var_bot)
+    local max_var_top = -math.abs(relRoomDim.y)  + 2
+    local max_var_bot = math.abs(relParentDim.y) - 2
 
-    print(perpOffsetStart)
+    if options.leave_hallway_space then
+        max_var_top = max_var_top + hallWidth
+        max_var_bot = max_var_bot - hallWidth
+    end
+    
+    local verOffsetStart = math.random(max_var_top, max_var_bot)
 
-    local currentHallOffset = hallOffsetStart
-    local currentPerpOffset = perpOffsetStart
-
-    local currentHallTestSign = 1
-    local currentPerpTestSign = 1
+    local incr = Incrementor()
+    local horOffsetVar = incr:addVar(horOffsetStart, options.min_hallway_length, options.max_hallway_length)
+    local verOffsetVar = incr:addVar(verOffsetStart, max_var_top, max_var_bot)
 
     -- check if can place the room at those coordinates.
     -- for that, all coordinates must be unoccupied with other rooms
@@ -410,15 +474,15 @@ function Generator:placeRoom(node, parent, dir)
     -- the outer edges or event the corners
     -- for now, walk the entire space over and over. if found a cell
     -- other than nil or occupied by a wall, test another offset
-    local currentHallOffsetVec
-    local currentPerpOffsetVec
+    local currentHorOffsetVec
+    local currentVerOffsetVec
     local currentStart
     local valid
     repeat
         valid = true
-        currentHallOffsetVec = relRightVec * currentHallOffset
-        currentPerpOffsetVec = relDownVec * currentPerpOffset
-        currentStart = relRoomStart + currentPerpOffsetVec + currentHallOffsetVec
+        currentHorOffsetVec = relRightVec * horOffsetVar.value
+        currentVerOffsetVec = relDownVec * verOffsetVar.value
+        currentStart = relRoomStart + currentVerOffsetVec + currentHorOffsetVec
         for i = 0, relRoomWidthVec:mag() do
             for j = 0, relRoomHeightVec:mag() do
                 local pos = currentStart + i * relRightVec + j * relDownVec
@@ -431,45 +495,24 @@ function Generator:placeRoom(node, parent, dir)
                 end
             end
             if not valid then
+                incr:next()
+                if incr.valid == false then
+                    print('No place for a room')
+                    return nil
+                end
                 break
             end            
-        end
-        if not valid then
-            currentHallOffset = currentHallOffset + currentHallTestSign
-            if currentHallTestSign == 1 then
-                if currentHallOffset > self.max_hallway_length then
-                    currentHallOffset = hallOffsetStart - 1
-                    currentHallTestSign = -1
-                end
-            end
-            if currentHallTestSign == -1 then
-                if currentHallOffset < self.min_hallway_length then
-                    currentHallOffset = hallOffsetStart
-                    currentHallTestSign = 1
-
-                    currentPerpOffset = currentPerpOffset + currentPerpTestSign
-
-                    if currentPerpOffset > max_var_bot then
-                        currentPerpOffset = perpOffsetStart - 1
-                        currentPerpTestSign = -1
-                    end
-                    if currentPerpOffset < max_var_top then
-                        print('No place for a room')
-                        return nil
-                    end
-                end
-            end
         end
     until valid
 
 
     -- once found a spot, fill it in
-    -- local relHalfRoomDimMinusOne = Vec(room.x - 1, room.h - 1):rotate(angle) / 2
     local roomCenter = currentStart + relRoomWidthVec / 2 + relRoomHeightVec / 2
     local leftTopRoomOffset = -relRoomWidthVec / 2 - relRoomHeightVec / 2
     local neededPos = roomCenter + leftTopRoomOffset * mirr
     local room = Room(neededPos.x, neededPos.y, node.w, node.h)
     self:writeIn(room)
+    node.room = room
     -- self.grid[room.x][room.y] = { type = 'g' }
     -- get a random hallway offset
     -- if the new room is lower than the parent room, do
@@ -481,74 +524,113 @@ function Generator:placeRoom(node, parent, dir)
     -- [[ will be the relative height of the parent room ]]
     -- The parameter displaying their relative position is currentPerpOffset
     
-    local hallwayPos
 
-    -- the first case
-    if currentPerpOffset > 0 then
-        -- it is one past the corner
-        local lowerLeftParent = relParentStart + relParentHeightVec
-        -- the difference is one more bigger than needed
-        -- so it's 2 more than needed right now
-        local perpDiff = lowerLeftParent - currentStart
-        -- this also has the relative x component, so project onto y
-        local projDiff = perpDiff * relDownVec
-        -- get the length and subtract 2
-        -- although it can be deduced as simply x + y, since the projected
-        -- vector is pure x or y, just calculate the magnitude
-        local mag = projDiff:mag()
-        local variance = mag - hallWidth
-        -- generate the start vector
-        local offset = math.random(1, variance)
-        
-        hallwayPos = currentStart + offset * relDownVec
+    if options.build_hallway then
 
-    else
-        -- still, one past the corner
-        local lowerLeftRoom = currentStart + relRoomHeightVec
-        -- calculate the difference
-        local perpDiff = relParentStart - lowerLeftRoom
-        -- project
-        local projDiff = perpDiff * relDownVec
-        -- get manitude
-        local mag = projDiff:mag()
-        -- get the relative height magnitude
-        local relHeightMag = relParentHeightVec:mag()
+        local hallwayPos
 
-        local variance
-        if mag > relHeightMag then
-            variance = relHeightMag - hallWidth
+        -- the first case
+        if verOffsetVar.value > 0 then
+            -- it is one past the corner
+            local lowerLeftParent = relParentStart + relParentHeightVec
+            -- the difference is one more bigger than needed
+            -- so it's 2 more than needed right now
+            local perpDiff = lowerLeftParent - currentStart
+            -- this also has the relative x component, so project onto y
+            local projDiff = perpDiff * relDownVec
+            -- get the length and subtract 2
+            -- although it can be deduced as simply x + y, since the projected
+            -- vector is pure x or y, just calculate the magnitude
+            local mag = projDiff:mag()
+            local variance = mag - hallWidth
+            -- generate the start vector
+            local offset = math.random(1, variance)
+            
+            hallwayPos = currentStart + offset * relDownVec
+
         else
-            variance = mag - hallWidth
+            -- still, one past the corner
+            local lowerLeftRoom = currentStart + relRoomHeightVec
+            -- calculate the difference
+            local perpDiff = relParentStart - lowerLeftRoom
+            -- project
+            local projDiff = perpDiff * relDownVec
+            -- get manitude
+            local mag = projDiff:mag()
+            -- get the relative height magnitude
+            local relHeightMag = relParentHeightVec:mag()
+
+            local variance
+            if mag > relHeightMag then
+                variance = relHeightMag - hallWidth
+            else
+                variance = mag - hallWidth
+            end
+
+            local offset = math.random(1, variance)
+
+            hallwayPos = 
+                relParentStart 
+                + offset * relDownVec 
+                + relParentWidthVec 
+                + relRightVec * horOffsetVar.value
+
         end
 
-        local offset = math.random(1, variance)
+        -- generate hallway
+        for i = 0, horOffsetVar.value do
 
-        hallwayPos = 
-            relParentStart 
-            + offset * relDownVec 
-            + relParentWidthVec 
-            + relRightVec * currentHallOffset
+            local currentHallPos = hallwayPos + -i * dirVec
 
-    end
+            for j = 0, hallWidth - 1 do
+                local hallPos = currentHallPos + relDownVec * j
+                self.grid[hallPos.x][hallPos.y] = Cell(Types.HALLWAY, { parent, node })
+            end
 
-    -- generate hallway
-    for i = 0, currentHallOffset do
+            local wallTopPos = currentHallPos - relDownVec
+            self.grid[wallTopPos.x][wallTopPos.y] = Cell(Types.WALL, { parent, node })
 
-        local currentHallPos = hallwayPos + -i * dirVec
-
-        for j = 0, hallWidth - 1 do
-            local hallPos = currentHallPos + relDownVec * j
-            self.grid[hallPos.x][hallPos.y] = Cell(Types.HALLWAY, { parent, node })
+            local wallBotPos = currentHallPos + relDownVec * hallWidth
+            self.grid[wallBotPos.x][wallBotPos.y] = Cell(Types.WALL, { parent, node })
         end
-
-        local wallTopPos = currentHallPos - relDownVec
-        self.grid[wallTopPos.x][wallTopPos.y] = Cell(Types.WALL, { parent, node })
-
-        local wallBotPos = currentHallPos + relDownVec * hallWidth
-        self.grid[wallBotPos.x][wallBotPos.y] = Cell(Types.WALL, { parent, node })
     end
 
     return room
+end
+
+
+-- generate a secret room of size w by h somewhere
+function Generator:secret(w, h)
+
+    local secretConfig = {
+        max_hallway_length = 0,
+        min_hallway_length = 0,
+        build_hallway = false,
+        leave_hallway_space = false,
+        enemy_density = 0
+    }
+
+    -- go through all the rooms. try to generate the secret 
+    -- room in between them. otherwise, try to generate it
+    -- in the place where it would neighbor most rooms.
+    for _, node in ipairs(self.nodes) do
+        local dirs = node:getOccupiedDirections()
+        local parent = node.room
+        local secretRoom
+
+        for _, dir in ipairs(dirs) do
+            local secretNode = { w = w, h = h }
+            secretRoom = self:placeRoom(secretNode, parent, dir, secretConfig)
+            if secretRoom ~= nil then
+                return secretRoom
+            end
+        end
+    end
+
+    print('No secret room generated')
+
+    -- TODO: figure out places that neighbor most rooms
+
 end
 
 

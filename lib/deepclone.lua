@@ -11,3 +11,5 @@ table.deepClone = function(toClone)
 
     return clone 
 end
+
+table.clone = table.deepClone

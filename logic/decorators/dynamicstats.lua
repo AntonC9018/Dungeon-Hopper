@@ -23,7 +23,7 @@ local DynamicStats = class('DynamicStats', Decorator)
 
 -- Map strings to indices
 DynamicStats.StatTypes = Data.StatTypes
-statTypesLength = #Data.StatConfigs
+local statTypesLength = #Data.StatConfigs
 local StatConfigs = Data.StatConfigs
 local HowToReturn = require '@decorators.stats.howtoreturn'
 local StatsHowToReturn = Data.StatsHowToReturn

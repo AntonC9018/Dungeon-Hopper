@@ -1,3 +1,4 @@
+local Changes = require 'render.changes'
 local utils = require '@retouchers.utils'
 
 
@@ -12,5 +13,5 @@ local function bump(event)
 end
 
 return function(entityClass)
-    utils.retouch(entityClass, 'displace', { bump, Numbers.rankMap[Ranks.MEDIUM] + 1 })
+    utils.retouch(entityClass, 'displace', { bump, RankNumbers.rankMap[Ranks.MEDIUM] + 1 })
 end

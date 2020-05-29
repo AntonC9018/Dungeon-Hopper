@@ -425,7 +425,7 @@ function Grid:remove(object)
     local cell = self:getCellAt(object.pos)
     if cell:get(object.layer) == object then
         cell:clear(object.layer)
-        self:emitWatchers(object.pos, 'from', entity)
+        self:emitWatchers(object.pos, 'from', object)
     end
 end
 

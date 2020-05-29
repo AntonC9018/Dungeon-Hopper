@@ -32,6 +32,9 @@ return function(config)
             generator:addNode(2)
             generator:addNode(3)
             generator:generate()
+            generator:secret(5, 5)
+            generator:secret(5, 5)
+            generator:prune()
         else
             generator = config.generator
         end

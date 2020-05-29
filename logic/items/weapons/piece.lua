@@ -1,5 +1,5 @@
 -- pos is the relative to the attacker coordinate
-local Piece = class("Piece", Piece)
+local Piece = class("Piece")
 
 function Piece:__construct(pos, dir, reach)
     self.pos = pos

@@ -102,7 +102,7 @@ end
 function Cell:dropGold(amount)
     local gold = self:getGold()
     if gold == nil then
-        gold = Gold(amount)
+        -- gold = Gold(amount)
         self:setGold(gold)
     else
         gold.add(amount)  

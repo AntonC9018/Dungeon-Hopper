@@ -37,7 +37,7 @@ function clamp(v, l, u)
     return v
 end
 
-function contains(table, val)
+table.contains = function(table, val)
     for i = 1, #table do
         if table[i] == val then 
            return true
@@ -45,6 +45,7 @@ function contains(table, val)
     end
     return false
 end
+
 function sign(x)
   return (x < 0 and -1) or ((x > 0 and 1) or 0)
 end
@@ -64,40 +65,11 @@ table.some = function(arr, it)
     return false
 end
 
-function tdArray(w, h, f, reversed)
-    if not f then f = function() return false end end
-
-    local arr = {}
-
-    if reversed then
-
-        for i = w, 1, -1 do
-            arr[i] = {}        
-            for j = h, 1, -1 do
-                arr[i][j] = f(i, j)
-            end
-        end
-
-
-    else
-
-        for i = 1, w do
-            arr[i] = {}        
-            for j = 1, h do
-                arr[i][j] = f(i, j)
-            end
-        end
-
-    end
-
-    return arr
-end
-
-function merge(t1, t2)
+table.merge = function(t1, t2)
     for k,v in pairs(t2) do
         if type(v) == "table" then
             if type(t1[k] or false) == "table" then
-                merge(t1[k] or {}, t2[k] or {})
+                table.merge(t1[k] or {}, t2[k] or {})
             else
                 t1[k] = v
             end
@@ -108,8 +80,7 @@ function merge(t1, t2)
     return t1
 end
 
-
-function merge_array(arr1, arr2)
+table.mergeArray = function(arr1, arr2)
     local len = #arr1
     for i = 1, #arr2 do
         arr1[len + i] = arr2[i]
@@ -134,11 +105,10 @@ table.shuffle = function(t)
     end
 end
 
-
-function array_join_all(...)
+table.joinAll = function (...)
     local r = {}
     for i = 1, arg.n do
-        merge_array(r, arg[i])
+        table.mergeArray(r, arg[i])
     end
     return r
 end
@@ -150,7 +120,7 @@ table.containsKey = function (t, k)
     return false
 end
 
-function averageByKey(arr, key)
+table.averageByKey = function(arr, key)
     local sum = arr[1]
     for i = 2, #arr do
         sum = sum + arr[i][key]
@@ -159,7 +129,7 @@ function averageByKey(arr, key)
 end
 
 
-function average(arr)
+table.average = function(arr)
     local sum = arr[1]
     for i = 2, # arr do
         sum = sum + arr[i]

@@ -12,7 +12,7 @@ local Statused = class('Statused', Decorator)
 -- Now how do we actually store status effects
 local StatusList = {}
 local StatusIndexToName = {}
-statusTypesLength = 0
+local statusTypesLength = 0
 Statused.StatusTypes = {}
 
 Statused.registerStatus = function(name, status) 

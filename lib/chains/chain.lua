@@ -89,7 +89,7 @@ function Chain:cleanUp(handler)
         end
     end
     self.toRemove = {}
-    merge_array(self.handlers, self.toAdd)
+    table.mergeArray(self.handlers, self.toAdd)
     self.toAdd = {}
 end
 

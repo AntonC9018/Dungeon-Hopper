@@ -29,7 +29,7 @@ function Generator:__construct(w, h, options)
     options.min_hallway_length = options.min_hallway_length or 0
     options.min_hallway_width  = options.min_hallway_width  or 1
     options.max_hallway_width  = options.max_hallway_width  or 2
-    options.enemy_density      = options.enemy_density or 1 / 10
+    options.enemy_density      = options.enemy_density or (1 / 10)
     options.max_iter = options.max_iter or MAX_ITER
 
     self.options = options    
@@ -60,11 +60,14 @@ function Generator:generate()
     self.rooms = { startRoom }
     self.rootNode.room = startRoom
 
-    if not self:iterate(self.rootNode, startRoom, normalRoomOptions) then
+    if not self:iterate(self.rootNode, startRoom) then
         return self:generate()
     end
 
-    self:pruneGrid()
+    self.secretRooms = {}
+    self.secretNodes = {}
+
+    -- self:pruneGrid()
     -- self:print()
 
     return true
@@ -261,7 +264,7 @@ function Generator:iterate(parentNode, parentRoom, ignoreNode)
     return true
 end
 
-function Generator:pruneGrid()
+function Generator:prune()
     for i = 1, self.width do
         if self.grid[i] == nil then
             print("Weird bug for i = ", i)
@@ -610,6 +613,17 @@ function Generator:secret(w, h)
         enemy_density = 0
     }
 
+    local function placeRoom(parent, dir)
+        local secretNode = { w = w, h = h }
+        local secretRoom = self:placeRoom(secretNode, parent, dir, secretConfig)
+        if secretRoom ~= nil then
+            secretRoom.secret = true
+            table.insert(self.secretNodes, secretNode)
+            table.insert(self.secretRooms, secretRoom)
+            return secretRoom
+        end
+    end
+
     -- go through all the rooms. try to generate the secret 
     -- room in between them. otherwise, try to generate it
     -- in the place where it would neighbor most rooms.
@@ -618,10 +632,9 @@ function Generator:secret(w, h)
         local parent = node.room
 
         for _, dir in ipairs(dirs) do
-            local secretNode = { w = w, h = h }
-            local secretRoom = self:placeRoom(secretNode, parent, dir, secretConfig)
-            if secretRoom ~= nil then
-                return secretRoom
+            local sroom = placeRoom(parent, dir)
+            if sroom ~= nil then
+                return sroom
             end
         end
     end
@@ -662,11 +675,7 @@ function Generator:secret(w, h)
         end
         local count, neigh = countNeighs(x, y)
         if count == numRooms then
-            local secretNode = { w = w, h = h }
-            local secretRoom = self:placeRoom(secretNode, neigh, Dir(x - neigh.x, y - neigh.y), secretConfig)
-            if secretRoom ~= nil then
-                return secretRoom
-            end
+            return placeRoom(neigh.room, Dir(x - neigh.x, y - neigh.y))
         end
     end
 

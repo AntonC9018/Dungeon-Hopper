@@ -25,8 +25,6 @@ FooBar.baseModifiers = {
         through = false
     },
     resistance = {
-        push = 0,
-        pierce = 1,
         armor = 0,
         pierce = 1,
         maxDamage = math.huge,

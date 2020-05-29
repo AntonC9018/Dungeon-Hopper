@@ -37,7 +37,7 @@ local step1 = {
         -- are on one line / column
         -- for this, we create a custom chain on which we hang that function
         -- create a chain that consists of one handler
-        chain: Handlers.checkOrthogonal,
+        Handlers.checkOrthogonal,
      -- the next step index
     success = 2,
     -- in case this fails, e.g. we're frozen, remain at the 1st step
@@ -61,7 +61,7 @@ local step2 = {
     movs = require '@sequence.movs.straight'
 }
 
-step3 = {
+local step3 = {
     action = None,
     repet = 2, -- repeat this step 2 times before going to the next one
     success = 1 -- this and the fail can be omitted, as the sequence loops by default

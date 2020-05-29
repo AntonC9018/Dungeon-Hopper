@@ -347,14 +347,17 @@ function World:materializeGenerator(generator, Tile, wallSubpoolId, enemySubpool
                 elseif cell.type == Types.ENEMY then
                     generator.grid[i][j] = Cell(vec)
                     self:create(Tile, vec)
-                    local enemyClass
-                    if type(wallSubpoolId) == 'number' then
-                        enemyClass = Entities[self:drawFromPool(enemySubpoolId)]
-                    else
-                        enemyClass = enemySubpoolId
-                    end
-                    if enemyClass then
-                        self:create(enemyClass, vec)
+
+                    if not cell.room.secret then
+                        local enemyClass
+                        if type(wallSubpoolId) == 'number' then
+                            enemyClass = Entities[self:drawFromPool(enemySubpoolId)]
+                        else
+                            enemyClass = enemySubpoolId
+                        end
+                        if enemyClass then
+                            self:create(enemyClass, vec)
+                        end
                     end
 
                 else

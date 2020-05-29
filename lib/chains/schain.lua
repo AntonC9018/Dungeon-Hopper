@@ -79,7 +79,7 @@ function SChain:cleanUp()
         end
     end
     self.toRemove = {}
-    merge_array(self.handlers, self.toAdd)
+    table.mergeArray(self.handlers, self.toAdd)
 
     if #self.toAdd ~= 0 then
         self:sortHandlers()

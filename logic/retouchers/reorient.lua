@@ -34,11 +34,11 @@ local function reorientActionHandler(event)
 end
 
 reorient.onAttack = function(entityClass)
-    utils.retouch(entityClass, 'attack', reorientHandler)
+    utils.retouch(entityClass, 'attack', reorientActionHandler)
 end
 
 reorient.onDig = function(entityClass)
-    utils.retouch(entityClass, 'dig', reorientHandler)
+    utils.retouch(entityClass, 'dig', reorientActionHandler)
 end
 
 

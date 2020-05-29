@@ -6,17 +6,17 @@ local Interactable = require '@decorators.interactable'
 local Interacting = class('Interacting', Decorator)
 
 -- interacting always takes place with the item right before the entity
-function getTarget(event)
+local function getTarget(event)
     local grid = event.actor.world.grid
     event.target = grid:getRealAt(event.actor.pos + event.action.direction)
     event.propagate = event.target ~= nil
 end
 
-function checkIsInteractable(event)
+local function checkIsInteractable(event)
     event.propagate = event.target:isDecorated(Interactable)
 end
 
-function interact(event)
+local function interact(event)
     event.target.decorators.Interactable:activate(event.target, event.action)
 end
 

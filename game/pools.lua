@@ -218,7 +218,7 @@ end
 -- only the root index is taken into account, 
 -- the rest of the pool id is ignored
 -- For example, 'i.common' would instantiate 'i'
-Pools.instantiatePool = function(str)
+Pools.instantiatePool = function(str, randomness)
     local processed = preprocessString(str)
     local index = processed[1]
     local rootPoolConfig = rootConfigs[index]

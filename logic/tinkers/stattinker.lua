@@ -1,5 +1,6 @@
 local Ranks = require 'lib.chains.ranks'
 local utils = require '@tinkers.utils'
+local generateId = require '@tinkers.id'
 
 local StatTinker = class("StatTinker")
 
@@ -17,10 +18,18 @@ function StatTinker:__construct(statChanges)
         else 
             table.insert(self.twoVarChanges, s)
         end
-    end
+    end    
+
+    self.id = generateId()
 end
 
 function StatTinker:tink(entity)
+
+    if entity.tinkerData[self.id] == nil then
+        entity.tinkerData[self.id] = 1
+    end
+    entity.tinkerData[self.id] = entity.tinkerData[self.id] + 1
+
     -- add the indicated amounts
     for _, s in ipairs(self.threeVarChanges) do
         entity.decorators.DynamicStats:addStat(s[1], s[2], s[3])
@@ -34,6 +43,9 @@ function StatTinker:tink(entity)
 end
 
 function StatTinker:untink(entity)
+
+    entity.tinkerData[self.id] = entity.tinkerData[self.id] - 1
+
     -- subtract the indicated amounts
     for _, s in ipairs(self.threeVarChanges) do
         entity.decorators.DynamicStats:addStat(s[1], s[2], -s[3])

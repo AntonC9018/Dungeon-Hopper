@@ -14,7 +14,7 @@ function scene:create( event )
     
     -- Simply load the test file
     -- They output a function, which we call here
-    require("game.tests.gen3")()
+    require("game.tests.spider")()
 
 end
 

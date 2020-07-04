@@ -152,37 +152,26 @@ end
 
 
 function World:resetObjects()
-    -- for now, just reset the reals and traps
-    for i, real in ipairs(self.grid.reals) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
+
+    local function reset(obj)
+        obj.didAction = false
+        obj.doingAction = false
+        obj.nextAction = nil
+        obj.enclosingEvent = nil
+        obj.history:clear()
     end
-    for i, real in ipairs(self.grid.traps) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
+
+    local function resetArr(arr)
+        for i, obj in ipairs(arr) do
+            reset(obj)
+        end
     end
-    for i, real in ipairs(self.grid.floors) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
-    end
-    for i, real in ipairs(self.grid.misc) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
-    end
-    for i, real in ipairs(self.grid.projectiles) do        
-        real.didAction = false
-        real.doingAction = false
-        real.nextAction = nil
-        real.enclosingEvent = nil
-    end
+
+    resetArr(self.grid.reals)
+    resetArr(self.grid.traps)
+    resetArr(self.grid.floors)
+    resetArr(self.grid.misc)
+    resetArr(self.grid.projectiles)
 end
 
 
@@ -290,15 +279,10 @@ function World:updateRenderStates()
 end
 
 
-function World:registerChange(obj, code)
-    local change = {
-        id = obj.id,
-        state = obj.state,
-        pos = obj.pos,
-        orientation = obj.orientation,
-        event = code
-    }
-    table.insert(self.changes[self.phase], change)
+local HistoryEvent = require '@history.event'
+
+function World:registerEvent(obj, code)
+    table.insert(self.changes[self.phase], HistoryEvent(code, obj))
 end
 
 

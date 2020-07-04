@@ -129,7 +129,7 @@ function Entity:reorient(newOrientation)
         or newOrientation.y ~= self.orientation.y 
     then
         self.orientation = newOrientation
-        self.world:registerChange(self, Changes.Reorient)
+        self:registerEvent(Changes.Reorient)
     end
 end
 

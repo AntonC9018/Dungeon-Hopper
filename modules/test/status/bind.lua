@@ -56,7 +56,7 @@ local function generator(tinker)
         local whoApplied = tinker:getStore(event.actor).whoApplied
         if whoApplied ~= nil and whoApplied.dead or whoApplied == nil then
             event.actor.decorators.Statused:resetStatus(StatusTypes.bind)
-            tinker:setStore(event.actor, nil)
+            tinker:removeStore(whoApplied)
         end
     end
 
@@ -64,7 +64,7 @@ local function generator(tinker)
         local whoApplied = tinker:getStore(event.actor).whoApplied
         if whoApplied ~= nil then
             whoApplied.pos = event.actor.pos
-            event.actor.world:registerChange(whoApplied, Changes.Move)
+            whoApplied:registerEvent(Changes.Move)
         end
     end
 

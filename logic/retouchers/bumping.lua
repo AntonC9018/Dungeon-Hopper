@@ -8,7 +8,7 @@ local function bump(event)
         newPos.x == pos.x
         and newPos.y == pos.y
     then
-        event.actor.world:registerChange(event.actor, Changes.Bump)
+        event.actor:registerEvent(Changes.Bump)
     end
 end
 

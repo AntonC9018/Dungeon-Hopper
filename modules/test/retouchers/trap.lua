@@ -22,7 +22,7 @@ local function unpress(event)
         or State.UNPRESSED
     
     if actor.state ~= nextState then
-        actor.world:registerChange(actor, Changes.JustState)
+        actor:registerEvent(Changes.JustState)
     end
 end
 

@@ -80,7 +80,7 @@ end
 
 utils.regChangeFunc = function(code)
     return function(event)
-        event.actor.world:registerChange(event.actor, code)
+        event.actor:registerEvent(code)
     end
 end
 

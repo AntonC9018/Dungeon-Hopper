@@ -6,7 +6,7 @@
 
 local None = require '@action.actions.none'
 local Emitter = require("lib.emitter")
-
+local History = require '@history.history'
 local GameObject = class("GameObject")
 
 -- fallback options
@@ -46,6 +46,12 @@ function GameObject:init(pos, world)
     if self.chainTemplate ~= nil then
         self:applyDecorators()
     end
+
+    self.history = History(self)
+
+    -- this is a blackbox object for entities themself
+    -- it is managed solely by tinkers
+    self.tinkerData = {}
 end
 
 
@@ -79,6 +85,12 @@ end
 
 function GameObject:isPlayer()
     return self.layer == Layers.player
+end
+
+function GameObject:registerEvent(code)
+    print(self.history)
+    self.world:registerEvent(self, code)
+    self.history:registerEvent(code)
 end
 
 

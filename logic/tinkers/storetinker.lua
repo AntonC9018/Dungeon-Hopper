@@ -27,6 +27,15 @@
 --    handlers get just the tinker instance, so the logic has to be rewritten
 --
 -- I like the first idea though
+--
+-- 04.07.2020 Update
+-- stores are now kept on entities and referenced by tinker id
+-- this is better since in case we keep the stores at tinkers,
+-- when entities die, the memory has to be freed manually.
+-- Without such a mechanism, memory leaks will occur.
+-- 
+-- The downside is that the entity object is sort of trashed.
+-- It has no knowledge of what `tinkerData` is.
 
 local RefTinker = require '@tinkers.reftinker'
 
@@ -34,20 +43,22 @@ local StoreTinker = class('StoreTinker', RefTinker)
 
 
 function StoreTinker:__construct(generator)
-    self.stores = {}
     RefTinker.__construct(self, generator)
 end
 
-function StoreTinker:setStore(entity, obj)
-    self.stores[entity.id] = obj or {}
+function StoreTinker:setStore(entity, obj)    
+    if entity.tinkerData[self.id] ~= nil then
+        printf("Be careful! Tinker of id %s has just been applied more than twice.")
+    end
+    entity.tinkerData[self.id] = obj or {}
 end
 
 function StoreTinker:getStore(entity)
-    return self.stores[entity.id]
+    return entity.tinkerData[self.id]
 end
 
 function StoreTinker:removeStore(entity)
-    self.stores[entity.id] = nil
+    entity.tinkerData[self.id] = nil
 end
 
 

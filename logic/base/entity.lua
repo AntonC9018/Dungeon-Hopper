@@ -4,7 +4,6 @@
 -- This is the base class for any entity in the game
 local Decorators = require '@decorators.decorators'
 local decorate = require('@decorators.decorate')
-local SimpleAlgo = require '@algos.simple'
 local GameObject = require '@base.gameobject'
 local None = require '@action.actions.none'
 local Attackableness = require '@enums.attackableness'
@@ -91,9 +90,7 @@ Entity.addStat =
 function Entity:getAttackableness(attacker)
     local attackable = self.decorators.Attackable
 
-    -- if has attackable decorator
     if attackable ~= nil then
-        -- call their method
         return attackable:getAttackableness(self, attacker)
     end
     -- can't be attacked
@@ -201,7 +198,6 @@ function Entity:getDigTargets(action)
 end
 
 
--- TODO: implement
 function Entity:getWeapon()
     if self:isDecorated(Decorators.Inventory) then
         return self.inventory:get(Decorators.Inventory.Slots.weapon):get(1)
@@ -209,7 +205,6 @@ function Entity:getWeapon()
 end
 
 --  for now, define the item interface here
--- TODO: refine
 function Entity:equip(item)
     if self:isDecorated(Decorators.Inventory) then
         self.inventory:equip(item)

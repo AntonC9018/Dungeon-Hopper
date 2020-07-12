@@ -1,6 +1,5 @@
 local all = {}
 
-
 all.Algos = require '@retouchers.algos'
 all.Attackableness = require '@retouchers.attackableness'
 all.Bumping = require '@retouchers.bumping'

@@ -27,21 +27,19 @@ function GameObject:init(pos, world)
     self.pos = pos
     self.world = world
     self.orientation = Vec(1, 0)
+
     -- default state is always 1
     -- this is the state in which the object is
     -- examples of states might be:
     --      1. a skeleton with head and without it
     --      2. rider on horse and without one
     self.state = 1
-    -- @type Action
+
     self.nextAction = nil
 
     self.enclosingEvent = nil
     self.didAction = false
     self.dead = false
-
-    -- create an emitter
-    -- self.emitter = Emitter()
 
     if self.chainTemplate ~= nil then
         self:applyDecorators()
@@ -88,7 +86,6 @@ function GameObject:isPlayer()
 end
 
 function GameObject:registerEvent(code)
-    print(self.history)
     self.world:registerEvent(self, code)
     self.history:registerEvent(code)
 end

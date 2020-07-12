@@ -1,5 +1,5 @@
 -- do the same for stats
--- 04.07.2020 Deprecated. probably.
+-- Deprecated. probably.
 
 local RefStatTinker = require '@tinkers.refstattinker'
 local StoreTinker = require '@tinkers.storetinker'

@@ -1,28 +1,6 @@
 local utils = {}
 
 
--- Not actually used!
-utils.checkApplyHandler = function(checkChain, nameApplyMethod)
-    return function(algoEvent)
-        local actor = algoEvent.actor
-        local action = algoEvent.action
-
-        local internalEvent = Event(actor, action)
-
-        checkChain:pass(internalEvent, Chain.checkPropagate)
-
-        if internalEvent.propagate then    
-            local resultEvent = actor[nameApplyMethod](actor, action)
-
-            algoEvent.propagate = false
-            algoEvent.success = true
-            algoEvent.resultEvent = resultEvent
-        end
-
-        return algoEvent
-    end
-end
-
 utils.applyHandler = function(nameApplyMethod)
     return function(algoEvent)
         local actor = algoEvent.actor

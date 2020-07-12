@@ -6,7 +6,12 @@ local Generator = require 'world.generation.generator'
 
 return function()
 
-    local generator = Generator(40, 40, { min_hallway_width = 2, max_hallway_width = 3, max_hallway_length = 1 })
+    local generator = Generator(40, 40, 
+        { 
+            min_hallway_width = 2, 
+            max_hallway_width = 3, 
+            max_hallway_length = 1 
+        })
     generator:start()
     generator:addNode(1, Vec(1, 0), 6, 6)
     generator:addNode(1, Vec(-1, 0), 6, 6)

@@ -9,7 +9,6 @@
 -- 
 -- 1. we could store an id or some key that every entity will provide 
 --    on each call to tink / untink. If a store with that id doesn't exist
--- [ Actually realized that stores can be managed separately, so there are separate methods for it ]
 --    one will be created. This way the handlers that reference the
 --    tinker would provide the entities' id as the key to the store of
 --    the shared piece of data.
@@ -28,8 +27,7 @@
 --
 -- I like the first idea though
 --
--- 04.07.2020 Update
--- stores are now kept on entities and referenced by tinker id
+-- Stores are kept on entities and referenced by tinker id
 -- this is better since in case we keep the stores at tinkers,
 -- when entities die, the memory has to be freed manually.
 -- Without such a mechanism, memory leaks will occur.

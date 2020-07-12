@@ -58,16 +58,16 @@ local rootConfigs = {}
 
 -- Basically, strings are mapped to indeces via the depthMap
 -- Indeces are left unchanged
--- Tilda is mapped to the current zone/level/etc.
+-- Tilde is mapped to the current zone/level/etc.
 -- A star is left unchanged. It indicates all subpools.
 local function preprocessString(str)
     local split = string.split(str, '.')
     split[1] = rootMap[ split[1] ]
     
-    local mapTilda
+    local mapTilde
 
     if current then
-        mapTilda = current[ split[1] ]
+        mapTilde = current[ split[1] ]
     end
 
     local mapString = depthMaps[ split[1] ]
@@ -76,7 +76,7 @@ local function preprocessString(str)
         if split[i] == '*' then
             
         elseif split[i] == '~' then
-            split[i] = mapTilda[i - 1]
+            split[i] = mapTilde[i - 1]
         else
             local n = tonumber(split[i])
 
@@ -214,7 +214,7 @@ Pools.addToSubpool = function(str, id, mass)
 end
 
 -- TODO: record mask
--- instentiate the given subpool
+-- instantiate the given subpool
 -- only the root index is taken into account, 
 -- the rest of the pool id is ignored
 -- For example, 'i.common' would instantiate 'i'
@@ -238,7 +238,7 @@ end
 --           'e.~.~.enemy', 'e.z1.f2.enemy'
 -- Can return root pools, e.g. 'e' or 'i'
 -- `pools` is a map poolIndex -> instantiated pool
--- TODO: `current` is the current tilda values
+-- TODO: `current` is the current tilde values
 Pools.drawSubpool = function(str, pools, current)
     local split = preprocessString(str)
 

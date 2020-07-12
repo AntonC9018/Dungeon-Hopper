@@ -21,22 +21,13 @@ local function Iterate(algoEvent)
     local actor = algoEvent.actor
     local action = algoEvent.action
 
-    -- Iterate over action components of the action and try them in order.
-    -- e.g. an AttackAction action has just one action component, which
-    -- would call the executeAction() method on that instance (actor).
-    -- If the action were successful, then by the end of this function
-    -- call it has already been executed. Otherwise, tell the entity blocking
-    -- the way to move and try again. If it resulted to a failed action yet
-    -- again, try another direction. 
-    action:getChain():pass(algoEvent, Chain.checkPropagate)
-    
+    action:getChain():pass(algoEvent, Chain.checkPropagate)    
 
     if not algoEvent.success then
         -- lets the real that blocks the way do its thing first
         -- if it does exist and did do something, succees would be true
         local succees = askMove(actor, action)
         
-        -- after this, we should repeat this iteration
         if succees then
             return Iterate(algoEvent)    
         end

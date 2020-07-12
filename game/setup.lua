@@ -77,8 +77,8 @@ local entityClassId = 0
 
 function registerEntity(entity)
     entityClassId = entityClassId + 1
-    entity.global_id = entityClassId 
-    Entities[entity.global_id] = entity
+    entity.class_id = entityClassId 
+    Entities[entity.class_id] = entity
 end
 
 
@@ -94,18 +94,6 @@ Item = require '@items.item'
 
 -- make essential retouchers global
 Retouchers = require '@retouchers.all'
--- as well as their utils
--- retoucherUtils = require '@retouchers.utils'
-
--- make tinker classes global
--- Tinker = require '@tinkers.tinker'
--- StatTinker = require '@tinkers.stattinker'
--- RefTinker = require '@tinkers.reftinker'
--- RefStatTinker = require '@tinkers.refstattinker'
--- StoreTinker = require '@tinkers.storetinker'
--- StoreStatTinker = require '@tinkers.storestattinker'
--- -- as well as tinker utils
--- tinkerUtls = require '@tinkers.utils'
 
 -- make the action class global
 Action = require '@action.action'

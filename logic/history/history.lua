@@ -1,6 +1,3 @@
--- So after such a long pause, the first thing I wish to implement is this
--- Also, I'm going to reimplement tinkers a little + do better job at 
--- keeping track of what tinkers have been applied
 local HistoryEvent = require '@history.event'
 
 local History = class('History')

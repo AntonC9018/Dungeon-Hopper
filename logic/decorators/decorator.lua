@@ -4,8 +4,6 @@ local Decorator = class("Decorator")
 
 -- Basically, all decorators do right now is they add 
 -- a bunch of handlers to chains / create new chains on instances
---
--- 
 
 -- Store the list of affected chains here
 Decorator.affectedChains = {}

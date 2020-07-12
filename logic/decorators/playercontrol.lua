@@ -1,6 +1,6 @@
 -- this file will include means of transforming 
 -- a provided piece of input into action objects
---
+
 local Decorator = require '@decorators.decorator'
 local None = require '@action.actions.none'
 local BasicHandlers = require "@action.handlers.basic"

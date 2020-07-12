@@ -12,17 +12,6 @@ local standartSuccessChain = Chain(
     }
 )
 
--- local function checkSuccessDefault()
---     local chain = Chain()
---     chain:addHandler(
---         function(event)
---             event.triggerEvent.propagate
---         end
---     )
---     return chain
--- end
-
-
 function Step:__construct(config)
 
     self.successStepIndex = nil
@@ -31,15 +20,6 @@ function Step:__construct(config)
     local ActionClass = config.action
     -- action must be specified
     assert(ActionClass ~= nil, "Action must be specified")
-
-    -- what is an action exactly?
-    --
-    -- action is just what is going to be passed down the line 
-    -- when the instance does stuff. Based off of that action,
-    -- different things would get executed. For example, 
-    -- the Attack action has a chain attached to it. This chain
-    -- in our case provides handlers for attacking an entity
-    -- For more examples, see `actions`.
 
     self.ActionClass = ActionClass
 

@@ -3,16 +3,6 @@ local Record = require '@items.pool.record'
 local Pool = class("Pool")
 
 
--- 
---  initialRecords = { Record() },
---  sharedRecords =  { Record() }, -- these are deeply copied initialRecords
---  config = {
---      { ...indices... },
---      { ...subnodes(config)... }
---  },
---  randomness = ?,
---  parent
-
 function Pool:__construct(
     initialRecords, 
     config,

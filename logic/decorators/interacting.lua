@@ -30,8 +30,6 @@ Interacting.affectedChains = {
     { "interact", 
         { 
             interact
-            -- ,
-            -- utils.regChangeFunc(Changes)
         } 
     }
 }

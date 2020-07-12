@@ -2,9 +2,7 @@
 local function SimpleAlgo(enclosingEvent)
 
     local actor = enclosingEvent.actor
-    -- action already has the action.direction here
     local action = enclosingEvent.action
-
 
     local algoEvent = Event(actor, action)
 

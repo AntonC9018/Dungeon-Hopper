@@ -9,7 +9,7 @@ local Overlay = require '@status.overlay'
 local Statused = class('Statused', Decorator)
 
 
--- Now how do we actually store status effects
+-- now how do we actually store status effects
 local StatusList = {}
 local StatusIndexToName = {}
 local statusTypesLength = 0
@@ -36,7 +36,7 @@ end
 
 
 function Statused:__construct(actor)
-    -- Create the status stats object
+    -- create the status stats object
     self.statuses = Stats()
     actor.statuses = self.statuses
 
@@ -45,7 +45,7 @@ function Statused:__construct(actor)
     self.actor = actor
 end
 
--- Get current stats
+-- get current stats
 function Statused:get()
     return self.statuses
 end

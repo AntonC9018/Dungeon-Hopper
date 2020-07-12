@@ -11,11 +11,6 @@ local Decorators = require "@decorators.decorators"
 Decorators.Start(DroppedItem)
 decorate(DroppedItem, Decorators.Killable)
 
--- remove oneself from world on pickup
--- function DroppedItem:beEquipped(entity)
---     self:die()
--- end
-
 function DroppedItem:addItemId(id)
     table.insert(self.state, id)
 end

@@ -41,7 +41,7 @@ utils.checkApplyPresetEvent = function(nameCheck, nameApply)
     end
 end
 
--- A modified version of check apply cycle, where instead of action
+-- a modified version of check apply cycle, where instead of action
 -- one is expected to get a `property`
 utils.checkApplyCustomized = function(nameCheck, nameApply, property)
     return function(decorator, actor, value)
